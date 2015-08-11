@@ -1,5 +1,6 @@
 #ui.r
 
+source('global.R')
 
 shinyUI(fluidPage(
   
@@ -11,12 +12,20 @@ shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       selectInput("species","Choose a species:",
-                  choices=c('A','B','C')),
+                  choices=species,
       
       sliderInput('cutoff','Probability of Occurrence cutoff:',
                   min=0,max=1,value=0.4,step=0.1)
       
-      ),
-    mainPanel("main panel")
-  )
-))
+      )),
+    mainPanel(
+      
+      
+      tabsetPanel(
+        tabPanel("Comparison",plotOutput("comparePlot")),
+        tabPanel("AquaMaps",plotOutput("aquamap")),
+        tabPanel("IUCN",plotOutput("iucn"))
+        )
+      )
+  
+)))
