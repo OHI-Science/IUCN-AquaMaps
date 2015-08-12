@@ -78,7 +78,7 @@ am_spp_cells_ltd <-  read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells
 
 
 ### Get IUCN species-to-cell lookup table
-# get_iucn_spp_list <- function(spp_list) {
+get_iucn_spp_list <- function(spp_list) {
   ### Function to create a lookup of IUCN species-to-cell for species in a list
   ### IUCN intersections are in git-annex/globalprep/SpeciesDiversity/iucn_intersections/, in .csv files by species group
   ### | sciname | id_no | LOICZID | prop_area
@@ -113,19 +113,21 @@ am_spp_cells_ltd <-  read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells
 # iucn_spp_cells <- iucn_spp_cells %>%
 #   select(-sciname) # to keep it a smaller file
 # write_csv(iucn_spp_cells, file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells.csv'))
-iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells.csv'))
+iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells.csv'), col_types = 'idiii', progress = TRUE)
 
 
 ### Species Map Function ###
-# This function takes a single species scientific name as input, then grabs all occurrence cells and associated probability per cell
+# This function takes a single species scientific name as input, then grabs all 
+# occurrence cells and associated Aquamaps probability and/or IUCN proportional area
+# per cell
 get_spp_map <- function(species){
   spp_id <- spp_list %>%
     filter(sciname == species & is.na(parent_sid)) %>%
-    select(am_sid, iucn_sid, sciname) %>%
+    dplyr::select(am_sid, iucn_sid, sciname) %>%
     unique()
   iucn_spp_map <- iucn_spp_cells %>%
     filter(iucn_sid == spp_id$iucn_sid) %>%
-    select(-parent_sid, -subpop_sid, loiczid = iucn_loiczid)
+    dplyr::select(-parent_sid, -subpop_sid, loiczid = iucn_loiczid)
   am_spp_map   <- am_spp_cells %>%
     filter(am_sid == spp_id$am_sid) %>%
     rename(loiczid = am_loiczid)
@@ -155,8 +157,8 @@ r_am_spp <- subs(loiczid_raster,
               by = 'loiczid', 
               which = 'am_prob', 
               subsWithNA = TRUE)
-cols <- rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
-plot(r_am_spp, col = cols, main = species, useRaster = FALSE)
+am_cols <- rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
+plot(r_am_spp, col = am_cols, main = species, useRaster = FALSE)
 map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
 
 #substitute values of raster LOICZID with proportional area from iucn_spp_cells, then plot
@@ -165,9 +167,7 @@ r_iucn_spp <- subs(loiczid_raster,
                  by = 'loiczid', 
                  which = 'iucn_area', 
                  subsWithNA = TRUE)
-cols <- rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
-plot(r_iucn_spp, col = cols, main = species, useRaster = FALSE)
+iucn_cols <- colorRampPalette(brewer.pal(9, 'Purples'))(255) # purple color scheme
+plot(r_iucn_spp, col = iucn_cols, main = species, useRaster = FALSE)
 map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
 
-ggplot(r_iucn_spp) +
-  geom_raster(aes(fill = loiczid))
