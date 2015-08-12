@@ -57,7 +57,6 @@ cells2 <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/cells2.csv'))
 # cells2 may be more recent, with more cells listed? not positive
 
 
-
 ### Get Aquamaps species-to-cell lookup table
 # am_spp_cells <- fread(input = file.path(dir_aquamaps,'tables/ohi_hcaf_species_native.csv'), header = TRUE,
 #                    colClasses = c('NULL', 'character', NA, 'numeric', 'NULL', 'NULL')) #1 min 49 sec
@@ -79,7 +78,7 @@ am_spp_cells_ltd <-  read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells
 
 
 ### Get IUCN species-to-cell lookup table
-get_iucn_spp_list <- function(spp_list) {
+# get_iucn_spp_list <- function(spp_list) {
   ### Function to create a lookup of IUCN species-to-cell for species in a list
   ### IUCN intersections are in git-annex/globalprep/SpeciesDiversity/iucn_intersections/, in .csv files by species group
   ### | sciname | id_no | LOICZID | prop_area
@@ -110,42 +109,65 @@ get_iucn_spp_list <- function(spp_list) {
   
   return(iucn_spp)
 }
-iucn_spp_cells <- get_iucn_spp_list(spp_list)
-iucn_spp_cells <- iucn_spp_cells %>%
-  select(-sciname) # to keep it a smaller file
-write_csv(iucn_spp_cells, file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells.csv'))
-iucn_spp <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells.csv'))
+# iucn_spp_cells <- get_iucn_spp_list(spp_list)
+# iucn_spp_cells <- iucn_spp_cells %>%
+#   select(-sciname) # to keep it a smaller file
+# write_csv(iucn_spp_cells, file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells.csv'))
+iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells.csv'))
 
 
 ### Species Map Function ###
 # This function takes a single species scientific name as input, then grabs all occurrence cells and associated probability per cell
-sp_map_fun <- function(species){
+get_spp_map <- function(species){
+  spp_id <- spp_list %>%
+    filter(sciname == species & is.na(parent_sid)) %>%
+    select(am_sid, iucn_sid, sciname) %>%
+    unique()
+  iucn_spp_map <- iucn_spp_cells %>%
+    filter(iucn_sid == spp_id$iucn_sid) %>%
+    select(-parent_sid, -subpop_sid, loiczid = iucn_loiczid)
+  am_spp_map   <- am_spp_cells %>%
+    filter(am_sid == spp_id$am_sid) %>%
+    rename(loiczid = am_loiczid)
+  spp_map <- full_join(iucn_spp_map, am_spp_map, by = 'loiczid') %>%
+    as.data.frame()
   
-  sp_id  <- filter(spp, scientific == species)$SPECIESID
-  sp_map <- filter(spp_cells, species_id == sp_id) %>%
-    merge(cells, by = 'csquare_code')
-  
-  return(sp_map)
+  return(spp_map)
 }
 
+#set species
+species <- 'Xiphias gladius'
+
+#get species occurrence cells
+spp_map <- get_spp_map(species)
 
 ### Plotting a single species ###
 
 #data for raster (used to plot species)
-r               <- raster(file.path(dir_cells, 'cells.tif'))
-names(r)        <- 'cid'
+loiczid_raster_file  <- file.path(dir_anx, 'rgns/loiczid_raster.grd')
+loiczid_raster       <- raster(loiczid_raster_file)
+names(loiczid_raster) <- 'loiczid'
 
-#set species
-sp <- 'Orcinus orca'
 
-#get species occurrence cells
-sp_cells <- sp_map_fun(sp)
-
-#substitute values of raster cid with sp_cells' probability
-r_sp <- subs(r, sp_cells[ , c('cid', 'probability')], by = 'cid', which = 'probability', subsWithNA = TRUE)
-
-#plot
+#substitute values of raster LOICZID with probability from am_spp_cells, then plot
+r_am_spp <- subs(loiczid_raster, 
+              spp_map[ , c('loiczid', 'am_prob')], 
+              by = 'loiczid', 
+              which = 'am_prob', 
+              subsWithNA = TRUE)
 cols <- rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
-plot(r_sp, col=cols,main='Killer Whale')
-map('world',col='gray95',fill=T,border='gray80',add=T)
+plot(r_am_spp, col = cols, main = species, useRaster = FALSE)
+map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
 
+#substitute values of raster LOICZID with proportional area from iucn_spp_cells, then plot
+r_iucn_spp <- subs(loiczid_raster, 
+                 spp_map[ , c('loiczid', 'iucn_area')], 
+                 by = 'loiczid', 
+                 which = 'iucn_area', 
+                 subsWithNA = TRUE)
+cols <- rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
+plot(r_iucn_spp, col = cols, main = species, useRaster = FALSE)
+map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
+
+ggplot(r_iucn_spp) +
+  geom_raster(aes(fill = loiczid))
