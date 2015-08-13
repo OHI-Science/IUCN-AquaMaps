@@ -60,10 +60,10 @@ shinyServer(function(input,output){
   map_compare <- reactive({
     if(input$am_form == 'pres') {
       am_map <- spp_map() %>%
-        mutate(am_pres = am_prob >= input$am_cutoff, 1, NA)
+        mutate(am_pres = ifelse(am_prob >= input$am_cutoff, 1, NA))
     } else {
       am_map <- spp_map() %>%
-        mutate(am_pres = am_prob >= input$am_cutoff, am_prob, NA)      
+        mutate(am_pres = ifelse(am_prob >= input$am_cutoff, am_prob, NA)) 
     }
     r_am_spp  <-  subs(loiczid_raster, 
                        am_map[ , c('loiczid', 'am_pres')], 
@@ -79,31 +79,31 @@ shinyServer(function(input,output){
                        subsWithNA = TRUE)
 
     if(input$top == 'iucn') {
-      plot(r_am_spp, col = am_pres_cols, main = input$species, useRaster = FALSE, alpha = (1 - input$am_trans/100))
+      plot(r_am_spp, col = am_pres_cols, main = input$species, useRaster = FALSE, alpha = input$am_trans/100)
       plot(r_iucn_spp, col = iucn_cols, useRaster = FALSE, alpha = input$iucn_trans/100, add = TRUE)   
     } else {
-      plot(r_iucn_spp, col = iucn_cols, main = input$species, useRaster = FALSE, alpha = (1 - input$iucn_trans/100))         
+      plot(r_iucn_spp, col = iucn_cols,  main = input$species, useRaster = FALSE, alpha = input$iucn_trans/100)         
       plot(r_am_spp, col = am_pres_cols, useRaster = FALSE, alpha = input$am_trans/100, add = TRUE)
     }
     map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
   })
   
   
-  output$aquamap_prob <- renderPlot({
-    am_map_prob()
-  })
-  
-  output$aquamap_pres <- renderPlot({
-    am_map_pres()
-  })
-  
-  output$iucn <- renderPlot({
-    iucn_map()
-  })
+#   output$aquamap_prob <- renderPlot({
+#     am_map_prob()
+#   })
+#   
+#   output$aquamap_pres <- renderPlot({
+#     am_map_pres()
+#   })
+#   
+#   output$iucn <- renderPlot({
+#     iucn_map()
+#   })
   
   output$comparePlot <- renderPlot({
     map_compare()
-  })
+  }, width = 1600, height = 800)
   
   
 })

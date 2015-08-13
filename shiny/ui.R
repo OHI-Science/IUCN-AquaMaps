@@ -7,12 +7,12 @@ shinyUI(fluidPage(
   
   #Sidebar with controls to select the species and the aquamaps probability
   # of occurrence cutoff point
-  sidebarLayout(
-    sidebarPanel(
+  fluidRow(
+    column(2,
       selectInput("species","Choose a species:",
                   choices = spp_choices),
       sliderInput('am_cutoff','Probability of Occurrence cutoff (Aquamaps):',
-                  min=0,max=1,value=.4,step=0.1),
+                  min = 0, max = 1, value = .4, step = 0.1),
       sliderInput('am_trans','Aquamaps opacity (0 = transparent):',
                   min = 0, max = 100, value = 50, step = 10),
       sliderInput('iucn_trans','IUCN opacity (0 = transparent):',
@@ -24,10 +24,10 @@ shinyUI(fluidPage(
       radioButtons('am_form', 'Aquamaps as presence or probability?',
                    c(Presence    = 'pres',
                      Probability = 'prob'),
-                   'pres')
+                   'prob')
     ),
     
-    mainPanel(
+    column(10,
       plotOutput("comparePlot")
 #     mainPanel(
 #       tabsetPanel(

@@ -1,13 +1,5 @@
 #server_fxns.R
 
-library(readr)
-library(shiny)
-library(dplyr)
-library(raster)
-library(maps)
-library(RColorBrewer)
-
-
 dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
            'Darwin'  = '/Volumes/data_edit',
            'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
