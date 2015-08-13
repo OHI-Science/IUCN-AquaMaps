@@ -10,11 +10,13 @@ dir_anx      <- file.path(dir_N, 'git-annex/globalprep/SpeciesDiversity')
 cat('Reading in IUCN species info...\n')
 #iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_ltd.csv'), col_types = 'idiii', progress = TRUE)
 iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells.csv'), col_types = 'idiii', progress = TRUE)
+#iucn_spp_cells <- read_csv('data/iucn_spp_cells.csv')
+
 
 cat('Reading in Aquamaps species info...\n')
 #am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_ltd.csv'), progress = TRUE)
 am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells.csv'), progress = TRUE)
-
+#am_spp_cells <- read_csv('data/am_spp_cells.csv') 
 
 
 
