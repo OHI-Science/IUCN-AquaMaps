@@ -58,34 +58,55 @@ shinyServer(function(input,output){
 #   })
   
   map_compare <- reactive({
-    if(input$am_form == 'pres') {
-      am_map <- spp_map() %>%
-        mutate(am_pres = ifelse(am_prob >= input$am_cutoff, 1, NA))
-    } else {
-      am_map <- spp_map() %>%
-        mutate(am_pres = ifelse(am_prob >= input$am_cutoff, am_prob, NA)) 
-    }
+    
+    am_map <- spp_map()%>%
+                mutate(am_pres = ifelse(am_prob >= input$am_cutoff,1,NA))
+    
+    
     r_am_spp  <-  subs(loiczid_raster, 
                        am_map[ , c('loiczid', 'am_pres')], 
                        by = 'loiczid', 
                        which = 'am_pres', 
                        subsWithNA = TRUE)
+    
+    
     iucn_map <- spp_map() %>%
-      mutate(iucn_pres = iucn_area > 0)
+                  mutate(iucn_pres = iucn_area > 0)
+    
     r_iucn_spp <- subs(loiczid_raster, 
                        iucn_map[ , c('loiczid', 'iucn_pres')], 
                        by = 'loiczid', 
                        which = 'iucn_pres', 
                        subsWithNA = TRUE)
-
-    if(input$top == 'iucn') {
-      plot(r_am_spp, col = am_pres_cols, main = input$species, useRaster = FALSE, alpha = input$am_trans/100)
-      plot(r_iucn_spp, col = iucn_cols, useRaster = FALSE, alpha = input$iucn_trans/100, add = TRUE)   
-    } else {
-      plot(r_iucn_spp, col = iucn_cols,  main = input$species, useRaster = FALSE, alpha = input$iucn_trans/100)         
-      plot(r_am_spp, col = am_pres_cols, useRaster = FALSE, alpha = input$am_trans/100, add = TRUE)
+    
+    
+    if(input$checkGroup==1){
+      plot(r_am_spp,col=am_pres_cols[128],main=input$species,useRaster=FALSE,axes=FALSE,box=FALSE,legend=FALSE)
+      legend("topright",legend="AquaMaps",fill=am_pres_cols[128])
+      map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
     }
-    map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
+    
+    if(input$checkGroup==2){
+      plot(r_iucn_spp,col = iucn_cols, useRaster = FALSE,axes=FALSE,box=FALSE,legend=FALSE)
+      legend("topright",legend="IUCN",fill=iucn_cols[128])
+      map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
+    }
+    
+    if(input$checkGroup==3){
+      plot(r_iucn_spp,col=iucn_cols,useRaster=FALSE,axes=FALSE,box=FALSE,legend=FALSE)
+      plot(r_am_spp,col=am_pres_cols,main=input$species,useRaster=FALSE,alpha=0.8,add=T,axes=FALSE,box=FALSE,legend=FALSE)
+      legend("topright",legend=c("AquaMaps","IUCN"),fill=c(am_pres_cols[128],iucn_cols[128]))
+      map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
+    }
+
+#   if(input$top == 'iucn') {
+#       plot(r_am_spp, col = am_pres_cols, main = input$species, useRaster = FALSE, alpha = input$am_trans/100)
+#       plot(r_iucn_spp, col = iucn_cols, useRaster = FALSE, alpha = input$iucn_trans/100, add = TRUE)   
+#     } else {
+#       plot(r_iucn_spp, col = iucn_cols,  main = input$species, useRaster = FALSE, alpha = input$iucn_trans/100)         
+#       plot(r_am_spp, col = am_pres_cols, useRaster = FALSE, alpha = input$am_trans/100, add = TRUE)
+#     }
+#    map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
   })
   
   
@@ -103,7 +124,8 @@ shinyServer(function(input,output){
   
   output$comparePlot <- renderPlot({
     map_compare()
-  }, width = 1600, height = 800)
-  
+  }, width = 1000, height = 600)
+
+
   
 })
