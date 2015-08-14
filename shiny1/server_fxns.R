@@ -37,7 +37,9 @@ get_spp_map <- function(species){
     unique()
   iucn_spp_map <- iucn_spp_cells %>%
     filter(iucn_sid == spp_id$iucn_sid) %>%
-    dplyr::select(-parent_sid, -subpop_sid, loiczid = iucn_loiczid)
+    dplyr::select(-parent_sid, -subpop_sid, loiczid = iucn_loiczid) %>%
+    group_by(loiczid, iucn_sid) %>%         ### this line and the summarize are to collapse cells with overlapped polygons
+    summarize(iucn_area = max(iucn_area))
   am_spp_map   <- am_spp_cells %>%
     filter(am_sid == spp_id$am_sid) %>%
     rename(loiczid = am_loiczid)
@@ -47,3 +49,5 @@ get_spp_map <- function(species){
   return(spp_map)
 }
 
+# species = 'Balaena mysticetus'
+# species = 'Acropora willisae'

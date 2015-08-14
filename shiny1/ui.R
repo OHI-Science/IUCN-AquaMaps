@@ -25,10 +25,6 @@ shinyUI(fluidPage(
                    c(Presence    = 'pres',
                      Probability = 'prob'),
                    'prob')
-      radioButtons('map_height', 'Map size?',
-                   c(Small = 500,
-                     Large = 800),
-                   500)
     ),
     
     column(10,

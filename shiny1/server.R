@@ -103,7 +103,7 @@ shinyServer(function(input,output){
   
   output$comparePlot <- renderPlot({
     map_compare()
-  }, width = input$map_height*2, height = input$map_height)
+  }, width = 1000, height = 500)
   
   
 })
