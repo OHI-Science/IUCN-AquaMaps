@@ -23,7 +23,7 @@ memory.limit(size=200000000)
 dir_N = c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
 
-dir_aquamaps = file.path(dir_N,"git-annex/globalprep/SpeciesDiversity/raw/aquamaps_2014")
+dir_aquamaps = file.path(dir_N,"git-annex/globalprep/SPP_ICO/raw/aquamaps_2014")
 dir_cells    = file.path(dir_N,"git-annex/Global/NCEAS-SpatialFishCatch_v2014/raw/ohi_spp/data")
 
 #read in data
