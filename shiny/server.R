@@ -64,41 +64,13 @@ shinyServer(function(input,output){
       legend("topright",legend=c("AquaMaps","IUCN"),fill=c(am_pres_cols[128],iucn_cols[128]))
       map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
     }
+    
+  }) 
   
   output$comparePlot <- renderPlot({
     map_compare()
-  }, width = 1000, height = 600)
-  
-  
-  # get percent overlap of map
-  
-  #iucn map cells
-  cells_iucn<-spp_map()%>%
-    filter(iucn_pres==TRUE)%>%
-    .$loiczid
-  cells_am <- spp_map()%>%
-    filter(!is.na(am_prob))%>%
-    .$loiczid
-  
-  cells_total = unique(spp_map()$loiczid)
-  cells_overlap = intersect(cells_iucn,cells_am)
-  
-  #percent overlap
-  perc = (length(cells_overlap)/length(cells_total))*100
-  
-  am_only = setdiff(cells_am,cells_iucn)
-  iucn_only = setdiff(cells_iucn,cells_am)
-  
-  perc_am = (length(am_only)/length(cells_total))*100
-  perc_iucn = (length(iucn_only)/length(cells_total))*100
+  }, width = 1000, height = 600) 
 
-  output$summary <- renderText({
-    
-    paste("Percent overlap is", perc,"%")
-    paste(perc_am,"% of the total area is just AquaMaps cells")
-    paste(perc_iucn,"% of the total area is just IUCN")
-    
-    
-  })
+  
   
 })
