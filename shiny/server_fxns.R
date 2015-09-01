@@ -4,7 +4,7 @@ dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
            'Darwin'  = '/Volumes/data_edit',
            'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
 
-dir_anx      <- file.path(dir_N, 'git-annex/globalprep/SpeciesDiversity')
+dir_anx      <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
 
 
 cat('Reading in IUCN species info...\n')
