@@ -17,7 +17,9 @@ shinyUI(fluidPage(
                          selected=1),
       
       sliderInput('am_cutoff','Probability of Occurrence cutoff (Aquamaps):',
-                  min = 0, max = 1, value = .4, step = 0.1)
+                  min = 0, max = 1, value = .4, step = 0.1),
+      
+      verbatimTextOutput("summary")
 
 
 
