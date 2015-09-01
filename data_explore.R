@@ -58,9 +58,10 @@ get_spp_map <- function(species){
 
 spp_list = spp_list%>%
               mutate(am_area = NA,
-                     iucn_area=NA)
+                     iucn_area=NA,
+                     perc = NA)
 
-for (i in 985:nrow(spp_list)){
+for (i in 1:nrow(spp_list)){
   
   print(i)
   
@@ -72,14 +73,14 @@ for (i in 985:nrow(spp_list)){
                 dplyr::select(loiczid,am_sid)%>% #add in am_prob when we want to look at probability
                   unique()
   
-  r_am_spp  <-  subs(loiczid_raster, 
-                     am_spp_map[ , c('loiczid', 'am_sid')], 
-                     by = 'loiczid', 
-                     which = 'am_sid', 
-                     subsWithNA = TRUE)
+#   r_am_spp  <-  subs(loiczid_raster, 
+#                      am_spp_map[ , c('loiczid', 'am_sid')], 
+#                      by = 'loiczid', 
+#                      which = 'am_sid', 
+#                      subsWithNA = TRUE)
   
-  spp_list[i,]$am_area = area(r_am_spp,na.rm=T)%>%
-              cellStats(.,stat='sum')
+  #spp_list[i,]$am_area = area(r_am_spp,na.rm=T)%>%
+              #cellStats(.,stat='sum')
   
   
   
@@ -92,17 +93,41 @@ for (i in 985:nrow(spp_list)){
   
   if(TRUE %in% duplicated(iucn_map$loiczid))next()
   
-  r_iucn_spp <- subs(loiczid_raster, 
-                     iucn_map[ , c('loiczid', 'iucn_pres')], 
-                     by = 'loiczid', 
-                     which = 'iucn_pres', 
-                     subsWithNA = TRUE)
+  #r_iucn_spp <- subs(loiczid_raster, 
+                     #iucn_map[ , c('loiczid', 'iucn_pres')], 
+                    # by = 'loiczid', 
+                     #which = 'iucn_pres', 
+                     #subsWithNA = TRUE)
   
-  spp_list[i,]$iucn_area = area(r_iucn_spp,na.rm=T)%>%
-                cellStats(.,stat='sum')
+  #spp_list[i,]$iucn_area = area(r_iucn_spp,na.rm=T)%>%
+                #cellStats(.,stat='sum')
   
+  # get percent overlap of map
   
-}
+  #iucn map cells
+  cells_iucn<-iucn_map%>%
+              filter(iucn_pres==TRUE)%>%
+              .$loiczid
+  cells_am <- am_spp_map%>%
+                filter(!is.na(am_sid))%>%
+                .$loiczid
+  
+  cells_total = unique(spp_map$loiczid)
+  cells_overlap = intersect(cells_iucn,cells_am)
+  
+  #percent overlap
+  perc = (length(cells_overlap)/length(cells_total))*100
+  spp_list[i,]$perc = perc
+  
+  am_only = setdiff(cells_am,cells_iucn)
+  iucn_only = setdiff(cells_iucn,cells_am)
+  
+  perc_am = (length(am_only)/length(cells_total))*100
+  perc_iucn = (length(iucn_only)/length(cells_total))*100
+  
+cat(perc,perc_am,perc_iucn)
+  
+  }
 
 
 # for Conus arenatus, the IUCN map gives 4 duplicate cells, but each of the entries has a different iucn_area...which doesn't make sense
@@ -136,5 +161,9 @@ all_status <- ggplot(df,aes(iucn_log,am_log,color=category)) +
 groups <- ggplot(df, aes(iucn_log, am_log,color=category)) + geom_point() +facet_wrap(~spp_group) + 
         geom_abline() + labs(x='IUCN Area (log transformed)', y='AquaMaps Area (log transformed)',
                              title='Comparing differences in area across species groups', fill='IUCN Category')
+
+#---------------------------------------------------------------------------------------------------------------------
+
+# look at % overlap
 
 
