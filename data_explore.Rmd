@@ -1,11 +1,12 @@
 ---
 title: "Data Exploration: IUCN and AquaMaps"
-author: "Jamie Afflerbach"
-date: "9/2/2015"
 output: html_document
 ---
 
 ```{r,echo=F,warning=FALSE,message=F}
+
+# Librarires and Paths
+
 library(ggplot2)
 library(maps)
 library(readr)
@@ -21,6 +22,9 @@ dir_anx      <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
 ```
 
 ```{r,echo=F,warning=FALSE,message=F,results='hide'}
+
+# Data files
+
 iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells.csv'), col_types = 'idiii', progress = TRUE)
 
 am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells.csv'), progress = TRUE)
@@ -67,36 +71,42 @@ get_spp_map <- function(species){
 
 
 ```{r,echo=F,eval=FALSE,warning=FALSE,message=F}
+
 spp_list = spp_list%>%
               mutate(am_area = NA,
                      iucn_area=NA,
                      perc = NA,
                      am_perc=NA,
-                     iucn_perc=NA)
+                     iucn_perc=NA,
+                     sm_perc = NA, #filled with % of smaller range that is within the larger range
+                     sm_range = NA) #what range is smaller
 
+#there's likely a better way to do this than a for loop (lapply or sapply?)
 for (i in 1:nrow(spp_list)){
   
   print(i)
   
-  spp <- spp_list[i,]$sciname
+  spp <- spp_list[i,]$sciname #species name
   
-  spp_map <- get_spp_map(spp)
+  spp_map <- get_spp_map(spp) #get species map
   
+  #get just the aquamaps cells
   am_spp_map = spp_map%>%
-                dplyr::select(loiczid,am_sid)%>% #add in am_prob when we want to look at probability
+                  filter(!is.na(am_prob))%>%
+                dplyr::select(loiczid,am_sid,am_prob)%>% #add in am_prob when we want to look at probability
                   unique()
-  
-#   r_am_spp  <-  subs(loiczid_raster, 
-#                      am_spp_map[ , c('loiczid', 'am_sid')], 
-#                      by = 'loiczid', 
-#                      which = 'am_sid', 
-#                      subsWithNA = TRUE)
+  #rasterize aquamaps map
+  r_am_spp  <-  subs(loiczid_raster, 
+                     am_spp_map[ , c('loiczid', 'am_sid')], 
+                     by = 'loiczid', 
+                     which = 'am_sid', 
+                     subsWithNA = TRUE)
 #   
 #   spp_list[i,]$am_area = area(r_am_spp,na.rm=T)%>%
 #               cellStats(.,stat='sum')
 #   
   
-  
+  #get the iucn cells
   iucn_map <- spp_map %>%
     mutate(iucn_pres = iucn_area > 0)%>%
       dplyr::select(loiczid,iucn_area,am_sid,am_prob,iucn_pres)%>%
@@ -104,13 +114,16 @@ for (i in 1:nrow(spp_list)){
   
   #TODO: incorporate the iucn_area (area of cell that species overlaps with...I think thats what it is)
   
+  #this is incorporated because there are some duplications for loiczids with IUCN cells. I'm guessing this is because of the parent/subpopulations?
+  
    if(TRUE %in% duplicated(iucn_map$loiczid))next()
 #   
-#   r_iucn_spp <- subs(loiczid_raster, 
-#                      iucn_map[ , c('loiczid', 'iucn_pres')], 
-#                     by = 'loiczid', 
-#                      which = 'iucn_pres', 
-#                      subsWithNA = TRUE)
+#  rasterize IUCN map
+  r_iucn_spp <- subs(loiczid_raster, 
+                     iucn_map[ , c('loiczid', 'iucn_pres')], 
+                    by = 'loiczid', 
+                     which = 'iucn_pres', 
+                     subsWithNA = TRUE)
 #   
 #   spp_list[i,]$iucn_area = area(r_iucn_spp,na.rm=T)%>%
 #                 cellStats(.,stat='sum')
@@ -128,6 +141,12 @@ for (i in 1:nrow(spp_list)){
   cells_total = unique(spp_map$loiczid)
   cells_overlap = intersect(cells_iucn,cells_am)
   
+   r_iucn_spp <- subs(loiczid_raster, 
+                      iucn_map[ , c('loiczid', 'iucn_pres')], 
+                     by = 'loiczid', 
+                      which = 'iucn_pres', 
+                      subsWithNA = TRUE)
+  
   #percent overlap
   perc = (length(cells_overlap)/length(cells_total))*100
   spp_list[i,]$perc = perc
@@ -140,9 +159,13 @@ for (i in 1:nrow(spp_list)){
   
   spp_list[i,]$am_perc = perc_am
   spp_list[i,]$iucn_perc = perc_iucn
-  
+
+  spp_list[i,]$sm_range = ifelse(length(cells_am)<length(cells_iucn),'AM','IUCN') #what dataset has the smaller range
+  spp_list[i,]$sm_perc = length(cells_overlap)/min(length(cells_am),length(cells_iucn))*100 #this is the total percent of smaller range encompassed in the larger range
 cat(perc,perc_am,perc_iucn)
-  
+
+
+
   }
 
 
@@ -299,3 +322,19 @@ print(sp)
 
 
 ```
+
+
+Looking at the percent of smaller species range that is within the larger range. 
+
+```{r,echo=F}
+
+d <- spp_list%>%
+  dplyr::select(sciname,sm_perc,sm_range)%>%
+      unique()
+      
+
+ggplot(d,aes(sm_perc,fill=sm_range))+geom_histogram(binwidth=1,alpha=.7)+
+  scale_fill_discrete(name="Dataset with smaller range",labels=c("AquaMaps", "IUCN"))+labs(x='Percent of smalle range that falls within the larger range', y='Number of Species')
+
+```
+
