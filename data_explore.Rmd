@@ -360,12 +360,34 @@ d <- spp_list%>%
 ggplot(d,aes(sm_perc,fill=sm_range))+geom_histogram(binwidth=1,alpha=.7)+
   scale_fill_discrete(name="Dataset with smaller range",labels=c("AquaMaps", "IUCN"))+labs(x='Percent of smalle range that falls within the larger range', y='Number of Species')
 
-reg <- ggplot(spp_list, aes(sm_perc,total_area,color=sm_range)) + geom_point() + geom_abline() + labs(y='Total Area', x='Percent overlap smaller range in larger', title='Comparing differences in area across species groups', fill='IUCN Category')
+reg <- ggplot(spp_list, aes(sm_perc,total_area,color=sm_range)) + geom_point() + geom_abline() + labs(y='Total Area (km2)', x='Percent overlap smaller range in larger', title='Size of species range vs. percent overlap of \nsmaller range with larger')
 
 print(reg)
 
-model = lm(spp_list$total_area~spp_list$sm_perc)
-summary(model)
+# remove all area greater than 100000000
+
+l = spp_list%>%filter(total_area <100000000)
+
+
+r <- ggplot(l, aes(sm_perc,total_area,color=sm_range)) + geom_point() + labs(y='Total Area (km2)', x='Percent overlap smaller range in larger', title='Size of species range vs. percent overlap of \nsmaller range with larger')
+
+print(r)
+
+#-----
+
+# Regression
+
+
+lm_eqn <- function(df){
+    m <- lm(total_area ~ sm_perc, spp_list);
+    eq <- substitute(italic('Total Area') == a + b %.% italic('Percent')*","~~italic(r)^2~"="~r2, 
+         list(a = format(coef(m)[1], digits = 2), 
+              b = format(coef(m)[2], digits = 2), 
+             r2 = format(summary(m)$r.squared, digits = 3)))
+    as.character(as.expression(eq));                 
+}
+
+p1 <- reg + geom_text(x = 50, y = 80000000, label = lm_eqn(spp_list), parse = TRUE)
 
 
 ```
