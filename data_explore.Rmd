@@ -369,6 +369,7 @@ ggplot(d, aes(sm_perc, fill = sm_range)) +
 
 ```
 
+Exploring possible correlation between area and percent coverage:
 ``` {r pct overlap vs area, echo = FALSE}
 
 reg <- ggplot(spp_list, aes(total_area, sm_perc, color = sm_range)) + 
@@ -379,6 +380,10 @@ reg <- ggplot(spp_list, aes(total_area, sm_perc, color = sm_range)) +
 
 print(reg)
 
+```
+
+Perent coverage as function of area, clipping to area below 100,000,000 km^2:
+``` {r, echo = F}
 # remove all area greater than 100000000
 
 l <- spp_list %>% filter(total_area < 100000000)
@@ -391,16 +396,20 @@ r <- ggplot(l, aes(total_area, sm_perc, color = sm_range)) +
 
 print(r)
 
+```
 
+Percent coverage as a function of log(area)
+``` {r, echo = F}
 # Log transform area
 
 logA_vs_pct <- ggplot(spp_list, aes(log_total_area, sm_perc, color = sm_range)) + 
   geom_point() + 
-  labs(x = 'Total Area (km2)', y = 'Percent overlap smaller range in larger', 
-       title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
+  labs(x = 'Log(total Area)', y = 'Percent overlap smaller range in larger', 
+       title = 'Size of species range (log) vs. percent overlap of \nsmaller range with larger')
 
 print(logA_vs_pct)
 ```
+
 
 ``` {r examine regressions, echo = FALSE}
 
@@ -423,9 +432,8 @@ logA_mdl   <- lm(log_total_area ~ sm_perc, spp_list)
 ```
 
 
-
+Examining data broken into quartiles to see if smaller patterns emerge
 ``` {r examine quartiles, echo = FALSE}
-
 
 
 summary(spp_list$total_area)
@@ -446,7 +454,7 @@ for (i in 1:4) {
   qtile_plot <- ggplot(area_clip, aes(total_area, sm_perc, color = sm_range)) + 
   geom_point() + 
   labs(x = 'Total Area (km2)', y = 'Percent overlap smaller range in larger', 
-       title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
+       title = sprintf('Size of species range (quartile %s) vs. percent overlap of \nsmaller range with larger', i))
 
 print(qtile_plot)
 }
