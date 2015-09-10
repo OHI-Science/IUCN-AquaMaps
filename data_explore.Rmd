@@ -72,22 +72,22 @@ get_spp_map <- function(species){
 
 ```{r,echo=F,eval=FALSE,warning=FALSE,message=F}
 
-spp_list = spp_list%>%
-              mutate(total_area=NA,
-                     am_area = NA,
-                     iucn_area=NA,
-                     perc = NA,
-                     am_perc=NA,
-                     iucn_perc=NA,
-                     sm_perc = NA, #filled with % of smaller range that is within the larger range
-                     sm_range = NA) #what range is smaller
+spp_list = spp_list %>%
+              mutate(total_area = NA,
+                     am_area    = NA,
+                     iucn_area  = NA,
+                     perc       = NA,
+                     am_perc    = NA,
+                     iucn_perc  = NA,
+                     sm_perc    = NA, #filled with % of smaller range that is within the larger range
+                     sm_range   = NA) #what range is smaller
 
 #there's likely a better way to do this than a for loop (lapply or sapply?)
 for (i in 1:nrow(spp_list)){
   
   print(i)
   
-  spp <- spp_list[i,]$sciname #species name
+  spp     <- spp_list[i, ]$sciname #species name
   
   spp_map <- get_spp_map(spp) #get species map
   
@@ -306,17 +306,17 @@ map <- get_spp_map(spp)
 
 ```{r,echo=F,warning=FALSE,message=F}
   
-  df <- gather(spp_list,perc.type,percent, perc,am_perc,iucn_perc)%>%
-          dplyr::select(sciname,spp_group,perc.type,percent)%>%
+  df <- gather(spp_list, perc.type, percent, perc, am_perc, iucn_perc) %>%
+          dplyr::select(sciname, spp_group, perc.type, percent) %>%
             unique()
   
-  perc_c = df%>%
-            filter(sciname==spp)
+  perc_c = df %>%
+            filter(sciname == spp)
   
-  p1 = perc_c%>%dplyr::select(percent)
-  paste0(round(p1[1,],2),'% of the total area in this map is covered by both IUCN and AquaMaps')
-  paste0(round(p1[2,],2),'% of the total area in this map is covered just by AquaMaps')
-  paste0(round(p1[3,],2),'% of the total area in this map is covered just by IUCN')
+  p1 = perc_c %>% dplyr::select(percent)
+  paste0(round(p1[1, ], 2), '% of the total area in this map is covered by both IUCN and AquaMaps')
+  paste0(round(p1[2, ], 2), '% of the total area in this map is covered just by AquaMaps')
+  paste0(round(p1[3, ], 2), '% of the total area in this map is covered just by IUCN')
 ```
   
   
@@ -329,7 +329,10 @@ This plot shows that the majority of species range maps have only ~30% of their 
 
 #look at density plot
 
-all<-ggplot(df,aes(percent,fill=perc.type))+geom_histogram(binwidth=1,alpha=.3)+scale_fill_discrete(name="Legend",labels=c("Overlap", "AquaMaps only", "IUCN only"))+labs(x='Percent of total range', y='Number of Species')
+all<-ggplot(df,aes(percent,fill=perc.type))+
+    geom_histogram(binwidth=1,alpha=.3)+
+    scale_fill_discrete(name="Legend",labels=c("Overlap", "AquaMaps only", "IUCN only"))+
+    labs(x='Percent of total range', y='Number of Species')
 
 print(all)
 ```
@@ -339,8 +342,10 @@ print(all)
 Split up by species - not sure if this is useful or not
 ```{r,echo=F}
 
-sp <- ggplot(df,aes(percent,fill=perc.type))+geom_histogram(binwidth=1,alpha=.3) +facet_wrap(~spp_group) +
-  scale_fill_discrete(name="Legend",labels=c("Overlap", "AquaMaps only", "IUCN only"))+labs(x='Percent of total range', y='Number of Species')
+sp <- ggplot(df,aes(percent,fill=perc.type))+geom_histogram(binwidth=1,alpha=.3) +
+  facet_wrap(~spp_group) +
+  scale_fill_discrete(name="Legend",labels=c("Overlap", "AquaMaps only", "IUCN only"))+
+  labs(x='Percent of total range', y='Number of Species')
 
 print(sp)
 
@@ -350,41 +355,151 @@ print(sp)
 
 Looking at the percent of smaller species range that is within the larger range. 
 
-```{r,echo=F}
+```{r pct small within large, echo=F}
 
-d <- spp_list%>%
-  dplyr::select(sciname,sm_perc,sm_range)%>%
+d <- spp_list %>%
+  dplyr::select(sciname, sm_perc, sm_range) %>%
       unique()
       
 
-ggplot(d,aes(sm_perc,fill=sm_range))+geom_histogram(binwidth=1,alpha=.7)+
-  scale_fill_discrete(name="Dataset with smaller range",labels=c("AquaMaps", "IUCN"))+labs(x='Percent of smalle range that falls within the larger range', y='Number of Species')
+ggplot(d, aes(sm_perc, fill = sm_range)) + 
+  geom_histogram(binwidth = 1, alpha = .7) +
+  scale_fill_discrete(name = "Dataset with smaller range", labels = c("AquaMaps", "IUCN")) + 
+  labs(x = 'Percent of smaller range that falls within the larger range', y = 'Number of Species')
 
-reg <- ggplot(spp_list, aes(sm_perc,total_area,color=sm_range)) + geom_point() + geom_abline() + labs(y='Total Area (km2)', x='Percent overlap smaller range in larger', title='Size of species range vs. percent overlap of \nsmaller range with larger')
+```
+
+Exploring possible correlation between area and percent coverage:
+``` {r pct overlap vs area, echo = FALSE}
+
+reg <- ggplot(spp_list, aes(total_area, sm_perc, color = sm_range)) + 
+  geom_point() + 
+  geom_abline() + 
+  labs(x = 'Total Area (km2)', y = 'Percent overlap smaller range in larger', 
+       title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
 
 print(reg)
 
+```
+
+Perent coverage as function of area, clipping to area below 100,000,000 km^2:
+``` {r, echo = F}
 # remove all area greater than 100000000
 
-l = spp_list%>%filter(total_area <100000000)
+l <- spp_list %>% filter(total_area < 100000000)
 
 
-r <- ggplot(l, aes(sm_perc,total_area,color=sm_range)) + geom_point() + labs(y='Total Area (km2)', x='Percent overlap smaller range in larger', title='Size of species range vs. percent overlap of \nsmaller range with larger')
+r <- ggplot(l, aes(total_area, sm_perc, color = sm_range)) + 
+  geom_point() + 
+  labs(x = 'Total Area (km2)', y = 'Percent overlap smaller range in larger', 
+       title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
 
 print(r)
 
-#-----
+```
+
+Percent coverage as a function of log(area)
+``` {r, echo = F}
+# Log transform area
+
+logA_vs_pct <- ggplot(spp_list, aes(log_total_area, sm_perc, color = sm_range)) + 
+  geom_point() + 
+  labs(x = 'Log(total Area)', y = 'Percent overlap smaller range in larger', 
+       title = 'Size of species range (log) vs. percent overlap of \nsmaller range with larger')
+
+print(logA_vs_pct)
+```
+
+
+``` {r examine regressions, echo = FALSE}
+
+A_mdl      <- lm(total_area ~ sm_perc, spp_list)
+#                Estimate Std. Error t value Pr(>|t|)    
+#   (Intercept) -16285410    2858388  -5.697  1.4e-08 ***
+#   sm_perc        533370      41702  12.790  < 2e-16 ***
+#   Multiple R-squared:  0.07732,	Adjusted R-squared:  0.07685 
+
+A_mdl_clip <- lm(total_area ~ sm_perc, l)
+#               Estimate Std. Error t value Pr(>|t|)    
+#   (Intercept)  2993939     810560   3.694 0.000227 ***
+#   sm_perc       153523      11952  12.844  < 2e-16 ***
+#   Multiple R-squared:  0.07955,	Adjusted R-squared:  0.07906 
+logA_mdl   <- lm(log_total_area ~ sm_perc, spp_list)
+#                Estimate Std. Error t value Pr(>|t|)    
+#   (Intercept) 14.775325   0.096446   153.2   <2e-16 ***
+#   sm_perc      0.016885   0.001407    12.0   <2e-16 ***
+#   Multiple R-squared:  0.0687,	Adjusted R-squared:  0.06823 
+```
+
+
+Examining data broken into quartiles to see if smaller patterns emerge
+``` {r examine quartiles, echo = FALSE}
+
+
+summary(spp_list$total_area)
+#      Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
+#     55760   3032000  10790000  18500000  22670000 372100000
+
+qtiles <- c(quantile(spp_list$total_area, 0.0),
+            quantile(spp_list$total_area, .25),
+            quantile(spp_list$total_area, .50),
+            quantile(spp_list$total_area, .75),
+            quantile(spp_list$total_area, 1.0))
+qtile_mdl <- list()
+for (i in 1:4) {
+  area_clip <- spp_list %>%
+    filter(total_area >= qtiles[i] & total_area < qtiles[i + 1])
+  qtile_mdl[[i]] <- lm(total_area ~ sm_perc, area_clip)
+  
+  qtile_plot <- ggplot(area_clip, aes(total_area, sm_perc, color = sm_range)) + 
+  geom_point() + 
+  labs(x = 'Total Area (km2)', y = 'Percent overlap smaller range in larger', 
+       title = sprintf('Size of species range (quartile %s) vs. percent overlap of \nsmaller range with larger', i))
+
+print(qtile_plot)
+}
+# First quartile regression:
+#                 Estimate Std. Error t value Pr(>|t|)    
+#     (Intercept)  1423917     101053  14.091   <2e-16 ***
+#     sm_perc         1188       1555   0.764    0.445    
+#     Multiple R-squared:  0.001198,	Adjusted R-squared:  -0.0008529 
+#
+# second quartile:
+#                 Estimate Std. Error t value Pr(>|t|)    
+#     (Intercept)  7011028     275943  25.408  < 2e-16 ***
+#     sm_perc       -17725       4228  -4.192 3.28e-05 ***
+#     Multiple R-squared:  0.03483,	Adjusted R-squared:  0.03285 
+#
+# third quartile:
+#                 Estimate Std. Error t value Pr(>|t|)    
+#     (Intercept) 12813279     507856  25.230  < 2e-16 ***
+#     sm_perc        64710       8159   7.931  1.5e-14 ***
+#     Multiple R-squared:  0.1146,	Adjusted R-squared:  0.1128 
+#
+# fourth quartile:
+#                   Estimate Std. Error t value Pr(>|t|)    
+#     (Intercept) -101736351   17259544  -5.894 7.04e-09 ***
+#     sm_perc        1911286     215216   8.881  < 2e-16 ***
+#     Multiple R-squared:  0.1399,	Adjusted R-squared:  0.1381 
+
+# This avenue of exploration looks like a bust.
+
+```
+
+
+``` {r, echo = FALSE}
+  
 
 # Regression
 
 
 lm_eqn <- function(df){
-    m <- lm(total_area ~ sm_perc, spp_list);
-    eq <- substitute(italic('Y') == a + b %.% italic('X')*","~~italic(r)^2~"="~r2, 
-         list(a = format(coef(m)[1], digits = 2), 
-              b = format(coef(m)[2], digits = 2), 
-             r2 = format(summary(m)$r.squared, digits = 3)))
-    as.character(as.expression(eq));                 
+    m  <- lm(total_area ~ sm_perc, spp_list)
+    eq <- substitute(italic('Total Area') == a + b %.% italic('Percent')*","~~italic(r)^2~"="~r2, 
+          list(a  = format(coef(m)[1], digits = 2), 
+               b  = format(coef(m)[2], digits = 2), 
+               r2 = format(summary(m)$r.squared, digits = 3)))
+    as.character(as.expression(eq))             
 }
 
 p1 <- reg + geom_text(x = 40, y = 300000000, label = lm_eqn(spp_list), parse = TRUE)
