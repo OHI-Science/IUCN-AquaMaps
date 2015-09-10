@@ -5,7 +5,7 @@ output: html_document
 
 ```{r,echo=F,warning=FALSE,message=F}
 
-# Librarires and Paths
+# Libraries and Paths
 
 library(ggplot2)
 library(maps)
@@ -380,15 +380,27 @@ print(r)
 
 lm_eqn <- function(df){
     m <- lm(total_area ~ sm_perc, spp_list);
-    eq <- substitute(italic('Total Area') == a + b %.% italic('Percent')*","~~italic(r)^2~"="~r2, 
+    eq <- substitute(italic('Y') == a + b %.% italic('X')*","~~italic(r)^2~"="~r2, 
          list(a = format(coef(m)[1], digits = 2), 
               b = format(coef(m)[2], digits = 2), 
              r2 = format(summary(m)$r.squared, digits = 3)))
     as.character(as.expression(eq));                 
 }
 
-p1 <- reg + geom_text(x = 50, y = 80000000, label = lm_eqn(spp_list), parse = TRUE)
+p1 <- reg + geom_text(x = 40, y = 300000000, label = lm_eqn(spp_list), parse = TRUE)
+
+print(p1)
+```
+***  
+
+Looking at how many and what type (threat category) of species we are losing by setting a threshold of 0.4 on the aquamaps species.
+
+```{r, warning=F,message=F}
+
+#source mapping aquamaps.R to read in all aquamaps raw data. This takes a while so rendering will take a while. 
+source('mapping aquamaps.R')
+
+
 
 
 ```
-
