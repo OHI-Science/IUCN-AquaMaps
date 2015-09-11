@@ -11,6 +11,7 @@ library(ggplot2)
 library(maps)
 library(readr)
 library(raster)
+library(data.table)
 library(tidyr)
 library(dplyr)
 
@@ -306,6 +307,7 @@ map <- get_spp_map(spp)
 
 ```{r,echo=F,warning=FALSE,message=F}
   
+  
   df <- gather(spp_list, perc.type, percent, perc, am_perc, iucn_perc) %>%
           dplyr::select(sciname, spp_group, perc.type, percent) %>%
             unique()
@@ -313,7 +315,8 @@ map <- get_spp_map(spp)
   perc_c = df %>%
             filter(sciname == spp)
   
-  p1 = perc_c %>% dplyr::select(percent)
+   p1 = perc_c %>% dplyr::select(percent)
+   
   paste0(round(p1[1, ], 2), '% of the total area in this map is covered by both IUCN and AquaMaps')
   paste0(round(p1[2, ], 2), '% of the total area in this map is covered just by AquaMaps')
   paste0(round(p1[3, ], 2), '% of the total area in this map is covered just by IUCN')
@@ -322,17 +325,19 @@ map <- get_spp_map(spp)
   
 ####Now looking across all species, here is the breakdown of how much overlap there is between the two datasets  
   
-This plot shows that the majority of species range maps have only ~30% of their full map covered by both maps, and almost no species have more than 50% of their two ranges (IUCN and AquaMaps) overlapping.  
+This plot shows that the majority of species range maps have only ~30% of their full map covered by both maps, and very few species have more than 50% of their two ranges (IUCN and AquaMaps) overlapping. 
+
 
 ```{r,echo=F,warning=FALSE,message=F}
 
 
 #look at density plot
 
-all<-ggplot(df,aes(percent,fill=perc.type))+
-    geom_histogram(binwidth=1,alpha=.3)+
-    scale_fill_discrete(name="Legend",labels=c("Overlap", "AquaMaps only", "IUCN only"))+
-    labs(x='Percent of total range', y='Number of Species')
+overlap = df%>%dplyr::filter(perc.type=='perc')
+  
+all<-ggplot(overlap,aes(percent))+
+    geom_histogram(aes(y=..count../1926),binwidth=5,alpha=.8)+
+    labs(x='Percent of total range that is shared between both datasets', y='Proportion of Total Species')
 
 print(all)
 ```
@@ -342,10 +347,9 @@ print(all)
 Split up by species - not sure if this is useful or not
 ```{r,echo=F}
 
-sp <- ggplot(df,aes(percent,fill=perc.type))+geom_histogram(binwidth=1,alpha=.3) +
+sp <- ggplot(overlap,aes(percent))+geom_histogram(binwidth=5,alpha=.8) +
   facet_wrap(~spp_group) +
-  scale_fill_discrete(name="Legend",labels=c("Overlap", "AquaMaps only", "IUCN only"))+
-  labs(x='Percent of total range', y='Number of Species')
+  labs(x='Percent of total range that is shared between both datasets', y='Number of Total Species')
 
 print(sp)
 
@@ -362,25 +366,52 @@ d <- spp_list %>%
       unique()
       
 
-ggplot(d, aes(sm_perc, fill = sm_range)) + 
-  geom_histogram(binwidth = 1, alpha = .7) +
-  scale_fill_discrete(name = "Dataset with smaller range", labels = c("AquaMaps", "IUCN")) + 
-  labs(x = 'Percent of smaller range that falls within the larger range', y = 'Number of Species')
+sm_plot <- ggplot(d, aes(sm_perc, fill = sm_range)) + 
+       geom_histogram(aes(y=..count../sum(..count..)),binwidth = 4, alpha = .8) +
+        scale_fill_discrete(name = "Dataset with smaller range", labels = c("AquaMaps", "IUCN")) + 
+        labs(x = 'Percent of smaller range that falls within the larger range', y = 'Proportion of all species (n=1962)')
+
+print(sm_plot)
 
 ```
 
-Exploring possible correlation between area and percent coverage:
+Exploring possible correlation between total species range area and percent overlap of smaller range within the larger:
 ``` {r pct overlap vs area, echo = FALSE}
 
-reg <- ggplot(spp_list, aes(total_area, sm_perc, color = sm_range)) + 
+reg <- ggplot(spp_list, aes(sm_perc,total_area, color = sm_range)) + 
   geom_point() + 
   geom_abline() + 
-  labs(x = 'Total Area (km2)', y = 'Percent overlap smaller range in larger', 
+  labs(y = 'Total Area (km2)', x = 'Percent overlap smaller range in larger', 
        title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
 
 print(reg)
 
 ```
+
+``` {r, echo = FALSE}
+  
+
+# Regression
+
+
+lm_eqn <- function(df){
+    m  <- lm(total_area~sm_perc, spp_list)
+    eq <- substitute(italic('y') == a + b %.% italic('x')*","~~italic(r)^2~"="~r2, 
+          list(a  = format(coef(m)[1], digits = 2), 
+               b  = format(coef(m)[2], digits = 2), 
+               r2 = format(summary(m)$r.squared, digits = 3)))
+    as.character(as.expression(eq))             
+}
+
+p1 <- reg + geom_text(x = 40, y = 300000000, label = lm_eqn(spp_list), parse = TRUE)
+
+print(p1)
+
+summary(lm(total_area~sm_perc,spp_list))
+```
+  
+***  
+
 
 Perent coverage as function of area, clipping to area below 100,000,000 km^2:
 ``` {r, echo = F}
@@ -487,35 +518,46 @@ print(qtile_plot)
 ```
 
 
-``` {r, echo = FALSE}
-  
-
-# Regression
-
-
-lm_eqn <- function(df){
-    m  <- lm(total_area ~ sm_perc, spp_list)
-    eq <- substitute(italic('Total Area') == a + b %.% italic('Percent')*","~~italic(r)^2~"="~r2, 
-          list(a  = format(coef(m)[1], digits = 2), 
-               b  = format(coef(m)[2], digits = 2), 
-               r2 = format(summary(m)$r.squared, digits = 3)))
-    as.character(as.expression(eq))             
-}
-
-p1 <- reg + geom_text(x = 40, y = 300000000, label = lm_eqn(spp_list), parse = TRUE)
-
-print(p1)
-```
-***  
 
 Looking at how many and what type (threat category) of species we are losing by setting a threshold of 0.4 on the aquamaps species.
 
-```{r, warning=F,message=F}
+```{r aquamaps probabilities, warning=F,message=F,cache.lazy=FALSE,cache=T,verbose=F,results=F,echo=F}
 
-#source mapping aquamaps.R to read in all aquamaps raw data. This takes a while so rendering will take a while. 
-source('mapping aquamaps.R')
-
+# get spp_cells raw data for aquamaps
 
 
+dir_N = c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
+          'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_aquamaps = file.path(dir_N,"git-annex/globalprep/SPP_ICO/raw/aquamaps_2014")
+
+spp_cells = fread(input=file.path(dir_aquamaps,"tables/ohi_hcaf_species_native.csv"),verbose=F,header=T,
+                  colClasses=c('NULL','character',NA,'numeric','NULL','NULL')) #1 min 49 sec
+
+setnames(spp_cells,c('SpeciesID','CsquareCode','probability'),c("species_id","csquare_code","probability"))
+
+spp_cells = as.data.frame(spp_cells)
+
+
+spp       = fread(input=file.path(dir_aquamaps,"tables/ohi_speciesoccursum.csv"),verbose=F,header=T)%>%
+              mutate(scientific = paste(Genus,Species,sep=" "))
+spp = as.data.frame(spp)
+
+```
+
+```{r,warning=F,message=F, echo=F}
+
+#create dataframe that gives me all species, their total number of cells, total number of cells >=0.4 prob, differnece between the two and threat
+df = spp_cells%>%
+      group_by(species_id)%>%
+        summarize(cells_0.4 = sum(probability>=0.4),
+                  cells_t = sum(probability>=0))%>%
+          mutate(prop = cells_0.4/cells_t)%>%
+            left_join(spp,by=c('species_id'='SPECIESID'))%>%
+          select(scientific,species_id,cells_0.4,cells_t,prop,iucn_code)
+
+
+hist <- ggplot(df,aes(prop,fill=iucn_code))+geom_histogram(aes(y=..count../sum(..count..)),binwidth = 0.05, alpha = .7)+labs(x='Proportion of range area included when selecting a threshold of 0.4',y='Proportion of all aquamaps species (17,348 total)')
+print(hist)
 
 ```
