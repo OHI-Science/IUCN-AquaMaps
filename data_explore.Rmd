@@ -220,7 +220,9 @@ g<-ggplot(df,aes(x=spp_group))+
   theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1))+ coord_flip()+
   labs(x='Species Group', y='Number of Species',title='Number of species in both AquaMaps and IUCN datasets')
 
+ggsave('figures/sp_groups_barchart.png',plot=g,width=8, height=4, dpi=100)
 print(g)
+
 ```
 
 ***  
@@ -231,6 +233,7 @@ print(g)
 
 dot = ggplot(df,aes(iucn_area,am_area,color=category))+ geom_point() + geom_abline()+
       labs(x='Area (km2) from IUCN dataset',y='Area (km2) from AquaMaps dataset',title='Comparing total area of species range maps')
+ggsave('figures/CompareTotalArea_AM-IUCN_scatter.png',plot=dot,width=8, height=4, dpi=100)
 print(dot)
 ```
 
@@ -246,7 +249,7 @@ all_status <- ggplot(df,aes(iucn_log,am_log,color=category)) +
   geom_point() + geom_abline() +
   labs(x='IUCN Area (log transformed)', y='AquaMaps Area (log transformed)',
         title= 'Comparing area of range maps\n (all area values are km2 log transformed)',fill='IUCN Category')
-
+ggsave('figures/CompareTotalAreaLOG_AM-IUCN_scatter.png',plot=all_status,width=8,height=4,dpi=100)
 print(all_status)
 ```
 
@@ -256,6 +259,7 @@ Data split into species groups and by IUCN category
 groups <- ggplot(df, aes(iucn_log, am_log,color=category)) + geom_point() +facet_wrap(~spp_group) + 
         geom_abline() + labs(x='IUCN Area (log transformed)', y='AquaMaps Area (log transformed)',
                              title='Comparing differences in area across species groups', fill='IUCN Category')
+ggsave('figures/CompareTotalAreaLOG_AM-IUCN_spgroups_scatter.png',plot=groups,width=8,height=6,dpi=100)
 print(groups)
 ```
 ***  
@@ -297,11 +301,11 @@ map <- get_spp_map(spp)
     
 
 #plot
-  plot(r_iucn_spp,col='mediumpurple',useRaster=FALSE,axes=FALSE,box=FALSE,legend=FALSE)
+    plot(r_iucn_spp,col='mediumpurple',useRaster=FALSE,axes=FALSE,box=FALSE,legend=FALSE)
   plot(r_am_spp,col='orange',main="Yellow-speckled Chromis", useRaster=FALSE,add=T,axes=FALSE,box=FALSE,legend=FALSE)
   map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
   legend("topright",legend=c("AquaMaps","IUCN"),fill=c('orange','mediumpurple'))
-  
+
 ```
   
 
@@ -337,8 +341,8 @@ overlap = df%>%dplyr::filter(perc.type=='perc')
   
 all<-ggplot(overlap,aes(percent))+
     geom_histogram(aes(y=..count../1926),binwidth=5,alpha=.8)+
-    labs(x='Percent of total range that is shared between both datasets', y='Proportion of Total Species')
-
+    labs(x='% total range that is shared b/w both datasets', y='Proportion of Total Species')
+ggsave('figures/Overlap-PercTotalRange.png')
 print(all)
 ```
 
@@ -349,10 +353,11 @@ Split up by species - not sure if this is useful or not
 
 sp <- ggplot(overlap,aes(percent))+geom_histogram(binwidth=5,alpha=.8) +
   facet_wrap(~spp_group) +
-  labs(x='Percent of total range that is shared between both datasets', y='Number of Total Species')
+  labs(x='Percent of total range that is shared between both datasets', y='Number of Total Species')+ 
+       theme(strip.text.x = element_text(size = 8))
 
+ggsave('figures/Overlap-PercTotalRange_spGroups.png')
 print(sp)
-
 
 ```
 
@@ -370,6 +375,7 @@ sm_plot <- ggplot(d, aes(sm_perc, fill = sm_range)) +
        geom_histogram(aes(y=..count../sum(..count..)),binwidth = 4, alpha = .8) +
         scale_fill_discrete(name = "Dataset with smaller range", labels = c("AquaMaps", "IUCN")) + 
         labs(x = 'Percent of smaller range that falls within the larger range', y = 'Proportion of all species (n=1962)')
+ggsave('figures/PercSmallRangeInLarger.png',width=6,height=4)
 
 print(sm_plot)
 
@@ -383,6 +389,8 @@ reg <- ggplot(spp_list, aes(sm_perc,total_area, color = sm_range)) +
   geom_abline() + 
   labs(y = 'Total Area (km2)', x = 'Percent overlap smaller range in larger', 
        title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
+
+ggsave('figures/AreavsPercOverlap.png',width=6,height=4)
 
 print(reg)
 
@@ -405,6 +413,8 @@ lm_eqn <- function(df){
 
 p1 <- reg + geom_text(x = 40, y = 300000000, label = lm_eqn(spp_list), parse = TRUE)
 
+ggsave('figures/CorrelationAreavsPercOverlap.png')
+
 print(p1)
 
 summary(lm(total_area~sm_perc,spp_list))
@@ -425,6 +435,9 @@ r <- ggplot(l, aes(total_area, sm_perc, color = sm_range)) +
   labs(x = 'Total Area (km2)', y = 'Percent overlap smaller range in larger', 
        title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
 
+ggsave('figures/AreavsPercOverlap_2.png',width=6,height=4)
+
+
 print(r)
 
 ```
@@ -437,6 +450,8 @@ logA_vs_pct <- ggplot(spp_list, aes(log_total_area, sm_perc, color = sm_range)) 
   geom_point() + 
   labs(x = 'Log(total Area)', y = 'Percent overlap smaller range in larger', 
        title = 'Size of species range (log) vs. percent overlap of \nsmaller range with larger')
+
+ggsave('AreavsPercOverlap_log.png',width=6,height=4)
 
 print(logA_vs_pct)
 ```
@@ -486,7 +501,7 @@ for (i in 1:4) {
   geom_point() + 
   labs(x = 'Total Area (km2)', y = 'Percent overlap smaller range in larger', 
        title = sprintf('Size of species range (quartile %s) vs. percent overlap of \nsmaller range with larger', i))
-
+ggsave(paste0('figures/AreavsOverlap_quantile_',i,'.png'),width=6,height=4)
 print(qtile_plot)
 }
 # First quartile regression:
@@ -558,6 +573,7 @@ df = spp_cells%>%
 
 
 hist <- ggplot(df,aes(prop,fill=iucn_code))+geom_histogram(aes(y=..count../sum(..count..)),binwidth = 0.05, alpha = .7)+labs(x='Proportion of range area included when selecting a threshold of 0.4',y='Proportion of all aquamaps species (17,348 total)')
+ggsave('figures/AMThreshold.png',width=6,height=4)
 print(hist)
 
 ```
