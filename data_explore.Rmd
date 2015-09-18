@@ -451,7 +451,7 @@ logA_vs_pct <- ggplot(spp_list, aes(log_total_area, sm_perc, color = sm_range)) 
   labs(x = 'Log(total Area)', y = 'Percent overlap smaller range in larger', 
        title = 'Size of species range (log) vs. percent overlap of \nsmaller range with larger')
 
-ggsave('AreavsPercOverlap_log.png',width=6,height=4)
+ggsave('figures/AreavsPercOverlap_log.png',width=6,height=4)
 
 print(logA_vs_pct)
 ```
