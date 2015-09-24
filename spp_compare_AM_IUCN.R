@@ -63,9 +63,9 @@ scatterPlot <- function(csv_orig, csv_new, title_text, zero_one_new = FALSE, zer
 #############################################################################=
 
 pref_flag <- c('IUCN', 'AM')
-prob_flag <- c('0.4', '0.05')
+prob_flag <- c('0.4', '0.01')
 
-i <- c(1, 2, 2, 2)
+i <- c(1, 1, 1, 1)
 
 status_base <- file.path(dir_data, sprintf('spp_status_global_%spref_prob%s.csv', pref_flag[i[1]], prob_flag[i[3]]))
 status_test <- file.path(dir_data, sprintf('spp_status_global_%spref_prob%s.csv', pref_flag[i[2]], prob_flag[i[4]]))
@@ -75,6 +75,15 @@ trend_test <- file.path(dir_data, sprintf('spp_trend_global_%spref_prob%s.csv', 
 
 scatterPlot(status_base, status_test, sprintf('GL_SPP_st_pref%svs%s_prob%svs%s', pref_flag[i[1]], pref_flag[i[2]], prob_flag[i[3]], prob_flag[i[4]]))
 scatterPlot(trend_base,  trend_test,  sprintf('GL_SPP_tr_pref%svs%s_prob%svs%s',  pref_flag[i[1]], pref_flag[i[2]], prob_flag[i[3]], prob_flag[i[4]]))
+
+status_base <- '~/github/ohi-global/eez2015/layers/spp_status.csv'
+trend_base <- '~/github/ohi-global/eez2015/layers/spp_trend.csv'
+
+status_test <- file.path(dir_data, sprintf('spp_status_global_%spref_prob%s.csv', pref_flag[i[1]], prob_flag[i[3]]))
+trend_test <- file.path(dir_data, sprintf('spp_trend_global_%spref_prob%s.csv', pref_flag[i[1]], prob_flag[i[3]]))
+
+scatterPlot(status_base, status_test, 'SPP_status_OHI2015_orig_v_new')
+scatterPlot(trend_base,  trend_test,  'SPP_trend_OHI2015_orig_v_new')
 
 #############################################################################=
 ### ICO Comparison Graphs -----
