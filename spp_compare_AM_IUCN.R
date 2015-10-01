@@ -86,107 +86,43 @@ scatterPlot(status_base, status_test, 'SPP_status_OHI2015_orig_v_new')
 scatterPlot(trend_base,  trend_test,  'SPP_trend_OHI2015_orig_v_new')
 
 #############################################################################=
-### ICO Comparison Graphs -----
+### Box Plots of change per scenario -----
 #############################################################################=
 
-# # ico_status and trend not in correct format in ohi-global/eez2013.
-# cat_conv    <- data.frame(category    = c("LC", "NT", "VU", "EN", "CR", "EX"), 
-#                           cat_score   = c(   0,  0.2,  0.4,  0.6,  0.8,   1))
-# trend_conv  <- data.frame(popn_trend  = c("Decreasing", "Stable", "Increasing"), 
-#                           trend_score = c(   -0.5,         0,          0.5   ))
-# 
-# ico_status_raw <- read.csv(file.path(dir_global, comp_scenario, 'layers/ico_spp_extinction_status.csv'), stringsAsFactors = FALSE) 
-# ico_status_compare <- ico_status_raw %>%
-#   left_join(cat_conv, by = 'category') %>%
-#   group_by(rgn_id) %>%
-#   summarize(mean_cat = mean(cat_score, na.rm = TRUE)) %>%
-#   mutate(score = ((1 - mean_cat) - 0.25) / 0.75)
-# ico_trend_raw <- read.csv(file.path(dir_global, comp_scenario, 'layers/ico_spp_popn_trend.csv'), stringsAsFactors = FALSE)
-# ico_trend_compare <- ico_trend_raw %>%
-#   left_join(trend_conv, by = 'popn_trend') %>%
-#   group_by(rgn_id) %>%
-#   summarize(score = mean(trend_score, na.rm = TRUE))
-# 
-# write_csv(ico_status_compare, file.path(dir_git, sprintf('tmp/ico_status_%s.csv', comp_scenario)))
-# write_csv(ico_trend_compare,  file.path(dir_git, sprintf('tmp/ico_trend_%s.csv',  comp_scenario)))
+status_base   <- read.csv(file.path(dir_data, sprintf('spp_status_global_%spref_prob%s.csv', 'IUCN',  '0.4')))
+st_lo_thresh  <- read.csv(file.path(dir_data, sprintf('spp_status_global_%spref_prob%s.csv', 'IUCN', '0.01')))
+st_am_pref    <- read.csv(file.path(dir_data, sprintf('spp_status_global_%spref_prob%s.csv',  'AM',   '0.4')))
+st_lo_am_pref <- read.csv(file.path(dir_data, sprintf('spp_status_global_%spref_prob%s.csv',  'AM',  '0.01')))
 
+scen_data <- status_base %>%
+  rename(base_score = score) %>%
+  full_join(st_lo_thresh %>%
+              rename(score_lo = score),
+            by = 'rgn_id') %>%
+  full_join(st_am_pref %>%
+              rename(score_am = score),
+            by = 'rgn_id') %>%
+  full_join(st_lo_am_pref %>%
+              rename(score_lo_am = score),
+            by = 'rgn_id') %>%
+  mutate(diff_lo_abs = 100*(base_score - score_lo),
+         diff_lo_rel = (base_score - score_lo)/base_score,
+         diff_am_abs = 100*(base_score - score_am),
+         diff_am_rel = (base_score - score_am)/base_score,
+         diff_lo_am_abs = 100*(base_score - score_lo_am),
+         diff_lo_am_rel = (base_score - score_lo_am)/base_score) %>%
+  gather(scenario, change, diff_lo_abs:diff_lo_am_rel)
 
+scen_data_rel <- scen_data %>%
+  filter(str_detect(scenario, 'rel'))
+scen_data_abs <- scen_data %>%
+  filter(str_detect(scenario, 'abs'))
 
-scatterPlot(csv_orig = file.path(dir_git, sprintf('tmp/ico_status_%s.csv', comp_scenario)),
-            csv_new  = file.path(dir_git, scenario, 'data/ico_status.csv'),
-            title_text = 'ico_status')
+ggplot(data = scen_data_abs, aes(scenario, change)) +
+  geom_boxplot() +
+  labs(title = 'Absolute change in SPP status')
 
-scatterPlot(csv_orig = file.path(dir_git, sprintf('tmp/ico_trend_%s.csv',  comp_scenario)),
-            csv_new  = file.path(dir_git, scenario, 'data/ico_trend.csv'),
-            title_text = 'ico_trend')
+ggplot(data = scen_data_rel, aes(scenario, change)) +
+  geom_boxplot() +
+  labs(title = 'Relative change in SPP status')
 
-
-status_x   <- left_join(ico_status_compare, 
-                       read_csv(file.path(dir_git, scenario, 'data/ico_status.csv')), 
-                       by = 'rgn_id')
-status_mdl <- lm(status_x$score.x ~ status_x$score.y)
-summary(status_mdl)
-
-# parents omitted; sum of parents/subpops
-# (Intercept)       0.51120    0.05873   8.704 1.38e-15 ***
-#   status_x$score.y -0.10883    0.11154  -0.976     0.33    
-# Residual standard error: 0.1367 on 194 degrees of freedom
-# Multiple R-squared:  0.004883,  Adjusted R-squared:  -0.0002463 
-# F-statistic: 0.952 on 1 and 194 DF,  p-value: 0.3304
-
-# parents omitted; mean of parents/subpops
-# (Intercept)       0.51194    0.05914   8.656 1.87e-15 ***
-#   status_x$score.y -0.11009    0.11218  -0.981    0.328    
-# Residual standard error: 0.1367 on 194 degrees of freedom
-# Multiple R-squared:  0.004939,  Adjusted R-squared:  -0.0001898 
-# F-statistic: 0.963 on 1 and 194 DF,  p-value: 0.3277
-
-# parents kept; mean of parents and all subpops
-# (Intercept)       0.49162    0.06393   7.690 7.22e-13 ***
-#   status_x$score.y -0.07033    0.12034  -0.584     0.56    
-# Residual standard error: 0.1369 on 194 degrees of freedom
-# Multiple R-squared:  0.001757,  Adjusted R-squared:  -0.003388 
-# F-statistic: 0.3415 on 1 and 194 DF,  p-value: 0.5596
-
-# parents kept; sum of parents and all subpops
-# (Intercept)       0.47643    0.06475   7.357 5.16e-12 ***
-#   status_x$score.y -0.04200    0.12368  -0.340    0.735    
-# Residual standard error: 0.137 on 194 degrees of freedom
-# Multiple R-squared:  0.000594,  Adjusted R-squared:  -0.004558 
-# F-statistic: 0.1153 on 1 and 194 DF,  p-value: 0.7346
-
-
-
-
-trend_x   <- left_join(ico_trend_compare, 
-                     read_csv(file.path(dir_git, scenario, 'data/ico_trend.csv')), 
-                     by = 'rgn_id')
-trend_mdl <- lm(trend_x$score.x ~ trend_x$score.y)
-summary(trend_mdl)
-# parents removed; sum of subpops
-# (Intercept)     -0.11557    0.01815  -6.366 1.54e-09 ***
-#   trend_x$score.y  0.69799    0.06705  10.410  < 2e-16 ***
-# Residual standard error: 0.1475 on 182 degrees of freedom
-# Multiple R-squared:  0.3732,  Adjusted R-squared:  0.3697 
-# F-statistic: 108.4 on 1 and 182 DF,  p-value: < 2.2e-16
-
-# parents removed; mean of subpops
-# (Intercept)     -0.10951    0.01828  -5.989  1.1e-08 ***
-#   trend_x$score.y  0.71088    0.06671  10.656  < 2e-16 ***
-# Residual standard error: 0.1462 on 182 degrees of freedom
-# Multiple R-squared:  0.3842,  Adjusted R-squared:  0.3808 
-# F-statistic: 113.5 on 1 and 182 DF,  p-value: < 2.2e-16
-
-# parents kept; mean of subpops/parents
-# (Intercept)     -0.09361    0.01925  -4.863 2.49e-06 ***
-#   trend_x$score.y  0.71873    0.06633  10.835  < 2e-16 ***
-# Residual standard error: 0.1453 on 182 degrees of freedom
-# Multiple R-squared:  0.3921,  Adjusted R-squared:  0.3888 
-# F-statistic: 117.4 on 1 and 182 DF,  p-value: < 2.2e-16
-
-# parents kept; sum of parents and subpops
-# (Intercept)     -0.11003    0.01927   -5.71 4.53e-08 ***
-#   trend_x$score.y  0.66614    0.06702    9.94  < 2e-16 ***
-# Residual standard error: 0.15 on 182 degrees of freedom
-# Multiple R-squared:  0.3519,  Adjusted R-squared:  0.3483 
-# F-statistic:  98.8 on 1 and 182 DF,  p-value: < 2.2e-16
