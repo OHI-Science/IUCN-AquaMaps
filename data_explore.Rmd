@@ -577,3 +577,18 @@ ggsave('figures/AMThreshold.png',width=6,height=4)
 print(hist)
 
 ```
+
+## Changes in SPP for scenarios
+
+Comparing three scenarios to the current (v2015) global model for SPP:
+
+* Baseline is: preferring IUCN rangemaps over Aquamaps rangemaps; Aquamaps "presence" threshold is set at 40% or greater.
+* Scenario 1: preferring IUCN rangemaps over Aquamaps; AM presence threshold set at >= 1% (effectively, all occurrences).
+* Scenario 2: preferring AM maps over IUCN; AM presence >= 40%.
+* Scenario 3: preferring AM over IUCN; AM presence >= 1%.
+
+Boxplots:
+
+![Absolute change in SPP score](figures/SPP_scenarios/boxplot_abs_diff.png)
+
+![Relative change in SPP score](figures/SPP_scenarios/boxplot_rel_diff.png)
