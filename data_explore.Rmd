@@ -25,14 +25,14 @@ dir_anx      <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
 ```{r,echo=F,warning=FALSE,message=F,results='hide'}
 
 # Data files
+#iucn spp cells WITHOUT extinct locations of IUCN species
+iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_both.csv'), col_types = 'cdddd', progress = TRUE)%>%as.data.frame()%>%filter(presence!=5)
 
-iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells.csv'), col_types = 'idiii', progress = TRUE)
 
 am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells.csv'), progress = TRUE)
 
-#species list
+#species list 
 spp_list <- read.csv('shiny/data/spp_am_v_iucn.csv', stringsAsFactors = FALSE)
-
 
 #data for raster (used to plot species)
 
@@ -53,15 +53,14 @@ get_spp_map <- function(species){
     dplyr::select(am_sid, iucn_sid, sciname) %>%
     unique()
   iucn_spp_map <- iucn_spp_cells %>%
-    filter(iucn_sid == spp_id$iucn_sid) %>%
-    dplyr::select(-parent_sid, -subpop_sid, loiczid = iucn_loiczid) %>%
-    group_by(loiczid, iucn_sid) %>%        
-    summarize(iucn_area = max(iucn_area))
+    filter(sciname == species) %>%
+    group_by(loiczid) %>%        
+    summarize(iucn_area = max(prop_area))
   ### The group_by() and summarize() are to collapse cells with overlapped polygons, fixing the duplicate 'by' issue
   am_spp_map   <- am_spp_cells %>%
     filter(am_sid == spp_id$am_sid) %>%
-    rename(loiczid = am_loiczid)
-  spp_map <- full_join(iucn_spp_map, am_spp_map, by = 'loiczid') %>%
+    rename(am_prob = prob)
+  spp_map <- full_join(iucn_spp_map, am_spp_map, by = 'loiczid')%>%
     as.data.frame()
   
   return(spp_map)
@@ -83,61 +82,61 @@ spp_list = spp_list %>%
                      sm_perc    = NA, #filled with % of smaller range that is within the larger range
                      sm_range   = NA) #what range is smaller
 
+
 #there's likely a better way to do this than a for loop (lapply or sapply?)
 for (i in 1:nrow(spp_list)){
-  
-  print(i)
-  
+
+ 
   spp     <- spp_list[i, ]$sciname #species name
   
   spp_map <- get_spp_map(spp) #get species map
   
-  #get just the aquamaps cells
-#   am_spp_map = spp_map%>%
-#                   filter(!is.na(am_prob))%>%
-#                 dplyr::select(loiczid,am_sid,am_prob)%>% #add in am_prob when we want to look at probability
-#                   unique()
+###get just the aquamaps cells
+   am_spp_map = spp_map%>%
+                   filter(!is.na(am_prob))%>%
+                    dplyr::select(loiczid,am_sid,am_prob)%>% #add in am_prob when we want to look at probability
+                     unique()
   
-#   if(TRUE %in% duplicated(am_spp_map$loiczid)){
-#                   am_spp_map = am_spp_map%>%
-#                                 dplyr::select(loiczid,am_sid)%>%
-#                                   unique()}
-#   
-  #rasterize aquamaps map
-#   r_am_spp  <-  subs(loiczid_raster, 
-#                      am_spp_map[ , c('loiczid', 'am_sid')], 
-#                      by = 'loiczid', 
-#                      which = 'am_sid', 
-#                      subsWithNA = TRUE)
-#   
-#   spp_list[i,]$am_area = area(r_am_spp,na.rm=T)%>%
-#               cellStats(.,stat='sum')
-#   
+  if(TRUE %in% duplicated(am_spp_map$loiczid)){
+                  am_spp_map = am_spp_map%>%
+                                dplyr::select(loiczid,am_sid)%>%
+                                  unique()}
   
-  #get the iucn cells
-#   iucn_map <- spp_map %>%
-#     mutate(iucn_pres = iucn_area > 0)%>%
-#       dplyr::select(loiczid,iucn_area,am_sid,am_prob,iucn_pres)%>%
-#         unique()
+###  rasterize aquamaps map
+  r_am_spp  <-  subs(loiczid_raster, 
+                     am_spp_map[ , c('loiczid', 'am_sid')], 
+                     by = 'loiczid', 
+                     which = 'am_sid', 
+                     subsWithNA = TRUE)
+  
+  spp_list[i,]$am_area = area(r_am_spp,na.rm=T)%>%
+              cellStats(.,stat='sum')
+  
+  
+###  get the iucn cells
+  iucn_map <- spp_map %>%
+    mutate(iucn_pres = iucn_area > 0)%>%
+      dplyr::select(loiczid,iucn_area,am_sid,am_prob,iucn_pres)%>%
+        unique()
   
   #TODO: incorporate the iucn_area (area of cell that species overlaps with...I think thats what it is)
   
-  #this is incorporated because there are some duplications for loiczids with IUCN cells. I'm guessing this is because of the parent/subpopulations?
+###this is incorporated because there are some duplications for loiczids with IUCN cells. I'm guessing this is because of the parent/subpopulations?
   
-#    if(TRUE %in% duplicated(iucn_map$loiczid))next()
-# #   
-#  rasterize IUCN map
-#   r_iucn_spp <- subs(loiczid_raster, 
-#                      iucn_map[ , c('loiczid', 'iucn_pres')], 
-#                     by = 'loiczid', 
-#                      which = 'iucn_pres', 
-#                      subsWithNA = TRUE)
-# #   
-#   spp_list[i,]$iucn_area = area(r_iucn_spp,na.rm=T)%>%
-#                 cellStats(.,stat='sum')
+   if(TRUE %in% duplicated(iucn_map$loiczid))next()
+   
+### rasterize IUCN map
+  r_iucn_spp <- subs(loiczid_raster, 
+                     iucn_map[ , c('loiczid', 'iucn_pres')], 
+                    by = 'loiczid', 
+                     which = 'iucn_pres', 
+                     subsWithNA = TRUE)
+
+  spp_list[i,]$iucn_area = area(r_iucn_spp,na.rm=T)%>%
+                cellStats(.,stat='sum')
   
   
-  # Get total area (IUCN and AM combined)
+### Get total area (IUCN and AM combined)
   allCells <- spp_map%>%
                 dplyr::select(loiczid)%>%
                   mutate(value=1)%>%
@@ -153,19 +152,20 @@ for (i in 1:nrow(spp_list)){
   spp_list[i,]$total_area = area(fullRange,na.rm=T)%>%
                               cellStats(.,stat='sum')
   
-  # get percent overlap of map
+### get percent overlap of map
   
-#   #iucn map cells
-#   cells_iucn<-iucn_map%>%
-#               filter(iucn_pres==TRUE)%>%
-#               .$loiczid
-#   cells_am <- am_spp_map%>%
-#                 filter(!is.na(am_sid))%>%
-#                 .$loiczid
-#   
-#   cells_total = unique(spp_map$loiczid)
-#   cells_overlap = intersect(cells_iucn,cells_am)
-#   
+   #iucn map cells
+  cells_iucn<-iucn_map%>%
+              filter(iucn_pres==TRUE)%>%
+              .$loiczid
+  cells_am <- am_spp_map%>%
+                filter(!is.na(am_sid))%>%
+                .$loiczid
+  
+  cells_total = unique(spp_map$loiczid)
+  cells_overlap = intersect(cells_iucn,cells_am)
+  
+  #I THINK THIS IS A DUPLICATE? r_iucn_spp raster created above... (JA 10/12/15)
 #    r_iucn_spp <- subs(loiczid_raster, 
 #                       iucn_map[ , c('loiczid', 'iucn_pres')], 
 #                      by = 'loiczid', 
@@ -173,23 +173,21 @@ for (i in 1:nrow(spp_list)){
 #                       subsWithNA = TRUE)
 #   
   #percent overlap
-#   perc = (length(cells_overlap)/length(cells_total))*100
-#   spp_list[i,]$perc = perc
-#   
-#   am_only = setdiff(cells_am,cells_iucn)
-#   iucn_only = setdiff(cells_iucn,cells_am)
-#   
-#   perc_am = (length(am_only)/length(cells_total))*100
-#   perc_iucn = (length(iucn_only)/length(cells_total))*100
-#   
-#   spp_list[i,]$am_perc = perc_am
-#   spp_list[i,]$iucn_perc = perc_iucn
-# 
-#   spp_list[i,]$sm_range = ifelse(length(cells_am)<length(cells_iucn),'AM','IUCN') #what dataset has the smaller range
-#   spp_list[i,]$sm_perc = length(cells_overlap)/min(length(cells_am),length(cells_iucn))*100 #this is the total percent of smaller range encompassed in the larger range
-# cat(perc,perc_am,perc_iucn)
-# 
+  perc = (length(cells_overlap)/length(cells_total))*100
+  spp_list[i,]$perc = perc
+  
+  am_only = setdiff(cells_am,cells_iucn)
+  iucn_only = setdiff(cells_iucn,cells_am)
+  
+  perc_am = (length(am_only)/length(cells_total))*100
+  perc_iucn = (length(iucn_only)/length(cells_total))*100
+  
+  spp_list[i,]$am_perc = perc_am
+  spp_list[i,]$iucn_perc = perc_iucn
 
+  spp_list[i,]$sm_range = ifelse(length(cells_am)<length(cells_iucn),'AM','IUCN') #what dataset has the smaller range
+  spp_list[i,]$sm_perc = length(cells_overlap)/min(length(cells_am),length(cells_iucn))*100 #this is the total percent of smaller range encompassed in the larger range
+cat(sprintf('%s: For species %s, %.2f%% of both datasets overlap, %.2f%% is just AquaMaps and %.2f%% is just IUCN\n',i,spp,perc,perc_am,perc_iucn))
 
   }
 
@@ -199,7 +197,12 @@ for (i in 1:nrow(spp_list)){
 #row 985 for Acanthurus leucopareius - AM is giving duplicate loiczids but with different am_prob...which is so strange. Looked
 # at the raw data and it seems to be in the raw data... (JA on 8/31/15)
 
-write.csv(spp_list,file='spp_list_w_area_percent.csv')
+#remove non IUCN species and log total area (for use later on)
+spp_list = spp_list%>%
+            filter(spp_group != 'hagfishes' & spp_group != 'non-homalopsids')%>%
+             mutate(log_total_area = log(total_area))
+
+write.csv(spp_list,file='spp_list_w_area_percent_noextinct.csv')
 ```
 
 
@@ -208,7 +211,7 @@ write.csv(spp_list,file='spp_list_w_area_percent.csv')
 ```{r,echo=F,warning=F,message=F,warning=FALSE,message=F}
 # look at number of species per group
 
-spp_list = read.csv('spp_list_w_area_percent.csv')
+spp_list = read.csv('spp_list_w_area_percent_noextinct.csv')
 
 df = spp_list%>%
       mutate(diff = iucn_area - am_area)
@@ -231,7 +234,7 @@ print(g)
 
 ```{r,echo=F,warning=F,message=F,warning=FALSE,message=F}
 
-dot = ggplot(df,aes(iucn_area,am_area,color=category))+ geom_point() + geom_abline()+
+dot = ggplot(df,aes(iucn_area,am_area,color=iucn_category))+ geom_point() + geom_abline()+
       labs(x='Area (km2) from IUCN dataset',y='Area (km2) from AquaMaps dataset',title='Comparing total area of species range maps')
 ggsave('figures/CompareTotalArea_AM-IUCN_scatter.png',plot=dot,width=8, height=4, dpi=100)
 print(dot)
@@ -245,7 +248,7 @@ df = df%>%
       mutate(am_log = log(am_area),
              iucn_log = log(iucn_area))
 
-all_status <- ggplot(df,aes(iucn_log,am_log,color=category)) + 
+all_status <- ggplot(df,aes(iucn_log,am_log,color=iucn_category)) + 
   geom_point() + geom_abline() +
   labs(x='IUCN Area (log transformed)', y='AquaMaps Area (log transformed)',
         title= 'Comparing area of range maps\n (all area values are km2 log transformed)',fill='IUCN Category')
@@ -256,9 +259,10 @@ print(all_status)
 Data split into species groups and by IUCN category
 ```{r,echo=F,warning=F,message=F}
 
-groups <- ggplot(df, aes(iucn_log, am_log,color=category)) + geom_point() +facet_wrap(~spp_group) + 
+groups <- ggplot(df, aes(iucn_log, am_log,color=iucn_category)) + geom_point() +facet_wrap(~spp_group) + 
         geom_abline() + labs(x='IUCN Area (log transformed)', y='AquaMaps Area (log transformed)',
                              title='Comparing differences in area across species groups', fill='IUCN Category')
+        
 ggsave('figures/CompareTotalAreaLOG_AM-IUCN_spgroups_scatter.png',plot=groups,width=8,height=6,dpi=100)
 print(groups)
 ```
@@ -321,11 +325,11 @@ map <- get_spp_map(spp)
   
    p1 = perc_c %>% dplyr::select(percent)
    
-  paste0(round(p1[1, ], 2), '% of the total area in this map is covered by both IUCN and AquaMaps')
-  paste0(round(p1[2, ], 2), '% of the total area in this map is covered just by AquaMaps')
-  paste0(round(p1[3, ], 2), '% of the total area in this map is covered just by IUCN')
 ```
+
+For `r spp`, `r round(pi[1], 2)`% of the total area is covered by both IUCN and AquaMaps, `r round(p1[2,],2)`% is covered just by AquaMaps and `r round(p1[3,], 2)`% is covered just by IUCN.
   
+***  
   
 ####Now looking across all species, here is the breakdown of how much overlap there is between the two datasets  
   
@@ -349,7 +353,7 @@ print(all)
 
 
 Split up by species - not sure if this is useful or not
-```{r,echo=F}
+```{r,echo=F, message = F, warning = F}
 
 sp <- ggplot(overlap,aes(percent))+geom_histogram(binwidth=5,alpha=.8) +
   facet_wrap(~spp_group) +
@@ -362,9 +366,11 @@ print(sp)
 ```
 
 
-Looking at the percent of smaller species range that is within the larger range. 
+###(4) Looking at the percent of smaller species range that is within the larger range. 
 
-```{r pct small within large, echo=F}
+For each range 
+
+```{r pct small within large, echo=F, warning= F}
 
 d <- spp_list %>%
   dplyr::select(sciname, sm_perc, sm_range) %>%
@@ -382,7 +388,7 @@ print(sm_plot)
 ```
 
 Exploring possible correlation between total species range area and percent overlap of smaller range within the larger:
-``` {r pct overlap vs area, echo = FALSE}
+``` {r pct overlap vs area, echo = FALSE, warning = F, message=F}
 
 reg <- ggplot(spp_list, aes(sm_perc,total_area, color = sm_range)) + 
   geom_point() + 
@@ -396,7 +402,7 @@ print(reg)
 
 ```
 
-``` {r, echo = FALSE}
+``` {r, echo = FALSE, warning = F, message=F}
   
 
 # Regression
@@ -424,7 +430,7 @@ summary(lm(total_area~sm_perc,spp_list))
 
 
 Perent coverage as function of area, clipping to area below 100,000,000 km^2:
-``` {r, echo = F}
+``` {r, echo = F, warning = F, message = F}
 # remove all area greater than 100000000
 
 l <- spp_list %>% filter(total_area < 100000000)
@@ -443,7 +449,7 @@ print(r)
 ```
 
 Percent coverage as a function of log(area)
-``` {r, echo = F}
+``` {r, echo = F, warning = F, message = F}
 # Log transform area
 
 logA_vs_pct <- ggplot(spp_list, aes(log_total_area, sm_perc, color = sm_range)) + 
@@ -457,7 +463,7 @@ print(logA_vs_pct)
 ```
 
 
-``` {r examine regressions, echo = FALSE}
+``` {r examine regressions, echo = FALSE, warning = F}
 
 A_mdl      <- lm(total_area ~ sm_perc, spp_list)
 #                Estimate Std. Error t value Pr(>|t|)    
@@ -477,20 +483,22 @@ logA_mdl   <- lm(log_total_area ~ sm_perc, spp_list)
 #   Multiple R-squared:  0.0687,	Adjusted R-squared:  0.06823 
 ```
 
+***  
 
-Examining data broken into quartiles to see if smaller patterns emerge
-``` {r examine quartiles, echo = FALSE}
+###(5) Examining data broken into quartiles to see if smaller patterns emerge
+``` {r examine quartiles, echo = FALSE, warning = F}
 
 
 summary(spp_list$total_area)
 #      Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
 #     55760   3032000  10790000  18500000  22670000 372100000
 
-qtiles <- c(quantile(spp_list$total_area, 0.0),
-            quantile(spp_list$total_area, .25),
-            quantile(spp_list$total_area, .50),
-            quantile(spp_list$total_area, .75),
-            quantile(spp_list$total_area, 1.0))
+qtiles <- c(quantile(spp_list$total_area, 0.0,na.rm=T),
+            quantile(spp_list$total_area, .25,na.rm=T),
+            quantile(spp_list$total_area, .50,na.rm=T),
+            quantile(spp_list$total_area, .75,na.rm=T),
+            quantile(spp_list$total_area, 1.0,na.rm=T))
+
 qtile_mdl <- list()
 for (i in 1:4) {
   area_clip <- spp_list %>%
@@ -532,11 +540,11 @@ print(qtile_plot)
 
 ```
 
+***  
 
+###(6) Looking at how many and what type (threat category) of species we are losing by setting a threshold of 0.4 on the aquamaps species.
 
-Looking at how many and what type (threat category) of species we are losing by setting a threshold of 0.4 on the aquamaps species.
-
-```{r aquamaps probabilities, warning=F,message=F,cache.lazy=FALSE,cache=T,verbose=F,results=F,echo=F}
+```{r aquamaps probabilities, warning=F,message=F,cache.lazy=FALSE,cache=T,verbose=F,results=F,echo=F,include=F}
 
 # get spp_cells raw data for aquamaps
 
