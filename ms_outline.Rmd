@@ -8,6 +8,15 @@ output:
     highlight: "haddock" 
 ---
 
+##Main message (25 words or less):
+
+With the increasing numbers of open datasets, it is important to understand the implications of using certain data over others. 
+
+##Working Abstract  
+
+
+
+
 ##Section One: Understanding each dataset separately  
 
 ####**IUCN**  
@@ -55,6 +64,8 @@ Computer model using 6 parameters (SST, salinity, temperature, depth, distance t
 
 ***  
 ##Section Three: Application to OHI
+
+The global Ocean Health Index (Halpern et al. 2012), an index made up of 10 goals, utilizes both of these datasets to inform the  Biodiversity goal. The biodiversity goal is made up of two parts; Species and Habitats. The species subgoal uses the IUCN range map data and threat status to calculate average species status in global ocean regions around the world. Since IUCN only has range maps for X% of total assessed species, AquaMaps provided the data in instances where we have a threat status but no range map.
 
 ***  
 
