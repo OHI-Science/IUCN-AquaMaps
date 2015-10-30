@@ -10,21 +10,29 @@ output:
 
 ##Main message:
 
+<<<<<<< HEAD
 Understanding the differences in marine species range maps from IUCN and AquaMaps, and the implications of using one or both.
+=======
+A comparison of two open source, spatial datasets and the implications of making decisions about what data to use as applied to the Ocean Health Index.
+>>>>>>> 040d66807538764f5e3dbe3c85d67dc4faee0b81
 
 ##Working Abstract  
 
 Species range maps are integral for spatial analyses across multiple disciplines including geography, conservation, ecology and policy. Two main sources for marine species are the IUCN and AquaMaps. These two datasets differ in development and outcomes, and therefore it is pertinent to understand the implications of using one over the other. AquaMaps uses a computer model based on preferential environmental parameters to predict species locations and probability of occurrence. IUCN uses expert insight to draw polygons around known locations of marine species. Approximately 1,900 species are found in both datasets. This comparative analysis draws attention to the similarities and differences between the two datasets, and highlights the implications of using one or the other in the context of the Ocean Health Index.
 
+*** 
 
 ##Section One: Understanding each dataset separately  
 
-####**IUCN**  
+![](./figures/SpeciesMap.png)
+
+**Figure 1:** Species range map for *Chromis alpha* from the AquaMaps (orange) and IUCN (purple) datasets.
+
+
+###IUCN
 
 **Data Type**  
 Shapefiles for individual species. Spatial files include subpopulation information, presence (extinct/extant etc.) and seasonality information (breeding/migration/origin etc.).  
-
-**INSERT MAP**  
 
 **Methods**  
 From [IUCN site](http://www.iucnredlist.org/technical-documents/red-list-training/iucnspatialresources):  
@@ -32,13 +40,19 @@ From [IUCN site](http://www.iucnredlist.org/technical-documents/red-list-trainin
 > The species distribution maps, sometimes referred to as 'limits of distribution' or 'field guide' maps, aim to provide the current known distribution of the species within its native range. The limits of distribution can be determined by using known occurrences of the species, along with the knowledge of habitat preferences, remaining suitable habitat, elevation limited, and other expert knowledge of the species and its range. In most cases the range is depicted as polygons. *A polygon displaying the limits of a species distribution is essentially meant to communicate that the species probably occurs within this polygon, but it does not mean that it is distributed equally within that polygon or occurs everywhere within that polygon*.  
 
 
-####AquaMaps  
+###AquaMaps 
 
 [Site](http://www.aquamaps.org/)
 
-Over 17,000 species  
+AquaMaps (Kirschner et al. 2013) was developed to create species range maps based on a computer model that takes up to six parameters to determine where marine species are located. The model uses known species preferences for sea surface temperature, salinity, depth, productivity, and in some instances distance to land and sea ice cover to predict species ranges. Range maps are based on a 0.5 degree global grid where values in each cell is equal to the probability of occurrence that the species is there. These maps can then be tweaked by experts altering the parameters and regenerating the modeled map. As of October 2015, 17,348 species have been mapped. See (Kirschner et al. 2013) for more detailed methods.
 
-Computer model using 6 parameters (SST, salinity, temperature, depth, distance to land, sea ice cover)  
+
+The main differences between these two sources of marine species ranges is how the maps are developed, and their output. When a species range is developed during an IUCN assessment, experts determine the boundaries of the species range based on their expertise which could be using known occurrences, habitat preferences, suitable habitat, or other knowledge. The range is depicted as a polygon where the boundaries are *"meant to communicate that the species probably occurs within this polygon, but it does not mean that it is distributed equally within the polygon or occurs everywhere within the polygon."*
+
+
+These two clearly differ in one aspect - AquaMaps provides higher resolution information about where species do and do not occur globally whereas the IUCN range maps are unable to provide specific information about where within a polygon a species occurs. This is understandable given the mobile nature of many marine species and the difficulty in observing and tracking known occurrences.
+
+
 
 
 AquaMaps uses both occurrence data and environmental parameters to predict relative species occurrence. This approach attempts to reduce sampling bias and fill gaps where data is not available. Six environmental predictors are used to estimate where a species could be found; sea surface temperature, bottom depth, salinity, primary production, sea ice concentration and distance to land. For more information on methods see Kaschner et al. (2007) and online at http://www.aquamaps.org/main/AboutAquaMaps.php.
@@ -49,28 +63,38 @@ There are inherent issues with AquaMaps. It can't be expected to accurately pred
 ##Section Two: Comparison of IUCN and AquaMaps
 
 ![](./figures/sp_groups_barchart.png)
-![](./figures/CompareTotalArea_AM-IUCN_scatter.png)
 ![](./figures/CompareTotalAreaLOG_AM-IUCN_scatter.png)
 ![](./figures/CompareTotalAreaLOG_AM-IUCN_spgroups_scatter.png)
-![](./figures/SpeciesMap.png)
 ![](./figures/Overlap-PercTotalRange.png)
 ![](./figures/Overlap-PercTotalRange_spGroups.png)
 ![](./figures/PercSmallRangeInLarger.png)
-![](./figures/AreavsPercOverlap.png)
 ![](./figures/AreavsPercOverlap_2.png)
-![](./figures/AreavsOverlap_quantile_1.png)
-![](./figures/AreavsOverlap_quantile_2.png)
-![](./figures/AreavsOverlap_quantile_3.png)
-![](./figures/AreavsOverlap_quantile_4.png)
 ![](./figures/AMThreshold.png)
 
+Figure 1 is an example of very large differences in a species range map from the IUCN and AquaMaps datasets. By considering the entire range of the species to be every cell that is in either dataset, only 3.14% of the map is in both. 3.18% is covered just by AquaMaps and 77.3% is covered just by IUCN. Figure 2
 
+
+This is not always the case as some species range maps align better, especially for marine mammals.
 
 
 ***  
+
 ##Section Three: Application to OHI
 
-The global Ocean Health Index (Halpern et al. 2012), an index made up of 10 goals, utilizes both of these datasets to inform the  Biodiversity goal. The biodiversity goal is made up of two parts; Species and Habitats. The species subgoal uses the IUCN range map data and threat status to calculate average species status in global ocean regions around the world. Since IUCN only has range maps for X% of total assessed species, AquaMaps provided the data in instances where we have a threat status but no range map.
+The global Ocean Health Index (Halpern et al. 2012), an index made up of 10 goals, utilizes both of these datasets to inform the  Biodiversity goal. The biodiversity goal is made up of two parts; Species and Habitats. The species subgoal uses the IUCN range map data and threat status to calculate average species status in global ocean regions around the world. Spatial range maps are developed by experts for species that are assessed. The assessment process happens in phases and only [X] number of marine species have been given spatial range maps. AquaMaps has spatial range maps for over 17,000 species. For those species that are missing spatial information from IUCN, AquaMaps data was used. If a species was assigned an IUCN threat status but did not have spatial range information in either dataset, it was excluded.
+
+This decision to use IUCN data preferentially to AquaMaps data was made based on the fact that experts are developing the IUCN maps and AquaMaps data is based off a computer model, which in some cases is then consulted by an expert and appropriately altered.
+
+Between the two databases, there are 1,923 species that have a range map in both. Figure [X] shows the change in status score for the Species Subgoal within the global Ocean Health Index under three different scenarios. 
+
+![Absolute change in SPP score](figures/SPP_scenarios/boxplot_abs_diff.png)
+
+![Relative change in SPP score](figures/SPP_scenarios/boxplot_rel_diff.png)
+
+Scenario 1 shows change in score if IUCN maps were still preferentially used over AquaMaps, but the AquaMaps threshold was set to 1% rather than 40% probability of occurrence. Scenario 2 shows the change in score if we switched preferences for AquaMaps over IUCN data while keeping the 40% probability of occurrence threshold. The final Scenario is the same as scenario 2 but without a probability of occurrence threshold.
+
+
+It is important to remember that although only [X (1,923/total number of species)]% of all species included in the species goal are found in both datasets, there are still significant differences when electing to choose one dataset over the other.
 
 ***  
 
