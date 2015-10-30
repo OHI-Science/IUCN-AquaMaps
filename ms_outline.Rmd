@@ -8,13 +8,13 @@ output:
     highlight: "haddock" 
 ---
 
-##Main message (25 words or less):
+##Main message:
 
-With the increasing numbers of open datasets, it is important to understand the implications of using certain data over others. 
+Understanding the differences in marine species range maps from IUCN and AquaMaps, and the implications of using one or both.
 
 ##Working Abstract  
 
-
+Species range maps are integral for spatial analyses across multiple disciplines including geography, conservation, ecology and policy. Two main sources for marine species are the IUCN and AquaMaps. These two datasets differ in development and outcomes, and therefore it is pertinent to understand the implications of using one over the other. AquaMaps uses a computer model based on preferential environmental parameters to predict species locations and probability of occurrence. IUCN uses expert insight to draw polygons around known locations of marine species. Approximately 1,900 species are found in both datasets. This comparative analysis draws attention to the similarities and differences between the two datasets, and highlights the implications of using one or the other in the context of the Ocean Health Index.
 
 
 ##Section One: Understanding each dataset separately  
@@ -39,6 +39,11 @@ From [IUCN site](http://www.iucnredlist.org/technical-documents/red-list-trainin
 Over 17,000 species  
 
 Computer model using 6 parameters (SST, salinity, temperature, depth, distance to land, sea ice cover)  
+
+
+AquaMaps uses both occurrence data and environmental parameters to predict relative species occurrence. This approach attempts to reduce sampling bias and fill gaps where data is not available. Six environmental predictors are used to estimate where a species could be found; sea surface temperature, bottom depth, salinity, primary production, sea ice concentration and distance to land. For more information on methods see Kaschner et al. (2007) and online at http://www.aquamaps.org/main/AboutAquaMaps.php.
+
+There are inherent issues with AquaMaps. It can't be expected to accurately predict all marine species ranges. Expert insight is sought and incorporated when available.
 
 ***  
 ##Section Two: Comparison of IUCN and AquaMaps
