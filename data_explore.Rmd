@@ -3,7 +3,7 @@ title: "Data Exploration: IUCN and AquaMaps"
 output: html_document
 ---
 
-```{r,echo=F,warning=FALSE,message=F}
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
 # Libraries and Paths
 
@@ -22,11 +22,14 @@ dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
 dir_anx      <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
 ```
 
-```{r,echo=F,warning=FALSE,message=F,results='hide'}
+```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE, results = 'hide'}
 
 # Data files
 #iucn spp cells WITHOUT extinct locations of IUCN species
-iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_both.csv'), col_types = 'cdddd', progress = TRUE)%>%as.data.frame()%>%filter(presence!=5)
+iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_both.csv'), 
+                           col_types = 'cdddd', progress = TRUE) %>%
+  as.data.frame() %>%
+  filter(presence != 5)
 
 
 am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells.csv'), progress = TRUE)
@@ -41,7 +44,7 @@ loiczid_raster       <- raster(loiczid_raster_file)
 names(loiczid_raster) <- 'loiczid'
 ```
 
-```{r,echo=F,warning=FALSE,message=F}
+```{r species_map_function, echo = FALSE, warning = FALSE, message = FALSE}
 
 ### Species Map Function ###
 # This function takes a single species scientific name as input, then grabs all 
@@ -70,9 +73,9 @@ get_spp_map <- function(species){
 
 
 
-```{r,echo=F,eval=FALSE,warning=FALSE,message=F}
+```{r create_species_list_w_area, echo = FALSE, eval = FALSE, warning = FALSE, message = FALSE}
 
-spp_list = spp_list %>%
+spp_list <- spp_list %>%
               mutate(total_area = NA,
                      am_area    = NA,
                      iucn_area  = NA,
@@ -85,38 +88,36 @@ spp_list = spp_list %>%
 
 #there's likely a better way to do this than a for loop (lapply or sapply?)
 for (i in 1:nrow(spp_list)){
-
- 
   spp     <- spp_list[i, ]$sciname #species name
-  
   spp_map <- get_spp_map(spp) #get species map
   
 ###get just the aquamaps cells
-   am_spp_map = spp_map%>%
+   am_spp_map <- spp_map%>%
                    filter(!is.na(am_prob))%>%
-                    dplyr::select(loiczid,am_sid,am_prob)%>% #add in am_prob when we want to look at probability
+                    dplyr::select(loiczid, am_sid, am_prob)%>% #add in am_prob when we want to look at probability
                      unique()
   
-  if(TRUE %in% duplicated(am_spp_map$loiczid)){
-                  am_spp_map = am_spp_map%>%
-                                dplyr::select(loiczid,am_sid)%>%
-                                  unique()}
+  if(any(duplicated(am_spp_map$loiczid))){
+    am_spp_map <- am_spp_map %>%
+      dplyr::select(loiczid, am_sid) %>% 
+      unique()
+    }
   
 ###  rasterize aquamaps map
-  r_am_spp  <-  subs(loiczid_raster, 
-                     am_spp_map[ , c('loiczid', 'am_sid')], 
-                     by = 'loiczid', 
-                     which = 'am_sid', 
-                     subsWithNA = TRUE)
+  r_am_spp <- subs(loiczid_raster, 
+                   am_spp_map[ , c('loiczid', 'am_sid')], 
+                   by = 'loiczid', 
+                   which = 'am_sid', 
+                   subsWithNA = TRUE)
   
-  spp_list[i,]$am_area = area(r_am_spp,na.rm=T)%>%
-              cellStats(.,stat='sum')
+  spp_list[i, ]$am_area <- area(r_am_spp, na.rm = TRUE)%>%
+              cellStats(., stat='sum')
   
   
 ###  get the iucn cells
   iucn_map <- spp_map %>%
     mutate(iucn_pres = iucn_area > 0)%>%
-      dplyr::select(loiczid,iucn_area,am_sid,am_prob,iucn_pres)%>%
+      dplyr::select(loiczid, iucn_area, am_sid, am_prob, iucn_pres)%>%
         unique()
   
   #TODO: incorporate the iucn_area (area of cell that species overlaps with...I think thats what it is)
@@ -132,8 +133,8 @@ for (i in 1:nrow(spp_list)){
                      which = 'iucn_pres', 
                      subsWithNA = TRUE)
 
-  spp_list[i,]$iucn_area = area(r_iucn_spp,na.rm=T)%>%
-                cellStats(.,stat='sum')
+  spp_list[i, ]$iucn_area <- area(r_iucn_spp, na.rm = TRUE)%>%
+                cellStats(., stat='sum')
   
   
 ### Get total area (IUCN and AM combined)
@@ -149,21 +150,21 @@ for (i in 1:nrow(spp_list)){
                      which = 'value', 
                      subsWithNA = TRUE)
   
-  spp_list[i,]$total_area = area(fullRange,na.rm=T)%>%
-                              cellStats(.,stat='sum')
+  spp_list[i, ]$total_area <- area(fullRange, na.rm = TRUE)%>%
+                              cellStats(., stat='sum')
   
 ### get percent overlap of map
   
    #iucn map cells
   cells_iucn<-iucn_map%>%
-              filter(iucn_pres==TRUE)%>%
+              filter(iucn_pres == TRUE)%>%
               .$loiczid
   cells_am <- am_spp_map%>%
                 filter(!is.na(am_sid))%>%
                 .$loiczid
   
-  cells_total = unique(spp_map$loiczid)
-  cells_overlap = intersect(cells_iucn,cells_am)
+  cells_total <- unique(spp_map$loiczid)
+  cells_overlap <- intersect(cells_iucn, cells_am)
   
   #I THINK THIS IS A DUPLICATE? r_iucn_spp raster created above... (JA 10/12/15)
 #    r_iucn_spp <- subs(loiczid_raster, 
@@ -173,21 +174,21 @@ for (i in 1:nrow(spp_list)){
 #                       subsWithNA = TRUE)
 #   
   #percent overlap
-  perc = (length(cells_overlap)/length(cells_total))*100
-  spp_list[i,]$perc = perc
+  perc <- (length(cells_overlap) / length(cells_total)) * 100
+  spp_list[i, ]$perc <- perc
   
-  am_only = setdiff(cells_am,cells_iucn)
-  iucn_only = setdiff(cells_iucn,cells_am)
+  am_only <- setdiff(cells_am, cells_iucn)
+  iucn_only <- setdiff(cells_iucn, cells_am)
   
-  perc_am = (length(am_only)/length(cells_total))*100
-  perc_iucn = (length(iucn_only)/length(cells_total))*100
+  perc_am <- (length(am_only) / length(cells_total)) * 100
+  perc_iucn <- (length(iucn_only) / length(cells_total)) * 100
   
-  spp_list[i,]$am_perc = perc_am
-  spp_list[i,]$iucn_perc = perc_iucn
+  spp_list[i, ]$am_perc <- perc_am
+  spp_list[i, ]$iucn_perc <- perc_iucn
 
-  spp_list[i,]$sm_range = ifelse(length(cells_am)<length(cells_iucn),'AM','IUCN') #what dataset has the smaller range
-  spp_list[i,]$sm_perc = length(cells_overlap)/min(length(cells_am),length(cells_iucn))*100 #this is the total percent of smaller range encompassed in the larger range
-cat(sprintf('%s: For species %s, %.2f%% of both datasets overlap, %.2f%% is just AquaMaps and %.2f%% is just IUCN\n',i,spp,perc,perc_am,perc_iucn))
+  spp_list[i, ]$sm_range <- ifelse(length(cells_am)<length(cells_iucn), 'AM', 'IUCN') #what dataset has the smaller range
+  spp_list[i, ]$sm_perc <- length(cells_overlap)/min(length(cells_am), length(cells_iucn)) * 100 #this is the total percent of smaller range encompassed in the larger range
+cat(sprintf('%s: For species %s, %.2f%% of both datasets overlap, %.2f%% is just AquaMaps and %.2f%% is just IUCN\n', i, spp, perc, perc_am, perc_iucn))
 
   }
 
@@ -198,33 +199,39 @@ cat(sprintf('%s: For species %s, %.2f%% of both datasets overlap, %.2f%% is just
 # at the raw data and it seems to be in the raw data... (JA on 8/31/15)
 
 #remove non IUCN species and log total area (for use later on)
-spp_list = spp_list%>%
+spp_list <- spp_list%>%
             filter(spp_group != 'hagfishes' & spp_group != 'non-homalopsids')%>%
              mutate(log_total_area = log(total_area))
 
-write.csv(spp_list,file='spp_list_w_area_percent_noextinct.csv')
+write.csv(spp_list, file='spp_list_w_area_percent_noextinct.csv')
 ```
 
 
 ###(1) Number of species in both datasets split up by group
 
-```{r,echo=F,warning=F,message=F,warning=FALSE,message=F}
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 # look at number of species per group
 
-spp_list = read.csv('spp_list_w_area_percent_noextinct.csv')
+spp_list <- read.csv('spp_list_w_area_percent_noextinct.csv')
 
-df = spp_list%>%
-      mutate(diff = iucn_area - am_area)
+spp_df <- spp_list %>%
+  mutate(diff = iucn_area - am_area)
 
-df <- within(df,spp_group <- factor(spp_group,levels=names(sort(table(spp_group),increasing=TRUE))))
+spp_df <- within(spp_df, spp_group <- factor(spp_group, levels = names(sort(table(spp_group), increasing = TRUE))))
 
-g<-ggplot(df,aes(x=spp_group))+
-  geom_bar(stat='bin')+
-  theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1))+ coord_flip()+
-  labs(x='Species Group', y='Number of Species',title='Number of species in both AquaMaps and IUCN datasets')
+barchart_sp_groups <- ggplot(spp_df, aes(x = spp_group)) +
+  geom_bar(stat = 'bin') +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) + 
+  coord_flip() +
+  labs(x = 'Species Group', 
+       y = 'Number of Species', 
+       title = 'Number of species in both AquaMaps and IUCN datasets')
 
-ggsave('figures/sp_groups_barchart.png',plot=g,width=8, height=4, dpi=100)
-print(g)
+ggsave('figures/sp_groups_barchart.png', 
+       plot = barchart_sp_groups, 
+       width = 8, height = 4, dpi = 100)
+
+print(barchart_sp_groups)
 
 ```
 
@@ -232,39 +239,62 @@ print(g)
 
 ###(2) Looking at the total difference in area (km2) for each species range map in both datasets
 
-```{r,echo=F,warning=F,message=F,warning=FALSE,message=F}
+```{r, echo = FALSE, warning = FALSE, message = FALSE, warning = FALSE, message = FALSE}
 
-dot = ggplot(df,aes(iucn_area,am_area,color=iucn_category))+ geom_point() + geom_abline()+
-      labs(x='Area (km2) from IUCN dataset',y='Area (km2) from AquaMaps dataset',title='Comparing total area of species range maps')
-ggsave('figures/CompareTotalArea_AM-IUCN_scatter.png',plot=dot,width=8, height=4, dpi=100)
-print(dot)
+scatter_am_iucn_area <- ggplot(spp_df, aes(iucn_area, am_area, color = iucn_category)) + 
+  geom_point() + 
+  geom_abline(slope = 1, intercept = 0, color = 'red') +
+  labs(x = 'Area (km2) from IUCN dataset', 
+       y = 'Area (km2) from AquaMaps dataset', 
+       title = 'Comparing total area of species range maps')
+
+ggsave('figures/CompareTotalArea_AM-IUCN_scatter.png', 
+       plot = scatter_am_iucn_area, 
+       width = 8, height = 4, dpi = 100)
+
+print(scatter_am_iucn_area)
 ```
 
 
 There are large differences so to get a better sense, here is the same comparison but with area log transformed.
-````{r echo=F,warning=F,message=F,warning=FALSE,message=F}
+``` {r echo = FALSE, warning = FALSE, message = FALSE}
 
-df = df%>%
-      mutate(am_log = log(am_area),
-             iucn_log = log(iucn_area))
+spp_df <- spp_df %>%
+  mutate(am_log = log(am_area),
+         iucn_log = log(iucn_area))
 
-all_status <- ggplot(df,aes(iucn_log,am_log,color=iucn_category)) + 
-  geom_point() + geom_abline() +
-  labs(x='IUCN Area (log transformed)', y='AquaMaps Area (log transformed)',
-        title= 'Comparing area of range maps\n (all area values are km2 log transformed)',fill='IUCN Category')
-ggsave('figures/CompareTotalAreaLOG_AM-IUCN_scatter.png',plot=all_status,width=8,height=4,dpi=100)
-print(all_status)
+scatter_am_iucn_area_log <- ggplot(spp_df, aes(iucn_log, am_log, color = iucn_category)) + 
+  geom_point() + 
+  geom_abline(slope = 1, intercept = 0, color = 'red') +
+  labs(x = 'IUCN Area (log transformed)', 
+       y = 'AquaMaps Area (log transformed)',
+       title = 'Comparing area of range maps\n (all area values are km2 log transformed)', 
+       fill = 'IUCN Category')
+
+ggsave('figures/CompareTotalAreaLOG_AM-IUCN_scatter.png', 
+       plot = scatter_am_iucn_area_log, 
+       width = 8, height = 4, dpi = 100)
+
+print(scatter_am_iucn_area_log)
 ```
 
 Data split into species groups and by IUCN category
-```{r,echo=F,warning=F,message=F}
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
-groups <- ggplot(df, aes(iucn_log, am_log,color=iucn_category)) + geom_point() +facet_wrap(~spp_group) + 
-        geom_abline() + labs(x='IUCN Area (log transformed)', y='AquaMaps Area (log transformed)',
-                             title='Comparing differences in area across species groups', fill='IUCN Category')
+scatter_am_iucn_alog_gp <- ggplot(spp_df, aes(iucn_log, am_log, color = iucn_category)) + 
+  geom_point() +
+  facet_wrap(~spp_group) + 
+  geom_abline() + 
+  labs(x = 'IUCN Area (log transformed)', 
+       y = 'AquaMaps Area (log transformed)',
+       title = 'Comparing differences in area across species groups', 
+       fill = 'IUCN Category')
         
-ggsave('figures/CompareTotalAreaLOG_AM-IUCN_spgroups_scatter.png',plot=groups,width=8,height=6,dpi=100)
-print(groups)
+ggsave('figures/CompareTotalAreaLOG_AM-IUCN_spgroups_scatter.png', 
+       plot = scatter_am_iucn_alog_gp, 
+       width = 8, height = 6, dpi = 100)
+
+print(scatter_am_iucn_alog_gp)
 ```
 ***  
 
@@ -276,58 +306,73 @@ This plot shows the total percent of a species range map that is (1) only covere
 
 Here is an example of a single species, the yellow speckled chromis (*Chromis alpha*)  
 
-```{r,echo=F,warning=FALSE,message=F}
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
-spp = 'Chromis alpha'
+spp <- 'Chromis alpha'
 map <- get_spp_map(spp)
 
- am_map <- map%>%
-            filter(!is.na(am_prob))
+am_map <- map %>%
+  filter(!is.na(am_prob))
     
+r_am_spp  <-  subs(loiczid_raster, 
+                   am_map[ , c('loiczid', 'am_prob')], 
+                   by = 'loiczid', 
+                   which = 'am_prob', 
+                   subsWithNA = TRUE)
     
-    r_am_spp  <-  subs(loiczid_raster, 
-                       am_map[ , c('loiczid', 'am_prob')], 
-                       by = 'loiczid', 
-                       which = 'am_prob', 
-                       subsWithNA = TRUE)
+r_am_spp[!is.na(r_am_spp)] <- 1
     
-    r_am_spp[!is.na(r_am_spp)]<-1
-    
-    
-    iucn_map <- map %>%
-                  mutate(iucn_pres = iucn_area > 0)
-    
-    r_iucn_spp <- subs(loiczid_raster, 
-                       iucn_map[ , c('loiczid', 'iucn_pres')], 
-                       by = 'loiczid', 
-                       which = 'iucn_pres', 
-                       subsWithNA = TRUE)
-    
+iucn_map <- map %>%
+  mutate(iucn_pres = iucn_area > 0)
 
-#plot
-    plot(r_iucn_spp,col='mediumpurple',useRaster=FALSE,axes=FALSE,box=FALSE,legend=FALSE)
-  plot(r_am_spp,col='orange',main="Yellow-speckled Chromis", useRaster=FALSE,add=T,axes=FALSE,box=FALSE,legend=FALSE)
-  map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
-  legend("topright",legend=c("AquaMaps","IUCN"),fill=c('orange','mediumpurple'))
+r_iucn_spp <- subs(loiczid_raster, 
+                   iucn_map[ , c('loiczid', 'iucn_pres')], 
+                   by = 'loiczid', 
+                   which = 'iucn_pres', 
+                   subsWithNA = TRUE)
+    
+### plot raster of species: IUCN map, AM map, world map, legend
+plot(r_iucn_spp, col = 'mediumpurple', 
+     useRaster = FALSE, 
+     axes = FALSE, 
+     box = FALSE, 
+     legend = FALSE)
+
+plot(r_am_spp, col = 'orange', 
+     main = "Yellow-speckled Chromis", 
+     useRaster = FALSE, 
+     add = TRUE, 
+     axes = FALSE, 
+     box = FALSE, 
+     legend = FALSE)
+
+map('world', col = 'gray95', 
+    fill = TRUE, 
+    border = 'gray80', 
+    add = TRUE)
+
+legend("topright", 
+       legend = c("AquaMaps", "IUCN"), 
+       fill = c('orange', 'mediumpurple'))
 
 ```
   
 
-```{r,echo=F,warning=FALSE,message=F}
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
   
+  spp_df2 <- gather(spp_list, perc.type, percent, perc, am_perc, iucn_perc) %>%
+    dplyr::select(sciname, spp_group, perc.type, percent) %>%
+    unique()
   
-  df <- gather(spp_list, perc.type, percent, perc, am_perc, iucn_perc) %>%
-          dplyr::select(sciname, spp_group, perc.type, percent) %>%
-            unique()
+  perc_c <- spp_df2 %>%
+    filter(sciname == spp)
   
-  perc_c = df %>%
-            filter(sciname == spp)
-  
-   p1 = perc_c %>% dplyr::select(percent)
+  p1 <- perc_c %>% 
+    dplyr::select(percent)
    
 ```
 
-For `r spp`, `r round(pi[1], 2)`% of the total area is covered by both IUCN and AquaMaps, `r round(p1[2,],2)`% is covered just by AquaMaps and `r round(p1[3,], 2)`% is covered just by IUCN.
+For `r spp`, `r round(pi[1], 2)`% of the total area is covered by both IUCN and AquaMaps, `r round(p1[2, ], 2)`% is covered just by AquaMaps and `r round(p1[3, ], 2)`% is covered just by IUCN.
   
 ***  
   
@@ -336,32 +381,37 @@ For `r spp`, `r round(pi[1], 2)`% of the total area is covered by both IUCN and 
 This plot shows that the majority of species range maps have only ~30% of their full map covered by both maps, and very few species have more than 50% of their two ranges (IUCN and AquaMaps) overlapping. 
 
 
-```{r,echo=F,warning=FALSE,message=F}
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
+### look at density plot
 
-#look at density plot
+overlap <- spp_df2 %>%
+  dplyr::filter(perc.type == 'perc')
 
-overlap = df%>%dplyr::filter(perc.type=='perc')
-  
-all<-ggplot(overlap,aes(percent))+
-    geom_histogram(aes(y=..count../1926),binwidth=5,alpha=.8)+
-    labs(x='% total range that is shared b/w both datasets', y='Proportion of Total Species')
+hist_overlap_pct <- ggplot(overlap, aes(percent)) +
+  geom_histogram(aes(y = ..count../1926), binwidth = 5, alpha = .8) +
+  labs(x = '% total range that is shared b/w both datasets', 
+       y = 'Proportion of Total Species')
+
 ggsave('figures/Overlap-PercTotalRange.png')
-print(all)
+
+print(hist_overlap_pct)
 ```
 
 
 
 Split up by species - not sure if this is useful or not
-```{r,echo=F, message = F, warning = F}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 
-sp <- ggplot(overlap,aes(percent))+geom_histogram(binwidth=5,alpha=.8) +
+hist_overlap_pct_gp <- ggplot(overlap, aes(percent)) + 
+  geom_histogram(binwidth = 5, alpha = .8) +
   facet_wrap(~spp_group) +
-  labs(x='Percent of total range that is shared between both datasets', y='Number of Total Species')+ 
-       theme(strip.text.x = element_text(size = 8))
+  labs(x = 'Percent of total range that is shared between both datasets', 
+       y = 'Number of Total Species') + 
+  theme(strip.text.x = element_text(size = 8))
 
 ggsave('figures/Overlap-PercTotalRange_spGroups.png')
-print(sp)
+print(hist_overlap_pct_gp)
 
 ```
 
@@ -370,78 +420,84 @@ print(sp)
 
 For each range 
 
-```{r pct small within large, echo=F, warning= F}
+```{r pct small within large, echo = FALSE, warning = FALSE}
 
-d <- spp_list %>%
+spp_df4 <- spp_list %>%
   dplyr::select(sciname, sm_perc, sm_range) %>%
-      unique()
+  unique()
       
 
-sm_plot <- ggplot(d, aes(sm_perc, fill = sm_range)) + 
-       geom_histogram(aes(y=..count../sum(..count..)),binwidth = 4, alpha = .8) +
-        scale_fill_discrete(name = "Dataset with smaller range", labels = c("AquaMaps", "IUCN")) + 
-        labs(x = 'Percent of smaller range that falls within the larger range', y = 'Proportion of all species (n=1962)')
-ggsave('figures/PercSmallRangeInLarger.png',width=6,height=4)
+sm_plot <- ggplot(spp_df4, aes(sm_perc, fill = sm_range)) + 
+  geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 4, alpha = .8) +
+  scale_fill_discrete(name = "Dataset with smaller range", labels = c("AquaMaps", "IUCN")) + 
+  labs(x = 'Percent of smaller range that falls within the larger range', 
+       y = 'Proportion of all species (n = 1962)')
+
+ggsave('figures/PercSmallRangeInLarger.png', width = 6, height = 4)
 
 print(sm_plot)
 
 ```
 
 Exploring possible correlation between total species range area and percent overlap of smaller range within the larger:
-``` {r pct overlap vs area, echo = FALSE, warning = F, message=F}
+``` {r pct overlap vs area, echo = FALSE, warning = FALSE, message = FALSE}
 
-reg <- ggplot(spp_list, aes(sm_perc,total_area, color = sm_range)) + 
+reg <- ggplot(spp_list, aes(sm_perc, total_area, color = sm_range)) + 
   geom_point() + 
   geom_abline() + 
-  labs(y = 'Total Area (km2)', x = 'Percent overlap smaller range in larger', 
+  labs(y = 'Total Area (km2)', 
+       x = 'Percent overlap smaller range in larger', 
        title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
 
-ggsave('figures/AreavsPercOverlap.png',width=6,height=4)
+ggsave('figures/AreavsPercOverlap.png', width = 6, height = 4)
 
 print(reg)
 
 ```
 
-``` {r, echo = FALSE, warning = F, message=F}
+``` {r, echo = FALSE, warning = FALSE, message = FALSE}
   
 
 # Regression
 
 
 lm_eqn <- function(df){
-    m  <- lm(total_area~sm_perc, spp_list)
-    eq <- substitute(italic('y') == a + b %.% italic('x')*","~~italic(r)^2~"="~r2, 
-          list(a  = format(coef(m)[1], digits = 2), 
-               b  = format(coef(m)[2], digits = 2), 
-               r2 = format(summary(m)$r.squared, digits = 3)))
-    as.character(as.expression(eq))             
+  m  <- lm(total_area~sm_perc, spp_list)
+  eq <- substitute(italic('y') == a + b %.% italic('x')*","~~italic(r)^2~"="~r2, 
+        list(a  = format(coef(m)[1], digits = 2), 
+             b  = format(coef(m)[2], digits = 2), 
+             r2 = format(summary(m)$r.squared, digits = 3)))
+  as.character(as.expression(eq))             
 }
 
-p1 <- reg + geom_text(x = 40, y = 300000000, label = lm_eqn(spp_list), parse = TRUE)
+p1 <- reg + 
+  geom_text(x = 40, y = 300000000, label = lm_eqn(spp_list), parse = TRUE)
 
 ggsave('figures/CorrelationAreavsPercOverlap.png')
 
 print(p1)
 
-summary(lm(total_area~sm_perc,spp_list))
+summary(lm(total_area~sm_perc, spp_list))
 ```
   
 ***  
 
 
 Perent coverage as function of area, clipping to area below 100,000,000 km^2:
-``` {r, echo = F, warning = F, message = F}
+``` {r, echo = FALSE, warning = FALSE, message = FALSE}
 # remove all area greater than 100000000
 
-l <- spp_list %>% filter(total_area < 100000000)
+l <- spp_list %>% 
+  filter(total_area < 100000000)
 
 
 r <- ggplot(l, aes(total_area, sm_perc, color = sm_range)) + 
   geom_point() + 
-  labs(x = 'Total Area (km2)', y = 'Percent overlap smaller range in larger', 
+  labs(x = 'Total Area (km2)', 
+       y = 'Percent overlap smaller range in larger', 
        title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
 
-ggsave('figures/AreavsPercOverlap_2.png',width=6,height=4)
+ggsave('figures/AreavsPercOverlap_2.png', width = 6, height = 4)
 
 
 print(r)
@@ -449,21 +505,22 @@ print(r)
 ```
 
 Percent coverage as a function of log(area)
-``` {r, echo = F, warning = F, message = F}
+``` {r, echo = FALSE, warning = FALSE, message = FALSE}
 # Log transform area
 
 logA_vs_pct <- ggplot(spp_list, aes(log_total_area, sm_perc, color = sm_range)) + 
   geom_point() + 
-  labs(x = 'Log(total Area)', y = 'Percent overlap smaller range in larger', 
+  labs(x = 'Log(total Area)', 
+       y = 'Percent overlap smaller range in larger', 
        title = 'Size of species range (log) vs. percent overlap of \nsmaller range with larger')
 
-ggsave('figures/AreavsPercOverlap_log.png',width=6,height=4)
+ggsave('figures/AreavsPercOverlap_log.png', width=6, height=4)
 
 print(logA_vs_pct)
 ```
 
 
-``` {r examine regressions, echo = FALSE, warning = F}
+``` {r examine regressions, echo = FALSE, warning = FALSE}
 
 A_mdl      <- lm(total_area ~ sm_perc, spp_list)
 #                Estimate Std. Error t value Pr(>|t|)    
@@ -486,18 +543,18 @@ logA_mdl   <- lm(log_total_area ~ sm_perc, spp_list)
 ***  
 
 ###(5) Examining data broken into quartiles to see if smaller patterns emerge
-``` {r examine quartiles, echo = FALSE, warning = F}
+``` {r examine quartiles, echo = FALSE, warning = FALSE}
 
 
 summary(spp_list$total_area)
 #      Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
 #     55760   3032000  10790000  18500000  22670000 372100000
 
-qtiles <- c(quantile(spp_list$total_area, 0.0,na.rm=T),
-            quantile(spp_list$total_area, .25,na.rm=T),
-            quantile(spp_list$total_area, .50,na.rm=T),
-            quantile(spp_list$total_area, .75,na.rm=T),
-            quantile(spp_list$total_area, 1.0,na.rm=T))
+qtiles <- c(quantile(spp_list$total_area, 0.0, na.rm = TRUE),
+            quantile(spp_list$total_area, .25, na.rm = TRUE),
+            quantile(spp_list$total_area, .50, na.rm = TRUE),
+            quantile(spp_list$total_area, .75, na.rm = TRUE),
+            quantile(spp_list$total_area, 1.0, na.rm = TRUE))
 
 qtile_mdl <- list()
 for (i in 1:4) {
@@ -506,11 +563,13 @@ for (i in 1:4) {
   qtile_mdl[[i]] <- lm(total_area ~ sm_perc, area_clip)
   
   qtile_plot <- ggplot(area_clip, aes(total_area, sm_perc, color = sm_range)) + 
-  geom_point() + 
-  labs(x = 'Total Area (km2)', y = 'Percent overlap smaller range in larger', 
-       title = sprintf('Size of species range (quartile %s) vs. percent overlap of \nsmaller range with larger', i))
-ggsave(paste0('figures/AreavsOverlap_quantile_',i,'.png'),width=6,height=4)
-print(qtile_plot)
+    geom_point() + 
+    labs(x = 'Total Area (km2)', 
+         y = 'Percent overlap smaller range in larger', 
+         title = sprintf('Size of species range (quartile %s) vs. percent overlap of \nsmaller range with larger', i))
+
+  ggsave(paste0('figures/AreavsOverlap_quantile_', i, '.png'), width = 6, height = 4)
+  print(qtile_plot)
 }
 # First quartile regression:
 #                 Estimate Std. Error t value Pr(>|t|)    
@@ -544,44 +603,49 @@ print(qtile_plot)
 
 ###(6) Looking at how many and what type (threat category) of species we are losing by setting a threshold of 0.4 on the aquamaps species.
 
-```{r aquamaps probabilities, warning=F,message=F,cache.lazy=FALSE,cache=T,verbose=F,results=F,echo=F,include=F}
+```{r aquamaps probabilities, warning = FALSE, message = FALSE, cache.lazy = FALSE, cache = TRUE, verbose = FALSE, results = FALSE, echo = FALSE, include = FALSE}
 
 # get spp_cells raw data for aquamaps
 
 
-dir_N = c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
-          'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
+           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
 
-dir_aquamaps = file.path(dir_N,"git-annex/globalprep/SPP_ICO/raw/aquamaps_2014")
+dir_aquamaps <- file.path(dir_N, "git-annex/globalprep/SPP_ICO/raw/aquamaps_2014")
 
-spp_cells = fread(input=file.path(dir_aquamaps,"tables/ohi_hcaf_species_native.csv"),verbose=F,header=T,
-                  colClasses=c('NULL','character',NA,'numeric','NULL','NULL')) #1 min 49 sec
+spp_cells <- fread(input = file.path(dir_aquamaps, "tables/ohi_hcaf_species_native.csv"), verbose = FALSE, header = TRUE, 
+                  colClasses = c('NULL', 'character', NA, 'numeric', 'NULL', 'NULL')) #1 min 49 sec
 
-setnames(spp_cells,c('SpeciesID','CsquareCode','probability'),c("species_id","csquare_code","probability"))
+setnames(spp_cells, c('SpeciesID', 'CsquareCode', 'probability'), c("species_id", "csquare_code", "probability"))
 
-spp_cells = as.data.frame(spp_cells)
+spp_cells <- as.data.frame(spp_cells)
 
 
-spp       = fread(input=file.path(dir_aquamaps,"tables/ohi_speciesoccursum.csv"),verbose=F,header=T)%>%
-              mutate(scientific = paste(Genus,Species,sep=" "))
-spp = as.data.frame(spp)
+spp       <- fread(input = file.path(dir_aquamaps, "tables/ohi_speciesoccursum.csv"), 
+                  verbose = FALSE, header = TRUE) %>%
+              mutate(scientific = paste(Genus, Species, sep = " "))
+spp <- as.data.frame(spp)
 
 ```
 
-```{r,warning=F,message=F, echo=F}
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
 
-#create dataframe that gives me all species, their total number of cells, total number of cells >=0.4 prob, differnece between the two and threat
-df = spp_cells%>%
-      group_by(species_id)%>%
-        summarize(cells_0.4 = sum(probability>=0.4),
-                  cells_t = sum(probability>=0))%>%
-          mutate(prop = cells_0.4/cells_t)%>%
-            left_join(spp,by=c('species_id'='SPECIESID'))%>%
-          select(scientific,species_id,cells_0.4,cells_t,prop,iucn_code)
+#create dataframe that gives me all species, their total number of cells, total number of cells >= 0.4 prob, differnece between the two and threat
+spp_df3 <- spp_cells %>%
+  group_by(species_id) %>%
+  summarize(cells_0.4 = sum(probability >= 0.4),
+            cells_t = sum(probability >= 0)) %>%
+  mutate(prop = cells_0.4 / cells_t) %>%
+  left_join(spp, by = c('species_id' = 'SPECIESID')) %>%
+  select(scientific, species_id, cells_0.4, cells_t, prop, iucn_code)
 
 
-hist <- ggplot(df,aes(prop,fill=iucn_code))+geom_histogram(aes(y=..count../sum(..count..)),binwidth = 0.05, alpha = .7)+labs(x='Proportion of range area included when selecting a threshold of 0.4',y='Proportion of all aquamaps species (17,348 total)')
-ggsave('figures/AMThreshold.png',width=6,height=4)
+hist <- ggplot(spp_df3, aes(prop, fill = iucn_code)) + 
+  geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
+  labs(x = 'Proportion of range area included when selecting a threshold of 0.4', y = 'Proportion of all aquamaps species (17,348 total)')
+
+ggsave('figures/AMThreshold.png', width = 6, height = 4)
+
 print(hist)
 
 ```
