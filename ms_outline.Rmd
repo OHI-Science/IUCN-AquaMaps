@@ -8,19 +8,28 @@ output:
     highlight: "haddock" 
 ---
 
-##Main message:
+##Main message
 
-<<<<<<< HEAD
 Understanding the differences in marine species range maps from IUCN and AquaMaps, and the implications of using one or both.
-=======
-A comparison of two open source, spatial datasets and the implications of making decisions about what data to use as applied to the Ocean Health Index.
->>>>>>> 040d66807538764f5e3dbe3c85d67dc4faee0b81
+
 
 ##Working Abstract  
 
-Species range maps are integral for spatial analyses across multiple disciplines including geography, conservation, ecology and policy. Two main sources for marine species are the IUCN and AquaMaps. These two datasets differ in development and outcomes, and therefore it is pertinent to understand the implications of using one over the other. AquaMaps uses a computer model based on preferential environmental parameters to predict species locations and probability of occurrence. IUCN uses expert insight to draw polygons around known locations of marine species. Approximately 1,900 species are found in both datasets. This comparative analysis draws attention to the similarities and differences between the two datasets, and highlights the implications of using one or the other in the context of the Ocean Health Index.
+- spatial distribution efforts range from modeled to expert input
+- help identify hotspots for global biodiversity 
+- priorities for conservation
+- marine spatial planning
+- assessing biodiversity 
+- monitor impacts (human, natural) overtime
+- 
+
+Species range maps are useful in conservation and management, as well as understanding the spatial distribution of movement and overlap of species in different habitats globally. Marine species prove more difficult to map based on their inherent nature of being difficult to observe and track. Two main sources for marine species are the IUCN and AquaMaps. These two datasets differ in methodology and final products, yet the differences between the two are not well documented. AquaMaps uses a computer model based on preferential environmental parameters to predict species locations and probability of occurrence, while the IUCN uses expert insight to assign spatial boundaries around known locations of marine species. Approximately 1,900 species are found in both datasets and there are very large differences between these maps. Depending on data usage, choosing one of these datasets over the other can lead to potentially large differences in results as exemplified here by the Ocean Health Index as an example.
 
 *** 
+
+##Introduction
+
+There have been multiple efforts to map marine species based on both observational data and known life history and habitat preferences. AquaMaps and IUCN are two of these efforts.
 
 ##Section One: Understanding each dataset separately  
 
@@ -30,6 +39,11 @@ Species range maps are integral for spatial analyses across multiple disciplines
 
 
 ###IUCN
+
+The IUCN conducts global assessments for species [detail assessment process - one paragraph].
+
+Spatial designation of the species distribution is left to the experts with strict guidance for how to assign the designation. Using known occurrence data, experts depict the species distribution by polygons using a systematic methodology laid out by the [IUCN](http://www.amphibians.org/wp-content/uploads/2013/09/Red-List-Mapping-standards-ARLA-Jan2014-web-version.pdf). These maps are meant to act as 'limits of distibution' and should be interpreted as the species 'probably occurs within this polygon, but it does not mean that it is distributed equally within that polygon or occurs everywhere within that polygon'.
+
 
 **Data Type**  
 Shapefiles for individual species. Spatial files include subpopulation information, presence (extinct/extant etc.) and seasonality information (breeding/migration/origin etc.).  
@@ -50,7 +64,7 @@ AquaMaps (Kirschner et al. 2013) was developed to create species range maps base
 The main differences between these two sources of marine species ranges is how the maps are developed, and their output. When a species range is developed during an IUCN assessment, experts determine the boundaries of the species range based on their expertise which could be using known occurrences, habitat preferences, suitable habitat, or other knowledge. The range is depicted as a polygon where the boundaries are *"meant to communicate that the species probably occurs within this polygon, but it does not mean that it is distributed equally within the polygon or occurs everywhere within the polygon."*
 
 
-These two clearly differ in one aspect - AquaMaps provides higher resolution information about where species do and do not occur globally whereas the IUCN range maps are unable to provide specific information about where within a polygon a species occurs. This is understandable given the mobile nature of many marine species and the difficulty in observing and tracking known occurrences.
+These two differ in spatial resolution - AquaMaps provides higher resolution information about where species do and do not occur globally whereas the IUCN range maps are unable to provide specific information about where within a polygon a species occurs. This is understandable given the mobile nature of many marine species and the difficulty in observing and tracking known occurrences.
 
 
 
@@ -62,9 +76,19 @@ There are inherent issues with AquaMaps. It can't be expected to accurately pred
 ***  
 ##Section Two: Comparison of IUCN and AquaMaps
 
+To compare these two datasets for all species found in each (1920), the IUCN maps were rasterized to the same cell resolution as AquaMaps, 0.5 degrees. For every grid cell where the polygon overlapped, a value of 1 was assigned. To allow for comparison, the probability of occurrence values in the AquaMaps data were ignored and all cells where there was a value greater than 0 were assigned a 1. This way we have comparable maps for total species range.
+
+Using predifined species groups by the IUCN, it is clear to see that tropical species - specifically wrasses, corals, blennies and groupers, make up the majority of species found in both. This is driven more by the IUCN dataset since the number of species with spatial data is directly attributed to the species that have assessments.
+
 ![](./figures/sp_groups_barchart.png)
+
+For each species map, the total area was calculated for all cells where the species was determined as 'possibly present' by both datasets. Due to large areas and differences, the total area per species was log transformed and then compared to the range map of the same species between datasets. There are differences, mainly driven by differeneces in the wrasses and combtooth blennies, but this could be due to there being more species in both of those species groups.
+
 ![](./figures/CompareTotalAreaLOG_AM-IUCN_scatter.png)
 ![](./figures/CompareTotalAreaLOG_AM-IUCN_spgroups_scatter.png)
+
+For each species range map, the total area was calculated for all cells that were included in either species distributions, regardless of source. The number of cells that were found in both 
+
 ![](./figures/Overlap-PercTotalRange.png)
 ![](./figures/Overlap-PercTotalRange_spGroups.png)
 ![](./figures/PercSmallRangeInLarger.png)
