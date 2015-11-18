@@ -58,9 +58,7 @@ ggtheme_plot <- theme(axis.ticks = element_blank(),
 
 ### theme for species range maps - based on generic plot theme
 ggtheme_map <- ggtheme_plot +
-  theme(axis.text = element_blank()) +       
-  scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
-  scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2))
+  theme(axis.text = element_blank())
 
 
 ```
@@ -126,6 +124,8 @@ plot_rangemap <- function(spp) {
     geom_raster(aes(fill = presence), alpha = .5) +
     scale_fill_manual(values = c('iucn' = 'blue', 'am' = 'red', 'both' = 'mediumorchid')) +
     borders('world', color='gray40', fill='gray45', size = .1) +  # create a layer of borders
+    scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
+    scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2)) +
     labs(title = spp, x = NULL, y = NULL) 
 }
 
@@ -502,7 +502,7 @@ scatter_area_vs_overlap <- scatter_area_vs_overlap +
 
 print(scatter_area_vs_overlap)
 
-summary(lm(total_area ~ sm_perc, spp_list))
+# summary(lm(total_area ~ sm_perc, spp_list))
 
 ggsave('figures/AreavsPercOverlap.png', width = 6, height = 4)
 
@@ -542,11 +542,19 @@ lm_eqn2 <- function(df){
 
 scatter_arearatio_vs_overlap <- ggplot(spp_list, aes(x = area_ratio, y = sm_perc, color = log_total_area)) + 
   ggtheme_plot + 
+  ### color the quadrant backgrounds:
+    annotate("rect", xmin = area_ratio_quartiles[2],  xmax = 100, 
+                     ymin = pct_overlap_quartiles[2], ymax = 100, alpha = .3, fill= "green4")  + 
+    annotate("rect", xmin = area_ratio_quartiles[2],  xmax =   0, 
+                     ymin = pct_overlap_quartiles[2], ymax = 100, alpha = .3, fill= "greenyellow") + 
+    annotate("rect", xmin = area_ratio_quartiles[2],  xmax = 100, 
+                     ymin = pct_overlap_quartiles[2], ymax =   0, alpha = .3, fill= "orange") + 
+    annotate("rect", xmin = area_ratio_quartiles[2],  xmax =   0, 
+                     ymin = pct_overlap_quartiles[2], ymax =   0, alpha = .3, fill= "orangered2") + 
   geom_point() + 
-  geom_abline() + 
-  geom_vline(x = area_ratio_quartiles,
+  geom_vline(x = area_ratio_quartiles[c(1, 3)],
              color = 'grey50', linetype = 'dashed') +
-  geom_hline(y = pct_overlap_quartiles,
+  geom_hline(y = pct_overlap_quartiles[c(1, 3)],
              color = 'grey50', linetype = 'dashed') +
   geom_point(data = spp_list_label, color = 'tomato2') + 
   geom_text(data = spp_list_label, 
@@ -561,42 +569,41 @@ scatter_arearatio_vs_overlap <- ggplot(spp_list, aes(x = area_ratio, y = sm_perc
        title = 'Ratio of species range vs. percent overlap of \nsmaller range with larger')
 
 scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap + 
-  geom_text(x = 15, y = 1, label = lm_eqn2(spp_list), parse = TRUE, color = 'tomato2')
+  geom_text(x = 40, y = 5, label = lm_eqn2(spp_list), parse = TRUE, color = 'tomato2')
 
 ggsave('figures/AreaRatiovsPercOverlap.png', width = 6, height = 4)
 
 print(scatter_arearatio_vs_overlap)
 
-scatter_arearatio_vs_overlap2 <- ggplot(spp_list, aes(x = area_ratio, y = sm_perc, color = sm_range)) + 
-  ggtheme_plot + 
-  geom_point() + 
-  geom_abline() + 
-  geom_vline(x = area_ratio_quartiles,
-             color = 'grey50', linetype = 'dashed') +
-  geom_hline(y = pct_overlap_quartiles,
-             color = 'grey50', linetype = 'dashed') +
-  geom_point(data = spp_list_label, color = 'grey30') + 
-  geom_text(data = spp_list_label, 
-            aes(label = sciname_label), 
-            color = 'grey30',
-            fontface = 'bold.italic',
-            size = 2,
-            hjust = .25,
-            vjust = 1.5) +
-  labs(x = 'Range area ratio (smaller:larger) * 100%', 
-       y = 'Percent overlap smaller range in larger', 
-       title = 'Ratio of species range vs. percent overlap of \nsmaller range with larger')
 
-scatter_arearatio_vs_overlap2 <- scatter_arearatio_vs_overlap2 + 
-  geom_text(x = 15, y = 1, label = lm_eqn2(spp_list), parse = TRUE, color = 'grey30')
+# scatter_arearatio_vs_overlap2 <- ggplot(spp_list, aes(x = area_ratio, y = sm_perc, color = sm_range)) + 
+#   ggtheme_plot + 
+#   geom_point() + 
+#   geom_vline(x = area_ratio_quartiles,
+#              color = 'grey50', linetype = 'dashed') +
+#   geom_hline(y = pct_overlap_quartiles,
+#              color = 'grey50', linetype = 'dashed') +
+#   geom_point(data = spp_list_label, color = 'grey30') + 
+#   geom_text(data = spp_list_label, 
+#             aes(label = sciname_label), 
+#             color = 'grey30',
+#             fontface = 'bold.italic',
+#             size = 2,
+#             hjust = .25,
+#             vjust = 1.5) +
+#   labs(x = 'Range area ratio (smaller:larger) * 100%', 
+#        y = 'Percent overlap smaller range in larger', 
+#        title = 'Ratio of species range vs. percent overlap of \nsmaller range with larger')
+# 
+# scatter_arearatio_vs_overlap2 <- scatter_arearatio_vs_overlap2 + 
+#   geom_text(x = 40, y = 5, label = lm_eqn2(spp_list), parse = TRUE, color = 'grey30')
+# 
+# ggsave('figures/AreaRatiovsPercOverlap2.png', 
+#        width = 6, height = 4)
+# 
+# print(scatter_arearatio_vs_overlap2)
 
-ggsave('figures/AreaRatiovsPercOverlap2.png', 
-       width = 6, height = 4)
-
-print(scatter_arearatio_vs_overlap2)
-
-
-summary(lm(area_ratio ~ sm_perc, spp_list))
+# summary(lm(area_ratio ~ sm_perc, spp_list))
 
 ```
 
@@ -646,7 +653,8 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
                                   transform(spp_group = reorder(spp_group, pct_q1)), 
                                 aes(x = spp_group, fill = quad, weight = pct_quad)) +
   ggtheme_plot + 
-  geom_bar(stat = 'bin') +
+  geom_bar(stat = 'bin', alpha = .5) +
+  scale_fill_manual(values = c('q1' = 'green4', 'q2' = 'greenyellow', 'q3' = 'orange', 'q4' = 'orangered2')) +
   geom_text(aes(label = sprintf('n = %s', n_spp), y = .05), hjust = 0) +
   coord_flip() +
   labs(x = 'Species Group', 
@@ -675,38 +683,11 @@ for (i in 1:length(spp_quads)) { # i = 1
 }
 
 ```
-  
 
-
-``` {r, echo = FALSE, warning = FALSE, message = FALSE}
-  
-
-# Regression
-
-
-lm_eqn <- function(df){
-  m  <- lm(total_area ~ sm_perc, spp_list)
-  eq <- substitute(italic('y') == a + b %.% italic('x')*","~~italic(r)^2~"="~r2, 
-        list(a  = format(coef(m)[1], digits = 2), 
-             b  = format(coef(m)[2], digits = 2), 
-             r2 = format(summary(m)$r.squared, digits = 3)))
-  as.character(as.expression(eq))             
-}
-
-scatter_area_vs_overlap <- scatter_area_vs_overlap + 
-  geom_text(x = 40, y = 300000000, label = lm_eqn(spp_list), parse = TRUE)
-
-ggsave('figures/CorrelationAreavsPercOverlap.png')
-
-print(scatter_area_vs_overlap)
-
-summary(lm(total_area ~ sm_perc, spp_list))
-```
-  
 ***  
 
+Percent coverage as function of area, clipping to area below 100,000,000 km^2^:
 
-Percent coverage as function of area, clipping to area below 100,000,000 km^2:
 ``` {r, echo = FALSE, warning = FALSE, message = FALSE}
 # remove all area greater than 100000000
 
@@ -862,23 +843,53 @@ spp_df3 <- spp_cells %>%
   group_by(species_id) %>%
   summarize(cells_0.4 = sum(probability >= 0.4),
             cells_t = sum(probability >= 0)) %>%
-  mutate(prop = cells_0.4 / cells_t) %>%
-  left_join(spp %>%
-#              filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')), 
-              filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX')), 
-            by = c('species_id' = 'SPECIESID')) %>%
+  left_join(spp, by = c('species_id' = 'SPECIESID')) %>%
+  mutate(prop = cells_0.4 / cells_t,
+         iucn_code = ifelse(is.na(iucn_code), 'NE', iucn_code)) %>%
+  filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')) %>%
+  # filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX')) %>%
   select(sciname, species_id, cells_0.4, cells_t, prop, iucn_code)
 
+iucn_levels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')
+spp_df3 <- spp_df3 %>% 
+  transform(iucn_code = factor(iucn_code, levels = iucn_levels))
 
 hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) + 
   ggtheme_plot + 
   geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
+  scale_fill_manual(values = c('LC' = 'green4', 
+                               'NT' = 'greenyellow', 
+                               'VU' = 'orange', 
+                               'EN' = 'orangered2', 
+                               'CR' = 'red4',
+                               'DD' = 'grey60',
+                               'NE' = 'grey70')) +
   labs(x = 'Proportion of range area included when selecting a threshold of 0.4', 
-       y = 'Proportion of all aquamaps species (17,348 total)')
+       y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3)))
 
 ggsave('figures/AMThreshold.png', width = 6, height = 4)
 
 print(hist_area_vs_threshold)
+
+spp_df3a <- spp_df3 %>% 
+  filter(!iucn_code %in% c('DD', 'NE'))
+
+hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) + 
+  ggtheme_plot + 
+  geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
+  scale_fill_manual(values = c('LC' = 'green4', 
+                               'NT' = 'greenyellow', 
+                               'VU' = 'orange', 
+                               'EN' = 'orangered2', 
+                               'CR' = 'red4',
+                               'DD' = 'grey60',
+                               'NE' = 'grey70')) +
+  labs(x = 'Proportion of range area included when selecting a threshold of 0.4', 
+       y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3a)))
+
+ggsave('figures/AMThreshold2.png', width = 6, height = 4)
+
+print(hist_area_vs_threshold2)
 
 ```
 
