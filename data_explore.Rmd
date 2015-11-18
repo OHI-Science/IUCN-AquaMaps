@@ -58,7 +58,10 @@ ggtheme_plot <- theme(axis.ticks = element_blank(),
 
 ### theme for species range maps - based on generic plot theme
 ggtheme_map <- ggtheme_plot +
-  theme(axis.text = element_blank())
+  theme(axis.text = element_blank()) +       
+  scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
+  scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2))
+
 
 ```
 
@@ -301,7 +304,7 @@ print(barchart_sp_groups)
 
 ***  
 
-###(2) Looking at the total difference in area (km^2) for each species range map in both datasets
+###(2) Looking at the total difference in area (km^2^) for each species range map in both datasets
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -404,7 +407,7 @@ For `r spp`, `r round(pi[1], 2)`% of the total area is covered by both IUCN and 
   
 ***  
   
-####Now looking across all species, here is the breakdown of how much overlap there is between the two datasets  
+#### Now looking across all species, here is the breakdown of how much overlap there is between the two datasets  
   
 This plot shows that the majority of species range maps have only ~30% of their full map covered by both maps, and very few species have more than 50% of their two ranges (IUCN and AquaMaps) overlapping. 
 
@@ -430,7 +433,8 @@ print(hist_overlap_pct)
 
 
 
-Split up by species - not sure if this is useful or not
+Split up by species groups
+
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 
 hist_overlap_pct_gp <- ggplot(overlap, aes(percent)) + 
@@ -484,9 +488,24 @@ scatter_area_vs_overlap <- ggplot(spp_list, aes(sm_perc, total_area, color = sm_
        x = 'Percent overlap smaller range in larger', 
        title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
 
-ggsave('figures/AreavsPercOverlap.png', width = 6, height = 4)
+lm_eqn <- function(df){
+  m  <- lm(total_area ~ sm_perc, spp_list)
+  eq <- substitute(italic('y') == a + b %.% italic('x')*","~~italic(r)^2~"="~r2, 
+        list(a  = format(coef(m)[1], digits = 2), 
+             b  = format(coef(m)[2], digits = 2), 
+             r2 = format(summary(m)$r.squared, digits = 3)))
+  as.character(as.expression(eq))             
+}
+
+scatter_area_vs_overlap <- scatter_area_vs_overlap + 
+  geom_text(x = 40, y = 300000000, label = lm_eqn(spp_list), parse = TRUE)
 
 print(scatter_area_vs_overlap)
+
+summary(lm(total_area ~ sm_perc, spp_list))
+
+ggsave('figures/AreavsPercOverlap.png', width = 6, height = 4)
+
 
 ```
 
@@ -512,6 +531,15 @@ spp_list_label <- spp_list %>%
   mutate(sciname_label = paste(str_sub(g, 1, 1), '. ', s, sep = '')) %>%
   select(-g, -s)
 
+lm_eqn2 <- function(df){
+  m  <- lm(area_ratio ~ sm_perc, spp_list)
+  eq <- substitute(italic('y') == a + b %.% italic('x')*","~~italic(r)^2~"="~r2, 
+        list(a  = format(coef(m)[1], digits = 2), 
+             b  = format(coef(m)[2], digits = 2), 
+             r2 = format(summary(m)$r.squared, digits = 3)))
+  as.character(as.expression(eq))             
+}
+
 scatter_arearatio_vs_overlap <- ggplot(spp_list, aes(x = area_ratio, y = sm_perc, color = log_total_area)) + 
   ggtheme_plot + 
   geom_point() + 
@@ -531,6 +559,9 @@ scatter_arearatio_vs_overlap <- ggplot(spp_list, aes(x = area_ratio, y = sm_perc
   labs(x = 'Range area ratio (smaller:larger) * 100%', 
        y = 'Percent overlap smaller range in larger', 
        title = 'Ratio of species range vs. percent overlap of \nsmaller range with larger')
+
+scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap + 
+  geom_text(x = 15, y = 1, label = lm_eqn2(spp_list), parse = TRUE, color = 'tomato2')
 
 ggsave('figures/AreaRatiovsPercOverlap.png', width = 6, height = 4)
 
@@ -556,14 +587,20 @@ scatter_arearatio_vs_overlap2 <- ggplot(spp_list, aes(x = area_ratio, y = sm_per
        y = 'Percent overlap smaller range in larger', 
        title = 'Ratio of species range vs. percent overlap of \nsmaller range with larger')
 
-ggsave('figures/AreaRatiovsPercOverlap2.png', width = 6, height = 4)
+scatter_arearatio_vs_overlap2 <- scatter_arearatio_vs_overlap2 + 
+  geom_text(x = 15, y = 1, label = lm_eqn2(spp_list), parse = TRUE, color = 'grey30')
+
+ggsave('figures/AreaRatiovsPercOverlap2.png', 
+       width = 6, height = 4)
 
 print(scatter_arearatio_vs_overlap2)
 
 
+summary(lm(area_ratio ~ sm_perc, spp_list))
+
 ```
 
-``` {r examine_spp_gp_quartiles}
+``` {r examine_spp_gp_quartiles, echo = FALSE}
 
 spp_list1 <- spp_list %>%
   group_by(spp_group) %>%
@@ -616,6 +653,10 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
        y = 'Relative number of species per quadrant', 
        title = 'Species group breakdown by quadrant')
 
+print(barchart_spp_gp_quads)
+ggsave(plot = barchart_spp_gp_quads,
+       filename = 'figures/barchart_spp_gp_quads.png',
+       width = 6, height = 4)
 
 ```
 
