@@ -250,6 +250,11 @@ spp_names_q1 <- spp_list_q1$sciname[seq(1, y, y/x)]
 
 for (spp in spp_names_q1) { # i = 1
   spp_plot <- plot_rangemap(spp)
+  spp_solo <- spp_list %>% filter(sciname == spp)
+  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
+  spp_plot <- spp_plot +
+    labs(title = sprintf('%s, quadrant 1: %s', spp, text_tag))
+
   print(spp_plot)
   
   ggsave(filename = file.path(dir_fig, sprintf('rangemap_q1_%s.png', str_replace(tolower(spp), ' ', '_'))),
@@ -269,6 +274,10 @@ spp_names_q2 <- spp_list_q2$sciname[seq(1, y, y/x)]
 
 for (spp in spp_names_q2) { # i = 1
   spp_plot <- plot_rangemap(spp)
+  spp_solo <- spp_list %>% filter(sciname == spp)
+  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
+  spp_plot <- spp_plot +
+    labs(title = sprintf('%s, quadrant 2: %s', spp, text_tag))
   print(spp_plot)
   
   ggsave(filename = file.path(dir_fig, sprintf('rangemap_q2_%s.png', str_replace(tolower(spp), ' ', '_'))),
@@ -289,6 +298,10 @@ spp_names_q3 <- spp_list_q3$sciname[seq(1, y, y/x)]
 
 for (spp in spp_names_q3) { # i = 1
   spp_plot <- plot_rangemap(spp)
+  spp_solo <- spp_list %>% filter(sciname == spp)
+  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
+  spp_plot <- spp_plot +
+    labs(title = sprintf('%s, quadrant 3: %s', spp, text_tag))
   print(spp_plot)
   
   ggsave(filename = file.path(dir_fig, sprintf('rangemap_q3_%s.png', str_replace(tolower(spp), ' ', '_'))),
@@ -309,6 +322,10 @@ spp_names_q4 <- spp_list_q4$sciname[seq(1, y, y/x)]
 
 for (spp in spp_names_q4) { # i = 1
   spp_plot <- plot_rangemap(spp)
+  spp_solo <- spp_list %>% filter(sciname == spp)
+  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
+  spp_plot <- spp_plot +
+    labs(title = sprintf('%s, quadrant 4: %s', spp, text_tag))
   print(spp_plot)
   
   ggsave(filename = file.path(dir_fig, sprintf('rangemap_q4_%s.png', str_replace(tolower(spp), ' ', '_'))),
