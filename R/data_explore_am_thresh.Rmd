@@ -1,0 +1,131 @@
+###(6) Looking at how many and what type (threat category) of species we are losing by setting a threshold of 0.4 on the aquamaps species
+
+This looks at the full Aquamaps dataset... should it be limited to species with valid categories?
+
+```{r aquamaps probabilities, warning = FALSE, message = FALSE, cache.lazy = FALSE, cache = TRUE, verbose = FALSE, results = FALSE, echo = FALSE, include = FALSE}
+
+# get spp_cells raw data for aquamaps
+dir_aquamaps <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO/raw/aquamaps_2014')
+
+spp_cells <- read_csv(file.path(dir_aquamaps, 'tables/ohi_hcaf_species_native.csv'), 
+                      col_types = '_ccd__', progress = TRUE)
+
+# spp_cells <- fread(input = file.path(dir_aquamaps, 'tables/ohi_hcaf_species_native.csv'), verbose = FALSE, header = TRUE, 
+#                   colClasses = c('NULL', 'character', NA, 'numeric', 'NULL', 'NULL')) #1 min 49 sec
+
+setnames(spp_cells, c('SpeciesID', 'CsquareCode', 'probability'), c('species_id', 'csquare_code', 'probability'))
+
+spp_cells <- as.data.frame(spp_cells)
+
+spp <- fread(input = file.path(dir_aquamaps, 'tables/ohi_speciesoccursum.csv'), 
+             verbose = FALSE, header = TRUE) %>%
+  mutate(sciname = paste(Genus, Species, sep = ' '),
+         iucn_code = str_replace(toupper(iucn_code), 'LR/', ''),
+         iucn_code = str_replace(iucn_code, 'N.E.', 'NE'))
+spp <- as.data.frame(spp)
+
+```
+
+```{r hist_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE}
+
+### create dataframe that gives me all species, their total number of cells, 
+### total number of cells >= 0.4 prob, difference between the two and threat
+spp_df3 <- spp_cells %>%
+  group_by(species_id) %>%
+  summarize(cells_0.4 = sum(probability >= 0.4),
+            cells_t = sum(probability >= 0)) %>%
+  left_join(spp, by = c('species_id' = 'SPECIESID')) %>%
+  mutate(prop = cells_0.4 / cells_t,
+         iucn_code = ifelse(is.na(iucn_code), 'NE', iucn_code)) %>%
+  filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')) %>%
+  # filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX')) %>%
+  select(sciname, species_id, cells_0.4, cells_t, prop, iucn_code)
+
+iucn_levels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')
+spp_df3 <- spp_df3 %>% 
+  transform(iucn_code = factor(iucn_code, levels = iucn_levels))
+
+hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) + 
+  ggtheme_plot + 
+  geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
+  scale_fill_manual(values = c('LC' = 'green4', 
+                               'NT' = 'greenyellow', 
+                               'VU' = 'orange', 
+                               'EN' = 'orangered2', 
+                               'CR' = 'red4',
+                               'DD' = 'grey60',
+                               'NE' = 'grey70')) +
+  labs(x = 'Proportion of range area included when selecting a threshold of 0.4', 
+       y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3)))
+
+ggsave('../figures/AMThreshold.png', width = 6, height = 4)
+
+print(hist_area_vs_threshold)
+
+spp_df3a <- spp_df3 %>% 
+  filter(!iucn_code %in% c('DD', 'NE'))
+
+hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) + 
+  ggtheme_plot + 
+  geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
+  scale_fill_manual(values = c('LC' = 'green4', 
+                               'NT' = 'greenyellow', 
+                               'VU' = 'orange', 
+                               'EN' = 'orangered2', 
+                               'CR' = 'red4',
+                               'DD' = 'grey60',
+                               'NE' = 'grey70')) +
+  labs(x = 'Proportion of range area included when selecting a threshold of 0.4', 
+       y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3a)))
+
+ggsave('../figures/AMThreshold2.png', width = 6, height = 4)
+
+print(hist_area_vs_threshold2)
+
+```
+
+```{r scatter_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE}
+
+### create dataframe that gives me all species, their total number of cells, 
+### total number of cells >= 0.4 prob, difference between the two and threat
+
+threshold_df <- data.frame()
+for (i in seq(0, 1, .05)) { # i = .05
+  temp_df <- spp_cells %>%
+    group_by(species_id) %>%
+    summarize(thresh       = i,
+              cells_thresh = sum(probability >= thresh),
+              cells_total  = sum(probability >= 0),
+              proportion   = cells_thresh/cells_total) %>%
+    left_join(spp %>%
+#              filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')), 
+              filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX')), 
+            by = c('species_id' = 'SPECIESID')) %>%
+    select(sciname, species_id, thresh, cells_thresh, cells_total, proportion, iucn_code)
+  
+  threshold_df <- threshold_df %>%
+    bind_rows(temp_df)
+}
+
+thresh_df_summary <- threshold_df %>%
+  group_by(thresh) %>%
+  summarize(mean_prop   = mean(proportion, na.rm = TRUE),
+            median_prop = median(proportion, na.rm = TRUE))
+
+scatter_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = mean_prop)) + 
+  ggtheme_plot + 
+  geom_point(aes(y = median_prop), color = 'grey60') +
+  geom_point() + 
+  geom_abline(slope = -1, intercept = 1, color = 'red') + 
+  geom_vline(x = 0.40, color = 'blue', linetype = 'dashed') +
+  ylim(0, 1) +
+  labs(title = 'Mean (median) species range after presence threshold cutoff',
+       x = 'Presence threshold cutoff', 
+       y = 'Mean (median) relative species range')
+
+ggsave('../figures/scatter_AMThreshold.png', width = 6, height = 4)
+
+print(scatter_area_vs_threshold)
+
+
+```
