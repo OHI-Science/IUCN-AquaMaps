@@ -7,6 +7,7 @@ output: html_document
 
 # Libraries and Paths
 
+library(rasterVis)
 library(ggplot2)
 library(maps)
 library(readr)
@@ -69,6 +70,7 @@ ggtheme_map <- ggtheme_plot +
 # This function takes a single species scientific name as input, then grabs all 
 # occurrence cells and associated Aquamaps probability and/or IUCN proportional area
 # per cell
+
 get_spp_map <- function(species){
   spp_id <- spp_list_base %>%
     filter(sciname == species & is.na(parent_sid)) %>%
@@ -745,6 +747,70 @@ logA_mdl   <- lm(log_total_area ~ sm_perc, spp_list)
 #   sm_perc      0.016885   0.001407    12.0   <2e-16 ***
 #   Multiple R-squared:  0.0687,	Adjusted R-squared:  0.06823 
 ```
+*** 
+
+###Global representation of species
+
+By counting the number of unique species are found in each of the half degree cells we can then create a single global raster of number of species.
+
+```{r map, echo=F, warning=F, message=F}
+
+
+# Number of aquamaps species per cell
+
+am_n_per_cell = filter(am_spp_cells,am_sid %in% unique(spp_list$am_sid))%>%
+                  group_by(loiczid)%>%
+                   summarize(count.am=n())%>%
+                    as.data.frame()
+
+am_sp_map = subs(loiczid_raster, am_n_per_cell[ , c('loiczid', 'count.am')], 
+                     by = 'loiczid', 
+                     which = 'count.am', 
+                     subsWithNA = TRUE)
+
+#number of IUCN species per cell
+iucn_n_per_cell = iucn_spp_cells%>%
+                   group_by(loiczid)%>%
+                    summarize(count.iucn=n())%>%
+                    as.data.frame()
+
+
+iucn_sp_map = subs(loiczid_raster, iucn_n_per_cell[ , c('loiczid', 'count.iucn')], 
+                     by = 'loiczid', 
+                     which = 'count.iucn', 
+                     subsWithNA = TRUE)
+
+#Plot both maps
+myTheme=rasterTheme(region=brewer.pal('Blues', n=9))
+
+levelplot(am_sp_map,par.settings=myTheme,main='Aquamaps Dataset',colorkey=list( at=seq(0, 1063, length=15)))
+
+levelplot(iucn_sp_map,par.settings=myTheme,main='IUCN Dataset',colorkey=list(at=seq(0, 1063, length=15)))
+```
+
+Now look at all aquamaps species
+
+```{r all aquamaps,eval=F}
+
+am_spp_cells_big = fread(file.path(dir_anx, 'raw/aquamaps_2014/tables/ohi_hcaf_species_native.csv'))
+#am_spp_cell_big is missing loiczid info so bring in hcaf to match
+
+hcaf <- read_csv(file.path(dir_anx,'raw/aquamaps_2014/tables/hcaf.csv')) #bring this in just to get loiczid
+
+
+all_am = am_spp_cells_big%>%
+          group_by(loiczid)%>%
+          summarize(count=n())%>%
+          as.data.frame()
+
+all_am_map = subs(loiczid_raster, all_am[ , c('loiczid', 'count')], 
+                     by = 'loiczid', 
+                     which = 'count', 
+                     subsWithNA = TRUE)
+
+levelplot(all_am_map,par.settings=myTheme,main='Entire Aquamaps Dataset',colorkey=list(at=seq(0, 1063, length=15)))
+```
+
 
 ***  
 
