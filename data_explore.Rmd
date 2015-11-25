@@ -114,15 +114,6 @@ spp_list_label <- spp_list %>%
   mutate(sciname_label = paste(str_sub(g, 1, 1), '. ', s, sep = '')) %>%
   select(-g, -s)
 
-lm_eqn2 <- function(df){
-  m  <- lm(area_ratio ~ sm_perc, spp_list)
-  eq <- substitute(italic('y') == a + b %.% italic('x')*","~~italic(r)^2~"="~r2, 
-        list(a  = format(coef(m)[1], digits = 2), 
-             b  = format(coef(m)[2], digits = 2), 
-             r2 = format(summary(m)$r.squared, digits = 3)))
-  as.character(as.expression(eq))             
-}
-
 scatter_arearatio_vs_overlap <- ggplot(spp_list, aes(x = area_ratio, y = sm_perc, color = log_total_area)) + 
   ggtheme_plot + 
   ### color the quadrant backgrounds:
@@ -166,9 +157,10 @@ for (i in 1:length(spp_quads)) { # i = 1
   spp_plot <- plot_rangemap(spp)
   print(spp_plot)
   
-  ggsave(filename = file.path(dir_fig, sprintf('rangemap_%s_%s.png', spp_quad, str_replace(tolower(spp), ' ', '_'))),
-         plot = spp_plot, 
-         width = 8, height = 4, dpi = 200)
+  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_%s_%s.png', spp_quad,
+  #                                              str_replace(tolower(spp), ' ', '_'))),
+  #        plot = spp_plot, 
+  #        width = 8, height = 4, dpi = 200)
 }
 
 ```
@@ -243,8 +235,8 @@ ggsave(plot = barchart_spp_gp_quads,
 
 ```
 
-Plotting species from q1 (well-matched)
-```{r plot_spp_from_q1, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+Plotting species from q1 (well-matched) (see data_explore_quadmaps.html for plots)
+```{r plot_spp_from_q1, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 x <- 20
 y <- nrow(spp_list_q1)
@@ -260,15 +252,15 @@ for (spp in spp_names_q1) { # i = 1
 
   print(spp_plot)
   
-  ggsave(filename = file.path(dir_fig, sprintf('rangemap_q1_%s.png', str_replace(tolower(spp), ' ', '_'))),
-         plot = spp_plot, 
-         width = 8, height = 4, dpi = 200)
+  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q1_%s.png', str_replace(tolower(spp), ' ', '_'))),
+  #        plot = spp_plot, 
+  #        width = 8, height = 4, dpi = 200)
 }
 
 ```
 
 Plotting species from q2 (distribution-matched)
-```{r plot_spp_from_q2, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+```{r plot_spp_from_q2, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 x <- 20
 y <- nrow(spp_list_q2)
@@ -283,13 +275,63 @@ for (spp in spp_names_q2) { # i = 1
     labs(title = sprintf('%s, quadrant 2: %s', spp, text_tag))
   print(spp_plot)
   
-  ggsave(filename = file.path(dir_fig, sprintf('rangemap_q2_%s.png', str_replace(tolower(spp), ' ', '_'))),
-         plot = spp_plot, 
-         width = 8, height = 4, dpi = 200)
+  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q2_%s.png', str_replace(tolower(spp), ' ', '_'))),
+  #        plot = spp_plot, 
+  #        width = 8, height = 4, dpi = 200)
 }
 
 
 ```
+
+
+Plotting species from q3 (area-matched)
+```{r plot_spp_from_q3, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+
+x <- 20
+y <- nrow(spp_list_q3)
+
+spp_names_q3 <- spp_list_q3$sciname[seq(1, y, y/x)]
+
+for (spp in spp_names_q3) { # i = 1
+  spp_plot <- plot_rangemap(spp)
+  spp_solo <- spp_list %>% filter(sciname == spp)
+  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
+  spp_plot <- spp_plot +
+    labs(title = sprintf('%s, quadrant 3: %s', spp, text_tag))
+  print(spp_plot)
+  
+  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q3_%s.png', str_replace(tolower(spp), ' ', '_'))),
+  #        plot = spp_plot, 
+  #        width = 8, height = 4, dpi = 200)
+}
+
+
+```
+
+Plotting species from q4 (poorly matched)
+```{r plot_spp_from_q4, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+
+x <- 20
+y <- nrow(spp_list_q4)
+
+spp_names_q4 <- spp_list_q4$sciname[seq(1, y, y/x)]
+
+for (spp in spp_names_q4) { # i = 1
+  spp_plot <- plot_rangemap(spp)
+  spp_solo <- spp_list %>% filter(sciname == spp)
+  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
+  spp_plot <- spp_plot +
+    labs(title = sprintf('%s, quadrant 4: %s', spp, text_tag))
+  print(spp_plot)
+  
+  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q4_%s.png', str_replace(tolower(spp), ' ', '_'))),
+  #        plot = spp_plot, 
+  #        width = 8, height = 4, dpi = 200)
+}
+
+
+```
+
 *** 
 
 ###Global representation of species
@@ -324,11 +366,11 @@ iucn_sp_map = subs(loiczid_raster, iucn_n_per_cell[ , c('loiczid', 'count.iucn')
                      subsWithNA = TRUE)
 
 #Plot both maps
-myTheme=rasterTheme(region=brewer.pal('Blues', n=9))
+myTheme = rasterTheme(region = brewer.pal('Blues', n = 9))
 
-levelplot(am_sp_map,par.settings=myTheme,main='Aquamaps Dataset',colorkey=list( at=seq(0, 1063, length=15)))
+levelplot(am_sp_map, par.settings = myTheme, main = 'Aquamaps Dataset', colorkey = list( at = seq(0, 1063, length = 15)))
 
-levelplot(iucn_sp_map,par.settings=myTheme,main='IUCN Dataset',colorkey=list(at=seq(0, 1063, length=15)))
+levelplot(iucn_sp_map, par.settings = myTheme, main = 'IUCN Dataset', colorkey = list(at = seq(0, 1063, length = 15)))
 ```
 
 Now look at all aquamaps species
@@ -338,19 +380,19 @@ Now look at all aquamaps species
 am_spp_cells_big = fread(file.path(dir_anx, 'raw/aquamaps_2014/tables/ohi_hcaf_species_native.csv'))
 #am_spp_cell_big is missing loiczid info so bring in hcaf to match
 
-hcaf <- fread(file.path(dir_anx,'raw/aquamaps_2014/tables/hcaf.csv'))%>% #bring this in just to get loiczid
-          as.data.frame()%>%
-            select(CsquareCode,LOICZID)%>%
-              rename(loiczid=LOICZID)
+hcaf <- fread(file.path(dir_anx, 'raw/aquamaps_2014/tables/hcaf.csv')) %>% #bring this in just to get loiczid
+          as.data.frame() %>%
+            select(CsquareCode, LOICZID) %>%
+              rename(loiczid = LOICZID)
 
-all_am = am_spp_cells_big%>%
-          select(SpeciesID,CsquareCode)%>%
-          group_by(CsquareCode)%>%
-          summarize(count=n())%>%
+all_am = am_spp_cells_big %>%
+          select(SpeciesID,CsquareCode) %>%
+          group_by(CsquareCode) %>%
+          summarize(count=n()) %>%
           as.data.frame()
 
 
-all = left_join(all_am,hcaf)
+all = left_join(all_am, hcaf)
 
 
 all_am_map = subs(loiczid_raster, all[ , c('loiczid', 'count')], 
@@ -358,58 +400,11 @@ all_am_map = subs(loiczid_raster, all[ , c('loiczid', 'count')],
                      which = 'count', 
                      subsWithNA = TRUE)
 
-levelplot(all_am_map,par.settings=myTheme,main='Entire Aquamaps Dataset')
+levelplot(all_am_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset')
 ```
 
 ![image](./figures/all_aquamaps_map.png)
 
-Plotting species from q3 (area-matched)
-```{r plot_spp_from_q3, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
-
-x <- 20
-y <- nrow(spp_list_q3)
-
-spp_names_q3 <- spp_list_q3$sciname[seq(1, y, y/x)]
-
-for (spp in spp_names_q3) { # i = 1
-  spp_plot <- plot_rangemap(spp)
-  spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
-  spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 3: %s', spp, text_tag))
-  print(spp_plot)
-  
-  ggsave(filename = file.path(dir_fig, sprintf('rangemap_q3_%s.png', str_replace(tolower(spp), ' ', '_'))),
-         plot = spp_plot, 
-         width = 8, height = 4, dpi = 200)
-}
-
-
-```
-
-Plotting species from q4 (poorly matched)
-```{r plot_spp_from_q4, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
-
-x <- 20
-y <- nrow(spp_list_q4)
-
-spp_names_q4 <- spp_list_q4$sciname[seq(1, y, y/x)]
-
-for (spp in spp_names_q4) { # i = 1
-  spp_plot <- plot_rangemap(spp)
-  spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
-  spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 4: %s', spp, text_tag))
-  print(spp_plot)
-  
-  ggsave(filename = file.path(dir_fig, sprintf('rangemap_q4_%s.png', str_replace(tolower(spp), ' ', '_'))),
-         plot = spp_plot, 
-         width = 8, height = 4, dpi = 200)
-}
-
-
-```
 
 
 ``` {r, child = 'R/data_explore_am_thresh.Rmd', eval = FALSE}
