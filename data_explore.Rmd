@@ -3,7 +3,7 @@ title: 'Data Exploration: IUCN and AquaMaps'
 output: html_document
 ---
 
-```{r, echo = FALSE, warning = FALSE, message = FALSE}
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
 
 # Libraries and Paths
 
@@ -46,7 +46,7 @@ names(loiczid_raster) <- 'loiczid'
 ```
 
 
-```{r get spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 data_file <- 'data/spp_list_w_area_percent_noextinct.csv'
 
 
@@ -61,6 +61,9 @@ spp_list <- read.csv(data_file, stringsAsFactors = FALSE)
 ```
 
 ``` {r child = 'R/data_explore_pt1.Rmd', eval = FALSE}
+# bar chart: number of spp per group
+# scatter plot: area compare IUCN vs AM, including log plot and plot by species group
+# rangemap: Chromis alpha 
 ```
 
 ``` {r, child = 'R/data_explore_pt2.Rmd', eval = FALSE}
@@ -70,7 +73,7 @@ spp_list <- read.csv(data_file, stringsAsFactors = FALSE)
 
 For each range 
 
-```{r pct small within large, echo = FALSE, warning = FALSE, eval = TRUE}
+```{r pct_small_within_large, echo = FALSE, warning = FALSE, eval = TRUE}
 
 spp_df4 <- spp_list %>%
   dplyr::select(sciname, sm_perc, sm_range) %>%
@@ -92,7 +95,7 @@ print(hist_sm_within_lg)
 ```
 
 
-``` {r pct overlap vs ratio of area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+``` {r pct_overlap_vs_ratio_of_area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
 spp_list <- spp_list %>%
   mutate(area_ratio = am_area / iucn_area,
@@ -358,72 +361,134 @@ for (spp in spp_names_q4) { # i = 1
 
 By counting the number of unique species are found in each of the half degree cells we can then create a single global raster of number of species.
 
-```{r map, echo=F, warning=F, message=F}
+```{r global_dist_map, echo = FALSE, warning = FALSE, message = FALSE}
 
+### find total species in each dataset for later percent calcs
+am_n_tot   <- am_spp_cells %>% 
+  filter(am_sid %in% unique(spp_list$am_sid)) %>%
+  select(am_sid) %>% 
+  unique() %>% nrow()
+iucn_n_tot <- iucn_spp_cells %>% 
+  filter(sciname %in% unique(spp_list$sciname)) %>%
+  select(sciname) %>% 
+  unique() %>% nrow()
+### good - the same number
 
-# Number of aquamaps species per cell
+### Number of aquamaps species per cell
+am_n_per_cell <- am_spp_cells %>%
+  filter(am_sid %in% unique(spp_list$am_sid)) %>%
+  group_by(loiczid) %>%
+  summarize(count_am = n(),
+            pct_am = count_am/am_n_tot) %>%
+  as.data.frame()
 
-am_n_per_cell = filter(am_spp_cells,am_sid %in% unique(spp_list$am_sid))%>%
-                  group_by(loiczid)%>%
-                   summarize(count.am=n())%>%
-                    as.data.frame()
+am_sp_map <- subs(loiczid_raster, am_n_per_cell[ , c('loiczid', 'count_am')], 
+                  by = 'loiczid', 
+                  which = 'count_am', 
+                  subsWithNA = TRUE)
 
-am_sp_map = subs(loiczid_raster, am_n_per_cell[ , c('loiczid', 'count.am')], 
-                     by = 'loiczid', 
-                     which = 'count.am', 
-                     subsWithNA = TRUE)
+### Number of IUCN species per cell
+iucn_n_per_cell <- iucn_spp_cells %>%
+  group_by(loiczid) %>%
+  summarize(count_iucn = n(),
+            pct_iucn = count_iucn/iucn_n_tot) %>%
+  as.data.frame()
 
-#number of IUCN species per cell
-iucn_n_per_cell = iucn_spp_cells%>%
-                   group_by(loiczid)%>%
-                    summarize(count.iucn=n())%>%
-                    as.data.frame()
+iucn_sp_map <- subs(loiczid_raster, iucn_n_per_cell[ , c('loiczid', 'count_iucn')], 
+                    by = 'loiczid', 
+                    which = 'count_iucn', 
+                    subsWithNA = TRUE)
 
+### Plot both maps
+myTheme <- rasterTheme(region = brewer.pal('Blues', n = 9))
 
-iucn_sp_map = subs(loiczid_raster, iucn_n_per_cell[ , c('loiczid', 'count.iucn')], 
-                     by = 'loiczid', 
-                     which = 'count.iucn', 
-                     subsWithNA = TRUE)
+levelplot(am_sp_map, par.settings = myTheme, 
+          main = 'Aquamaps Dataset', 
+          colorkey = list( at = seq(0, 1063, length = 15)))
 
-#Plot both maps
-myTheme = rasterTheme(region = brewer.pal('Blues', n = 9))
+levelplot(iucn_sp_map, par.settings = myTheme, 
+          main = 'IUCN Dataset', 
+          colorkey = list(at = seq(0, 1063, length = 15)))
 
-levelplot(am_sp_map, par.settings = myTheme, main = 'Aquamaps Dataset', colorkey = list( at = seq(0, 1063, length = 15)))
-
-levelplot(iucn_sp_map, par.settings = myTheme, main = 'IUCN Dataset', colorkey = list(at = seq(0, 1063, length = 15)))
 ```
 
 Now look at all aquamaps species
 
-```{r all aquamaps,eval=F, echo=F}
+```{r all_aquamaps, eval = FALSE, echo = FALSE}
 
-am_spp_cells_big = fread(file.path(dir_anx, 'raw/aquamaps_2014/tables/ohi_hcaf_species_native.csv'))
-#am_spp_cell_big is missing loiczid info so bring in hcaf to match
+am_spp_cells_big <- fread(file.path(dir_anx, 'raw/aquamaps_2014/tables/ohi_hcaf_species_native.csv')) %>%
+  as.data.frame()
+### am_spp_cell_big is missing loiczid info so bring in hcaf to match
 
 hcaf <- fread(file.path(dir_anx, 'raw/aquamaps_2014/tables/hcaf.csv')) %>% #bring this in just to get loiczid
-          as.data.frame() %>%
-            select(CsquareCode, LOICZID) %>%
-              rename(loiczid = LOICZID)
+  as.data.frame() %>%
+  select(CsquareCode, LOICZID) %>%
+  rename(loiczid = LOICZID)
 
-all_am = am_spp_cells_big %>%
-          select(SpeciesID,CsquareCode) %>%
-          group_by(CsquareCode) %>%
-          summarize(count=n()) %>%
-          as.data.frame()
+### find total spp to allow for percent calcs later
+am_all_n_tot <- am_spp_cells_big %>% 
+  select(SpeciesID) %>% 
+  unique() %>% nrow()
 
+all_am <- am_spp_cells_big %>%
+  select(SpeciesID, CsquareCode) %>%
+  group_by(CsquareCode) %>%
+  summarize(all_count = n(),
+            all_pct   = all_count/am_all_n_tot) %>%
+  as.data.frame()
 
-all = left_join(all_am, hcaf)
+all <- all_am %>%
+  left_join(hcaf, by = 'CsquareCode')
 
-
-all_am_map = subs(loiczid_raster, all[ , c('loiczid', 'count')], 
-                     by = 'loiczid', 
-                     which = 'count', 
-                     subsWithNA = TRUE)
+all_am_map <- subs(loiczid_raster, all[ , c('loiczid', 'all_count')], 
+                   by = 'loiczid', 
+                   which = 'all_count', 
+                   subsWithNA = TRUE)
 
 levelplot(all_am_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset')
 ```
 
-![image](./figures/all_aquamaps_map.png)
+![image](figures/all_aquamaps_map.png)
+
+``` {r variations_on_gl_dist_maps, echo = FALSE, eval = FALSE}
+### find distribution by percent of total species
+am_sp_pct_map <- subs(loiczid_raster, am_n_per_cell[ , c('loiczid', 'pct_am')], 
+                      by = 'loiczid', 
+                      which = 'pct_am', 
+                      subsWithNA = TRUE)
+iucn_sp_pct_map <- subs(loiczid_raster, iucn_n_per_cell[ , c('loiczid', 'pct_iucn')], 
+                        by = 'loiczid', 
+                        which = 'pct_iucn', 
+                        subsWithNA = TRUE)
+### find difference in percent between the two distribution maps; should be small,
+### if species are well-matched, since it's all the same species
+diff_pct_map    <- iucn_sp_pct_map - am_sp_pct_map
+
+### plot maps with distributions as percentages.  Should it be 0 - 1, or 
+### 0 - max value?
+levelplot(am_sp_pct_map, par.settings = myTheme, 
+          main = 'Aquamaps Dataset pct', 
+          colorkey = list( at = seq(0, 1, length = 15)))
+levelplot(iucn_sp_pct_map, par.settings = myTheme, 
+          main = 'IUCN Dataset pct', 
+          colorkey = list(at = seq(0, 1, length = 15)))
+### this is the difference one. Should it be min value to max value?
+levelplot(diff_pct_map, par.settings = myTheme, 
+          main = 'IUCN pct - AM pct', 
+          colorkey = list(at = seq(-1, 1, length = 15)))
+
+### Do similar, but with the full aquamaps list (should also do this
+### against the full IUCN list...)
+all_am_pct_map <- subs(loiczid_raster, all[ , c('loiczid', 'all_pct')], 
+                   by = 'loiczid', 
+                   which = 'all_pct', 
+                   subsWithNA = TRUE)
+
+diff_pct_map2    <- iucn_sp_pct_map - all_am_pct_map
+levelplot(all_am_pct_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset, pct')
+levelplot(diff_pct_map2, par.settings = myTheme, main = 'iucn (overlap only) - aquamaps (all)')
+
+```
 
 
 
