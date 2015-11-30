@@ -1,6 +1,6 @@
 Exploring possible correlation between total species range area and percent overlap of smaller range within the larger:
   
-``` {r pct overlap vs area, echo = FALSE, warning = FALSE, message = FALSE}
+``` {r pct overlap vs tot area, echo = FALSE, warning = FALSE, message = FALSE}
 
 scatter_area_vs_overlap <- ggplot(spp_list, aes(sm_perc, total_area, color = sm_range)) + 
   ggtheme_plot + 
@@ -30,6 +30,32 @@ ggsave(file.path(dir_fig, 'AreavsPercOverlap.png'), width = 6, height = 4)
 
 
 ```
+
+  
+``` {r pct overlap vs lg area, echo = FALSE, warning = FALSE, message = FALSE}
+
+spp_list <- spp_list %>%
+  mutate(lg_area = ifelse(am_area > iucn_area, am_area, iucn_area),
+         sm_area = ifelse(am_area < iucn_area, am_area, iucn_area),
+         lg_area_pct = 100 * lg_area / max(iucn_area, am_area, na.rm = TRUE)) ### use largest data set as approx for total ocean range
+
+scatter_lg_area_vs_overlap <- ggplot(spp_list, aes(lg_area_pct, sm_perc, color = sm_range)) + 
+  ggtheme_plot + 
+  geom_point() + 
+  geom_abline() + 
+  labs(x = 'Larger range (% total ocean)', 
+       y = 'Percent overlap smaller range in larger', 
+       title = 'Percent overlap vs. larger range')
+
+print(scatter_lg_area_vs_overlap)
+
+# summary(lm(total_area ~ sm_perc, spp_list))
+
+ggsave(file.path(dir_fig, 'PercOverlapvsLgArea.png'), width = 6, height = 4)
+
+
+```
+
 
 ***  
   
