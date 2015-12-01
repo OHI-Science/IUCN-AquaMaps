@@ -111,7 +111,7 @@ spp_map <- plot_rangemap(spp)
 
 print(spp_map)
 ggsave(plot = spp_map,
-       filename = file.path(dir_fig, sprintf('rangemap_%s.png', spp)),
+       filename = file.path(dir_fig, sprintf('rangemap_%s.png', str_replace(tolower(spp), ' ', '_'))),
        width = 8, height = 4, dpi = 200)
 ```
 
