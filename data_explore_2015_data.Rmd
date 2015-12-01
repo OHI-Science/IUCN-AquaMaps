@@ -31,12 +31,12 @@ source('R/data_explore_fxns.R')
 
 # Data files
 #iucn spp cells WITHOUT extinct locations of IUCN subpopulations
-iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_both.csv'), 
+iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_both_2015.csv'), 
                            col_types = 'cdddd', progress = TRUE) %>%
   as.data.frame() %>%
   filter(presence != 5) ### removes extinct subpopulations
 
-am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells.csv'), progress = TRUE)
+am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'), progress = TRUE)
 
 
 ### LOICZID cell ID numbers - used in plotting rasters
@@ -47,12 +47,12 @@ names(loiczid_raster) <- 'loiczid'
 
 
 ```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
-data_file <- 'data/spp_list_w_area_percent_noextinct.csv'
+data_file <- 'data/spp_list_w_area_percent_noextinct_2015.csv'
 
 
 if(!file.exists(data_file)) {
   ### species info list - scinames, IUCN species ID, AM species ID, category etc
-  spp_list_base <- read.csv('shiny/data/spp_am_v_iucn.csv', stringsAsFactors = FALSE)
+  spp_list_base <- read.csv('shiny/data/spp_am_v_iucn_2015.csv', stringsAsFactors = FALSE)
   
   create_spp_list(spp_list_base, data_file)
 }
