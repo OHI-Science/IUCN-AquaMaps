@@ -29,7 +29,7 @@ create_spp_list <- function(spp_list_base, data_file) {
   
   
   #there's likely a better way to do this than a for loop (lapply or sapply?)
-  for (i in 1:nrow(spp_list)){
+  for (i in 1:nrow(spp_list)){ # i = 1
     spp     <- spp_list[i, ]$sciname #species name
     spp_map <- get_spp_map(spp) #get species map
     
@@ -53,21 +53,21 @@ create_spp_list <- function(spp_list_base, data_file) {
                      which = 'am_sid', 
                      subsWithNA = TRUE)
     
-    spp_list[i, ]$am_area <- area(r_am_spp, na.rm = TRUE)%>%
+    spp_list[i, ]$am_area <- area(r_am_spp, na.rm = TRUE) %>%
       cellStats(., stat='sum')
     
     
     ###  get the iucn cells
     iucn_map <- spp_map %>%
-      mutate(iucn_pres = iucn_area > 0)%>%
-      dplyr::select(loiczid, iucn_area, am_sid, am_prob, iucn_pres)%>%
+      mutate(iucn_pres = iucn_area > 0) %>%
+      dplyr::select(loiczid, iucn_area, am_sid, am_prob, iucn_pres) %>%
       unique()
     
     #TODO: incorporate the iucn_area (area of cell that species overlaps with...I think thats what it is)
     
     ###this is incorporated because there are some duplications for loiczids with IUCN cells. I'm guessing this is because of the parent/subpopulations?
     
-    if(TRUE %in% duplicated(iucn_map$loiczid))next()
+    if(TRUE %in% duplicated(iucn_map$loiczid)) next()
     
     ### rasterize IUCN map
     r_iucn_spp <- subs(loiczid_raster, 
@@ -76,14 +76,14 @@ create_spp_list <- function(spp_list_base, data_file) {
                        which = 'iucn_pres', 
                        subsWithNA = TRUE)
     
-    spp_list[i, ]$iucn_area <- area(r_iucn_spp, na.rm = TRUE)%>%
-      cellStats(., stat='sum')
+    spp_list[i, ]$iucn_area <- area(r_iucn_spp, na.rm = TRUE) %>%
+      cellStats(., stat = 'sum')
     
     
     ### Get total area (IUCN and AM combined)
-    allCells <- spp_map%>%
-      dplyr::select(loiczid)%>%
-      mutate(value=1)%>%
+    allCells <- spp_map %>%
+      dplyr::select(loiczid) %>%
+      mutate(value=1) %>%
       unique()
     
     
@@ -93,8 +93,8 @@ create_spp_list <- function(spp_list_base, data_file) {
                       which = 'value', 
                       subsWithNA = TRUE)
     
-    spp_list[i, ]$total_area <- area(fullRange, na.rm = TRUE)%>%
-      cellStats(., stat='sum')
+    spp_list[i, ]$total_area <- area(fullRange, na.rm = TRUE) %>%
+      cellStats(., stat = 'sum')
     
     ### get percent overlap of map
     
@@ -106,27 +106,20 @@ create_spp_list <- function(spp_list_base, data_file) {
       filter(!is.na(am_sid)) %>%
       .$loiczid
     
-    cells_total <- unique(spp_map$loiczid)
+    cells_total   <- unique(spp_map$loiczid)
     cells_overlap <- intersect(cells_iucn, cells_am)
     
-    #I THINK THIS IS A DUPLICATE? r_iucn_spp raster created above... (JA 10/12/15)
-    #    r_iucn_spp <- subs(loiczid_raster, 
-    #                       iucn_map[ , c('loiczid', 'iucn_pres')], 
-    #                      by = 'loiczid', 
-    #                       which = 'iucn_pres', 
-    #                       subsWithNA = TRUE)
-    #   
     #percent overlap
     perc <- (length(cells_overlap) / length(cells_total)) * 100
     spp_list[i, ]$perc <- perc
     
-    am_only <- setdiff(cells_am, cells_iucn)
+    am_only   <- setdiff(cells_am, cells_iucn)
     iucn_only <- setdiff(cells_iucn, cells_am)
     
-    perc_am <- (length(am_only) / length(cells_total)) * 100
+    perc_am   <- (length(am_only) / length(cells_total)) * 100
     perc_iucn <- (length(iucn_only) / length(cells_total)) * 100
     
-    spp_list[i, ]$am_perc <- perc_am
+    spp_list[i, ]$am_perc   <- perc_am
     spp_list[i, ]$iucn_perc <- perc_iucn
     
     spp_list[i, ]$sm_range <- ifelse(length(cells_am)<length(cells_iucn), 'AM', 'IUCN') 
@@ -149,7 +142,32 @@ create_spp_list <- function(spp_list_base, data_file) {
     filter(spp_group != 'hagfishes' & spp_group != 'non-homalopsids') %>%
     mutate(log_total_area = log(total_area))
   
-  write.csv(spp_list, file = data_file)
+  spp_list <- spp_list %>%
+    mutate(area_ratio = am_area / iucn_area,
+           area_ratio = ifelse(area_ratio > 1, 1 / area_ratio, area_ratio),
+           area_ratio = area_ratio * 100)
+  
+  spp_list <- spp_list %>%
+    mutate(lg_area = ifelse(am_area > iucn_area, am_area, iucn_area),
+           sm_area = ifelse(am_area < iucn_area, am_area, iucn_area),
+           lg_area_pct = 100 * lg_area / max(total_area, na.rm = TRUE)) %>% ### use largest data set as approx for total ocean range
+    select(-lg_area, -sm_area)
+  
+  spp_list <- spp_list %>%
+    mutate(total_area  = round(total_area, 1),
+           am_area     = round(am_area, 1),
+           iucn_area   = round(iucn_area, 1),
+           perc        = round(perc, 3),
+           am_perc     = round(am_perc, 3),
+           iucn_perc   = round(iucn_perc, 3),
+           sm_perc     = round(sm_perc, 3),
+           log_total_area = round(log_total_area, 3),
+           area_ratio  = round(area_ratio, 3),
+           lg_area_pct = round(lg_area_pct, 3)
+    ) %>%
+    mutate(reviewed = as.integer(reviewed)) ### 'null' values force this to be character... this converts '1' to 1, and 'null' to NA
+  
+  write.csv(spp_list, file = data_file, row.names = FALSE)
 }
 
 ### Species Map Function ###

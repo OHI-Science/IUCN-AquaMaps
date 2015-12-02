@@ -31,7 +31,7 @@ source('R/data_explore_fxns.R')
 
 # Data files
 #iucn spp cells WITHOUT extinct locations of IUCN subpopulations
-iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_both_2015.csv'), 
+iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'), 
                            col_types = 'cdddd', progress = TRUE) %>%
   as.data.frame() %>%
   filter(presence != 5) ### removes extinct subpopulations
@@ -50,15 +50,30 @@ names(loiczid_raster) <- 'loiczid'
 data_file <- 'data/spp_list_w_area_percent_noextinct_2015.csv'
 
 
-if(!file.exists(data_file)) {
+if (!file.exists(data_file)) {
   ### species info list - scinames, IUCN species ID, AM species ID, category etc
-  spp_list_base <- read.csv('shiny/data/spp_am_v_iucn_2015.csv', stringsAsFactors = FALSE)
+  spp_list_base <- read.csv('data/spp_am_v_iucn_2015_inclDD.csv', stringsAsFactors = FALSE)
   
   create_spp_list(spp_list_base, data_file)
 }
 
-spp_list <- read.csv(data_file, stringsAsFactors = FALSE)
+spp_list1 <- read.csv(data_file, stringsAsFactors = FALSE)
 ```
+
+Note: At this point the species list (`spp_list1`) still contains data deficient species.  274 species show zero area for IUCN; most of these are DD.  The next chunk filters for `!is.na(sm_perc)` and `popn_category != 'DD'`
+
+``` {r eliminate DD and NA areas, echo = FALSE, warning = FALSE}
+spp_list <- spp_list1 %>% 
+  filter(!is.na(sm_perc))
+
+DT::datatable(spp_list %>%
+                 select(sciname, am_sid, iucn_sid, am_review = reviewed, 
+                        cat = popn_category, trend = popn_trend, spp_group, 
+                        A_tot = total_area, A_am = am_area, A_iucn = iucn_area, 
+                        sm_perc, sm_range, area_ratio, lg_area_pct))
+
+```
+
 
 ``` {r child = 'R/data_explore_pt1.Rmd', eval = FALSE}
 # bar chart: number of spp per group
@@ -97,10 +112,6 @@ print(hist_sm_within_lg)
 
 ``` {r pct_overlap_vs_ratio_of_area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
-spp_list <- spp_list %>%
-  mutate(area_ratio = am_area / iucn_area,
-         area_ratio = ifelse(area_ratio > 1, 1 / area_ratio, area_ratio),
-         area_ratio = area_ratio * 100)
 
 ### define 25% and 75% quartiles for both x and y axes
 area_ratio_quartiles <- quantile(spp_list$area_ratio, na.rm = TRUE)[2:4]
