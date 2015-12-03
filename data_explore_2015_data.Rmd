@@ -22,7 +22,8 @@ dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
            'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
 
 dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
-dir_fig <- file.path(getwd(), 'figures')
+dir_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data')
+dir_fig <- file.path(getwd(), 'figs2015')
 
 source('R/data_explore_fxns.R')
 ```
@@ -93,13 +94,12 @@ For each range
 spp_df4 <- spp_list %>%
   dplyr::select(sciname, sm_perc, sm_range) %>%
   unique()
-      
 
 hist_sm_within_lg <- ggplot(spp_df4, aes(sm_perc, fill = sm_range)) + 
   ggtheme_plot + 
   geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 4, alpha = .8) +
   scale_fill_discrete(name = 'Dataset with smaller range', labels = c('AquaMaps', 'IUCN')) + 
-  labs(title = 'Percent of smaller range within larger range',
+  labs(title = 'Percent of smaller range within larger range 2015 data',
        x = 'Percent of smaller range that falls within the larger range', 
        y = sprintf('Proportion of all species (n = %s)', nrow(spp_df4)))
 
@@ -153,7 +153,8 @@ scatter_arearatio_vs_overlap <- ggplot(spp_list %>%
                                  'NT' = 'greenyellow', 
                                  'VU' = 'yellow', 
                                  'EN' = 'orange', 
-                                 'CR' = 'orangered2')) +
+                                 'CR' = 'orangered2',
+                                 'DD' = 'grey50')) +
   geom_vline(x = area_ratio_quartiles[c(1, 3)],
              color = 'grey50', linetype = 'dashed') +
   geom_hline(y = pct_overlap_quartiles[c(1, 3)],
@@ -260,7 +261,7 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
   coord_flip() +
   labs(x = 'Species Group', 
        y = 'Relative number of species per quadrant', 
-       title = 'Species group breakdown by quadrant')
+       title = 'Species group breakdown by quadrant 2015 data')
 
 print(barchart_spp_gp_quads)
 ggsave(plot = barchart_spp_gp_quads,
@@ -413,13 +414,22 @@ iucn_sp_map <- subs(loiczid_raster, iucn_n_per_cell[ , c('loiczid', 'count_iucn'
 ### Plot both maps
 myTheme <- rasterTheme(region = brewer.pal('Blues', n = 9))
 
-levelplot(am_sp_map, par.settings = myTheme, 
-          main = 'Aquamaps Dataset', 
+am_lvlplot <- levelplot(am_sp_map, par.settings = myTheme, 
+          main = 'Aquamaps Dataset 2015', 
           colorkey = list( at = seq(0, 1063, length = 15)))
 
-levelplot(iucn_sp_map, par.settings = myTheme, 
+png(file.path(dir_fig, 'levelplot_am.png'))
+print(am_lvlplot)
+dev.off()
+
+iucn_lvlplot <- levelplot(iucn_sp_map, par.settings = myTheme, 
           main = 'IUCN Dataset', 
           colorkey = list(at = seq(0, 1063, length = 15)))
+
+png(file.path(dir_fig, 'levelplot_iucn.png'))
+print(iucn_lvlplot)
+dev.off()
+
 
 ```
 
@@ -427,39 +437,38 @@ Now look at all aquamaps species
 
 ```{r all_aquamaps, eval = FALSE, echo = FALSE}
 
-am_spp_cells_big <- fread(file.path(dir_anx, 'raw/aquamaps_2014/tables/ohi_hcaf_species_native.csv')) %>%
+am_spp_cells_big <- fread(file.path(dir_data, 'aquamaps/v2015/csv/hcaf_sp_native_trunc.csv')) %>%
   as.data.frame()
-### am_spp_cell_big is missing loiczid info so bring in hcaf to match
-
-hcaf <- fread(file.path(dir_anx, 'raw/aquamaps_2014/tables/hcaf.csv')) %>% #bring this in just to get loiczid
-  as.data.frame() %>%
-  select(CsquareCode, LOICZID) %>%
-  rename(loiczid = LOICZID)
 
 ### find total spp to allow for percent calcs later
 am_all_n_tot <- am_spp_cells_big %>% 
-  select(SpeciesID) %>% 
-  unique() %>% nrow()
+  select(speciesid) %>% 
+  unique() %>% 
+  nrow()
 
 all_am <- am_spp_cells_big %>%
-  select(SpeciesID, CsquareCode) %>%
-  group_by(CsquareCode) %>%
+  select(speciesid, loiczid) %>%
+  group_by(loiczid) %>%
   summarize(all_count = n(),
             all_pct   = all_count/am_all_n_tot) %>%
   as.data.frame()
 
-all <- all_am %>%
-  left_join(hcaf, by = 'CsquareCode')
 
-all_am_map <- subs(loiczid_raster, all[ , c('loiczid', 'all_count')], 
+all_am_map <- subs(loiczid_raster, all_am[ , c('loiczid', 'all_count')], 
                    by = 'loiczid', 
                    which = 'all_count', 
                    subsWithNA = TRUE)
 
-levelplot(all_am_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset')
+am_lvlplot_all <- levelplot(all_am_map, par.settings = myTheme, 
+                            main = 'Entire Aquamaps Dataset 2015')
+
+png(file.path(dir_fig, 'levelplot_am_all.png'))
+print(am_lvlplot_all)
+dev.off()
+
 ```
 
-![image](figures/all_aquamaps_map.png)
+![image](figs2015/all_aquamaps_map.png)
 
 ``` {r variations_on_gl_dist_maps, echo = FALSE, eval = FALSE}
 ### find distribution by percent of total species
@@ -518,6 +527,6 @@ Comparing three scenarios to the current (v2015) global model for SPP:
 
 Boxplots:
 
-![Absolute change in SPP score](figures/SPP_scenarios/boxplot_abs_diff.png)
+![Absolute change in SPP score](figs2015/SPP_scenarios/boxplot_abs_diff.png)
 
-![Relative change in SPP score](figures/SPP_scenarios/boxplot_rel_diff.png)
+![Relative change in SPP score](figs2015/SPP_scenarios/boxplot_rel_diff.png)
