@@ -7,7 +7,7 @@ output: html_document
 
 # Libraries and Paths
 
-library(rasterVis)
+# library(rasterVis)
 library(ggplot2)
 library(maps)
 library(readr)
@@ -77,10 +77,10 @@ DT::datatable(spp_list %>%
 
 
 ``` {r child = 'R/data_explore_pt1.Rmd', eval = FALSE}
+```
 # bar chart: number of spp per group
 # scatter plot: area compare IUCN vs AM, including log plot and plot by species group
 # rangemap: Chromis alpha 
-```
 
 ``` {r, child = 'R/data_explore_pt2.Rmd', eval = FALSE}
 ```
@@ -373,7 +373,7 @@ for (spp in spp_names_q4) { # i = 1
 
 By counting the number of unique species are found in each of the half degree cells we can then create a single global raster of number of species.
 
-```{r global_dist_map, echo = FALSE, warning = FALSE, message = FALSE}
+```{r global_dist_map, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 ### find total species in each dataset for later percent calcs
 am_n_tot   <- am_spp_cells %>% 
