@@ -44,7 +44,22 @@ Species range maps are useful in conservation and management, as well as underst
 
 #Introduction
 
+Mapping species abundances and distributions is a critical component to understanding global biodiversity and detecting patterns and trends through time. There have been multiple efforts to map terrestrial, freshwater and marine species from local to global scales. These pieces of information inform our understanding of taxonomic assemblages, biogeographical limits to species ranges, suitable habitat for species.
+
+These two spatial datasets have been used to analyze species status globally (Halpern et al. 2012, Selig et al. 2013), global biodiversity patterns and trends, predicting range shifts (Molinos et al. 2015),and setting conservation priorities (Klein et al. 2015). Yet there have been no comprehensive comparisons of these two datasets to identify the differences and provide insight into how using one or the other can influence the outcome of an analysis. With impactful conclusions being drawn from these large-scale studies on global biodiversity and conservation, it's imperative that the data used in these analyses are appropriate and the data decisions are informed.
+
+The IUCN Red List of Threatened Species includes more than 19,000 assessed marine species, 
+<!--define what "assessed" means? include DD? keeping those in for now--> but only **4463** <!--11975 maps in those shapefiles, but fewer than 4500 correspond to assessed marine species... and only 2500 of those overall correpond to AquaMaps species--> of these have associated spatial information. AquaMaps has developed range maps for over 22,800 species. Only 2,100 species have been mapped in both datasets. This gap in overlapping species between these two datasets further highlights the need for understanding each of these datasets. Both IUCN and AquaMaps have gaps in marine species information and a significant portion of available data may be overlooked if limited to just one of these datasets.
+
+Species range maps provided by AquaMaps (Kaschner et al. 2013) are model-based, relying on environmental parameters in addition to known occurrences and expert input.  AquaMaps use information about individual species environmental tolerances for salinity, temperature, depth, productivity, and where applicable, sea ice and distance from land, to create a presence-only gridded range map at a resolution of 0.5 degree cells with cell values ranging from 0 to 1.00. These values represent the *relative environmental suitability* for the species, with 0 representing unsuitable habitat and 1.00 being the most suitable habitat. Once produced, each range map maintains a dynamic element that allows individuals to adjust parameters based on their expert knowledge to improve the model-generated map.
+
+The maps provided by the IUCN for each assessed species are created by one or more experts on that species. There are general guidelines to how the map should be created. Specifically, the final mapped polygons are meant to indicate that a species *probably only occurs within the polygon* but are *not* meant to indicate that the species is evenly distributed everywhere within the polygon. The guidelines vary slightly for each type of species (terrestrial, freshwater, marine). These maps are typically dependent on observation records from databases such as GBIF.
+
+IUCN only publishes spatial distribution map sets for taxonomic groups in which at least 90% of the species within the taxon group have been evaluated.  While this helps prevent sampling bias within taxa, it also means that entire taxonomic groups remain unavailable until they have met this threshold of comprehensive assessment.  As of December 2015, IUCN species distribution maps were available for XXX marine species (habitat = "marine" on IUCN species information pages).
+
+<!--
 There have been multiple efforts to map marine species based on both observational data and known life history and habitat preferences. AquaMaps and IUCN are two of these efforts.
+-->
 
 # Understanding each dataset separately  
 
@@ -291,3 +306,16 @@ Jones, M.C., S.R. Dyeb, J.K. Pinnegar and W.W.L. Cheung (2012). Modelling commer
 Coll, M., C. Piroddi, J. Steenbeek, K. Kaschner, F. Ben Rais Lasram et al. (2010). The biodiversity of the Mediterranean Sea: estimates, patterns, and threats. PLoS ONE 5(8): e11842. PDF
 
 Martin C.S., Fletcher R., Jones M.C., Kaschner K., Sullivan E., Tittensor D.P., Mcowen C., Geffert J.L., van Bochove J.W., Thomas H., Blyth S., Ravillious C., Tolley M., Stanwell-Smith D. (2014). Manual of marine nd coastal datasets of biodiversity importance. May 2014 release. Cambridge (UK): UNEP World Conservation Monitoring Centre. 28 pp. (+ 4 annexes totalling 174 pp. and one e-supplement). PDF
+
+
+#References
+
+García Molinos, Jorge, Benjamin S. Halpern, David S. Schoeman, Christopher J. Brown, Wolfgang Kiessling, Pippa J. Moore, John M. Pandolfi, Elvira S. Poloczanska, Anthony J. Richardson, and Michael T. Burrows. “Climate Velocity and the Future Global Redistribution of Marine Biodiversity.” Nature Climate Change advance online publication (August 31, 2015). doi:10.1038/nclimate2769.
+
+Halpern, Benjamin S., Catherine Longo, Darren Hardy, Karen L. McLeod, Jameal F. Samhouri, Steven K. Katona, Kristin Kleisner, et al. “An Index to Assess the Health and Benefits of the Global Ocean.” Nature 488, no. 7413 (August 30, 2012): 615–20. doi:10.1038/nature11397.
+
+Halpin, P.N., A.J. Read, E. Fujioka, B.D. Best, B. Donnelly, L.J. Hazen, C. Kot, K. Urian, E. LaBrecque, A. Dimatteo, J. Cleary, C. Good, L.B. Crowder, and K.D. Hyrenbach. 2009. OBIS-SEAMAP: The world data center for marine mammal, sea bird, and sea turtle distributions. Oceanography 22(2):104-115
+
+Klein, Carissa J., Christopher J. Brown, Benjamin S. Halpern, Daniel B. Segan, Jennifer McGowan, Maria Beger, and James E.M. Watson. “Shortfalls in the Global Protected Area Network at Representing Marine Biodiversity.” Scientific Reports 5 (December 3, 2015): 17539. doi:10.1038/srep17539.
+
+Selig, Elizabeth R., Catherine Longo, Benjamin S. Halpern, Benjamin D. Best, Darren Hardy, Cristiane T. Elfes, Courtney Scarborough, Kristin M. Kleisner, and Steven K. Katona. “Assessing Global Marine Biodiversity Status within a Coupled Socio-Ecological Perspective.” PLoS ONE 8, no. 4 (April 11, 2013): e60284. doi:10.1371/journal.pone.0060284.
