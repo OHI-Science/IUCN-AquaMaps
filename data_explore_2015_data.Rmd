@@ -23,7 +23,7 @@ dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
 
 dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
 dir_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data')
-dir_fig <- file.path(getwd(), 'figs2015')
+dir_fig <- file.path(getwd(), 'figures')
 
 source('R/data_explore_fxns.R')
 ```
