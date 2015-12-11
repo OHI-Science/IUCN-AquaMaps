@@ -174,3 +174,28 @@ for (i in 1:4) {
 ```
 
 ***  
+
+###(4) Looking at the percent of smaller species range that is within the larger range. 
+
+For each range 
+
+```{r pct_small_within_large, echo = FALSE, warning = FALSE, eval = TRUE}
+
+spp_df4 <- spp_list %>%
+  dplyr::select(sciname, sm_perc, sm_range) %>%
+  unique()
+      
+
+hist_sm_within_lg <- ggplot(spp_df4, aes(sm_perc, fill = sm_range)) + 
+  ggtheme_plot + 
+  geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 4, alpha = .8) +
+  scale_fill_discrete(name = 'Dataset with smaller range', labels = c('AquaMaps', 'IUCN')) + 
+  labs(title = 'Percent of smaller range within larger range',
+       x = 'Percent of smaller range that falls within the larger range', 
+       y = sprintf('Proportion of all species (n = %s)', nrow(spp_df4)))
+
+ggsave(file.path(dir_fig, 'PercSmallRangeInLarger.png'), width = 6, height = 4)
+
+print(hist_sm_within_lg)
+
+```

@@ -69,30 +69,6 @@ spp_list <- read.csv(data_file, stringsAsFactors = FALSE)
 ``` {r, child = 'R/data_explore_pt2.Rmd', eval = FALSE}
 ```
 
-###(4) Looking at the percent of smaller species range that is within the larger range. 
-
-For each range 
-
-```{r pct_small_within_large, echo = FALSE, warning = FALSE, eval = TRUE}
-
-spp_df4 <- spp_list %>%
-  dplyr::select(sciname, sm_perc, sm_range) %>%
-  unique()
-      
-
-hist_sm_within_lg <- ggplot(spp_df4, aes(sm_perc, fill = sm_range)) + 
-  ggtheme_plot + 
-  geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 4, alpha = .8) +
-  scale_fill_discrete(name = 'Dataset with smaller range', labels = c('AquaMaps', 'IUCN')) + 
-  labs(title = 'Percent of smaller range within larger range',
-       x = 'Percent of smaller range that falls within the larger range', 
-       y = sprintf('Proportion of all species (n = %s)', nrow(spp_df4)))
-
-ggsave(file.path(dir_fig, 'PercSmallRangeInLarger.png'), width = 6, height = 4)
-
-print(hist_sm_within_lg)
-
-```
 
 
 ``` {r pct_overlap_vs_ratio_of_area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
@@ -258,101 +234,9 @@ ggsave(plot = barchart_spp_gp_quads,
 
 ```
 
-Plotting species from q1 (well-matched) (see data_explore_quadmaps.html for plots)
-```{r plot_spp_from_q1, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
-x <- 20
-y <- nrow(spp_list_q1)
-
-spp_names_q1 <- spp_list_q1$sciname[seq(1, y, y/x)]
-
-for (spp in spp_names_q1) { # i = 1
-  spp_plot <- plot_rangemap(spp)
-  spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
-  spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 1: %s', spp, text_tag))
-
-  print(spp_plot)
-  
-  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q1_%s.png', str_replace(tolower(spp), ' ', '_'))),
-  #        plot = spp_plot, 
-  #        width = 8, height = 4, dpi = 200)
-}
-
-```
-
-Plotting species from q2 (distribution-matched)
-```{r plot_spp_from_q2, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
-
-x <- 20
-y <- nrow(spp_list_q2)
-
-spp_names_q2 <- spp_list_q2$sciname[seq(1, y, y/x)]
-
-for (spp in spp_names_q2) { # i = 1
-  spp_plot <- plot_rangemap(spp)
-  spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
-  spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 2: %s', spp, text_tag))
-  print(spp_plot)
-  
-  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q2_%s.png', str_replace(tolower(spp), ' ', '_'))),
-  #        plot = spp_plot, 
-  #        width = 8, height = 4, dpi = 200)
-}
-
-
-```
-
-
-Plotting species from q3 (area-matched)
-```{r plot_spp_from_q3, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
-
-x <- 20
-y <- nrow(spp_list_q3)
-
-spp_names_q3 <- spp_list_q3$sciname[seq(1, y, y/x)]
-
-for (spp in spp_names_q3) { # i = 1
-  spp_plot <- plot_rangemap(spp)
-  spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
-  spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 3: %s', spp, text_tag))
-  print(spp_plot)
-  
-  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q3_%s.png', str_replace(tolower(spp), ' ', '_'))),
-  #        plot = spp_plot, 
-  #        width = 8, height = 4, dpi = 200)
-}
-
-
-```
-
-Plotting species from q4 (poorly matched)
-```{r plot_spp_from_q4, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
-
-x <- 20
-y <- nrow(spp_list_q4)
-
-spp_names_q4 <- spp_list_q4$sciname[seq(1, y, y/x)]
-
-for (spp in spp_names_q4) { # i = 1
-  spp_plot <- plot_rangemap(spp)
-  spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
-  spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 4: %s', spp, text_tag))
-  print(spp_plot)
-  
-  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q4_%s.png', str_replace(tolower(spp), ' ', '_'))),
-  #        plot = spp_plot, 
-  #        width = 8, height = 4, dpi = 200)
-}
-
-
+``` {r child = 'R/data_explore_pt3.Rmd', eval = FALSE}
+# Multiple species maps per quadrant
 ```
 
 *** 
