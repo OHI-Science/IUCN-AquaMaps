@@ -47,6 +47,7 @@ spp_iucn_marine <- read.csv(iucn_marine_file, stringsAsFactors = FALSE)
 
 iucn_maps_file <- 'data/spp_iucn_maps.csv'
 spp_iucn_maps <- read.csv(iucn_maps_file, stringsAsFactors = FALSE) %>%
+  rename(sciname = binomial) %>%
   filter(spp_group != 'hagfishes') %>%           ### not from IUCN...
   filter(sciname %in% spp_iucn_marine$sciname)   ### ditch freshwater spp
 
@@ -55,6 +56,7 @@ spp_am <- read.csv(spp_am_file, stringsAsFactors = FALSE)
 
 
 ```
+
 ## Main message
 
 Understanding the differences in marine species range maps from IUCN and AquaMaps, and the implications of using one or both.
@@ -109,26 +111,26 @@ Three comparisons presented here:
 
 # Understanding each dataset separately  
 
-###IUCN
+## IUCN species distribution maps
 
 The IUCN publishes species distribution maps for as collections of shapefiles for a range of taxonomic groups, including both terrestrial and marine organisms.  Species spatial distributions are determined by experts based upon known occurrences of the species and expert understanding of range and habitat preferences.  These maps are typically dependent on observation records from databases ___such as GBIF other examples?___, and IUCN provides general guidelines to facilitate consistency in how the maps are generated.   
 
 The IUCN presents these maps as 'limits of distibution'; they are meant to indicate that a species probably occurs within the defined polygon, but are not meant to indicate that the species is evenly distributed everywhere within the polygon.  While the polygons roughly define regions of presence/absence, additional attributes provide information on extant/extinct ranges, native/introduced ranges, and seasonality.  
 
-IUCN publishes spatial distribution map sets only for taxonomic groups in which at least 90% of the species within the taxon group have been evaluated.  While this mitigates sampling bias within taxa, it also means that entire taxonomic groups remain unavailable until they have met this threshold of comprehensive assessment.  As of December 2015, IUCN had published species distribution maps for nearly 12,000 marine species across 26 taxonomic groups, though fewer than 4,500 of these have been formally assessed under the IUCN Red List of Threatened Species.
+IUCN publishes spatial distribution map sets only for taxonomic groups whjich have been "comprehensively assessed," i.e. in which at least 90% of the species within the taxon group have been evaluated.  While this mitigates sampling bias within taxa, it also means that entire taxonomic groups remain unavailable until they have met this threshold of comprehensive assessment.  As of December 2015, IUCN had published species distribution maps for nearly 12,000 marine species across 26 taxonomic groups, though fewer than 4,500 of these have been formally assessed under the IUCN Red List of Threatened Species.
 
 * _use as a reference:_ 
     * https://www.conservationtraining.org/course/view.php?id=217&lang=en
     * http://www.iucnredlist.org/technical-documents/red-list-training/iucnspatialresources
 
 
-### AquaMaps 
+## AquaMaps standardized range maps of marine species
 
 AquaMaps (Kaschner et al. 2013) offers species range maps based on modeled relative environmental suitability.  For each assessed species, data from observations and expert knowledge are used to generate bioclimatic envelopes for sea surface temperature, salinity, depth, productivity, and where applicable, sea ice cover and/or distance to land.  The species' suite of bioclimatic envelopes is compared to a map of environmental attributes on a 0.5 degree global grid, creating a global map of ___probability of occurrence___ (or ___relative environmental suitability?___ (see Kaschner et al 2006 and 2011)), with cell values ranging from 0 (unsuitable) to 1.00 (highly suitable).  These maps can then be tweaked by experts altering the parameters and regenerating the modeled map. As of December 2015, nearly 23,000 species have been mapped, though only 5,600 of these species have been evaluated for the IUCN Red List. ___Expert mode to further refine models?___ See (Kaschner et al. 2013) for more detailed methods.
 
 * ___how is expert insight used? how frequently? new data set includes "reviewed" field___ expert insight seems to be used to generate the environmental suitability envelope for species, to provide sightings info that use used in training the model, and to exclude species from regions of known absence; but the model generates the maps. However, some species maps are reviewed by experts (approved? changed? what happens in the review)
 
-### Comparison between AM and IUCN
+## Comparison between AM and IUCN
 
 * Differences in intent: capture all observations and be inclusive as possible, vs model suitable habitats
 * Differences in methodology - expert-defined range maps (over-predicting) vs sightings (under-predicting) vs models: 
@@ -137,103 +139,34 @@ from __Kaschner et al 2011__:  _Similar to the trade-offs of different habitat p
 * Differences in the interpretation: probability/RES, vs. presence "probably within this polygon, but not everywhere within" - apples to oranges.
 
 
-### Overlap between assessed species
-
-| Map set   | n~total~                | n~Red_List~                                                               |
-| :-------: | ----------------------: | ------------------------------------------------------------------------: |
-| AquaMaps  | `r nrow(spp_am)`        | `r nrow(spp_am %>% filter(sciname %in% spp_iucn_marine$sciname))`         |
-| IUCN      | `r nrow(spp_iucn_maps)` | `r nrow(spp_iucn_maps %>% filter(sciname %in% spp_iucn_marine$sciname))`  |
-| Both      | `r nrow(spp_am %>% filter(sciname %in% spp_iucn_maps$sciname))` | `r nrow(spp_map_pairs)`           |
-
-Researchers have two large and useful data sets at their disposal, each with its own utility.  Being able to use both simultaneously makes many more species available, but beware: here there be challenges.
 
 -----
 
 # Analysis of taxonomic and regional inclusion
 
-Focus on IUCN red-list evaluated species (incl or not incl DD)? or all species?
+## Overlap between assessed species
+
+Due to differences in both methodology and intent, there are significant differences in the coverage afforded by the species distribution maps published by AquaMaps and those published by the IUCN.  This is immediately clear from an examination of the number of species maps offered by each source, and the small proportion of species with maps from both sources.
+
+| Map set   | n~total~                | n~Red_List~                                                       |
+| :-------: | ----------------------: | :---------------------------------------------------------------: | 
+| AquaMaps  | `r nrow(spp_am)`        | `r nrow(spp_am %>% filter(sciname %in% spp_iucn_marine$sciname))` | 
+| IUCN      | `r nrow(spp_iucn_maps)` | all                                                               | 
+| Both      | `r nrow(spp_am %>% filter(sciname %in% spp_iucn_maps$sciname))` | all                       |
+
+___Should we break it down by "reviewed" Aquamaps as well?___
+
+The AquaMaps species list includes all species available as of December 2015.  The IUCN species list includes all species maps available directly from the IUCN Red List website (http://www.iucnredlist.org/technical-documents/spatial-data) as of December 2015, filtered to include only species with habitat listed as "marine."  For the purposes of this analysis, we did not include IUCN range maps for bird species, as those range maps are hosted separately by BirdLife International.
 
 ## Taxonomic distribution between data sets
 
-Examine the overlapping and non-overlapping species by taxonomic group (order? family?) - are there differences in taxonomic group coverage between the two data sets?
+![](figures/bar_by_taxa_all.png)
 
-IUCN - translate the taxonomic group into families - is there a way to automate this? http://www.itis.gov/downloads/?
-AM - access taxa group information directly from AM species list - order? family?
+![](figures/bar_by_taxa_assessed.png)
 
-``` {r breakdown by taxa, echo = FALSE}
+As IUCN only releases map sets when a taxonomic group (on the scale of order or family) has been comprehensively assessed, spatial data for many taxonomic classes are not available, and within a class, the assessed sub-groups may not represent the entire class.  For example, as of this writing, IUCN has released no spatial data for class Elasmobranchii (cartilaginous fishes including sharks and rays); and while IUCN offers a large number of maps within class Actinopterygii (ray-finned bony fishes), the available maps include only a few primarily tropical taxonomic sub-groups, such as wrasses, damselfish, butterflyfish, tunas, and billfishes.  However, IUCN's criterion of comprehensive assessment greatly reduces the risk of sample bias within the bounds of the assessed taxonomic groups.
 
-sciname_lookup <- read.csv('sciname_lookups/scinames.csv', stringsAsFactors = FALSE)
-
-iucn_maps_class <- spp_iucn_maps %>% 
-  ### add sciname list, then jump through hoops to delete dupes
-  ### NOTE: this also ditches ones with no sciname match...
-  separate(sciname, 'genus', sep = ' ', remove = FALSE, extra = 'drop') %>%
-  mutate(genus = tolower(genus)) %>%
-  left_join(sciname_lookup, by = 'genus') %>% 
-  filter(!(str_detect(tolower(spp_group), 'grass')    & !str_detect(kingdom, 'plant'))) %>%
-  filter(!(str_detect(tolower(spp_group), 'mangrove') & !str_detect(kingdom, 'plant'))) %>%
-  filter(!(str_detect(tolower(spp_group), 'coral')    & !str_detect(kingdom, 'animal'))) %>%
-  filter(!(str_detect(tolower(spp_group), 'reptile')  & !str_detect(kingdom, 'animal'))) %>%
-  filter(!(str_detect(tolower(spp_group), 'seabream') & !str_detect(kingdom, 'animal'))) %>%
-  filter(!(str_detect(tolower(spp_group), 'wrass')    & !str_detect(kingdom, 'animal'))) %>%
-  filter(!(str_detect(tolower(spp_group), 'mamm')     & !str_detect(kingdom, 'animal'))) %>%
-  filter(!is.na(phylum)) %>%
-  select(-kingdom, -phylum, -family) %>%
-  unique()
-
-taxa_iucn_all <- iucn_maps_class[!duplicated(iucn_maps_class$sciname), ] %>%
-  filter(!is.na(class)) %>% ### don't count the unknowns
-  mutate(class = str_to_title(class),
-         n_iucn_tot = n()) %>%        ### length of whole maps list
-  group_by(class) %>%
-  summarize(n_iucn_class_all  = n(),
-            p_iucn_class_all  = round((n_iucn_class_all/first(n_iucn_tot) * 100), 2))
-
-taxa_iucn_solo <- iucn_maps_class[!duplicated(iucn_maps_class$sciname), ] %>%
-  filter(!is.na(class)) %>% ### don't count the unknowns
-  filter(!sciname %in% spp_am$sciname) %>%  ### filter list to IUCN only
-  mutate(class = str_to_title(class),
-         n_iucn_solo = n()) %>%       ### length of IUCN only list
-  group_by(class) %>%
-  summarize(n_iucn_class_solo = n(),
-            p_iucn_class_solo = round((n_iucn_class_solo/first(n_iucn_solo) * 100), 2))
-
-taxa_am_all <- spp_am %>%
-  filter(!class %in% c('Not assigned', 'null') & !is.na(class)) %>%
-  mutate(class = str_to_title(class),
-         n_am_tot = n()) %>%        ### length of whole AM maps list
-  group_by(class) %>%
-  summarize(n_am_class_all  = n(),
-            p_am_class_all  = round((n_am_class_all/first(n_am_tot) * 100), 2))
-
-taxa_am_solo <- spp_am %>%
-  filter(!class %in% c('Not assigned', 'null') & !is.na(class)) %>%
-  filter(!sciname %in% iucn_maps_class$sciname) %>%  ### filter list to AM only
-  mutate(class = str_to_title(class),
-         n_am_solo = n()) %>%       ### length of AM only list
-  group_by(class) %>%
-  summarize(n_am_class_solo = n(),
-            p_am_class_solo = round((n_am_class_solo/first(n_am_solo) * 100), 2))
-
-taxa_both <- spp_am %>%
-  filter(sciname %in% spp_iucn_maps$sciname) %>%
-  filter(!class %in% c('Not assigned', 'null')) %>%
-  mutate(class = str_to_title(class),
-         n_both_tot = n()) %>%
-  group_by(class) %>%
-  summarize(n_class_both = n(),
-            p_class_both = round(n_class_both/first(n_both_tot) * 100, 2))
-
-taxa_df <- taxa_am_all %>%
-  full_join(taxa_am_solo,   by = 'class') %>%
-  full_join(taxa_iucn_all,  by = 'class') %>%
-  full_join(taxa_iucn_solo, by = 'class') %>%
-  full_join(taxa_both,      by = 'class') %>%
-  filter(!(is.na(n_iucn_class_all) & p_am_class_all < 0.5))
-
-knitr::kable(taxa_df %>%
-               select(class, am_perc = p_am_class_all, iucn_perc = p_iucn_class_all, both_perc = p_class_both))
-```
+The release of AquaMaps distribution maps is not limited in the same way, and maps are available across a much larger range of taxonomic classes; however, there is no guarantee that the list of species included within each class is a representative cross section of the entire class.  ___How do they choose their species to assess?___
 
 ## Spatial global distribution between data sets
 
@@ -245,15 +178,15 @@ ___main messages:___
 * Small number of overlapping species indicates that each offers data on distinct spp
 * This section is really supporting the idea that it is critical to understanding the differences, as both data sets support one another
 
-Using predifined species groups by the IUCN, it is clear to see that tropical species - specifically wrasses, corals, blennies and groupers, make up the majority of species found in both. This is driven more by the IUCN dataset since the number of species with spatial data is directly attributed to the species that have assessments. ___This could be shown using the n = XXX on the species group quadrant breakdown chart too.___
+Using predefined species groups by the IUCN, it is clear to see that tropical species - specifically wrasses, corals, blennies and groupers, make up the majority of species found in both. This is driven more by the IUCN dataset since the number of species with spatial data is directly attributed to the species that have assessments. ___This could be shown using the n = XXX on the species group quadrant breakdown chart too.___
 
-_Total species occurrences for each data set: all AM, all IUCN, and overlap (one? the other? occurrences of both?)_
+___Total species occurrences for each data set: all AM, all IUCN, and overlap (one? the other? occurrences of both?)___
 
 ![](figures/all_aquamaps_map.png)
 
 _Relevance of this_ - unequal distribution of assessed species - strengths and weaknesses of each; benefits of using both maybe?  save for discussion
 
-
+Each data set offers spatial distribution information for large numbers of species.  However, the data sets vary in terms of taxonomic coverage and regional coverage.  For spatial assessments of biodiversity, the choice of one data set over the other is likely to create significantly different results.  For studies confined to a narrow range of taxa or to a narrow spatial scale, one data set may offer an advantage over the other in the number of species maps available.  For global scale biodiversity studies, however, the selection of one data set over the other will entail tradeoffs in spatial coverage, taxonomic breadth, and taxonomic depth. ___find a reference that describes what makes a "good" data set for global biodiversity, e.g. OHI___
 
 -----  
 
@@ -267,9 +200,9 @@ To facilitate our analysis, we selected the subset of marine species that have r
 
 * For IUCN data, we defined "presence" within a cell as any non-zero overlap with a range map polygon.
 * For AquaMaps data, we defined presence as any cell with non-zero probability ___(or RES?)___.  
-* In both cases, these criteria for presence will maximize the number of cells included.  Using these criteria, we found that for 
-`r round(nrow(spp_map_pairs %>% filter(sm_range == 'AM')) / nrow(spp_map_pairs) * 100, 1)`%
-of species, the IUCN distribution maps indicated a larger species range than the range indicated by AquaMaps.
+* In both cases, these criteria for presence will maximize the number of cells included.  
+
+Using these criteria, we found that for `r round(nrow(spp_map_pairs %>% filter(sm_range == 'AM')) / nrow(spp_map_pairs) * 100, 1)`% of species, the IUCN distribution maps indicated a larger species range than the range indicated by AquaMaps.
 
 Overlaying distribution maps from the two data sets for a given species, we calculated two dimensions of spatial alignment: distribution match, which we defined as the ratio of the smaller range that overlapped with the larger range; and area match, which we defined as the ratio of the smaller range to the larger range.
 
@@ -295,17 +228,17 @@ We divided the plot into quadrants based on the median values for each axis to d
 ``` {r calc medians and quadrant counts, echo = FALSE}
 dist_median <- round(median(spp_map_pairs$sm_perc,    na.rm = TRUE), 1)
 area_median <- round(median(spp_map_pairs$area_ratio, na.rm = TRUE), 1)
-q1_count <- sum(spp_map_pairs$sm_perc > dist_median  & spp_map_pairs$area_ratio >  area_median)
-q2_count <- sum(spp_map_pairs$sm_perc <= dist_median & spp_map_pairs$area_ratio >  area_median)
-q3_count <- sum(spp_map_pairs$sm_perc > dist_median  & spp_map_pairs$area_ratio <= area_median)
-q4_count <- sum(spp_map_pairs$sm_perc <= dist_median & spp_map_pairs$area_ratio <= area_median)
+q1_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio >= area_median)
+q2_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio >= area_median)
+q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio <  area_median)
+q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
 ```
 
-| Description              |   Distribution match |      Area match      |
+| Description              |  Distribution match  |     Area match       |
 | :----------------------: | :------------------: | :------------------: |
-| q1: Well-aligned         |  > `r dist_median` % |  > `r area_median` % |
-| q2: Distribution-aligned |  < `r dist_median` % |  > `r area_median` % |
-| q3: Area-aligned         |  > `r dist_median` % |  < `r area_median` % |
+| q1: Well-aligned         | >= `r dist_median` % | >= `r area_median` % |
+| q2: Distribution-aligned |  < `r dist_median` % | >= `r area_median` % |
+| q3: Area-aligned         | >= `r dist_median` % |  < `r area_median` % |
 | q4: Poorly-aligned       |  < `r dist_median` % |  < `r area_median` % |
 
 The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the area of described ranges.  For these species, the expert-drawn range map and the bioclimatic envelope model produce similar predictions of species distribution. 

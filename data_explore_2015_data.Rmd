@@ -270,101 +270,127 @@ ggsave(plot = barchart_spp_gp_quads,
 
 ```
 
-Plotting species from q1 (well-matched) (see data_explore_quadmaps.html for plots)
-```{r plot_spp_from_q1, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
-x <- 20
-y <- nrow(spp_list_q1)
+``` {r load data, echo = FALSE, warning = FALSE, message = FALSE}
+### use data_explore.Rmd to create this file, if it does not yet exist.
 
-spp_names_q1 <- spp_list_q1$sciname[seq(1, y, y/x)]
+data_file <- 'data/spp_list_w_area_percent_noextinct_2015.csv'
+spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE) %>%
+  filter(!is.na(popn_category)) %>% ### filter out unassessed species
+  filter(!is.na(sm_perc))           ### filter out NA maps (usually IUCN maps with no polygons)
 
-for (spp in spp_names_q1) { # i = 1
-  spp_plot <- plot_rangemap(spp)
-  spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
-  spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 1: %s', spp, text_tag))
+### generate other lists
 
-  print(spp_plot)
-  
-  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q1_%s.png', str_replace(tolower(spp), ' ', '_'))),
-  #        plot = spp_plot, 
-  #        width = 8, height = 4, dpi = 200)
-}
+spp_all_file <- 'data/spp_all_2015.csv'
+spp_all <- read.csv(spp_all_file, stringsAsFactors = FALSE) 
 
-```
+iucn_marine_file <- 'data/spp_iucn_marine.csv'
+spp_iucn_marine <- read.csv(iucn_marine_file, stringsAsFactors = FALSE) 
 
-Plotting species from q2 (distribution-matched)
-```{r plot_spp_from_q2, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+iucn_maps_file <- 'data/spp_iucn_maps.csv'
+spp_iucn_maps <- read.csv(iucn_maps_file, stringsAsFactors = FALSE) %>%
+  filter(spp_group != 'hagfishes') %>%           ### not from IUCN...
+  filter(sciname %in% spp_iucn_marine$sciname)   ### ditch freshwater spp
 
-x <- 20
-y <- nrow(spp_list_q2)
-
-spp_names_q2 <- spp_list_q2$sciname[seq(1, y, y/x)]
-
-for (spp in spp_names_q2) { # i = 1
-  spp_plot <- plot_rangemap(spp)
-  spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
-  spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 2: %s', spp, text_tag))
-  print(spp_plot)
-  
-  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q2_%s.png', str_replace(tolower(spp), ' ', '_'))),
-  #        plot = spp_plot, 
-  #        width = 8, height = 4, dpi = 200)
-}
-
+spp_am_file <- 'data/spp_am.csv'
+spp_am <- read.csv(spp_am_file, stringsAsFactors = FALSE)
 
 ```
 
+``` {r breakdown by taxa, echo = FALSE}
 
-Plotting species from q3 (area-matched)
-```{r plot_spp_from_q3, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+sciname_lookup <- read.csv('sciname_lookups/spp_iucn_all.csv', stringsAsFactors = FALSE)
 
-x <- 20
-y <- nrow(spp_list_q3)
+iucn_maps_class <- spp_iucn_maps %>% 
+  left_join(sciname_lookup %>% 
+              select(sciname, class) %>%
+              unique(), 
+            by = 'sciname')
 
-spp_names_q3 <- spp_list_q3$sciname[seq(1, y, y/x)]
+taxa_iucn_all <- iucn_maps_class[!duplicated(iucn_maps_class$sciname), ] %>%
+  filter(!is.na(class)) %>% ### don't count the unknowns
+  mutate(class = str_to_title(class),
+         n_iucn_tot = n()) %>%        ### length of whole maps list
+  group_by(class) %>%
+  summarize(n_iucn_class_all  = n(),
+            p_iucn_class_all  = round((n_iucn_class_all/first(n_iucn_tot) * 100), 2))
 
-for (spp in spp_names_q3) { # i = 1
-  spp_plot <- plot_rangemap(spp)
-  spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
-  spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 3: %s', spp, text_tag))
-  print(spp_plot)
-  
-  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q3_%s.png', str_replace(tolower(spp), ' ', '_'))),
-  #        plot = spp_plot, 
-  #        width = 8, height = 4, dpi = 200)
-}
+taxa_iucn_solo <- iucn_maps_class[!duplicated(iucn_maps_class$sciname), ] %>%
+  filter(!is.na(class)) %>% ### don't count the unknowns
+  filter(!sciname %in% spp_am$sciname) %>%  ### filter list to IUCN only
+  mutate(class = str_to_title(class),
+         n_iucn_solo = n()) %>%       ### length of IUCN only list
+  group_by(class) %>%
+  summarize(n_iucn_class_solo = n(),
+            p_iucn_class_solo = round((n_iucn_class_solo/first(n_iucn_solo) * 100), 2))
 
+taxa_am_all <- spp_am %>%
+  filter(!class %in% c('Not assigned', 'null') & !is.na(class)) %>%
+  mutate(class = str_to_title(class),
+         n_am_tot = n()) %>%        ### length of whole AM maps list
+  group_by(class) %>%
+  summarize(n_am_class_all  = n(),
+            p_am_class_all  = round((n_am_class_all/first(n_am_tot) * 100), 2))
+
+taxa_am_solo <- spp_am %>%
+  filter(!class %in% c('Not assigned', 'null') & !is.na(class)) %>%
+  filter(!sciname %in% iucn_maps_class$sciname) %>%  ### filter list to AM only
+  mutate(class = str_to_title(class),
+         n_am_solo = n()) %>%       ### length of AM only list
+  group_by(class) %>%
+  summarize(n_am_class_solo = n(),
+            p_am_class_solo = round((n_am_class_solo/first(n_am_solo) * 100), 2))
+
+taxa_both <- spp_am %>%
+  filter(sciname %in% spp_iucn_maps$sciname) %>%
+  filter(!class %in% c('Not assigned', 'null')) %>%
+  mutate(class = str_to_title(class),
+         n_both_tot = n()) %>%
+  group_by(class) %>%
+  summarize(n_class_both = n(),
+            p_class_both = round(n_class_both/first(n_both_tot) * 100, 2))
+
+taxa_df <- taxa_am_all %>%
+  full_join(taxa_am_solo,   by = 'class') %>%
+  full_join(taxa_iucn_all,  by = 'class') %>%
+  full_join(taxa_iucn_solo, by = 'class') %>%
+  full_join(taxa_both,      by = 'class') %>%
+  filter(!(is.na(n_iucn_class_all) & p_am_class_all < 0.5))
+
+
+knitr::kable(taxa_df %>%
+               select(class, AquaMaps = n_am_class_all, IUCN = n_iucn_class_all, Both = n_class_both))
+
+### bar charts comparing number of species in each class for each data set
+
+taxa_df_long1 <- taxa_df %>%
+  select(class, AquaMaps = n_am_class_all, IUCN = n_iucn_class_all, Both = n_class_both) %>%
+  gather(dataset, n_spp, AquaMaps:Both)
+bar_taxa1 <- ggplot(taxa_df_long1, aes(x = class, y = n_spp)) +
+  geom_bar(stat = 'identity') +
+  facet_grid(dataset ~ ., scales = 'free_y') +
+  theme(axis.text.x = element_text(angle = 75, hjust = 1))
+print(bar_taxa1)
+
+taxa_df_long2 <- taxa_df %>%
+  select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
+  gather(dataset, n_spp, AquaMaps:Both) %>%
+  group_by(class) %>%
+  mutate(n_total = sum(n_spp, na.rm = TRUE),
+         percent = n_spp/n_total * 100)
+bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) +
+  geom_bar(stat = 'identity') +
+  geom_text(aes(label = sprintf('n = %s', n_total), y = .05), hjust = 0, size = 4, angle = 90, hjust = 1) +
+  theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
+  labs(x = 'Class', y = 'Percent of mapped species',
+       title = 'Distribution of species maps by taxonomic group (class)')
+print(bar_taxa2)
 
 ```
 
-Plotting species from q4 (poorly matched)
-```{r plot_spp_from_q4, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
-x <- 20
-y <- nrow(spp_list_q4)
-
-spp_names_q4 <- spp_list_q4$sciname[seq(1, y, y/x)]
-
-for (spp in spp_names_q4) { # i = 1
-  spp_plot <- plot_rangemap(spp)
-  spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
-  spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 4: %s', spp, text_tag))
-  print(spp_plot)
-  
-  # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q4_%s.png', str_replace(tolower(spp), ' ', '_'))),
-  #        plot = spp_plot, 
-  #        width = 8, height = 4, dpi = 200)
-}
-
-
+``` {r child = 'R/data_explore_pt3.Rmd', eval = FALSE}
+# Multiple species maps per quadrant
 ```
 
 *** 
