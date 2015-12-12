@@ -107,35 +107,54 @@ Now look at full aquamaps species
 ```{r all_aquamaps, eval = FALSE, echo = FALSE}
 
 am_spp_cells_big <- fread(file.path(dir_am_data, 'hcaf_sp_native_trunc.csv')) %>%
-  as.data.frame()
-# ### am_spp_cell_big is missing loiczid info so bring in hcaf to match
-# 
-# hcaf <- fread(file.path(dir_anx, 'raw/aquamaps_2014/tables/hcaf.csv')) %>% #bring this in just to get loiczid
-#   as.data.frame() %>%
-#   dplyr::select(CsquareCode, LOICZID) %>%
-#   rename(loiczid = LOICZID)
+  as.data.frame(stringsAsFactors = FALSE)
 
 ### find total spp to allow for percent calcs later
-am_all_n_tot <- am_spp_cells_big %>% 
-  dplyr::select(SpeciesID) %>% 
-  unique() %>% nrow()
+# am_all_n_tot <- am_spp_cells_big %>% 
+#   dplyr::select(SpeciesID) %>% 
+#   unique() %>% nrow()
 
 all_am <- am_spp_cells_big %>%
-  dplyr::select(SpeciesID, CsquareCode) %>%
-  group_by(CsquareCode) %>%
-  summarize(all_count = n(),
-            all_pct   = all_count/am_all_n_tot) %>%
+  group_by(loiczid) %>%
+  summarize(all_count = n()) %>%
+#   summarize(all_count = n(),
+#             all_pct   = all_count/am_all_n_tot) %>%
   as.data.frame()
 
-all <- all_am %>%
-  left_join(hcaf, by = 'CsquareCode')
-
-all_am_map <- subs(loiczid_raster, all[ , c('loiczid', 'all_count')], 
+all_am_map <- subs(loiczid_raster, all_am[ , c('loiczid', 'all_count')], 
                    by = 'loiczid', 
                    which = 'all_count', 
                    subsWithNA = TRUE)
 
 levelplot(all_am_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset')
+```
+
+Now look at full IUCN species
+
+```{r all_aquamaps, eval = FALSE, echo = FALSE}
+
+iucn_cells_file    <- file.path(dir_data_iucn, 'iucn_cells_2015.csv')
+iucn_spp_cells_all <- fread(iucn_cells_file) %>%
+      as.data.frame(stringsAsFactors = FALSE)
+
+### find total spp to allow for percent calcs later
+# am_all_n_tot <- am_spp_cells_big %>% 
+#   dplyr::select(SpeciesID) %>% 
+#   unique() %>% nrow()
+
+all_iucn <- iucn_spp_cells_all %>%
+  group_by(loiczid) %>%
+  summarize(all_count = n()) %>%
+#   summarize(all_count = n(),
+#             all_pct   = all_count/am_all_n_tot) %>%
+  as.data.frame()
+
+all_iucn_map <- subs(loiczid_raster, all_iucn[ , c('loiczid', 'all_count')], 
+                   by = 'loiczid', 
+                   which = 'all_count', 
+                   subsWithNA = TRUE)
+
+levelplot(all_iucn_map, par.settings = myTheme, main = 'Entire IUCN Dataset')
 ```
 
 ![image](figures/all_aquamaps_map.png)
