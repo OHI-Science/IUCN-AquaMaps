@@ -2,11 +2,14 @@
 title: "A comparative analysis of AquaMaps and IUCN species distribution maps"
 author: "JA, CO, BH"
 output:
+  pdf_document:
+    number_sections: yes
+    toc: no
   html_document:
-    toc: true
-    number_sections: true
-    theme: "spacelab"
-    highlight: "haddock" 
+    highlight: haddock
+    number_sections: yes
+    theme: spacelab
+    toc: yes
 ---
 
 ``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
@@ -92,22 +95,35 @@ Species range maps are useful in conservation and management, as well as underst
 
 # Introduction
 
+_can we set up a compelling story line here?_
+
 Mapping species abundances and distributions is a critical component to understanding global biodiversity and detecting patterns and trends through time. There have been multiple efforts to map terrestrial, freshwater and marine species from local to global scales. These pieces of information inform our understanding of taxonomic assemblages, biogeographical limits to species ranges, suitable habitat for species.
 
-These two spatial datasets have been used to analyze species status globally (Halpern et al. 2012, Selig et al. 2013), global biodiversity patterns and trends, predicting range shifts (Molinos et al. 2015),and setting conservation priorities (Klein et al. 2015). Yet there have been no comprehensive comparisons of these two datasets to identify the differences and provide insight into how using one or the other can influence the outcome of an analysis. With impactful conclusions being drawn from these large-scale studies on global biodiversity and conservation, it's imperative that the data used in these analyses are appropriate and the data decisions are informed.
+These two spatial datasets have been used to analyze species status globally (Halpern et al. 2012, Selig et al. 2013), global biodiversity patterns and trends, predicting range shifts (Molinos et al. 2015),and setting conservation priorities (Klein et al. 2015). Yet there have been no comprehensive comparisons of these two datasets to identify the differences and provide insight into how using one or the other can influence the outcome of an analysis. 
 
-The IUCN Red List of Threatened Species includes more than 19,000 assessed marine species, 
-<!--define what "assessed" means? include DD? keeping those in for now--> but fewer than 4,500 <!--11975 maps in those shapefiles, but fewer than 4500 correspond to assessed marine species... and only 2500 of those overall correpond to AquaMaps species--> of these have associated spatial information. AquaMaps has developed range maps for over 22,800 species. Only 2,200 species are mapped in both datasets. This gap in overlapping species between these two datasets further highlights the need for understanding each of these datasets. Both IUCN and AquaMaps have gaps in marine species information and a significant portion of available data may be overlooked if limited to just one of these datasets.
+_Differences in methodology (model-driven vs expert knowledge-driven); differences in intent (what does it communicate); differences in represented species and regions_
 
-Species range maps provided by AquaMaps (Kaschner et al. 2013) are model-based, relying on environmental parameters in addition to known occurrences and expert input.  AquaMaps use information about individual species environmental tolerances for salinity, temperature, depth, productivity, and where applicable, sea ice and distance from land, to create a presence-only gridded range map at a resolution of 0.5 degree cells with cell values ranging from 0 to 1.00. These values represent the *relative environmental suitability* for the species, with 0 representing unsuitable habitat and 1.00 being the most suitable habitat. Once produced, each range map maintains a dynamic element that allows individuals to adjust parameters based on their expert knowledge to improve the model-generated map.
+<!--
+The IUCN Red List of Threatened Species includes more than 19,000 assessed marine species, but fewer than 4,500 of these have associated spatial information. AquaMaps has developed range maps for over 22,800 species. Only 2,200 species are mapped in both datasets. This gap in overlapping species between these two datasets further highlights the need for understanding each of these datasets. Both IUCN and AquaMaps have gaps in marine species information and a significant portion of available data may be overlooked if limited to just one of these datasets.
 
-Three comparisons presented here:
+Species range maps provided by AquaMaps (Kaschner et al. 2013) are model-based, relying on environmental parameters in addition to known occurrences and expert input.  AquaMaps use information about individual species environmental tolerances for salinity, temperature, depth, productivity, and where applicable, sea ice and distance from land, to create a presence-only gridded range map at a resolution of 0.5 degree cells with cell values ranging from 0 to 1.00. These values represent the *relative environmental suitability* for the species, with 0 representing unsuitable habitat and 1.00 being the most suitable habitat. Once produced, each range map maintains a dynamic element that allows individuals to adjust parameters based on their expert knowledge to improve the model-generated map. 
+-->
 
-* Differences in overall species representation - by taxa and by spatial distribution - how well does each set of maps represent the global distribution of species, the global distribution of biodiversity
-* alignment between maps for species in common - how well do the maps align, when compared at a species-by-species level
+To better understand the similarities and differences between the two data sets, we examined three fundamental questions:
+
+* How do the two data sets compare in their representation of global spatial distribution of species diversity? 
+* How do the two data sets compare in their representation of species diversity across taxonomic groups?
+* For species represented in both data sets, how closely do the spatial distribution maps align?
+
+We examined the implications of alternate data use scenarios on two large-scale studies of global biodiversity and conservation:  the Ocean Health Index and MPA Gap Analysis study.
+
 * sensitivity analysis to AquaMaps presence threshold - diff reports use diff thresholds; what is the likely effect? is there a "correct" threshold?
     * this seems like a sub-analysis to justify choice of 0% threshold etc.  
-    * ___That graph should be box plots at each threshold, not simply mean and/or median.___
+    * Should this just be in supplemental info?  This could be important though...
+
+<!--
+With impactful conclusions being drawn from these large-scale studies on global biodiversity and conservation, it's imperative that the data used in these analyses are appropriate and the data decisions are informed.
+-->
 
 # Understanding each dataset separately  
 
@@ -115,9 +131,9 @@ Three comparisons presented here:
 
 The IUCN publishes species distribution maps for as collections of shapefiles for a range of taxonomic groups, including both terrestrial and marine organisms.  Species spatial distributions are determined by experts based upon known occurrences of the species and expert understanding of range and habitat preferences.  These maps are typically dependent on observation records from databases ___such as GBIF other examples?___, and IUCN provides general guidelines to facilitate consistency in how the maps are generated.   
 
-The IUCN presents these maps as 'limits of distibution'; they are meant to indicate that a species probably occurs within the defined polygon, but are not meant to indicate that the species is evenly distributed everywhere within the polygon.  While the polygons roughly define regions of presence/absence, additional attributes provide information on extant/extinct ranges, native/introduced ranges, and seasonality.  
+The IUCN presents these maps as 'limits of distribution'; they are meant to indicate that a species probably occurs within the defined polygon, but are not meant to indicate that the species is evenly distributed within the polygon.  While the polygons roughly define regions of presence/absence, additional attributes provide information on extant/extinct ranges, native/introduced ranges, and seasonality.  
 
-IUCN publishes spatial distribution map sets only for taxonomic groups whjich have been "comprehensively assessed," i.e. in which at least 90% of the species within the taxon group have been evaluated.  While this mitigates sampling bias within taxa, it also means that entire taxonomic groups remain unavailable until they have met this threshold of comprehensive assessment.  As of December 2015, IUCN had published species distribution maps for nearly 12,000 marine species across 26 taxonomic groups, though fewer than 4,500 of these have been formally assessed under the IUCN Red List of Threatened Species.
+IUCN publishes spatial distribution map sets only for taxonomic groups that have been "comprehensively assessed," i.e. in which at least 90% of the species within the taxonomic group have been evaluated.  While this mitigates sampling bias within taxa, it also means that entire taxonomic groups remain unavailable until they have met this threshold of comprehensive assessment.  As of December 2015, IUCN had published species distribution maps for nearly 12,000 marine species across 26 taxonomic groups, though fewer than 4,500 of these have been formally assessed under the IUCN Red List of Threatened Species.
 
 * _use as a reference:_ 
     * https://www.conservationtraining.org/course/view.php?id=217&lang=en
@@ -156,7 +172,7 @@ Due to differences in both methodology and intent, there are significant differe
 
 ___Should we break it down by "reviewed" Aquamaps as well?___
 
-The AquaMaps species list includes all species available as of December 2015.  The IUCN species list includes all species maps available directly from the IUCN Red List website (http://www.iucnredlist.org/technical-documents/spatial-data) as of December 2015, filtered to include only species with habitat listed as "marine."  For the purposes of this analysis, we did not include IUCN range maps for bird species, as those range maps are hosted separately by BirdLife International.
+The AquaMaps species list includes all species available as of December 2015.  The IUCN species list includes all species maps available directly from the IUCN Red List website (http://www.iucnredlist.org/technical-documents/spatial-data) as of December 2015, filtered to include only species with habitat listed as "marine."  For this analysis, we did not include IUCN range maps for bird species, as those data are hosted separately by BirdLife International.
 
 ## Taxonomic distribution between data sets
 
@@ -164,9 +180,11 @@ The AquaMaps species list includes all species available as of December 2015.  T
 
 ![](figures/bar_by_taxa_assessed.png)
 
-As IUCN only releases map sets when a taxonomic group (on the scale of order or family) has been comprehensively assessed, spatial data for many taxonomic classes are not available, and within a class, the assessed sub-groups may not represent the entire class.  For example, as of this writing, IUCN has released no spatial data for class Elasmobranchii (cartilaginous fishes including sharks and rays); and while IUCN offers a large number of maps within class Actinopterygii (ray-finned bony fishes), the available maps include only a few primarily tropical taxonomic sub-groups, such as wrasses, damselfish, butterflyfish, tunas, and billfishes.  However, IUCN's criterion of comprehensive assessment greatly reduces the risk of sample bias within the bounds of the assessed taxonomic groups.
+The IUCN only releases spatial data sets when a taxonomic group (on the scale of order or family) has been comprehensively assessed.  As such, spatial data for many taxonomic classes are not available, and within a class, the assessed sub-groups may not represent the entire class.  For example, as of this writing, IUCN has released no spatial data for class Elasmobranchii (cartilaginous fishes including sharks and rays); and while IUCN offers a large number of maps within class Actinopterygii (ray-finned bony fishes), the available maps include only a few primarily tropical taxonomic sub-groups, such as wrasses, damselfish, butterflyfish, tunas, and billfishes.  However, IUCN's criterion of comprehensive assessment greatly reduces the risk of sample bias within the bounds of the assessed taxonomic groups.
 
 The release of AquaMaps distribution maps is not limited in the same way, and maps are available across a much larger range of taxonomic classes; however, there is no guarantee that the list of species included within each class is a representative cross section of the entire class.  ___How do they choose their species to assess?___
+
+Some studies of species diversity, such as the Ocean Health Index, require both spatial distribution information and non-spatial information such as extinction risk, population trend, or native/non-native status provided by IUCN Red List assessments.  While all species represented in IUCN distribution maps have also been evaluated for Red List inclusion, we found that only `r round(nrow(spp_am %>% filter(sciname %in% spp_iucn_marine$sciname))/nrow(spp_am) * 100, 1)`% (`r nrow(spp_am %>% filter(sciname %in% spp_iucn_marine$sciname))` of `r nrow(spp_am)`) of AquaMaps species have been evaluated, severely limiting the catalog of available species maps for diversity studies.
 
 ## Spatial global distribution between data sets
 
@@ -178,7 +196,7 @@ ___main messages:___
 * Small number of overlapping species indicates that each offers data on distinct spp
 * This section is really supporting the idea that it is critical to understanding the differences, as both data sets support one another
 
-Using predefined species groups by the IUCN, it is clear to see that tropical species - specifically wrasses, corals, blennies and groupers, make up the majority of species found in both. This is driven more by the IUCN dataset since the number of species with spatial data is directly attributed to the species that have assessments. ___This could be shown using the n = XXX on the species group quadrant breakdown chart too.___
+Using predefined taxonomic groups by the IUCN, it is clear to see that tropical species - specifically wrasses, corals, blennies and groupers, make up the majority of species found in both. This is driven more by the IUCN dataset since the number of species with spatial data is directly attributed to the species that have assessments. ___This could be shown using the n = XXX on the taxonomic group quadrant breakdown chart too.___
 
 ___N Species by cell for each data set: all AM, all IUCN, and overlap (one? the other? occurrences of both?)___
 
@@ -186,8 +204,6 @@ ___N Species by cell for each data set: all AM, all IUCN, and overlap (one? the 
 ![](figures/all_iucn_map.png)
 
 ___Note that these level plots show the mean() of the cell value for each row and each column.___  For a difference plot, maybe there's another function that can show us that?
-
-![](figures/all_iucn_map.png)
 
 _Relevance of this_ - unequal distribution of assessed species - strengths and weaknesses of each; benefits of using both maybe?  save for discussion
 
