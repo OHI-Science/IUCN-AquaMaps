@@ -180,9 +180,12 @@ ___main messages:___
 
 Using predefined species groups by the IUCN, it is clear to see that tropical species - specifically wrasses, corals, blennies and groupers, make up the majority of species found in both. This is driven more by the IUCN dataset since the number of species with spatial data is directly attributed to the species that have assessments. ___This could be shown using the n = XXX on the species group quadrant breakdown chart too.___
 
-___Total species occurrences for each data set: all AM, all IUCN, and overlap (one? the other? occurrences of both?)___
+___N Species by cell for each data set: all AM, all IUCN, and overlap (one? the other? occurrences of both?)___
 
 ![](figures/all_aquamaps_map.png)
+![](figures/all_iucn_map.png)
+
+___Note that these level plots show the mean() of the cell value for each row and each column.___  For a difference plot, maybe there's another function that can show us that?
 
 _Relevance of this_ - unequal distribution of assessed species - strengths and weaknesses of each; benefits of using both maybe?  save for discussion
 
@@ -194,7 +197,7 @@ Each data set offers spatial distribution information for large numbers of speci
 
 ## Defining spatial alignment between the two data sets
 
-AquaMaps and IUCN marine species distribution maps ostensibly describe the same information, and while differences in methodology and input data will inevitably lead to differences, we would expect to see strong similarities between range maps for any given species.  
+AquaMaps and IUCN marine species distribution maps ostensibly describe the same information, and while differences in methodology and input data will inevitably lead to variation between range maps for any given species, we would expect to see some spatial correlation.  
 
 To facilitate our analysis, we selected the subset of marine species that have range maps in both IUCN (filtering out ranges identified as extinct) and AquaMaps current native distribution (n = `r nrow(spp_map_pairs)`), and used genus and species binomials to identify paired maps.  We then rasterized the IUCN shapefiles to match the Aquamaps half-cell raster.  We flattened each map by assigning to each cell a simple "presence/absence" value:
 
