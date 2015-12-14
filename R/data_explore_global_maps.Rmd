@@ -120,7 +120,7 @@ Now look at full aquamaps species
 
 all_am_rast_file   <- 'rasters/am_all_rast.tif'
 
-if(!file.exists(am_all_rast_file)) {
+if(!file.exists(all_am_rast_file)) {
   am_spp_cells_big <- fread(file.path(dir_am_data, 'hcaf_sp_native_trunc.csv')) %>%
     as.data.frame(stringsAsFactors = FALSE)
   
@@ -141,7 +141,7 @@ if(!file.exists(am_all_rast_file)) {
                      which = 'all_count', 
                      subsWithNA = TRUE)
   
-  writeRaster(all_am_map, filename = am_all_rast_file, overwrite = TRUE)
+  writeRaster(all_am_map, filename = all_am_rast_file, overwrite = TRUE)
 
 } else {
   all_am_map   <- raster(all_am_rast_file)
@@ -154,9 +154,9 @@ Now look at full IUCN species
 
 ```{r all_aquamaps, eval = FALSE, echo = FALSE}
 
-all_iucn_rast_file   <- 'rasters/am_all_rast.tif'
+all_iucn_rast_file   <- 'rasters/iucn_all_rast.tif'
 
-if(!file.exists(iucn_all_rast_file)) {
+if(!file.exists(all_iucn_rast_file)) {
   iucn_cells_file    <- file.path(dir_data_iucn, 'iucn_cells_2015.csv')
   iucn_spp_cells_all <- fread(iucn_cells_file) %>%
         as.data.frame(stringsAsFactors = FALSE)
@@ -181,7 +181,7 @@ if(!file.exists(iucn_all_rast_file)) {
   writeRaster(all_iucn_map, filename = all_iucn_rast_file, overwrite = TRUE)
 
 } else {
-  all_iucn_map   <- raster(iucn_all_rast_file)
+  all_iucn_map   <- raster(all_iucn_rast_file)
 }
 
 levelplot(all_iucn_map, par.settings = myTheme, main = 'Entire IUCN Dataset')
@@ -192,36 +192,26 @@ levelplot(all_iucn_map, par.settings = myTheme, main = 'Entire IUCN Dataset')
 ``` {r variations_on_gl_dist_maps, echo = FALSE, eval = FALSE}
 ### rescale values relative to maximum cell value
 
-am_map_max <- max(all_am_map, na.rm = TRUE)
+am_map_max <- maxValue(all_am_map)
 all_am_pct_map <- all_am_map/am_map_max
 
-iucn_map_max <- max(all_iucn_map, na.rm = TRUE)
+iucn_map_max <- maxValue(all_iucn_map)
 all_iucn_pct_map <- all_iucn_map/iucn_map_max
 
 diff_pct_map    <- all_am_pct_map - all_iucn_pct_map
 
 ### plot maps with distributions as percentages.  Should it be 0 - 1, or 
 ### 0 - max value?
-levelplot(am_sp_pct_map, par.settings = myTheme, 
-          main = 'Aquamaps Dataset pct', 
+levelplot(all_am_pct_map, par.settings = myTheme, 
+          main = 'Aquamaps Dataset percent of max', 
           colorkey = list( at = seq(0, 1, length = 15)))
-levelplot(iucn_sp_pct_map, par.settings = myTheme, 
-          main = 'IUCN Dataset pct', 
+levelplot(all_iucn_pct_map, par.settings = myTheme, 
+          main = 'IUCN Dataset percent of max', 
           colorkey = list(at = seq(0, 1, length = 15)))
 ### this is the difference one. Should it be min value to max value?
 levelplot(diff_pct_map, par.settings = myTheme, 
-          main = 'IUCN pct - AM pct', 
+          main = 'Difference: AquaMaps - IUCN by percent', 
           colorkey = list(at = seq(-1, 1, length = 15)))
 
-### Do similar, but with the full aquamaps list (should also do this
-### against the full IUCN list...)
-all_am_pct_map <- subs(loiczid_raster, all[ , c('loiczid', 'all_pct')], 
-                   by = 'loiczid', 
-                   which = 'all_pct', 
-                   subsWithNA = TRUE)
-
-diff_pct_map2    <- iucn_sp_pct_map - all_am_pct_map
-levelplot(all_am_pct_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset, pct')
-levelplot(diff_pct_map2, par.settings = myTheme, main = 'iucn (overlap only) - aquamaps (all)')
 
 ```

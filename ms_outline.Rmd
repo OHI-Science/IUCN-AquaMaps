@@ -203,7 +203,9 @@ ___N Species by cell for each data set: all AM, all IUCN, and overlap (one? the 
 ![](figures/all_aquamaps_map.png)
 ![](figures/all_iucn_map.png)
 
-___Note that these level plots show the mean() of the cell value for each row and each column.___  For a difference plot, maybe there's another function that can show us that?
+![](figures/all_am-all_iucn_map.png)
+
+___Note: I believe these level plots show the mean() of the cell value for each row and each column.___  For a difference plot, maybe there's another function that can show us that?
 
 _Relevance of this_ - unequal distribution of assessed species - strengths and weaknesses of each; benefits of using both maybe?  save for discussion
 
