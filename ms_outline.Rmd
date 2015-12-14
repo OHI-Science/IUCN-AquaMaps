@@ -184,6 +184,8 @@ ___Total species occurrences for each data set: all AM, all IUCN, and overlap (o
 
 ![](figures/all_aquamaps_map.png)
 
+![](figures/all_iucn_map.png)
+
 _Relevance of this_ - unequal distribution of assessed species - strengths and weaknesses of each; benefits of using both maybe?  save for discussion
 
 Each data set offers spatial distribution information for large numbers of species.  However, the data sets vary in terms of taxonomic coverage and regional coverage.  For spatial assessments of biodiversity, the choice of one data set over the other is likely to create significantly different results.  For studies confined to a narrow range of taxa or to a narrow spatial scale, one data set may offer an advantage over the other in the number of species maps available.  For global scale biodiversity studies, however, the selection of one data set over the other will entail tradeoffs in spatial coverage, taxonomic breadth, and taxonomic depth. ___find a reference that describes what makes a "good" data set for global biodiversity, e.g. OHI___
