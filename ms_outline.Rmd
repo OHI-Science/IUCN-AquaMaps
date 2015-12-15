@@ -184,32 +184,22 @@ The IUCN only releases spatial data sets when a taxonomic group (on the scale of
 
 The release of AquaMaps distribution maps is not limited in the same way, and maps are available across a much larger range of taxonomic classes; however, there is no guarantee that the list of species included within each class is a representative cross section of the entire class.  ___How do they choose their species to assess?___
 
-Some studies of species diversity, such as the Ocean Health Index, require both spatial distribution information and non-spatial information such as extinction risk, population trend, or native/non-native status provided by IUCN Red List assessments.  While all species represented in IUCN distribution maps have also been evaluated for Red List inclusion, we found that only `r round(nrow(spp_am %>% filter(sciname %in% spp_iucn_marine$sciname))/nrow(spp_am) * 100, 1)`% (`r nrow(spp_am %>% filter(sciname %in% spp_iucn_marine$sciname))` of `r nrow(spp_am)`) of AquaMaps species have been evaluated, severely limiting the catalog of available species maps for diversity studies.
+Some global-scale studies of biodiversity, such as the Ocean Health Index, require both spatial distribution information and non-spatial information such as extinction risk, population trend, or native/non-native status provided by IUCN Red List assessments.  While all species represented in IUCN distribution maps have also been evaluated for Red List inclusion, we found that only `r round(nrow(spp_am %>% filter(sciname %in% spp_iucn_marine$sciname))/nrow(spp_am) * 100, 1)`% (`r nrow(spp_am %>% filter(sciname %in% spp_iucn_marine$sciname))` of `r nrow(spp_am)`) of AquaMaps species have been similarly evaluated, severely limiting the catalog of available species maps for studies of species diversity and ecosystem health.
+
+-----
 
 ## Spatial global distribution between data sets
-
-___main messages:___ 
-
-* IUCN seems to be weighted toward tropics; AM might be more evenly distributed?
-* This difference in distribution might come into play when selecting a data set for a more regionally-focused study
-* ... or for global studies, it might be desirable to use both data sets to get better global distribution?
-* Small number of overlapping species indicates that each offers data on distinct spp
-* This section is really supporting the idea that it is critical to understanding the differences, as both data sets support one another
-
-Using predefined taxonomic groups by the IUCN, it is clear to see that tropical species - specifically wrasses, corals, blennies and groupers, make up the majority of species found in both. This is driven more by the IUCN dataset since the number of species with spatial data is directly attributed to the species that have assessments. ___This could be shown using the n = XXX on the taxonomic group quadrant breakdown chart too.___
-
-___N Species by cell for each data set: all AM, all IUCN, and overlap (one? the other? occurrences of both?)___
 
 ![](figures/all_aquamaps_map.png)
 ![](figures/all_iucn_map.png)
 
 ![](figures/all_am-all_iucn_map.png)
 
-___Note: I believe these level plots show the mean() of the cell value for each row and each column.___  For a difference plot, maybe there's another function that can show us that?
+The balance of species represented in IUCN spatial data skews toward tropical latitudes compared to the distribution represented in AquaMaps distribution maps.  (The tropical skew of IUCN species is also evident from an examination of the taxonomic groups included in the IUCN map set; see Fig. XXX).  While both data sets indicate highest species richness in the Coral Triangle and western Indian Ocean, the AquaMaps data set shows a relatively larger representation of species in the Atlantic, Caribbean, and eastern Pacific than does the IUCN data set.
 
-_Relevance of this_ - unequal distribution of assessed species - strengths and weaknesses of each; benefits of using both maybe?  save for discussion
+-----
 
-Each data set offers spatial distribution information for large numbers of species.  However, the data sets vary in terms of taxonomic coverage and regional coverage.  For spatial assessments of biodiversity, the choice of one data set over the other is likely to create significantly different results.  For studies confined to a narrow range of taxa or to a narrow spatial scale, one data set may offer an advantage over the other in the number of species maps available.  For global scale biodiversity studies, however, the selection of one data set over the other will entail tradeoffs in spatial coverage, taxonomic breadth, and taxonomic depth. ___find a reference that describes what makes a "good" data set for global biodiversity, e.g. OHI___
+Each data set offers spatial distribution information for large numbers of species.  However, the data sets vary in terms of taxonomic coverage and regional coverage.  For spatial assessments of biodiversity, the choice of one data set over the other is likely to create significantly different results.  For studies confined to a narrow range of taxa or to a narrow spatial scale, one data set may offer an advantage over the other in the number of species maps available.  For global scale biodiversity studies, however, the selection of one data set over the other will entail tradeoffs in spatial coverage, taxonomic breadth, and taxonomic depth. ___find a reference that describes what makes a "good" data set for global biodiversity, e.g. OHI___ _or maybe species richness vs diversity vs "health" or whatnot_
 
 -----  
 
@@ -280,14 +270,15 @@ The lower left quadrant (quadrant 4: poorly matched in both dimensions) indicate
 
 Figure 2 divides the `r nrow(spp_map_pairs)` species map pairs into taxonomic groups as classified by the published IUCN range maps, and examines the breakdown of each taxonomic group by quadrant.  
 
+### Mechanistic explanations for some of the variation?
 
-___move to discussion?___ We were not surprised to find that map pairs for marine mammals, tunas, and billfishes were well-matched (quadrants 1 and 2); many of these species are global-ranging pelagic organisms, with some ranges encompassing nearly the entire ocean.  Mangroves are also not a surprise, being immobile and easily mapped by remote sensing methods.
+We were not surprised to find that map pairs for marine mammals, tunas, and billfishes were well-matched (quadrants 1 and 2); many of these species are global-ranging pelagic organisms, with some ranges encompassing nearly the entire ocean.
 
-_Map pairs for corals, most of which fall into quadrant 2, ***hypothesis...*** generally agree well in distribution, but in many cases IUCN ranges include buffers that extend much farther from coastlines than AquaMaps modeled ranges, which use seafloor depth as a limiting factor._
+_Map pairs for corals, most of which fall into quadrant 2, ***hypothesis... check a bunch of maps to see if this is a real trend*** generally agree well in distribution, but in many cases IUCN ranges include buffers that extend much farther from coastlines than AquaMaps modeled ranges, which use seafloor depth as a limiting factor._
 
 ___Other hypotheses/case studies to highlight possible mechanistic differences?___
 
-
+-----
 
 # AquaMaps: Effect of changing "presence" threshold on area representation
 
@@ -298,37 +289,41 @@ ___Identify several studies that used different thresholds - OHI, MPA gap analys
 ![](figures/scatter_AMThreshold_mockup.png)
 Effect of selecting different thresholds on total "present" area - linearish, no big steps or drops to indicate sudden change in tradeoff.  Do regression - shallow slope indicates that sensitivity is less than 1:1.
 
-
-
 -----  
 
 # Implications
 
 ## Application to OHI
 
-The global Ocean Health Index (Halpern et al. 2012), an index made up of 10 goals, utilizes both of these datasets to inform the  Biodiversity goal. The biodiversity goal is made up of two parts; Species and Habitats. The species subgoal uses the IUCN range map data and threat status to calculate average species status in global ocean regions around the world. Spatial range maps are developed by experts for species that are assessed. The assessment process happens in phases and only [X] number of marine species have been given spatial range maps. AquaMaps has spatial range maps for over 17,000 species. For those species that are missing spatial information from IUCN, AquaMaps data was used. If a species was assigned an IUCN threat status but did not have spatial range information in either dataset, it was excluded.
+The global Ocean Health Index (Halpern et al. 2012), an index made up of 10 goals, utilizes both of these datasets to inform the Biodiversity goal. The biodiversity goal is made up of two parts; Species and Habitats. As it is currently calculated, the Species subgoal uses the IUCN range map data and IUCN Red List conservation status to calculate an area-weighted mean species status in each of 221 exclusive economic zones. For those species that are are represented within the IUCN range maps, AquaMaps distribution maps were used.  Species with no spatial data in either data set were excluded, as were species with insufficient information to determine conservation status (including species listed as not evaluated or data deficient).
 
-This decision to use IUCN data preferentially to AquaMaps data was made based on the fact that experts are developing the IUCN maps and AquaMaps data is based off a computer model, which in some cases is then consulted by an expert and appropriately altered.
+This decision to use IUCN data preferentially to AquaMaps data was made based on the fact that experts are developing the IUCN maps and AquaMaps data is based off a computer model, which in some cases is then consulted by an expert and appropriately altered. ___is this really the reasoning behind the decision? let's get the real reason in here___
 
-Between the two databases, there are 1,923 species that have a range map in both. Figure [X] shows the change in status score for the Species Subgoal within the global Ocean Health Index under three different scenarios. 
+Figure [X] shows the change in status score for the Species Subgoal within the global Ocean Health Index under three different scenarios. 
 
 ![Absolute change in SPP score](figures/SPP_scenarios/boxplot_abs_diff.png)
 
-<!--
-![Relative change in SPP score](figures/SPP_scenarios/boxplot_rel_diff.png)
--->
 
-Scenario 1 shows change in score if IUCN maps were still preferentially used over AquaMaps, but the AquaMaps threshold was set to 1% rather than 40% probability of occurrence. Scenario 2 shows the change in score if we switched preferences for AquaMaps over IUCN data while keeping the 40% probability of occurrence threshold. The final Scenario is the same as scenario 2 but without a probability of occurrence threshold.
+| Scenario              | Priority data source | AquaMaps presence threshold |
+| --------------------- | :------------------: | :-------------------------: |
+| Scenario 0 (current)  | IUCN                 |  >= 40%                     |
+| Scenario 1            | IUCN                 |   > 0%                      |
+| Scenario 2            | AquaMaps             |  >= 40%                     |
+| Scenario 3            | AquaMaps             |   > 0%                      |
 
+Scenario 1 shows the effect of reducing the threshold for AquaMaps presence.  This will always increase the apparent range of any AquaMaps species in the analysis.  The slight decrease in average score suggests increased spatial representation of species at greater risk of extinction.
 
-It is important to remember that although only ___[X (1,923/total number of species)]%___ of all species included in the species goal are found in both datasets, there are still significant differences when electing to choose one dataset over the other.
+Scenario 2 shows the effect of prioritizing AquaMaps data over IUCN, while maintaining the same presence threshold.  This will have different effects depending on the species; in general, AquaMaps ranges are smaller than IUCN ranges, so we could predict an average decrease in range for these overlapping species.  _The slight bump in mean score indicates that a slight increased representation of low-risk species counterbalances a decreased representation of high-risk species._ ___can we really make any generalizations here? not really anything useful without further analysis___
+
+Scenario 3 shows the combination of the two previous scenarios.  The larger decrease in score indicates that the ___hmm gotta think about this a little more - come back to it___
 
 -----  
 
 ## Application to MPA Gap Analysis
 
-___need more info on these options? they both sound interesting though___
-- could talk about MPA gap analysis
+___yeah still gotta do something on this one___
+
+-----
 
 # Conclusion
 
