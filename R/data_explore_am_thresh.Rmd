@@ -28,8 +28,6 @@ spp <- as.data.frame(spp)
 
 ```{r hist_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE}
 
-### create dataframe that gives me all species, their total number of cells, 
-### total number of cells >= 0.4 prob, difference between the two and threat
 spp_df3 <- spp_cells %>%
   group_by(species_id) %>%
   summarize(cells_0.4 = sum(probability >= 0.4),
@@ -58,7 +56,7 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
   labs(x = 'Proportion of range area included when selecting a threshold of 0.4', 
        y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3)))
 
-ggsave('../figures/AMThreshold.png', width = 6, height = 4)
+ggsave('figures/AMThreshold.png', width = 6, height = 4)
 
 print(hist_area_vs_threshold)
 
@@ -78,7 +76,7 @@ hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) +
   labs(x = 'Proportion of range area included when selecting a threshold of 0.4', 
        y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3a)))
 
-ggsave('../figures/AMThreshold2.png', width = 6, height = 4)
+ggsave('figures/AMThreshold2.png', width = 6, height = 4)
 
 print(hist_area_vs_threshold2)
 
@@ -110,7 +108,11 @@ for (i in seq(0, 1, .05)) { # i = .05
 thresh_df_summary <- threshold_df %>%
   group_by(thresh) %>%
   summarize(mean_prop   = mean(proportion, na.rm = TRUE),
-            median_prop = median(proportion, na.rm = TRUE))
+            median_prop = median(proportion, na.rm = TRUE),
+            quant09 = quantile(proportion, .09),
+            quant25 = quantile(proportion, .25),
+            quant75 = quantile(proportion, .75),
+            quant91 = quantile(proportion, .91))
 
 scatter_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = mean_prop)) + 
   ggtheme_plot + 
@@ -123,9 +125,54 @@ scatter_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = mean_
        x = 'Presence threshold cutoff', 
        y = 'Mean (median) relative species range')
 
-ggsave('../figures/scatter_AMThreshold.png', width = 6, height = 4)
+ggsave('figures/scatter_AMThreshold.png', width = 6, height = 4)
 
 print(scatter_area_vs_threshold)
+
+
+```
+
+```{r boxplot_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE}
+
+area_mean_model <- lm(mean_prop ~ thresh, data = thresh_df_summary)
+area_median_model  <- lm(median_prop ~ thresh,  data = thresh_df_summary)
+  
+
+ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median_prop)) + 
+  ggtheme_plot + 
+#  geom_point(position = position_jitter(w = .1), aes(color = scenario), alpha = .5) +
+
+  geom_ribbon(aes(ymax = quant91, ymin = quant09), alpha = .5, color = NA, fill = 'grey80') +
+  geom_ribbon(aes(ymax = quant75, ymin = quant25), alpha = .5, color = NA, fill = 'grey70') +
+  geom_point(color = 'grey20') + 
+  geom_point(aes(y = mean_prop), color = 'darkred') + 
+  geom_abline(intercept = area_mean_model[['coefficients']][1],
+              slope     = area_mean_model[['coefficients']][2],
+              color = 'red') + 
+  geom_vline(x = 0.40, color = 'blue', linetype = 'dashed') +
+  geom_vline(x = 0.50, color = 'blue', linetype = 'dashed') +
+  geom_vline(x = 0.60, color = 'blue', linetype = 'dashed') +
+  annotate('text', x = .40, y = .05, hjust = 0, vjust = -.5,
+           angle = 90, size = 2, color = 'grey20',
+           label = 'Ocean Health Index: 40%') + 
+  annotate('text', x = .50, y = .05, hjust = 0, vjust = -.5,
+           angle = 90, size = 2, color = 'grey20',
+           label = 'MPA Gap Analysis: 50%') + 
+  annotate('text', x = .60, y = .05, hjust = 0, vjust = -.5,
+           angle = 90, size = 2, color = 'grey20',
+           label = 'Marine mammals: 60%') + 
+  annotate('text', x = .75, y = .85,
+           size = 2, color = 'grey20',
+           label = 'R^2 = .995') + 
+  ylim(0, 1) +
+  labs(title = 'Relative species range after presence threshold',
+       x = 'Presence threshold cutoff', 
+       y = 'Mean (median) relative species range')
+
+print(ribbon_area_vs_threshold)
+
+ggsave('figures/ribbon_AMThreshold.png', width = 6, height = 4)
+
 
 
 ```
