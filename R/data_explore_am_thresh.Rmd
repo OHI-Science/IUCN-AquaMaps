@@ -43,9 +43,20 @@ iucn_levels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')
 spp_df3 <- spp_df3 %>% 
   transform(iucn_code = factor(iucn_code, levels = iucn_levels))
 
+spp_df3_mean <- mean(spp_df3$prop, na.rm = TRUE)
+spp_df3_med <- median(spp_df3$prop, na.rm = TRUE)
+
 hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) + 
   ggtheme_plot + 
   geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
+  geom_vline(x = spp_df3_mean, color = 'darkred', linetype = 'dashed') + 
+  annotate('text', x = spp_df3_mean, y = .16, hjust = 0, vjust = -.5,
+           angle = 90, size = 2, color = 'grey20',
+           label = 'mean') + 
+  geom_vline(x = spp_df3_med, color = 'grey30', linetype = 'dashed') + 
+  annotate('text', x = spp_df3_med, y = .16, hjust = 0, vjust = -.5,
+           angle = 90, size = 2, color = 'grey20',
+           label = 'median') + 
   scale_fill_manual(values = c('LC' = 'green4', 
                                'NT' = 'greenyellow', 
                                'VU' = 'orange', 
@@ -56,16 +67,30 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
   labs(x = 'Proportion of range area included when selecting a threshold of 0.4', 
        y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3)))
 
-ggsave('figures/AMThreshold.png', width = 6, height = 4)
-
 print(hist_area_vs_threshold)
+
+ggsave('figures/AMThreshold.png', width = 6, height = 4)
+```
+
+```{r hist_lost_area_w_threshold_ne_dd_removed, warning = FALSE, message = FALSE, echo = FALSE}
 
 spp_df3a <- spp_df3 %>% 
   filter(!iucn_code %in% c('DD', 'NE'))
 
+spp_df3a_mean <- mean(spp_df3$prop, na.rm = TRUE)
+spp_df3a_med <- median(spp_df3$prop, na.rm = TRUE)
+
 hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) + 
   ggtheme_plot + 
   geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
+  geom_vline(x = spp_df3a_mean, color = 'darkred', linetype = 'dashed') + 
+  annotate('text', x = spp_df3a_mean, y = .16, hjust = 0, vjust = -.5,
+           angle = 90, size = 2, color = 'grey20',
+           label = 'mean') + 
+  geom_vline(x = spp_df3a_med, color = 'grey30', linetype = 'dashed') + 
+  annotate('text', x = spp_df3a_med, y = .16, hjust = 0, vjust = -.5,
+           angle = 90, size = 2, color = 'grey20',
+           label = 'median') + 
   scale_fill_manual(values = c('LC' = 'green4', 
                                'NT' = 'greenyellow', 
                                'VU' = 'orange', 
@@ -144,7 +169,7 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
 
   geom_ribbon(aes(ymax = quant91, ymin = quant09), alpha = .5, color = NA, fill = 'grey80') +
   geom_ribbon(aes(ymax = quant75, ymin = quant25), alpha = .5, color = NA, fill = 'grey70') +
-  geom_point(color = 'grey20') + 
+  geom_point(color = 'grey30') + 
   geom_point(aes(y = mean_prop), color = 'darkred') + 
   geom_abline(intercept = area_mean_model[['coefficients']][1],
               slope     = area_mean_model[['coefficients']][2],
