@@ -75,7 +75,9 @@ spp_list <- spp_list %>%
 ``` {r, child = 'R/data_explore_pt2.Rmd', eval = FALSE}
 ```
 
+***
 
+Quadrant map and quad breakdown by taxa and risk
 
 ``` {r pct_overlap_vs_ratio_of_area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
@@ -84,7 +86,7 @@ spp_list <- spp_list %>%
          area_ratio = ifelse(area_ratio > 1, 1 / area_ratio, area_ratio),
          area_ratio = area_ratio * 100)
 
-### define 25% and 75% quartiles for both x and y axes
+### define 25%, 50%, and 75% quartiles for both x and y axes
 area_ratio_quartiles <- quantile(spp_list$area_ratio, na.rm = TRUE)[2:4]
 pct_overlap_quartiles <- quantile(spp_list$sm_perc, na.rm = TRUE)[2:4]
 
@@ -124,17 +126,53 @@ scatter_arearatio_vs_overlap <- ggplot(spp_list %>%
                      ymin = pct_overlap_quartiles[2], ymax =   0, alpha = .3, fill= "orange") + 
     annotate("rect", xmin = area_ratio_quartiles[2],  xmax =   0, 
                      ymin = pct_overlap_quartiles[2], ymax =   0, alpha = .3, fill= "orangered2") + 
-  geom_point() + 
+  geom_point(alpha = .6)
+
+### Manage scales for color and size 
+scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
   scale_colour_manual(values = c('LC' = 'green4', 
                                  'NT' = 'greenyellow', 
                                  'VU' = 'yellow', 
                                  'EN' = 'orange', 
                                  'CR' = 'orangered2',
-                                 'DD' = 'grey30')) +
-  geom_vline(x = area_ratio_quartiles[c(1, 3)],
-             color = 'grey50', linetype = 'dashed') +
-  geom_hline(y = pct_overlap_quartiles[c(1, 3)],
-             color = 'grey50', linetype = 'dashed') +
+                                 'DD' = 'grey30')) + 
+  scale_size_continuous(limits = c(0, 100),
+                        breaks = c( 0,    25,    50,    75,    100), 
+                        labels = c('0%', '25%', '50%', '75%', '100%')) + 
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 100)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100))
+  
+### here are median labels:
+scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
+  annotate(geom = 'text',
+           x = area_ratio_quartiles[2], y = 5,
+           hjust = 0, vjust = 0,
+           color = 'grey50', size = 2,
+           fontface = 'bold.italic', angle = 90,
+           label = sprintf('Median = %s%%', round(area_ratio_quartiles[2], 1))) +
+  annotate(geom = 'text',
+           x = 5, y = pct_overlap_quartiles[2],
+           hjust = 0, vjust = 0,
+           color = 'grey50', size = 2,
+           fontface = 'bold.italic', angle = 0,
+           label = sprintf('Median = %s%%', round(pct_overlap_quartiles[2], 1)))
+  
+### here are median lines:
+# scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
+#   geom_vline(x = area_ratio_quartiles[2],
+#              color = 'grey50', linetype = 'dashed') +
+#   geom_hline(y = pct_overlap_quartiles[2],
+#              color = 'grey50', linetype = 'dashed')
+
+### here are 25% and 75% quantile lines:
+# scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
+#   geom_vline(x = area_ratio_quartiles[c(1, 3)],
+#              color = 'grey50', linetype = 'dashed') +
+#   geom_hline(y = pct_overlap_quartiles[c(1, 3)],
+#              color = 'grey50', linetype = 'dashed')
+  
+### here are individual species, identified and named on the plot:
+# scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
 #   geom_point(data = spp_list_label, shape = 4, color = 'grey30', size = 4) + 
 #   geom_text(data = spp_list_label, 
 #             aes(label = sciname_label), 
@@ -142,19 +180,21 @@ scatter_arearatio_vs_overlap <- ggplot(spp_list %>%
 #             fontface = 'bold.italic',
 #             size = 2,
 #             hjust = .25,
-#             vjust = 1.5) +
-  labs(x = 'Area match: \n(range area smaller : range area larger) * 100%', 
-       y = 'Distribution match: \n % overlap of smaller range w/ larger', 
-       title = 'Area match vs distribution match',
-       color = 'Risk', size = '% ocean range')
+#             vjust = 1.5)
 
-ggsave(file.path(dir_fig, 'AreaRatiovsPercOverlap.png'), width = 6, height = 4)
+scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
+  labs(x = bquote('Area alignment '*alpha['area']*' (%)'), 
+       y = bquote('Distribution alignment '*alpha['dist']*' (%)'), 
+       title = 'Distribution alignment vs area alignment',
+       color = 'Risk', size = '% ocean range') 
 
 print(scatter_arearatio_vs_overlap)
 
+ggsave(file.path(dir_fig, 'AreaRatiovsPercOverlap.png'), width = 6, height = 4)
+
 ```
 
-```{r plot_spp_from_quadrants, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+``` {r plot_spp_from_quadrants, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 for (i in 1:length(spp_quads)) { # i = 1
   spp <- spp_quads[i]
@@ -235,12 +275,13 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
                                'q2 dist-matched'   = 'greenyellow', 
                                'q3 area-matched'   = 'orange', 
                                'q4 poorly matched' = 'orangered2')) +
-  geom_text(aes(label = sprintf('n = %s', n_spp), y = .05), hjust = 0, size = 4) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+  geom_text(aes(label = sprintf('n = %s', n_spp), y = .05), hjust = 0, size = 2, color = 'grey20') +
   coord_flip() +
-  labs(x = 'Species Group', 
-       y = 'Relative number of species per quadrant', 
-       title = 'Species group breakdown by quadrant',
-       fill = 'Match quadrant')
+  labs(x = 'Taxonomic Group', 
+       y = 'Relative proportion of species per quadrant', 
+       title = 'Taxonomic group by quadrant',
+       fill = 'Alignment')
 
 print(barchart_spp_gp_quads)
 ggsave(plot = barchart_spp_gp_quads,
@@ -318,17 +359,18 @@ barchart_spp_risk_quads <- ggplot(spp_risk_quadrants %>%
                                'q2 dist-matched'   = 'greenyellow', 
                                'q3 area-matched'   = 'orange', 
                                'q4 poorly matched' = 'orangered2')) +
-  geom_text(aes(label = sprintf('n = %s', n_spp), y = .05), hjust = 0, size = 4) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+  geom_text(aes(label = sprintf('n = %s', n_spp), y = .05), hjust = 0, size = 2, color = 'grey20') +
   coord_flip() +
   labs(x = 'Risk category', 
-       y = 'Relative number of species per quadrant', 
-       title = 'Risk category breakdown by quadrant',
-       fill = 'Match quadrant')
+       y = 'Relative proportion of species per quadrant', 
+       title = 'Risk category by quadrant',
+       fill = 'Alignment')
 
 print(barchart_spp_risk_quads)
 ggsave(plot = barchart_spp_risk_quads,
        filename = file.path(dir_fig, 'barchart_spp_risk_quads.png'),
-       width = 6, height = 4)
+       width = 6, height = 1.5)
 
 ```
 
@@ -374,7 +416,7 @@ sciname_lookup <- read.csv('sciname_lookups/spp_iucn_all.csv', stringsAsFactors 
 
 iucn_maps_class <- spp_iucn_maps %>% 
   left_join(sciname_lookup %>% 
-              select(sciname, class) %>%
+              dplyr::select(sciname, class) %>%
               unique(), 
             by = 'sciname')
 
@@ -451,14 +493,17 @@ taxa_df <- taxa_am_all %>%
 
 
 knitr::kable(taxa_df %>%
-               select(class, AquaMaps = n_am_class_all, IUCN = n_iucn_class_all, Both = n_class_both))
+               dplyr::select(class, 
+                             AquaMaps = n_am_class_all, 
+                             IUCN = n_iucn_class_all, 
+                             Both = n_class_both))
 ```
 
 ``` {r plot bar charts by taxa, echo = FALSE, message = FALSE, warning = FALSE}
 ### bar charts comparing number of species in each class for each data set
 
 taxa_df_long1 <- taxa_df %>%
-  select(class, AquaMaps = n_am_class_all, IUCN = n_iucn_class_all, Both = n_class_both) %>%
+  dplyr::select(class, AquaMaps = n_am_class_all, IUCN = n_iucn_class_all, Both = n_class_both) %>%
   gather(dataset, n_spp, AquaMaps:Both)
 bar_taxa1 <- ggplot(taxa_df_long1, aes(x = class, y = n_spp)) +
   ggtheme_plot + 
@@ -468,7 +513,7 @@ bar_taxa1 <- ggplot(taxa_df_long1, aes(x = class, y = n_spp)) +
 print(bar_taxa1)
 
 taxa_df_long2 <- taxa_df %>%
-  select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
+  dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
   gather(dataset, n_spp, AquaMaps:Both) %>%
   group_by(class) %>%
   mutate(n_total = sum(n_spp, na.rm = TRUE),
@@ -477,15 +522,17 @@ bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) 
   ggtheme_plot + 
   geom_bar(stat = 'identity', alpha = .5) +
   scale_fill_manual(values = c('AquaMaps' = 'red', 'Both' = 'mediumorchid', 'IUCN' = 'blue')) +
-  geom_text(aes(label = sprintf('n = %s', n_total), y = .05), hjust = 0, size = 4, angle = 90, hjust = 1) +
+  geom_text(aes(label = sprintf('n = %s', n_total), y = 3), 
+            size = 3, angle = 90, hjust = 0, color = 'grey30') +
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100))
   labs(x = 'Class', y = 'Percent of mapped species',
        title = 'Distribution of species maps by taxonomic group (class)')
 print(bar_taxa2)
 ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), height = 4, width = 8)
 
 taxa_df_long3 <- taxa_df %>%
-  select(class, AquaMaps = n_am_class_solo_ass, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
+  dplyr::select(class, AquaMaps = n_am_class_solo_ass, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
   gather(dataset, n_spp, AquaMaps:Both) %>%
   group_by(class) %>%
   mutate(n_total = sum(n_spp, na.rm = TRUE),
@@ -494,8 +541,10 @@ bar_taxa3 <- ggplot(taxa_df_long3, aes(x = class, y = percent, fill = dataset)) 
   ggtheme_plot + 
   geom_bar(stat = 'identity', alpha = .5) +
   scale_fill_manual(values = c('AquaMaps' = 'red', 'Both' = 'mediumorchid', 'IUCN' = 'blue')) +
-  geom_text(aes(label = sprintf('n = %s', n_total), y = .05), hjust = 0, size = 4, angle = 90, hjust = 1) +
+  geom_text(aes(label = sprintf('n = %s', n_total), y = 3), 
+            size = 3, angle = 90, hjust = 0, color = 'grey30') +
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100))
   labs(x = 'Class', y = 'Percent of mapped and assessed species',
        title = 'Distribution of species maps by taxonomic group (class)')
 print(bar_taxa3)
