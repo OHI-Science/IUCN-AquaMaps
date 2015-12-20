@@ -1,0 +1,201 @@
+Exploring possible correlation between total species range area and percent overlap of smaller range within the larger:
+  
+``` {r pct overlap vs tot area, echo = FALSE, warning = FALSE, message = FALSE}
+
+scatter_area_vs_overlap <- ggplot(spp_list, aes(sm_perc, total_area, color = sm_range)) + 
+  ggtheme_plot + 
+  geom_point() + 
+  geom_abline() + 
+  labs(y = 'Total Area (km^2)', 
+       x = 'Percent overlap smaller range in larger', 
+       title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
+
+lm_eqn <- function(df){
+  m  <- lm(total_area ~ sm_perc, spp_list)
+  eq <- substitute(italic('y') == a + b %.% italic('x')*","~~italic(r)^2~"="~r2, 
+                   list(a  = format(coef(m)[1], digits = 2), 
+                        b  = format(coef(m)[2], digits = 2), 
+                        r2 = format(summary(m)$r.squared, digits = 3)))
+  as.character(as.expression(eq))             
+}
+
+scatter_area_vs_overlap <- scatter_area_vs_overlap + 
+  geom_text(x = 40, y = 300000000, label = lm_eqn(spp_list), parse = TRUE)
+
+print(scatter_area_vs_overlap)
+
+# summary(lm(total_area ~ sm_perc, spp_list))
+
+ggsave(file.path(dir_fig, 'AreavsPercOverlap.png'), width = 6, height = 4)
+
+
+```
+
+  
+``` {r pct overlap vs lg area, echo = FALSE, warning = FALSE, message = FALSE}
+
+scatter_lg_area_vs_overlap <- ggplot(spp_list, aes(lg_area_pct, sm_perc, color = sm_range)) + 
+  ggtheme_plot + 
+  geom_point() + 
+  geom_abline() + 
+  labs(x = 'Larger range (% total ocean)', 
+       y = 'Percent overlap smaller range in larger', 
+       title = 'Percent overlap vs. larger range')
+
+print(scatter_lg_area_vs_overlap)
+
+# summary(lm(total_area ~ sm_perc, spp_list))
+
+ggsave(file.path(dir_fig, 'PercOverlapvsLgArea.png'), width = 6, height = 4)
+
+
+```
+
+
+***  
+  
+Percent coverage as function of area, clipping to area below 100,000,000 km^2^:
+
+``` {r, echo = FALSE, warning = FALSE, message = FALSE}
+# remove all area greater than 100000000
+
+spp_small_df <- spp_list %>% 
+  filter(total_area < 100000000)
+
+
+scatter_a_vs_overlap_small <- ggplot(spp_small_df, aes(total_area, sm_perc, color = sm_range)) + 
+  ggtheme_plot + 
+  geom_point() + 
+  labs(x = 'Total Area (km^2)', 
+       y = 'Percent overlap smaller range in larger', 
+       title = 'Size of species range vs. percent overlap of \nsmaller range with larger')
+
+ggsave(file.path(dir_fig, 'AreavsPercOverlap_2.png'), width = 6, height = 4)
+
+
+print(scatter_a_vs_overlap_small)
+
+```
+
+Percent coverage as a function of log(area)
+``` {r, echo = FALSE, warning = FALSE, message = FALSE}
+# Log transform area
+
+scatter_logA_vs_overlap <- ggplot(spp_list, aes(log_total_area, sm_perc, color = sm_range)) + 
+  ggtheme_plot + 
+  geom_point() + 
+  labs(x = 'Log(total Area)', 
+       y = 'Percent overlap smaller range in larger', 
+       title = 'Size of species range (log) vs. percent overlap of \nsmaller range with larger')
+
+ggsave(file.path(dir_fig, 'AreavsPercOverlap_log.png'), width=6, height=4)
+
+print(scatter_logA_vs_overlap)
+```
+
+
+``` {r examine regressions, eval = FALSE, echo = FALSE, warning = FALSE}
+
+A_mdl      <- lm(total_area ~ sm_perc, spp_list)
+#                Estimate Std. Error t value Pr(>|t|)    
+#   (Intercept) -16285410    2858388  -5.697  1.4e-08 ***
+#   sm_perc        533370      41702  12.790  < 2e-16 ***
+#   Multiple R-squared:  0.07732,	Adjusted R-squared:  0.07685 
+
+A_mdl_clip <- lm(total_area ~ sm_perc, l)
+#               Estimate Std. Error t value Pr(>|t|)    
+#   (Intercept)  2993939     810560   3.694 0.000227 ***
+#   sm_perc       153523      11952  12.844  < 2e-16 ***
+#   Multiple R-squared:  0.07955,	Adjusted R-squared:  0.07906 
+logA_mdl   <- lm(log_total_area ~ sm_perc, spp_list)
+#                Estimate Std. Error t value Pr(>|t|)    
+#   (Intercept) 14.775325   0.096446   153.2   <2e-16 ***
+#   sm_perc      0.016885   0.001407    12.0   <2e-16 ***
+#   Multiple R-squared:  0.0687,	Adjusted R-squared:  0.06823 
+```
+
+***  
+  
+###(5) Examining data broken into quartiles to see if smaller patterns emerge
+``` {r examine quartiles, eval = FALSE, echo = FALSE, warning = FALSE}
+
+summary(spp_list$total_area)
+#      Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
+#     55760   3032000  10790000  18500000  22670000 372100000
+
+qtiles <- c(quantile(spp_list$total_area, 0.0, na.rm = TRUE),
+            quantile(spp_list$total_area, .25, na.rm = TRUE),
+            quantile(spp_list$total_area, .50, na.rm = TRUE),
+            quantile(spp_list$total_area, .75, na.rm = TRUE),
+            quantile(spp_list$total_area, 1.0, na.rm = TRUE))
+
+qtile_mdl <- list()
+for (i in 1:4) {
+  area_clip <- spp_list %>%
+    filter(total_area >= qtiles[i] & total_area < qtiles[i + 1])
+  qtile_mdl[[i]] <- lm(total_area ~ sm_perc, area_clip)
+  
+  qtile_plot <- ggplot(area_clip, aes(total_area, sm_perc, color = sm_range)) + 
+    ggtheme_plot + 
+    geom_point() + 
+    labs(x = 'Total Area (km^2)', 
+         y = 'Percent overlap smaller range in larger', 
+         title = sprintf('Size of species range (quartile %s) vs. percent overlap of \nsmaller range with larger', i))
+  
+  ggsave(file.path(dir_fig, paste0('AreavsOverlap_quantile_', i, '.png')), width = 6, height = 4)
+  print(qtile_plot)
+}
+# First quartile regression:
+#                 Estimate Std. Error t value Pr(>|t|)    
+#     (Intercept)  1423917     101053  14.091   <2e-16 ***
+#     sm_perc         1188       1555   0.764    0.445    
+#     Multiple R-squared:  0.001198,	Adjusted R-squared:  -0.0008529 
+#
+# second quartile:
+#                 Estimate Std. Error t value Pr(>|t|)    
+#     (Intercept)  7011028     275943  25.408  < 2e-16 ***
+#     sm_perc       -17725       4228  -4.192 3.28e-05 ***
+#     Multiple R-squared:  0.03483,	Adjusted R-squared:  0.03285 
+#
+# third quartile:
+#                 Estimate Std. Error t value Pr(>|t|)    
+#     (Intercept) 12813279     507856  25.230  < 2e-16 ***
+#     sm_perc        64710       8159   7.931  1.5e-14 ***
+#     Multiple R-squared:  0.1146,	Adjusted R-squared:  0.1128 
+#
+# fourth quartile:
+#                   Estimate Std. Error t value Pr(>|t|)    
+#     (Intercept) -101736351   17259544  -5.894 7.04e-09 ***
+#     sm_perc        1911286     215216   8.881  < 2e-16 ***
+#     Multiple R-squared:  0.1399,	Adjusted R-squared:  0.1381 
+
+# This avenue of exploration looks like a bust.
+
+```
+
+***  
+
+###(4) Looking at the percent of smaller species range that is within the larger range. 
+
+For each range 
+
+```{r pct_small_within_large, echo = FALSE, warning = FALSE, eval = TRUE}
+
+spp_df4 <- spp_list %>%
+  dplyr::select(sciname, sm_perc, sm_range) %>%
+  unique()
+      
+
+hist_sm_within_lg <- ggplot(spp_df4, aes(sm_perc, fill = sm_range)) + 
+  ggtheme_plot + 
+  geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 4, alpha = .8) +
+  scale_fill_discrete(name = 'Dataset with smaller range', labels = c('AquaMaps', 'IUCN')) + 
+  labs(title = 'Percent of smaller range within larger range',
+       x = 'Percent of smaller range that falls within the larger range', 
+       y = sprintf('Proportion of all species (n = %s)', nrow(spp_df4)))
+
+ggsave(file.path(dir_fig, 'PercSmallRangeInLarger.png'), width = 6, height = 4)
+
+print(hist_sm_within_lg)
+
+```
