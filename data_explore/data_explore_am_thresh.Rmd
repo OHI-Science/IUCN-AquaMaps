@@ -2,16 +2,13 @@
 
 This looks at the full Aquamaps dataset... should it be limited to species with valid categories?
 
-```{r aquamaps probabilities, warning = FALSE, message = FALSE, cache.lazy = FALSE, cache = TRUE, verbose = FALSE, results = FALSE, echo = FALSE, include = FALSE}
+```{r aquamaps_load_data, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 
 # get spp_cells raw data for aquamaps
 dir_aquamaps <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO/raw/aquamaps_2014')
 
 spp_cells <- read_csv(file.path(dir_aquamaps, 'tables/ohi_hcaf_species_native.csv'), 
                       col_types = '_ccd__', progress = TRUE)
-
-# spp_cells <- fread(input = file.path(dir_aquamaps, 'tables/ohi_hcaf_species_native.csv'), verbose = FALSE, header = TRUE, 
-#                   colClasses = c('NULL', 'character', NA, 'numeric', 'NULL', 'NULL')) #1 min 49 sec
 
 setnames(spp_cells, c('SpeciesID', 'CsquareCode', 'probability'), c('species_id', 'csquare_code', 'probability'))
 
@@ -49,11 +46,11 @@ spp_df3_med <- median(spp_df3$prop, na.rm = TRUE)
 hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) + 
   ggtheme_plot + 
   geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
-  geom_vline(x = spp_df3_mean, color = 'darkred', linetype = 'dashed') + 
+  geom_vline(xintercept = spp_df3_mean, color = 'darkred', linetype = 'dashed') + 
   annotate('text', x = spp_df3_mean, y = .16, hjust = 0, vjust = -.5,
            angle = 90, size = 2, color = 'grey20',
            label = 'mean') + 
-  geom_vline(x = spp_df3_med, color = 'grey30', linetype = 'dashed') + 
+  geom_vline(xintercept = spp_df3_med, color = 'grey30', linetype = 'dashed') + 
   annotate('text', x = spp_df3_med, y = .16, hjust = 0, vjust = -.5,
            angle = 90, size = 2, color = 'grey20',
            label = 'median') + 
@@ -85,11 +82,11 @@ spp_df3a_med <- median(spp_df3$prop, na.rm = TRUE)
 hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) + 
   ggtheme_plot + 
   geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
-  geom_vline(x = spp_df3a_mean, color = 'darkred', linetype = 'dashed') + 
+  geom_vline(xintercept = spp_df3a_mean, color = 'darkred', linetype = 'dashed') + 
   annotate('text', x = spp_df3a_mean, y = .16, hjust = 0, vjust = -.5,
            angle = 90, size = 2, color = 'grey20',
            label = 'mean') + 
-  geom_vline(x = spp_df3a_med, color = 'grey30', linetype = 'dashed') + 
+  geom_vline(xintercept = spp_df3a_med, color = 'grey30', linetype = 'dashed') + 
   annotate('text', x = spp_df3a_med, y = .16, hjust = 0, vjust = -.5,
            angle = 90, size = 2, color = 'grey20',
            label = 'median') + 
@@ -148,7 +145,7 @@ scatter_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = mean_
   geom_point(aes(y = median_prop), color = 'grey60') +
   geom_point() + 
   geom_abline(slope = -1, intercept = 1, color = 'red') + 
-  geom_vline(x = 0.40, color = 'blue', linetype = 'dashed') +
+  geom_vline(xintercept = 0.40, color = 'blue', linetype = 'dashed') +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
   labs(title = 'Mean (median) species range after presence threshold cutoff',
@@ -179,9 +176,9 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
   geom_abline(intercept = area_mean_model[['coefficients']][1],
               slope     = area_mean_model[['coefficients']][2],
               color = 'red') + 
-  geom_vline(x = 0.40, color = 'blue', linetype = 'dashed') +
-  geom_vline(x = 0.50, color = 'blue', linetype = 'dashed') +
-  geom_vline(x = 0.60, color = 'blue', linetype = 'dashed') +
+  geom_vline(xintercept = 0.40, color = 'blue', linetype = 'dashed') +
+  geom_vline(xintercept = 0.50, color = 'blue', linetype = 'dashed') +
+  geom_vline(xintercept = 0.60, color = 'blue', linetype = 'dashed') +
   annotate('text', x = .40, y = .05, hjust = 0, vjust = -.5,
            angle = 90, size = 2, color = 'grey20',
            label = 'Ocean Health Index: 40%') + 

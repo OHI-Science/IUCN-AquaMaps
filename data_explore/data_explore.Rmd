@@ -283,7 +283,7 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
                                   transform(spp_group_text = reorder(spp_group_text, pct_q1)), 
                                 aes(x = spp_group_text, fill = quad, weight = pct_quad)) +
   ggtheme_plot + 
-  geom_bar(stat = 'bin', alpha = .5) +
+  geom_bar(stat = 'count', alpha = .5) +
   scale_fill_manual(values = c('q1 well-matched'   = 'green4', 
                                'q2 dist-matched'   = 'greenyellow', 
                                'q3 area-matched'   = 'orange', 
@@ -367,7 +367,7 @@ barchart_spp_risk_quads <- ggplot(spp_risk_quadrants %>%
                                   transform(popn_category = reorder(popn_category, cat_rank)), 
                                 aes(x = popn_category, fill = quad, weight = pct_quad)) +
   ggtheme_plot + 
-  geom_bar(stat = 'bin', alpha = .5) +
+  geom_bar(stat = 'count', alpha = .5) +
   scale_fill_manual(values = c('q1 well-matched'   = 'green4', 
                                'q2 dist-matched'   = 'greenyellow', 
                                'q3 area-matched'   = 'orange', 
