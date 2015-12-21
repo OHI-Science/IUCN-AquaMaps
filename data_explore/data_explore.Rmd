@@ -11,6 +11,7 @@ library(ggplot2)
 library(maps)
 library(readr)
 library(data.table)
+library(raster)
 library(tidyr)
 library(dplyr)
 library(stringr)
@@ -19,10 +20,14 @@ dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
            'Darwin'  = '/Volumes/data_edit',
            'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
 
+dir_git <- '~/github/IUCN-AquaMaps'
+  
 dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
-dir_fig <- file.path(getwd(), 'figures')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
 
-source('R/data_explore_fxns.R')
+source('data_explore_fxns.R')
+### When knitting this, it automatically sets WD to be this directory...
 ```
 
 ```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE, results = 'hide'}
@@ -38,41 +43,49 @@ am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_20
 
 
 ### LOICZID cell ID numbers - used in plotting rasters
-loiczid_raster_file  <- 'shiny/data/loiczid_raster.grd'
+loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
 loiczid_raster       <- raster(loiczid_raster_file)
 names(loiczid_raster) <- 'loiczid'
 ```
 
 
 ```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
-data_file <- 'data/spp_list_w_area_percent_noextinct_2015.csv'
+data_file <- file.path(dir_data, 'spp_list_w_area_all.csv')
 
 
 if (!file.exists(data_file)) {
   ### species info list - scinames, IUCN species ID, AM species ID, category etc
-  spp_list_base <- read.csv('data/spp_am_v_iucn_2015_inclDD.csv', stringsAsFactors = FALSE)
+  spp_list_base <- read.csv(file.path(dir_data, 'spp_am_v_iucn.csv'),
+                            stringsAsFactors = FALSE)
   
   create_spp_list(spp_list_base, data_file)
 }
 
 
-spp_list <- read.csv(data_file, stringsAsFactors = FALSE) %>%
-  filter(!is.na(sm_perc)) 
+spp_list <- read.csv(data_file, stringsAsFactors = FALSE) 
+### At this point, spp_list contains subpops and aliases, and zero-area IUCNs
+
+spp_list <- spp_list %>%
+  filter(!is.na(sm_perc)) %>%
   ### will ditch the ones where no IUCN polygon exists - or are these species
   ### whose ranges only occur in cells beyond the LOICZID grid?
+  filter(!str_detect(spatial_source, 'subpop') & !str_detect(spatial_source, 'alias'))
 spp_list <- spp_list %>%
-  left_join(read.csv('data/sciname_lookups/spp_groupnames.csv', stringsAsFactors = FALSE),
+  left_join(read.csv(file.path(dir_data, 'sciname_lookups/spp_groupnames.csv'), 
+                     stringsAsFactors = FALSE),
             by = 'spp_group')
+
+write.csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 
 ```
 
-``` {r child = 'R/data_explore_pt1.Rmd', eval = FALSE}
+``` {r child = 'data_explore_pt1.Rmd', eval = FALSE}
 ```
 <!-- # bar chart: number of spp per group
 # scatter plot: area compare IUCN vs AM, including log plot and plot by species group
 # rangemap: Chromis alpha --> 
 
-``` {r, child = 'R/data_explore_pt2.Rmd', eval = FALSE}
+``` {r, child = 'data_explore_pt2.Rmd', eval = FALSE}
 ```
 
 ***
@@ -375,9 +388,9 @@ ggsave(plot = barchart_spp_risk_quads,
 ```
 
 
-``` {r child = 'R/data_explore_pt3.Rmd', eval = FALSE}
-```
 <!-- # Multiple species maps per quadrant -->
+``` {r child = 'data_explore_pt3.Rmd', eval = FALSE}
+```
 
 
 ***
@@ -387,32 +400,33 @@ Breakdown maps by taxa
 ``` {r load data, echo = FALSE, warning = FALSE, message = FALSE}
 ### use data_explore.Rmd to create this file, if it does not yet exist.
 
-data_file <- 'data/spp_list_w_area_percent_noextinct_2015.csv'
+data_file <- file.path(dir_data, 'spp_list_w_area_trimmed.csv')
 spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE) %>%
   filter(!is.na(popn_category)) %>% ### filter out unassessed species
   filter(!is.na(sm_perc))           ### filter out NA maps (usually IUCN maps with no polygons)
 
 ### generate other lists
 
-spp_all_file <- 'data/spp_all_2015.csv'
+spp_all_file <- file.path(dir_data, 'spp_all.csv')
 spp_all <- read.csv(spp_all_file, stringsAsFactors = FALSE) 
 
-iucn_marine_file <- 'data/spp_iucn_marine.csv'
+iucn_marine_file <- file.path(dir_data, 'spp_iucn_marine.csv')
 spp_iucn_marine <- read.csv(iucn_marine_file, stringsAsFactors = FALSE) 
 
-iucn_maps_file <- 'data/spp_iucn_maps.csv'
+message('Getting IUCN maps list')
+iucn_maps_file <- file.path(dir_data, 'spp_iucn_maps.csv')
 spp_iucn_maps <- read.csv(iucn_maps_file, stringsAsFactors = FALSE) %>%
   filter(spp_group != 'hagfishes') %>%           ### not from IUCN...
   filter(sciname %in% spp_iucn_marine$sciname)   ### ditch freshwater spp
 
-spp_am_file <- 'data/spp_am.csv'
+spp_am_file <- file.path(dir_data, 'spp_am.csv')
 spp_am <- read.csv(spp_am_file, stringsAsFactors = FALSE)
 
 ```
 
 ``` {r breakdown by taxa, echo = FALSE, message = FALSE, warning = FALSE}
 
-sciname_lookup <- read.csv('data/sciname_lookups/spp_iucn_all.csv', stringsAsFactors = FALSE)
+sciname_lookup <- read.csv(file.path(dir_data, 'sciname_lookups/spp_iucn_scinames.csv'), stringsAsFactors = FALSE)
 
 iucn_maps_class <- spp_iucn_maps %>% 
   left_join(sciname_lookup %>% 
@@ -525,7 +539,7 @@ bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) 
   geom_text(aes(label = sprintf('n = %s', n_total), y = 3), 
             size = 3, angle = 90, hjust = 0, color = 'grey30') +
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 100))
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) + 
   labs(x = 'Class', y = 'Percent of mapped species',
        title = 'Distribution of species maps by taxonomic group (class)')
 print(bar_taxa2)
@@ -544,7 +558,7 @@ bar_taxa3 <- ggplot(taxa_df_long3, aes(x = class, y = percent, fill = dataset)) 
   geom_text(aes(label = sprintf('n = %s', n_total), y = 3), 
             size = 3, angle = 90, hjust = 0, color = 'grey30') +
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 100))
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
   labs(x = 'Class', y = 'Percent of mapped and assessed species',
        title = 'Distribution of species maps by taxonomic group (class)')
 print(bar_taxa3)
@@ -555,26 +569,11 @@ ggsave(filename = file.path(dir_fig, 'bar_by_taxa_assessed.png'), height = 4, wi
 
 *** 
 
-``` {r, child = 'R/data_explore_global_maps.Rmd', eval = FALSE}
+``` {r, child = 'data_explore_global_maps.Rmd', echo = FALSE, message = FALSE, eval = TRUE}
 ```
 
 
 
-``` {r, child = 'R/data_explore_am_thresh.Rmd', eval = FALSE}
+``` {r, child = 'data_explore_am_thresh.Rmd', echo = FALSE, message = FALSE, eval = TRUE}
 ```
 
-
-## Changes in SPP for scenarios
-
-Comparing three scenarios to the current (v2015) global model for SPP:
-
-* Baseline is: preferring IUCN rangemaps over Aquamaps rangemaps; Aquamaps 'presence' threshold is set at 40% or greater.
-* Scenario 1: preferring IUCN rangemaps over Aquamaps; AM presence threshold set at >= 1% (effectively, all occurrences).
-* Scenario 2: preferring AM maps over IUCN; AM presence >= 40%.
-* Scenario 3: preferring AM over IUCN; AM presence >= 1%.
-
-Boxplots:
-
-![Absolute change in SPP score](figures/SPP_scenarios/boxplot_abs_diff.png)
-
-![Relative change in SPP score](figures/SPP_scenarios/boxplot_rel_diff.png)

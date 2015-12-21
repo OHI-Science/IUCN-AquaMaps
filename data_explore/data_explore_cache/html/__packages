@@ -8,9 +8,9 @@ stats
 ggplot2
 maps
 readr
+data.table
 sp
 raster
-data.table
 tidyr
 dplyr
 stringr

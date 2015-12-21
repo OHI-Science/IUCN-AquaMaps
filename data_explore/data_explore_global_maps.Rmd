@@ -2,54 +2,8 @@
 
 By counting the number of unique species are found in each of the half degree cells we can then create a single global raster of number of species.
 
-``` {r setup, message = FALSE, eval = FALSE}
-library(rasterVis)
-library(ggplot2)
-library(maps)
-library(raster)
-library(data.table)
-library(tidyr)
-library(dplyr)
-library(stringr)
-library(readr)
 
-dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
-           'Darwin'  = '/Volumes/data_edit',
-           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
-
-dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
-dir_am_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data/aquamaps/v2015/csv')
-dir_fig <- file.path(getwd(), 'figures')
-
-source('R/data_explore_fxns.R')
-
-
-
-
-data_file <- 'data/spp_list_w_area_percent_noextinct_2015.csv'
-
-spp_list <- read.csv(data_file, stringsAsFactors = FALSE) %>%
-  filter(!is.na(sm_perc)) ### will ditch the ones where no IUCN polygon exists
-
-```
-
-``` {r load data sets, echo = FALSE, message = FALSE}
-iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'), 
-                           col_types = 'cdddd', progress = TRUE) %>%
-  as.data.frame() %>%
-  filter(presence != 5) ### removes extinct subpopulations
-
-am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'), progress = TRUE)
-
-
-### LOICZID cell ID numbers - used in plotting rasters
-loiczid_raster_file  <- 'shiny/data/loiczid_raster.grd'
-loiczid_raster       <- raster(loiczid_raster_file)
-names(loiczid_raster) <- 'loiczid'
-```
-
-
-```{r global map matched species, echo = FALSE, warning = FALSE, message = FALSE}
+```{r global map matched species, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 ### find total species in each dataset for later percent calcs
 # am_n_tot   <- am_spp_cells %>% 
@@ -63,8 +17,8 @@ names(loiczid_raster) <- 'loiczid'
 ### good - the same number
 
 ### Number of aquamaps species per cell
-iucn_pair_rast_file <- 'rasters/iucn_pair_rast.tif'
-am_pair_rast_file   <- 'rasters/am_pair_rast.tif'
+iucn_pair_rast_file <- file.path(dir_data, 'rasters/iucn_pair_rast.tif')
+am_pair_rast_file   <- file.path(dir_data, 'rasters/am_pair_rast.tif')
 
 if(!file.exists(iucn_pair_rast_file) | !file.exists(am_pair_rast_file)) {
   am_n_per_cell <- am_spp_cells %>%
@@ -128,7 +82,7 @@ Now look at full aquamaps species
 
 ```{r all_aquamaps, eval = FALSE, echo = FALSE}
 
-all_am_rast_file   <- 'rasters/am_all_rast.tif'
+all_am_rast_file   <- file.path(dir_data, 'rasters/am_all_rast.tif')
 
 if(!file.exists(all_am_rast_file)) {
   am_spp_cells_big <- fread(file.path(dir_am_data, 'hcaf_sp_native_trunc.csv')) %>%
@@ -157,33 +111,36 @@ if(!file.exists(all_am_rast_file)) {
   all_am_map   <- raster(all_am_rast_file)
 }
 
-levelplot(all_am_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset')
+am_levelplot1 <- levelplot(all_am_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset')
 
 all_am_ln_map <- log(all_am_map + 1)
 all_am_ln_map <- all_am_ln_map/maxValue(all_am_ln_map)
-levelplot(all_am_ln_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset: log-transformed relative species richness', 
+am_levelplot1 <- levelplot(all_am_ln_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset: log-transformed relative species richness', 
           colorkey = list(at = seq(0, 1, length = 15)))
 
-am_ln_pts <- as.data.frame(rasterToPoints(all_am_ln_map))
-spp_richness_am_plot <- ggplot(am_ln_pts, aes(x = x, y = y)) +
-  ggtheme_map + 
-  geom_raster(aes(fill = layer), alpha = .7) +
-  scale_fill_continuous(low = 'white', high = 'blue') +
-  borders('world', color='gray40', fill='gray45', size = .1) +  # create a layer of borders
-  scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
-  scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2)) +
-  labs(title = 'AquaMaps Dataset: log-transformed relative species richness', x = NULL, y = NULL, fill = NULL) 
+print(am_levelplot1)
+print(am_levelplot2)
 
-spp_richness_am_plot
-ggsave(file.path(dir_fig, 'all_am_ln_map.png'), height = 4, width = 8)
+# am_ln_pts <- as.data.frame(rasterToPoints(all_am_ln_map))
+# spp_richness_am_plot <- ggplot(am_ln_pts, aes(x = x, y = y)) +
+#   ggtheme_map + 
+#   geom_raster(aes(fill = layer), alpha = .7) +
+#   scale_fill_continuous(low = 'white', high = 'blue') +
+#   borders('world', color='gray40', fill='gray45', size = .1) +  # create a layer of borders
+#   scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
+#   scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2)) +
+#   labs(title = 'AquaMaps Dataset: log-transformed relative species richness', x = NULL, y = NULL, fill = NULL) 
+# 
+# spp_richness_am_plot
+# ggsave(file.path(dir_fig, 'all_am_ln_map.png'), height = 4, width = 8)
 
 ```
 
 Now look at full IUCN species
 
-```{r all_aquamaps, eval = FALSE, echo = FALSE}
+```{r all_iucn, eval = FALSE, echo = FALSE}
 
-all_iucn_rast_file   <- 'rasters/iucn_all_rast.tif'
+all_iucn_rast_file   <- file.path(dir_data, 'rasters/iucn_all_rast.tif')
 
 if(!file.exists(all_iucn_rast_file)) {
   iucn_cells_file    <- file.path(dir_data_iucn, 'iucn_cells_2015.csv')
@@ -213,32 +170,32 @@ if(!file.exists(all_iucn_rast_file)) {
   all_iucn_map   <- raster(all_iucn_rast_file)
 }
 
-levelplot(all_iucn_map, par.settings = myTheme, main = 'Entire IUCN Dataset')
+iucn_levelplot1 <- levelplot(all_iucn_map, par.settings = myTheme, main = 'Entire IUCN Dataset')
 
 all_iucn_ln_map <- log(all_iucn_map + 1)
 all_iucn_ln_map <- all_iucn_ln_map/maxValue(all_iucn_ln_map)
-levelplot(all_iucn_ln_map, 
+iucn_levelplot2 <- levelplot(all_iucn_ln_map, 
           par.settings = myTheme, 
           margin = list(axis = TRUE),
           main = 'Entire IUCN Dataset: log-transformed relative species richness', 
           colorkey = list(at = seq(0, 1, length = 15)))
 
-iucn_ln_pts <- as.data.frame(rasterToPoints(all_iucn_ln_map))
-spp_richness_iucn_plot <- ggplot(iucn_ln_pts, aes(x = x, y = y)) +
-  ggtheme_map + 
-  geom_raster(aes(fill = layer), alpha = .7) +
-  scale_fill_continuous(low = 'white', high = 'blue') +
-  borders('world', color='gray40', fill='gray45', size = .1) +  # create a layer of borders
-  scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
-  scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2)) +
-  labs(title = 'IUCN Dataset: log-transformed relative species richness', x = NULL, y = NULL, fill = NULL) 
-
-spp_richness_iucn_plot
-ggsave(file.path(dir_fig, 'all_iucn_ln_map.png'), height = 4, width = 8)
+print(iucn_levelplot1)
+print(iucn_levelplot2)
+# iucn_ln_pts <- as.data.frame(rasterToPoints(all_iucn_ln_map))
+# spp_richness_iucn_plot <- ggplot(iucn_ln_pts, aes(x = x, y = y)) +
+#   ggtheme_map + 
+#   geom_raster(aes(fill = layer), alpha = .7) +
+#   scale_fill_continuous(low = 'white', high = 'blue') +
+#   borders('world', color='gray40', fill='gray45', size = .1) +  # create a layer of borders
+#   scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
+#   scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2)) +
+#   labs(title = 'IUCN Dataset: log-transformed relative species richness', x = NULL, y = NULL, fill = NULL) 
+# 
+# spp_richness_iucn_plot
+# ggsave(file.path(dir_fig, 'all_iucn_ln_map.png'), height = 4, width = 8)
 
 ```
-
-![image](figures/all_aquamaps_map.png)
 
 ``` {r variations_on_gl_dist_maps, echo = FALSE, eval = FALSE}
 ### rescale values relative to maximum cell value

@@ -26,7 +26,7 @@ ggtheme_map <- ggtheme_basic +
 
 ### Function to create a species list from scratch... use when new data is available
 create_spp_list <- function(spp_list_base, data_file) {
-  spp_list <- spp_list_base %>%
+  spp_list_build <- spp_list_base %>%
     mutate(total_area = NA,
            am_area    = NA,
            iucn_area  = NA,
@@ -38,8 +38,8 @@ create_spp_list <- function(spp_list_base, data_file) {
   
   
   #there's likely a better way to do this than a for loop (lapply or sapply?)
-  for (i in 1:nrow(spp_list)){ # i = 1
-    spp     <- spp_list[i, ]$sciname #species name
+  for (i in 1:nrow(spp_list_build)){ # i = 1
+    spp     <- spp_list_build[i, ]$sciname #species name
     spp_map <- get_spp_map(spp) #get species map
     
     ###get just the aquamaps cells
@@ -62,7 +62,7 @@ create_spp_list <- function(spp_list_base, data_file) {
                      which = 'am_sid', 
                      subsWithNA = TRUE)
     
-    spp_list[i, ]$am_area <- area(r_am_spp, na.rm = TRUE) %>%
+    spp_list_build[i, ]$am_area <- area(r_am_spp, na.rm = TRUE) %>%
       cellStats(., stat='sum')
     
     
@@ -85,7 +85,7 @@ create_spp_list <- function(spp_list_base, data_file) {
                        which = 'iucn_pres', 
                        subsWithNA = TRUE)
     
-    spp_list[i, ]$iucn_area <- area(r_iucn_spp, na.rm = TRUE) %>%
+    spp_list_build[i, ]$iucn_area <- area(r_iucn_spp, na.rm = TRUE) %>%
       cellStats(., stat = 'sum')
     
     
@@ -102,7 +102,7 @@ create_spp_list <- function(spp_list_base, data_file) {
                       which = 'value', 
                       subsWithNA = TRUE)
     
-    spp_list[i, ]$total_area <- area(fullRange, na.rm = TRUE) %>%
+    spp_list_build[i, ]$total_area <- area(fullRange, na.rm = TRUE) %>%
       cellStats(., stat = 'sum')
     
     ### get percent overlap of map
@@ -120,7 +120,7 @@ create_spp_list <- function(spp_list_base, data_file) {
     
     #percent overlap
     perc <- (length(cells_overlap) / length(cells_total)) * 100
-    spp_list[i, ]$perc <- perc
+    spp_list_build[i, ]$perc <- perc
     
     am_only   <- setdiff(cells_am, cells_iucn)
     iucn_only <- setdiff(cells_iucn, cells_am)
@@ -128,12 +128,12 @@ create_spp_list <- function(spp_list_base, data_file) {
     perc_am   <- (length(am_only) / length(cells_total)) * 100
     perc_iucn <- (length(iucn_only) / length(cells_total)) * 100
     
-    spp_list[i, ]$am_perc   <- perc_am
-    spp_list[i, ]$iucn_perc <- perc_iucn
+    spp_list_build[i, ]$am_perc   <- perc_am
+    spp_list_build[i, ]$iucn_perc <- perc_iucn
     
-    spp_list[i, ]$sm_range <- ifelse(length(cells_am)<length(cells_iucn), 'AM', 'IUCN') 
+    spp_list_build[i, ]$sm_range <- ifelse(length(cells_am)<length(cells_iucn), 'AM', 'IUCN') 
     ### what dataset has the smaller range
-    spp_list[i, ]$sm_perc <- length(cells_overlap)/min(length(cells_am), length(cells_iucn)) * 100 
+    spp_list_build[i, ]$sm_perc <- length(cells_overlap)/min(length(cells_am), length(cells_iucn)) * 100 
     ### this is the total percent of smaller range encompassed in the larger range
     
     cat(sprintf('%s: For species %s, %.2f%% of both datasets overlap, %.2f%% is just AquaMaps and %.2f%% is just IUCN\n', 
@@ -147,22 +147,22 @@ create_spp_list <- function(spp_list_base, data_file) {
   # at the raw data and it seems to be in the raw data... (JA on 8/31/15)
   
   #remove non IUCN species and log total area (for use later on)
-  spp_list <- spp_list %>%
+  spp_list_build <- spp_list_build %>%
     filter(spp_group != 'hagfishes' & spp_group != 'non-homalopsids') %>%
     mutate(log_total_area = log(total_area))
   
-  spp_list <- spp_list %>%
+  spp_list_build <- spp_list_build %>%
     mutate(area_ratio = am_area / iucn_area,
            area_ratio = ifelse(area_ratio > 1, 1 / area_ratio, area_ratio),
            area_ratio = area_ratio * 100)
   
-  spp_list <- spp_list %>%
+  spp_list_build <- spp_list_build %>%
     mutate(lg_area = ifelse(am_area > iucn_area, am_area, iucn_area),
            sm_area = ifelse(am_area < iucn_area, am_area, iucn_area),
            lg_area_pct = 100 * lg_area / max(total_area, na.rm = TRUE)) %>% ### use largest data set as approx for total ocean range
     select(-lg_area, -sm_area)
   
-  spp_list <- spp_list %>%
+  spp_list_build <- spp_list_build %>%
     mutate(total_area  = round(total_area, 1),
            am_area     = round(am_area, 1),
            iucn_area   = round(iucn_area, 1),
@@ -176,28 +176,38 @@ create_spp_list <- function(spp_list_base, data_file) {
     ) %>%
     mutate(reviewed = as.integer(reviewed)) ### 'null' values force this to be character... this converts '1' to 1, and 'null' to NA
   
-  write.csv(spp_list, file = data_file, row.names = FALSE)
+  write.csv(spp_list_build, file = data_file, row.names = FALSE)
 }
 
 ### Species Map Function ###
 # This function takes a single species scientific name as input, then grabs all 
 # occurrence cells and associated Aquamaps probability and/or IUCN proportional area
 # per cell
-get_spp_map <- function(species){
-  spp_id <- spp_list %>%
+get_spp_map <- function(species){ # species = 'Acanthopagrus latus' # species = 'Abudefduf concolor'
+  spp_id <- spp_list_build %>%
     filter(sciname == species & is.na(parent_sid)) %>%
     dplyr::select(am_sid, iucn_sid, sciname) %>%
     unique()
-  iucn_spp_map <- iucn_spp_cells %>%
-    filter(sciname == species) %>%
-    group_by(loiczid) %>%        
-    summarize(iucn_area = max(prop_area))
-  ### The group_by() and summarize() are to collapse cells with overlapped polygons, fixing the duplicate 'by' issue
+
   am_spp_map   <- am_spp_cells %>%
     filter(am_sid == spp_id$am_sid) %>%
     rename(am_prob = prob)
-  spp_map <- full_join(iucn_spp_map, am_spp_map, by = 'loiczid')%>%
-    as.data.frame()
+  
+  iucn_spp_map <- iucn_spp_cells %>%
+    filter(sciname == species)
+  if(nrow(iucn_spp_map) == 0) {
+    message(sprintf('Species %s has zero IUCN cells', species))
+    spp_map <- am_spp_map %>%
+      as.data.frame() %>%
+      mutate(iucn_area = NA)
+  } else {
+    iucn_spp_map <- iucn_spp_map %>%
+      group_by(loiczid) %>%        
+      summarize(iucn_area = max(prop_area))
+    ### The group_by() and summarize() are to collapse cells with overlapped polygons, fixing the duplicate 'by' issue
+    spp_map <- full_join(iucn_spp_map, am_spp_map, by = 'loiczid') %>%
+      as.data.frame()
+  }
   
   return(spp_map)
 }
