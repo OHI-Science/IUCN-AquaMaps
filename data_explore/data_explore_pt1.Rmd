@@ -99,11 +99,13 @@ print(scatter_am_iucn_alog_gp)
   
   This plot shows the total percent of a species range map that is (1) only covered by IUCN cells, (2) only covered by AquaMaps cells and (3) covered by both IUCN and AquaMaps cells. 
 
+<!--
 ####How this breaks down between AquaMaps and IUCN
 
 Here is an example of a single species, the yellow speckled chromis (*Chromis alpha*)  
+-->
 
-```{r map chromis alpha, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+```{r map chromis alpha, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 spp <- 'Chromis alpha'
 
@@ -131,7 +133,9 @@ p1 <- perc_c %>%
 
 ```
 
+<!--
 For `r spp`, `r round(pi[1], 2)`% of the total area is covered by both IUCN and AquaMaps, `r round(p1[2, ], 2)`% is covered just by AquaMaps and `r round(p1[3, ], 2)`% is covered just by IUCN.
+-->
 
 ***  
   
