@@ -203,7 +203,7 @@ scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
 
 print(scatter_arearatio_vs_overlap)
 
-ggsave(file.path(dir_fig, 'AreaRatiovsPercOverlap.png'), width = 6, height = 4)
+ggsave(file.path(dir_fig, 'AreaRatiovsPercOverlap.png'), width = 6, height = 3.5)
 
 ```
 
@@ -299,7 +299,7 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
 print(barchart_spp_gp_quads)
 ggsave(plot = barchart_spp_gp_quads,
        filename = file.path(dir_fig, 'barchart_spp_gp_quads.png'),
-       width = 6, height = 4)
+       width = 6, height = 3.5)
 
 ```
 
@@ -383,7 +383,7 @@ barchart_spp_risk_quads <- ggplot(spp_risk_quadrants %>%
 print(barchart_spp_risk_quads)
 ggsave(plot = barchart_spp_risk_quads,
        filename = file.path(dir_fig, 'barchart_spp_risk_quads.png'),
-       width = 6, height = 1.5)
+       width = 6, height = 1.75)
 
 ```
 
@@ -541,9 +541,9 @@ bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) 
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) + 
   labs(x = 'Class', y = 'Percent of mapped species',
-       title = 'Distribution of species maps by taxonomic group (class)')
+       title = 'Species maps by taxonomic class')
 print(bar_taxa2)
-ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), height = 4, width = 8)
+ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), height = 3, width = 6)
 
 taxa_df_long3 <- taxa_df %>%
   dplyr::select(class, AquaMaps = n_am_class_solo_ass, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
@@ -559,10 +559,10 @@ bar_taxa3 <- ggplot(taxa_df_long3, aes(x = class, y = percent, fill = dataset)) 
             size = 3, angle = 90, hjust = 0, color = 'grey30') +
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
-  labs(x = 'Class', y = 'Percent of mapped and assessed species',
-       title = 'Distribution of species maps by taxonomic group (class)')
+  labs(x = 'Class', y = 'Percent of assessed mapped species',
+       title = 'Species maps by taxonomic class, Red List-assessed only')
 print(bar_taxa3)
-ggsave(filename = file.path(dir_fig, 'bar_by_taxa_assessed.png'), height = 4, width = 8)
+ggsave(filename = file.path(dir_fig, 'bar_by_taxa_assessed.png'), height = 3, width = 6)
 
 ```
 
