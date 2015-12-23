@@ -3,7 +3,7 @@
 
 _taxonomic distribution comparison_
 
-___Either move to brief methods section above, and maybe even shorten - BH___: To examine the overall taxonomic distribution across the spatial datasets, we grouped species by taxonomic class and data source (IUCN, AquaMaps, or both), and examined the proportion of each class represented in each data source category.  We further divided the data by whether species had been evaluated for the IUCN Red List of Threatened Species.
+___Either move to brief methods section above, and maybe even shorten - BH___: To examine the overall taxonomic distribution across the spatial datasets, we grouped species by taxonomic class and data source (IUCN, AquaMaps, or both), and examined the proportion of each class represented in each data source category.  We then filtered the species list to those that have been evaluated for the IUCN Red List of Threatened Species.
 
 ___Either cut or move to data description section of methods above. - BH___: The IUCN releases spatial data sets when a taxonomic group (on the scale of order or family) has been comprehensively assessed, to guard against sample bias (though non-comprehensive datasets are available for reptiles and marine fish).  As such, spatial data for many taxonomic classes remain unavailable, and within a class, the assessed sub-groups may not represent the entire class. 
 

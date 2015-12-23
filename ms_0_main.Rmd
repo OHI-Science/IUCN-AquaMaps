@@ -2,15 +2,15 @@
 title: "Aligning species range data to better serve science and conservation"
 author: "Casey O'Hara, Jamie Afflerbach, Ben Halpern"
 output:
+  pdf_document:
+    number_sections: yes
+    toc: no
   html_document:
     highlight: haddock
     number_sections: yes
     theme: spacelab
     toc: yes
-  pdf_document:
-    number_sections: yes
-    toc: no
-  word_document: null
+  word_document: default
 ---
 
 ``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
