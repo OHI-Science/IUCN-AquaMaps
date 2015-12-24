@@ -184,7 +184,7 @@ create_spp_list <- function(spp_list_base, data_file) {
 # occurrence cells and associated Aquamaps probability and/or IUCN proportional area
 # per cell
 get_spp_map <- function(species){ # species = 'Acanthopagrus latus' # species = 'Abudefduf concolor'
-  spp_id <- spp_list_build %>%
+  spp_id <- spp_list %>%
     filter(sciname == species & is.na(parent_sid)) %>%
     dplyr::select(am_sid, iucn_sid, sciname) %>%
     unique()

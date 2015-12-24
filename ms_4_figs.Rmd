@@ -7,17 +7,22 @@
 
 ![](figures/bar_by_taxa_assessed.png)
 
+Number and proportion of species, listed by taxa, included in each dataset: IUCN, AquaMaps, or both. (a) All species with distribution maps; (b) IUCN Red List-assessed species with distribution maps.
+
 ### Figure 2 (a, b):
 
 ![](figures/all_aquamaps_map.png)
 
 ![](figures/all_iucn_map.png)
 
-### Figure 3:
+Global marine species richness according to (a) AquaMaps dataset and (b) IUCN dataset.
+
+### Figure 3 (a):
 
 ![](figures/AreaRatiovsPercOverlap.png)
 
-___Figure XXX: Distribution alignment vs area alignment for `r nrow(spp_map_pairs)` species mapped in both Aquamaps and IUCN species distribution maps.___
+Distribution alignment vs Extent alignment for `r nrow(spp_map_pairs)` species mapped in both Aquamaps and IUCN datasets.
+
 ``` {r tally_quad_counts, echo = FALSE}
 dist_median <- round(median(spp_map_pairs$sm_perc,    na.rm = TRUE), 1)
 area_median <- round(median(spp_map_pairs$area_ratio, na.rm = TRUE), 1)
@@ -27,26 +32,31 @@ q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio 
 q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
 ```
 
-* The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the area of described ranges.  For these species, the expert-drawn range map and the bioclimatic envelope model produce similar predictions of species distribution.  
+* The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the area of described ranges.
 (n = `r q1_count`; `r round(q1_count/nrow(spp_map_pairs) * 100, 1)` %)
-* Species map pairs that fall within the upper left quadrant (quadrant 2: well-aligned in distribution but poorly-matched in area) indicate species in which the range of the smaller map falls generally within the larger map, but the larger map may include more generous buffers or may include areas unrepresented in the smaller map.
+* The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in extent.
 (n = `r q2_count`; `r round(q2_count/nrow(spp_map_pairs) * 100, 1)` %)
-* The lower right quadrant (quadrant 3: well-aligned in area but poorly matched in distribution) includes species for which the paired maps generally agree in range area, but disagree in locations of those ranges.  Disagreement in distribution seems to indicate a greater issue than disagreement in area extent, so we categorized map pairs in this quadrant as being lower quality alignment than map pairs in either of the upper quadrants. 
+* The lower right quadrant (quadrant 3) includes species for which the paired maps generally agree in range extent, but disagree on where those ranges lie - a more problematic mismatch than that indicated by quadrant 2.
 (n = `r q3_count`; `r round(q3_count/nrow(spp_map_pairs) * 100, 1)` %)
-* The lower left quadrant (quadrant 4: poorly matched in both dimensions) indicates species for which the map pairs fail to agree in both area and distribution. 
+* The lower left quadrant (quadrant 4) indicates species for which the map pairs fail to agree in both area and distribution. 
 (n = `r q4_count`; `r round(q4_count/nrow(spp_map_pairs) * 100, 1)` %)
 
-### Figure 4 (a, b):
+### Figure 3 (b, c):
+
+![](figures/barchart_spp_gp_quads.png)
 
 ![](figures/barchart_spp_risk_quads.png)
 
-![](figures/barchart_spp_gp_quads.png)
+Spatial alignment of paired-map species by (a) taxonomic group and (b) extinction risk category.
+
 
 ### Figure 5 (a, b):
 
 ![](figures/AMThreshold.png) 
 
 ![](figures/ribbon_AMThreshold.png)
+
+AquaMaps distribution map extent remaining after applying a presence threshold.  (a) A 40% threshold applied to all species in the AquaMaps dataset shows a mean loss of XXX, with a wide distribution in which some species lose nearly all of their apparent range.  (b) Mean (median) remaining extent at increments of presence threshold. Dark grey ribbon includes 25% to 75% quantiles, while light grey ribbon includes 9% to 91% quantiles.
 
 ### Figure 6
 

@@ -5,20 +5,19 @@ Mapping and predicting species distributions is fundamental to the sciences of e
 
 One very important outcome of this body of science is the various compiled databases of species distribution maps. In the oceans there are now two such global repositories _(if we define it narrowly; OBIS is global species distribution, but not quite range maps)_ – Aquamaps predicted distribution maps (Kaschner et al. 2013) and International Union for Conservation of Nature (IUCN) range maps (REF) – that are used for a wide range of purposes, including assessing marine species status (Halpern et al. 2012, Selig et al. 2013), evaluating global biodiversity patterns (Coll et al. 2010, Martin et al. 2014), predicting range shifts (Molinos et al. 2015), and setting conservation priorities (Klein et al. 2015). The two data collections ostensibly describe the same information, but significant differences in methodology and intent could lead to dramatically different understandings of our marine ecosystems, with significant implications for policy and conservation recommendations.
 
-Importantly, biases in taxonomic or spatial coverage of a dataset could shift management or conservation actions _towards places or species that aren’t actually the most in need (shift management or conservation actions away from places or species that are most in need?)_.(maybe Jetz 2008?) False indications of presence (commission errors) overestimate the protection afforded by a marine reserve, while false indications of absence (omission errors) reduce the adequacy of a reserve system by underestimating species distributions. (Rondinini et al. 2006)
+Importantly, biases in taxonomic or spatial coverage of a dataset could shift management or conservation actions _towards places or species that aren’t actually the most in need (shift management or conservation actions away from places or species that are most in need?)_.(maybe Jetz 2008?) Errors of commission (false indications of presence) or omission (false indications of absence) could lead to inefficient or ineffective marine reserve systems and management plans. (Rondinini et al. 2006) (Jetz 2008?)
 
-To understand the implications of similarities and differences between the two datasets, we examined how they compare in their representation of global spatial distribution of species, and for the relatively small number of species represented in both datasets, how closely their spatial distribution maps align. _We then reanalyze two recent studies using these datasets based on different versions of the data to illustrate how and why decisions about which species range data to use affect our understanding of the status of marine biodiversity._
+To understand the implications of differences between the two datasets, we compared how each data set represents the global spatial distribution of species.  For the relatively small number of species mapped in both datasets, we examined how well their spatial distribution maps align. We then subjected two recent marine biodiversity studies to a sensitivity analysis, highlighting the consequences of different data use decisions _on our understanding of the status of marine biodiversity._
 
+-----
 
 # Overview of the datasets  
 
 ___We may need to shorten this section to fit this paper into the format guidelines for PNAS.  If so, some of this can be pushed to the Suppl. Materials. - BH___
 
-The IUCN publishes species distribution maps as vector shapefiles gathered into taxonomic groups _that have been comprehensively assessed (> 90% of species evaluated)_.  Species extents of occurrence are outlined by experts based upon known occurrences of the species, typically from point locality databases such as the Ocean Biogeographic Information System (OBIS) (REF) and the Global Biodiversity Information Facility (GBIF) (REF), and refined by expert understanding of range and habitat preferences.
+The IUCN publishes species distribution maps as vector shapefiles, collected by taxonomic groups.  Species experts outline polygons to represent a species' extent of occurrence, based on observation records <!--point locality databases such as the Ocean Biogeographic Information System (OBIS) (REF? not actually using this data) and the Global Biodiversity Information Facility (GBIF) (REF?),--> and refined by the expert's understanding of the species' range and habitat preferences.  IUCN publishes range map sets only for taxonomic groups that have been "comprehensively assessed," i.e. in which at least 90% of the species within the taxonomic group have been evaluated.  While this mitigates sampling bias within taxa, it also means that entire taxonomic groups remain unavailable until they have met this threshold of comprehensive assessment.  
 
-_IUCN publishes range map sets only for taxonomic groups that have been "comprehensively assessed," i.e. in which at least 90% of the species within the taxonomic group have been evaluated_.  While this mitigates sampling bias within taxa, it also means that entire taxonomic groups remain unavailable until they have met this threshold of comprehensive assessment.  
-
-AquaMaps develops species distribution maps based on modeled relative environmental suitability.  For each modeled species, environmental preferences (e.g. temperature, depth, salinity) are deduced from occurrence records such as OBIS and GBIF, published species databases such as FishBase, and expert knowledge.  These environmental preferences are compared to a map of environmental attributes on a 0.5 degree global grid, creating a global map of probability of occurrence.
+AquaMaps develops species distribution maps based on modeled relative environmental suitability.  For each modeled species, environmental preferences (e.g. temperature, depth, salinity) are deduced from occurrence records _such as OBIS and GBIF_ ___(should we mention these, or leave out? I left them out when describing the IUCN data sets)___, published species databases such as FishBase, and expert knowledge.  The AquaMaps model overlays these environmental preferences atop a map of environmental attributes on a 0.5 degree global grid, creating a global map of probability of occurrence.
 
 * _How does AquaMaps select species?  based on data available from OBIS/GBIF and Fishbase?_
 
@@ -48,14 +47,16 @@ p_both_am   <- round(n_spp_both/n_spp_am, 1)
 p_both_iucn <- round(n_spp_both/n_spp_iucn, 1)
 ```
 
-Differences in methodology and intent drive significant differences between AquaMaps and IUCN species distribution maps (Fig. 1).  Only `r n_spp_both` species were included in both datasets (`r p_both_am`% of total Aquamaps species; `r p_both_iucn`% of total IUCN species; Fig. 1, 2).  __All IUCN-mapped species are also included in Red List species, but only `r p_spp_am_rl`% of AquaMaps species.__
+IUCN maps are best categorized as geographic range data, while AquaMaps maps can be categorized as predicted distribution data (Rondinini et al., 2006) _(the categories come from here, but not my categorizations of these particular datasets...)_; the two types of spatial data differ in methodology and intent, and this drives significant differences between the resulting species distribution maps (Fig. 1).  Only `r n_spp_both` species were included in both datasets (`r p_both_am`% of total Aquamaps species; `r p_both_iucn`% of total IUCN species; Fig. 1, 2).  _All IUCN-mapped species are also included in Red List species, but only `r p_spp_am_rl`% of AquaMaps species._
 
 
 ### Taxonomic distribution between datasets
 
-The balance of species represented in IUCN spatial data skews toward tropical latitudes compared to the distribution represented in AquaMaps distribution maps.  This may be driven by the fact that the taxonomic distribution of IUCN distribution maps focuses heavily on coral reef-associated species (see fig. XXX).  While both datasets indicate highest species richness in the Coral Triangle and western Indian Ocean, the AquaMaps dataset shows a relatively larger representation of species in the Atlantic, Caribbean, and eastern Pacific than does the IUCN dataset.
+The distribution of IUCN-mapped species skews toward tropical latitudes and away from the Atlantic and Eastern Pacific compared to the distribution of AquaMaps-mapped species.  This skew likely reflects the fact that the IUCN dataset focuses more heavily on coral reef-associated taxa than does the AquaMaps dataset (see fig. XXX).
 
-Each dataset offers spatial distribution information for large numbers of species.  However, the datasets vary in terms of taxonomic coverage and regional coverage.  For spatial assessments of biodiversity, the choice of one dataset over the other is likely to create significantly different results.  For studies confined to a narrow range of taxa or to a narrow spatial scale, one dataset may offer an advantage over the other in the number of species maps available.  For global scale biodiversity studies, however, the selection of one dataset over the other will entail tradeoffs in spatial coverage, taxonomic breadth, and taxonomic depth. ___find a reference that describes what makes a "good" dataset for global biodiversity, e.g. OHI___ _or maybe species richness vs diversity vs "health" or whatnot_
+Each dataset offers spatial distribution information for large numbers of species.  However, the datasets vary in terms of taxonomic coverage and regional coverage.  For spatial assessments of biodiversity, the choice of one dataset over the other is likely to create significantly different results.  For studies confined to a narrow range of taxa or to a narrow spatial scale, one dataset may offer an advantage over the other in the number of species maps available.  For global scale biodiversity studies, however, the selection of one dataset over the other will entail tradeoffs in spatial coverage, taxonomic breadth, and taxonomic depth._use something from Rondinini here?_
+
+_find a reference that describes what makes a "good" dataset for global biodiversity, e.g. OHI, or maybe species richness vs diversity vs "health" or whatnot:  (Tittensor et al., 2010)_
 
 -----
 
@@ -63,36 +64,45 @@ Each dataset offers spatial distribution information for large numbers of specie
 
 ### Defining spatial alignment between the two datasets
 
-For species described in both spatial datasets, we would expect to see spatial correlation both in the global pattern of species distribution and the extent of species range.  Large discrepancies in distribution and range extent could indicate species that require further study to consolidate expert knowledge for IUCN range maps and improve the accuracy of AquaMaps species distribution models.
+The IUCN and AquaMaps spatial datasets share `r nrow(spp_map_pairs)` species in common.  If we were to examine each species' pair of maps side by side, we would hope to see spatial correlation both in the global pattern of species distribution (where on the map) and the extent of species range (how much of the map).  Large discrepancies in distribution and range extent could indicate species that require further study to consolidate expert knowledge for IUCN range maps and improve the accuracy of AquaMaps species distribution models.
 
-Using genus and species binomials to identify paired maps, we selected the subset of marine species that have range maps in both IUCN and AquaMaps current native distribution (n = `r nrow(spp_map_pairs)`).  We found that for `r round(nrow(spp_map_pairs %>% filter(sm_range == 'AM')) / nrow(spp_map_pairs) * 100, 1)`% of paired-map species, the IUCN distribution maps indicated a larger species range than the range indicated by AquaMaps.  This aligns with the expectations of Rondinini et al. (2006) that range maps are more likely to falsely predict presence while predicted distribution models are more likely to falsely predict absence.
+For each paired-map species, we calculated two dimensions of spatial alignment: _distribution alignment_, which we defined as the proportion of the smaller range intersecting the larger range (where on the map); and _extent alignment_, which we defined as the ratio of the smaller range to the larger range (how much of the map).  For a species whose distribution is well understood and described in both datasets, we would expect to see a value near 100% for each dimension of alignment.  
 
-Overlaying paired distribution maps for a given species, we calculated two dimensions of spatial alignment: _distribution alignment_, which we defined as the proportion of the smaller range intersecting the larger range; and _extent alignment_, which we defined as the ratio of the smaller range to the larger range.
+We found that for `r round(nrow(spp_map_pairs %>% filter(sm_range == 'AM')) / nrow(spp_map_pairs) * 100, 1)`% of paired-map species, the IUCN distribution map indicated a larger species range than the AquaMaps map.  This concurs with the general expectation that geographic range maps (e.g. IUCN) are more likely to over-predict presence than predicted distribution models (e.g. AquaMaps), while predicted distribution models are more likely to over-predict absence.(Rondinini et al., 2006) _errors of commission vs errors of omission, essentially type I and type II errors_
 
-For a species whose distribution is well understood and described in both datasets, we would expect to see a value near 100% for each dimension of alignment, indicating near-total inclusion of the smaller range within the larger (_distribution alignment_) and similar extent of occurrence (_extent alignment_).  Dividing the map-paired species into quadrants based on median values for each axis, we can examine the implications of four different qualities of alignment.
+Dividing the map-paired species into quadrants based on median values for each dimension, we can examine the _implications_ of four different qualities of alignment. (FIG 3a)
 
-<!--
-___moving to figure caption.  Summarize results here.___
+``` {r load_spp_list_by_quad, echo = FALSE}
+spp_list_quads <- read.csv('data/spp_list_quads.csv', stringsAsFactors = FALSE)
+n_q1 <- nrow(spp_list_quads %>% filter(quad == 'q1'))
+n_q2 <- nrow(spp_list_quads %>% filter(quad == 'q2'))
+n_q2_am_sm  <- nrow(spp_list_quads %>% filter(sm_range == 'AM' & quad == 'q2'))
+n_q2_corals <- nrow(spp_list_quads %>% filter(str_detect(tolower(spp_group), 'coral') & quad == 'q2'))
+n_corals    <- nrow(spp_list_quads %>% filter(str_detect(tolower(spp_group), 'coral')))
+n_q3 <- nrow(spp_list_quads %>% filter(quad == 'q3'))
+n_q4 <- nrow(spp_list_quads %>% filter(quad == 'q4'))
+```
 
+___could use some help on organizing this part... too much info?  should some go in the caption, and some in the body? thinking this way: quickie description of quadrants in caption of figure; then use the bar charts in Fig 4 to help explain some mechanisms of quadrants___
 
-* The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges.  For these species, the expert-drawn range map and the bioclimatic envelope model produce similar predictions of species distribution.  
-* Species map pairs that fall within the upper left quadrant (quadrant 2: well-aligned in distribution but poorly-matched in extent) indicate species in which the range of the smaller map falls generally within the larger map, but the larger map may include more generous buffers or may include areas unrepresented in the smaller map.
-* The lower right quadrant (quadrant 3: well-aligned in extent but poorly matched in distribution) includes species for which the paired maps generally agree in range extent, but disagree in locations of those ranges.  Disagreement in distribution seems to indicate a greater issue than disagreement in extent, so we categorized map pairs in this quadrant as being lower quality alignment than map pairs in either of the upper quadrants. 
-* The lower left quadrant (quadrant 4: poorly matched in both dimensions) indicates species for which the map pairs fail to agree in both extent and distribution. 
+* The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges, as we hoped for well-understood species.  Excellent, but not particularly interesting.  
+* Species map pairs that fall within the upper left quadrant (quadrant 2) agree well in distribution, but disagree in extent.
+* The lower right quadrant (quadrant 3 ___note, "math" quadrant 3 would be lower left, not lower right, will this quadrant ID scheme be confusing?___) includes species for which the paired maps generally agree in range extent, but disagree on where those ranges lie - a more worrisome mismatch than that indicated by quadrant 2.
+* The lower left quadrant (quadrant 4) indicates species for which the map pairs fail to agree in both extent and distribution. 
 
--->
+Examining spatial alignment by taxonomic group (FIG 3a), we found that certain taxa were far more likely than others to be spatially well-aligned; in particular, wide-ranging pelagic organisms such as marine mammals, tunas, and billfishes were more consistently well-aligned (quadrants 1 and 2) than demersal and reef organisms.  _explain reasoning?_ 
 
-Breaking down the quadrants by IUCN extinction risk categories, we found that species with higher extinction risk tend to be better aligned between the two datasets, perhaps correlated to increased expert scrutiny.  Does higher perceived risk lead to increased attention, and thus better understanding of species distribution? Or conversely, does increased attention to species distribution reveal deeper risk?  Likely both mechanisms are at play in a feedback loop.
+Coral species are predominantly found in quadrant 2 (`r n_q2_corals` coral species - `r round(n_q2_corals/n_corals * 100, 1)`% of all corals and `r round(n_q2_corals/n_q2 * 100, 1)`% of all species in quadrant 2). <!--AquaMaps accounts for seafloor depth as a limiting factor, highly constraining the predicted habitat for photosynthesizing corals, while IUCN maps for coral species often include wide buffers that would extend far beyond appropriate depth for coral habitat, thus likely overestimating the actual species range (see SI).  A similar mechanism may also drive poor extent alignment of other demersal and reef-associated organisms.-->
 
-Examining quadrants by taxonomic group, we found that certain taxa were far more likely than others to be spatially well-aligned; in particular, wide-ranging pelagic organisms such as marine mammals, tunas, and billfishes were more consistently well-aligned (quadrants 1 and 2) than demersal and reef organisms.   Coral species are predominantly found in quadrant 2, indicating that while general global distribution trends seem to be consistent between the two datasets, predicted extents are not well-aligned. AquaMaps accounts for seafloor depth as a limiting factor, highly constraining the predicted habitat for photosynthesizing corals, while IUCN maps for coral species often include wide buffers that would extend far beyond appropriate depth for coral habitat, thus likely overestimating the actual species range (see SI).  A similar mechanism may also drive poor extent alignment of other demersal and reef-associated organisms.
+___how to transition from above paragraph to this idea:___ Looking more closely at the species included in quadrant 2, we can identify several mechanisms that could cause extent misalignment.  For `r n_q2_am_sm` of `r n_q2` species in this quadrant (`r round((n_q2_am_sm/n_q2) * 100, 1)`%), the IUCN extent is larger than the AquaMaps extent.  By itself, this is not surprising; but for many of these species, a quick look at the maps (see SI for examples) shows that the IUCN range hews closely to the AquaMaps range, while including a wide buffer zone.  We suspect that many of these extent-misaligned map pairs can be easily explained: most corals and reef-associated organisms prefer shallower waters; seafloor depth is explicitly modeled in AquaMaps, but not explicitly included in IUCN range considerations.
 
-Poorly-aligned rangemaps, regardless of taxon or extinction risk category, indicate species that could benefit from further expert study.
+* _Occasionally, the AquaMaps map conformed to a small, local subset of the IUCN map (see SI for examples), in some cases due to some point locality observations being rejected by AquaMaps experts (EXAMPLES) and in other cases due to differences in species identification._ ___bleh - this needs help.___
 
-___Other hypotheses/case studies to highlight other possible mechanistic differences?___
+Breaking down the quadrants by IUCN extinction risk categories (FIG 3c), we found that species with higher extinction risk tend to be better aligned between the two datasets, perhaps correlated to increased expert scrutiny.  Does higher perceived risk lead to increased attention, and thus better understanding of species distribution? Or conversely, does increased attention to species distribution reveal more species at risk?  Likely both mechanisms are at play on a case-by-case basis, depending on the species' taxon and region. _does this argument bear up to closer scrutiny? CR isn't dominated by Q1 any more_
 
-Confusion in species names also seems to correlate with spatial misalignment.  AquaMaps identifies each species map by binomial as well as a unique species ID code.  While the IUCN assigns a unique numeric code to every Red List-assessed species, this code is not used consistently to identify range map polygons. ___NOTE: NEW DATA as of Nov 24?  Need to re-extract all the IUCN species :( ___
+Poorly-aligned rangemaps, regardless of taxon or extinction risk category, indicate species that could benefit from further expert study. ___is this just 'duh'? is there something more important I can say?___
 
-___range maps less likely to commit omission errors and more likely to commit commission errors; predicted distribution moderate chance of each compared to range maps and point locality data___ (based on Rondinini et al. 2006) this in discussion after the distribution/extent analysis
+_Other hypotheses/case studies to highlight other possible mechanistic differences?_
 
 
 -----
@@ -119,8 +129,6 @@ Since the Ocean Health Index Species subgoal relies on spatial data from both da
 
 ## Application to MPA Gap Analysis
 
-___do the analysis...___
+_do the analysis..._
 
-Predictions:  
-
-IUCN overestimates extent esp for coastal species?  More species will be included in MPAs so fewer apparent gap species.  Included range area inside MPAs will increase.  Policy implications?  Less pressure to carefully consider MPA design; less resolution on 
+_Predictions:  IUCN overestimates extent esp for coastal species?  More species will be included in MPAs so fewer apparent gap species.  Included range area inside MPAs will increase.  Policy implications?  Less pressure to carefully consider MPA design; less resolution on_
