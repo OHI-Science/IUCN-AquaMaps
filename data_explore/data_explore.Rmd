@@ -52,32 +52,8 @@ names(loiczid_raster) <- 'loiczid'
 
 
 ```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
-data_file <- file.path(dir_data, 'spp_list_w_area_all.csv')
-
-
-if (!file.exists(data_file)) {
-  ### species info list - scinames, IUCN species ID, AM species ID, category etc
-  spp_list_base <- read.csv(file.path(dir_data, 'spp_am_v_iucn.csv'),
-                            stringsAsFactors = FALSE)
-  
-  create_spp_list(spp_list_base, data_file)
-}
-
-
-spp_list <- read.csv(data_file, stringsAsFactors = FALSE) 
-### At this point, spp_list contains subpops and aliases, and zero-area IUCNs
-
-spp_list <- spp_list %>%
-  filter(!is.na(sm_perc)) %>%
-  ### will ditch the ones where no IUCN polygon exists - or are these species
-  ### whose ranges only occur in cells beyond the LOICZID grid?
-  filter(!str_detect(spatial_source, 'subpop') & !str_detect(spatial_source, 'alias'))
-spp_list <- spp_list %>%
-  left_join(read.csv(file.path(dir_data, 'sciname_lookups/spp_groupnames.csv'), 
-                     stringsAsFactors = FALSE),
-            by = 'spp_group')
-
-write.csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
+### this file created in data_prep
+read.csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'), stringsAsFactors = FALSE)
 
 ```
 
