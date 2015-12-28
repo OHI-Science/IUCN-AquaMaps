@@ -1,15 +1,13 @@
 
 # Figures
 
-### Figure 1 (a, b):
+### Figure 1(a)?:
 
 ![](figures/bar_by_taxa_all.png)
 
-![](figures/bar_by_taxa_assessed.png)
+Number and proportion of species, listed by taxa, included in each dataset: IUCN, AquaMaps, or both.
 
-Number and proportion of species, listed by taxa, included in each dataset: IUCN, AquaMaps, or both. (a) All species with distribution maps; (b) IUCN Red List-assessed species with distribution maps.
-
-### Figure 2 (a, b):
+### Figure 1 (b, c):
 
 ![](figures/all_aquamaps_map.png)
 
@@ -17,11 +15,12 @@ Number and proportion of species, listed by taxa, included in each dataset: IUCN
 
 Global marine species richness according to (a) AquaMaps dataset and (b) IUCN dataset.
 
+
 ### Figure 3 (a):
 
 ![](figures/AreaRatiovsPercOverlap.png)
 
-Distribution alignment vs Extent alignment for `r nrow(spp_map_pairs)` species mapped in both Aquamaps and IUCN datasets.
+For each paired-map species, we calculated two dimensions of spatial alignment: _distribution alignment_, which we defined as the proportion of the smaller range intersecting the larger range (where on the map); and _extent alignment_, which we defined as the ratio of the smaller range to the larger range (how much of the map).  For a species whose distribution is well understood and described in both datasets, we would expect to see a value near 100% for each dimension of alignment.  
 
 ``` {r tally_quad_counts, echo = FALSE}
 dist_median <- round(median(spp_map_pairs$sm_perc,    na.rm = TRUE), 1)
@@ -32,33 +31,24 @@ q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio 
 q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
 ```
 
-* The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the area of described ranges.
+* The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges. 
 (n = `r q1_count`; `r round(q1_count/nrow(spp_map_pairs) * 100, 1)` %)
 * The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in extent.
 (n = `r q2_count`; `r round(q2_count/nrow(spp_map_pairs) * 100, 1)` %)
-* The lower right quadrant (quadrant 3) includes species for which the paired maps generally agree in range extent, but disagree on where those ranges lie - a more problematic mismatch than that indicated by quadrant 2.
+* The lower right quadrant (quadrant 3) includes species for which the paired maps generally agree in range extent, but disagree on where those ranges lie - a more worrisome mismatch than that indicated by quadrant 2.
 (n = `r q3_count`; `r round(q3_count/nrow(spp_map_pairs) * 100, 1)` %)
-* The lower left quadrant (quadrant 4) indicates species for which the map pairs fail to agree in both area and distribution. 
+* The lower left quadrant (quadrant 4) indicates species for which the map pairs agree poorly in both area and distribution. 
 (n = `r q4_count`; `r round(q4_count/nrow(spp_map_pairs) * 100, 1)` %)
 
-### Figure 3 (b, c):
+### Figure 3 (b):
 
 ![](figures/barchart_spp_gp_quads.png)
 
-![](figures/barchart_spp_risk_quads.png)
-
-Spatial alignment of paired-map species by (a) taxonomic group and (b) extinction risk category.
+Spatial alignment of paired-map species by taxonomic group.
 
 
-### Figure 5 (a, b):
 
-![](figures/AMThreshold.png) 
-
-![](figures/ribbon_AMThreshold.png)
-
-AquaMaps distribution map extent remaining after applying a presence threshold.  (a) A 40% threshold applied to all species in the AquaMaps dataset shows a mean loss of XXX, with a wide distribution in which some species lose nearly all of their apparent range.  (b) Mean (median) remaining extent at increments of presence threshold. Dark grey ribbon includes 25% to 75% quantiles, while light grey ribbon includes 9% to 91% quantiles.
-
-### Figure 6
+### Figure 4
 
 ![Absolute change in SPP score](figures/SPP_scenarios/boxplot_abs_diff.png)
 
