@@ -1,21 +1,19 @@
 
 # Methods
 
-_taxonomic distribution comparison_
+### taxonomic distribution comparison
 
-___Either move to brief methods section above, and maybe even shorten - BH___: To examine the overall taxonomic distribution across the spatial datasets, we grouped species by taxonomic class and data source (IUCN, AquaMaps, or both), and examined the proportion of each class represented in each data source category.  We then filtered the species list to those that have been evaluated for the IUCN Red List of Threatened Species.
+To examine the overall taxonomic distribution across the spatial datasets, we grouped species by taxonomic class and data source (IUCN, AquaMaps, or both), and examined the proportion of each class represented in each data source category.  We then filtered the species list to those that have been evaluated for the IUCN Red List of Threatened Species (in SOM).
 
-___Either cut or move to data description section of methods above. - BH___: The IUCN releases spatial data sets when a taxonomic group (on the scale of order or family) has been comprehensively assessed, to guard against sample bias (though non-comprehensive datasets are available for reptiles and marine fish).  As such, spatial data for many taxonomic classes remain unavailable, and within a class, the assessed sub-groups may not represent the entire class. 
+___Currently this is also included in body - take out and leave in here?  Per BH: "Either cut or move to data description section of methods above."___: The IUCN releases spatial data sets when a taxonomic group (typically on the scale of order or family) has been comprehensively assessed, to guard against sample bias (though non-comprehensive datasets are available for reptiles and marine fish).  As such, spatial data for many taxonomic classes remain unavailable, and within a class, the assessed sub-groups may not represent the entire class. 
 
-_global distribution spatial comparison_
+### global spatial distribution comparison
 
-To compare the spatial representation of the two datasets directly, we first rasterized the IUCN species polygons to the same 0.5° cells as the AquaMaps species maps; species presence within a cell was determined by any non-zero overlap of a species polygon with the cell, and species richness per cell was simply the sum of the species present.  For the AquaMaps dataset, we determined per-cell species richness by summing all species with non-zero probability of occurrence.  We represented relative distribution of species richness for each dataset by plotting average species count against latitude and longitude.  To highlight the differences between the two datasets, we also examined the relative difference in per-cell species richness against latitude and longitude.
-
-For our comparisons of global distribution of represented biodiversity and spatial alignment between datasets, we considered "present" to be any cell with a non-zero probability of occurrence, to best approximate the "extent of occurrence" as generally indicated by IUCN maps.  To examine the effect of different presence threshold selections on the represented range of a species, we varied the threshold from 0.05 to 1.00 and calculated the average species range relative to a zero threshold.
+To compare the spatial representation of the two datasets directly, we first rasterized the IUCN species polygons to the same 0.5° grid as the AquaMaps species maps; species presence within a grid cell was determined by any non-zero overlap of a species polygon with the cell, and species richness per cell was simply the count of the species present.  For the AquaMaps dataset, we determined per-cell species richness by counting all species with non-zero probability of occurrence, to best approximate the "extent of occurrence" generally indicated by IUCN maps.  We represented relative distribution of species richness for each dataset by plotting average species count against latitude and longitude.
 
 _map pairs comparison_
 
-Using genus and species binomials to identify paired maps, we selected the subset of marine species that have range maps in both IUCN and AquaMaps current native distribution (n = `r nrow(spp_map_pairs)`).  
+Using genus and species binomials to identify paired maps, we selected the subset of marine species that have range maps in both IUCN and AquaMaps current native distribution (n = `r nrow(spp_map_pairs)`).  We used the same criteria as outlined above to determine species presence within a cell.
 
 ___from results/discussion:___ Overlaying paired distribution maps for a given species, we calculated two dimensions of spatial alignment: _distribution alignment_, which we defined as the proportion of the smaller range intersecting the larger range; and _area alignment_, which we defined as the ratio of the smaller range to the larger range.
 
