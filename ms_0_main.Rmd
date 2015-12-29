@@ -44,7 +44,7 @@ spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE) %>%
 
 ### generate other lists
 
-spp_all_file <- 'data/spp_all_2015.csv'
+spp_all_file <- 'data/spp_all.csv'
 spp_all <- read.csv(spp_all_file, stringsAsFactors = FALSE) 
 
 iucn_marine_file <- 'data/spp_iucn_marine.csv'
@@ -52,7 +52,6 @@ spp_iucn_marine <- read.csv(iucn_marine_file, stringsAsFactors = FALSE)
 
 iucn_maps_file <- 'data/spp_iucn_maps.csv'
 spp_iucn_maps <- read.csv(iucn_maps_file, stringsAsFactors = FALSE) %>%
-  rename(sciname = binomial) %>%
   filter(spp_group != 'hagfishes') %>%           ### not from IUCN...
   filter(sciname %in% spp_iucn_marine$sciname)   ### ditch freshwater spp
 

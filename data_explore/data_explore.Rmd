@@ -26,8 +26,10 @@ dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
 
+setwd('data_explore') 
+  ### When knitting, it automatically sets WD to be this directory...
+  ### this command is just here to facilitate running when not in knit mode.
 source('data_explore_fxns.R')
-### When knitting this, it automatically sets WD to be this directory...
 ```
 
 ```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE, results = 'hide'}
