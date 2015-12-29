@@ -1,6 +1,6 @@
 ---
 title: 'Data Exploration quad maps: IUCN and AquaMaps'
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
@@ -181,8 +181,10 @@ for (i in 1:length(spp_quads)) { # i = 1
   spp <- spp_quads[i]
   spp_quad <- names(spp_quads)[i]
   
-  cat(sprintf('%s: %s', spp_quad, spp))
   spp_plot <- plot_rangemap(spp)
+  spp_plot <- spp_plot + 
+    labs(title = sprintf('%s: %s', spp_quad, spp))
+
   print(spp_plot)
   }
 
