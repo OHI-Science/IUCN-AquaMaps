@@ -26,10 +26,10 @@ dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
 
-setwd('data_explore') 
-  ### When knitting, it automatically sets WD to be this directory...
-  ### this command is just here to facilitate running when not in knit mode.
+if(basename(getwd()) != 'data_explore') setwd('data_explore')
 source('data_explore_fxns.R')
+### When knitting this, it automatically sets WD to be this directory...
+### the 'setwd()' is there for running by chunk
 ```
 
 ```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE, results = 'hide'}
@@ -52,32 +52,9 @@ names(loiczid_raster) <- 'loiczid'
 
 
 ```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
-data_file <- file.path(dir_data, 'spp_list_w_area_all.csv')
+### this file created in data_prep
+spp_list <- read.csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'), stringsAsFactors = FALSE)
 
-
-if (!file.exists(data_file)) {
-  ### species info list - scinames, IUCN species ID, AM species ID, category etc
-  spp_list_base <- read.csv(file.path(dir_data, 'spp_am_v_iucn.csv'),
-                            stringsAsFactors = FALSE)
-  
-  create_spp_list(spp_list_base, data_file)
-}
-
-
-spp_list <- read.csv(data_file, stringsAsFactors = FALSE) 
-### At this point, spp_list contains subpops and aliases, and zero-area IUCNs
-
-spp_list <- spp_list %>%
-  filter(!is.na(sm_perc)) %>%
-  ### will ditch the ones where no IUCN polygon exists - or are these species
-  ### whose ranges only occur in cells beyond the LOICZID grid?
-  filter(!str_detect(spatial_source, 'subpop') & !str_detect(spatial_source, 'alias'))
-spp_list <- spp_list %>%
-  left_join(read.csv(file.path(dir_data, 'sciname_lookups/spp_groupnames.csv'), 
-                     stringsAsFactors = FALSE),
-            by = 'spp_group')
-
-write.csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 
 ```
 
@@ -198,9 +175,9 @@ scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
 #             vjust = 1.5)
 
 scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
-  labs(x = bquote('Area alignment '*alpha['area']*' (%)'), 
+  labs(x = bquote('Extent alignment '*alpha['ext']*' (%)'), 
        y = bquote('Distribution alignment '*alpha['dist']*' (%)'), 
-       title = 'Distribution alignment vs area alignment',
+       title = 'Distribution alignment vs Extent alignment',
        color = 'Risk', size = '% ocean range') 
 
 print(scatter_arearatio_vs_overlap)
@@ -243,6 +220,14 @@ spp_list_q3 <- spp_list1 %>%
   filter(area_ratio >= median(area_ratio) & sm_perc < median(sm_perc))
 spp_list_q4 <- spp_list1 %>%
   filter(area_ratio < median(area_ratio) & sm_perc < median(sm_perc))
+
+spp_list_quads <- spp_list1 %>%
+  mutate(quad = NA,
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q1$sciname, 'q1', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q2$sciname, 'q2', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q3$sciname, 'q3', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q4$sciname, 'q4', quad))
+write.csv(spp_list_quads, file.path(dir_data, 'spp_list_quads.csv'), row.names = FALSE)
 
 ### Summarize quadrant species list by species group (e.g. CORALS1)
 spp_gp_q1 <- spp_list_q1 %>%
@@ -303,25 +288,12 @@ ggsave(plot = barchart_spp_gp_quads,
        filename = file.path(dir_fig, 'barchart_spp_gp_quads.png'),
        width = 6, height = 3.5)
 
+write.csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads.csv'), row.names = FALSE)
+
 ```
 
 
 ``` {r examine_risk_quartiles, echo = FALSE, eval = TRUE}
-
-spp_list1 <- spp_list %>%
-  group_by(popn_category) %>%
-  mutate(n_spp = n()) %>%
-  ungroup()
-
-### Create species lists by quadrant
-spp_list_q1 <- spp_list1 %>%
-  filter(area_ratio >= median(area_ratio) & sm_perc >= median(sm_perc))
-spp_list_q2 <- spp_list1 %>%
-  filter(area_ratio < median(area_ratio) & sm_perc >= median(sm_perc))
-spp_list_q3 <- spp_list1 %>%
-  filter(area_ratio >= median(area_ratio) & sm_perc < median(sm_perc))
-spp_list_q4 <- spp_list1 %>%
-  filter(area_ratio < median(area_ratio) & sm_perc < median(sm_perc))
 
 ### Summarize quadrant species list by species group (e.g. CORALS1)
 spp_risk_q1 <- spp_list_q1 %>%
@@ -391,7 +363,7 @@ ggsave(plot = barchart_spp_risk_quads,
 
 
 <!-- # Multiple species maps per quadrant -->
-``` {r child = 'data_explore_pt3.Rmd', eval = FALSE}
+``` {r child = 'data_explore_pt3.Rmd', eval = TRUE}
 ```
 
 
