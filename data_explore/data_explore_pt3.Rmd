@@ -1,18 +1,18 @@
 Plotting species from q1 (well-matched) (see data_explore_quadmaps.html for plots)
 
-```{r plot_spp_from_q1, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+```{r plot_spp_from_q1, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
-x <- 20
+x <- 10
 y <- nrow(spp_list_q1)
 
-spp_names_q1 <- spp_list_q1$sciname[seq(1, y, y/x)]
+spp_names_q1 <- spp_list_q1$sciname[seq(1, y, round(y/x))]
 
 for (spp in spp_names_q1) { # i = 1
   spp_plot <- plot_rangemap(spp)
   spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
+  text_tag <- sprintf('Distribution align: %s%%, Extent align: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
   spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 1: %s', spp, text_tag))
+    labs(title = sprintf('%s (%s), quadrant 1: %s', spp, spp_solo$spp_group_text, text_tag))
 
   print(spp_plot)
   
@@ -24,19 +24,19 @@ for (spp in spp_names_q1) { # i = 1
 ```
 
 Plotting species from q2 (distribution-matched)
-```{r plot_spp_from_q2, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+```{r plot_spp_from_q2, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
-x <- 20
+x <- 10
 y <- nrow(spp_list_q2)
 
-spp_names_q2 <- spp_list_q2$sciname[seq(1, y, y/x)]
+spp_names_q2 <- spp_list_q2$sciname[seq(1, y, round(y/x))]
 
 for (spp in spp_names_q2) { # i = 1
   spp_plot <- plot_rangemap(spp)
   spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
+  text_tag <- sprintf('Distribution align: %s%%, Extent align: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
   spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 2: %s', spp, text_tag))
+    labs(title = sprintf('%s (%s), quadrant 2: %s', spp, spp_solo$spp_group_text, text_tag))
   print(spp_plot)
   
   # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q2_%s.png', str_replace(tolower(spp), ' ', '_'))),
@@ -49,19 +49,19 @@ for (spp in spp_names_q2) { # i = 1
 
 
 Plotting species from q3 (area-matched)
-```{r plot_spp_from_q3, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+```{r plot_spp_from_q3, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
 x <- 20
 y <- nrow(spp_list_q3)
 
-spp_names_q3 <- spp_list_q3$sciname[seq(1, y, y/x)]
+spp_names_q3 <- spp_list_q3$sciname[seq(1, y, round(y/x))]
 
 for (spp in spp_names_q3) { # i = 1
   spp_plot <- plot_rangemap(spp)
   spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
+  text_tag <- sprintf('Distribution align: %s%%, Extent align: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
   spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 3: %s', spp, text_tag))
+    labs(title = sprintf('%s (%s), quadrant 3: %s', spp, spp_solo$spp_group_text, text_tag))
   print(spp_plot)
   
   # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q3_%s.png', str_replace(tolower(spp), ' ', '_'))),
@@ -73,19 +73,19 @@ for (spp in spp_names_q3) { # i = 1
 ```
 
 Plotting species from q4 (poorly matched)
-```{r plot_spp_from_q4, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+```{r plot_spp_from_q4, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
 x <- 20
 y <- nrow(spp_list_q4)
 
-spp_names_q4 <- spp_list_q4$sciname[seq(1, y, y/x)]
+spp_names_q4 <- spp_list_q4$sciname[seq(1, y, round(y/x))]
 
 for (spp in spp_names_q4) { # i = 1
   spp_plot <- plot_rangemap(spp)
   spp_solo <- spp_list %>% filter(sciname == spp)
-  text_tag <- sprintf('Overlap: %s%%, area ratio: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
+  text_tag <- sprintf('Distribution align: %s%%, Extent align: %s%%', round(spp_solo$sm_perc, 1), round(spp_solo$area_ratio, 1))
   spp_plot <- spp_plot +
-    labs(title = sprintf('%s, quadrant 4: %s', spp, text_tag))
+    labs(title = sprintf('%s (%s), quadrant 4: %s', spp, spp_solo$spp_group_text, text_tag))
   print(spp_plot)
   
   # ggsave(filename = file.path(dir_fig, sprintf('rangemap_q4_%s.png', str_replace(tolower(spp), ' ', '_'))),

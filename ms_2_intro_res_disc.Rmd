@@ -49,6 +49,16 @@ _Analyses [briefly describe the analyses done]_
 
 ### Taxonomic distribution between datasets
 
+![](figures/bar_by_taxa_all.png)
+
+> __Figure 1(a):__ Number and proportion of species, listed by taxa, included in each dataset: IUCN, AquaMaps, or both.
+
+![](figures/all_aquamaps_map.png)
+
+![](figures/all_iucn_map.png)
+
+> __Figure 1 (b, c):__ Global marine species richness according to (a) AquaMaps dataset and (b) IUCN dataset.
+
 ``` {r calc species numbers, echo = FALSE}
 n_spp_am    <- nrow(spp_am)
 n_spp_am_rl <- nrow(spp_am %>% filter(sciname %in% spp_iucn_marine$sciname))
@@ -75,11 +85,30 @@ _find a reference that describes what makes a "good" dataset for global biodiver
 
 The IUCN and AquaMaps spatial datasets share `r nrow(spp_map_pairs)` species in common.  If we were to examine each of these species' pair of maps side by side, we would hope to see spatial correlation both in the global pattern of species distribution (where on the map) and the extent of species range (how much of the map).
 
-<!-- moved to caption
-For each paired-map species, we calculated two dimensions of spatial alignment: _distribution alignment_, which we defined as the proportion of the smaller range intersecting the larger range (where on the map); and _extent alignment_, which we defined as the ratio of the smaller range to the larger range (how much of the map).  For a species whose distribution is well understood and described in both datasets, we would expect to see a value near 100% for each dimension of alignment.  
--->
-
 In `r round(nrow(spp_map_pairs %>% filter(sm_range == 'AM')) / nrow(spp_map_pairs) * 100, 1)`% of cases, the IUCN range map indicated a larger species range than the AquaMaps map.  This finding concurs with the general expectation that geographic range maps (e.g. IUCN) are more likely to over-predict presence than predicted distribution models (e.g. AquaMaps), while predicted distribution models are more likely to over-predict absence.(Rondinini et al., 2006) _errors of commission vs errors of omission, essentially type I and type II errors_
+
+
+![](figures/AreaRatiovsPercOverlap.png)
+
+> __Figure 3 (a):__ For each paired-map species, we calculated two dimensions of spatial alignment: _distribution alignment_, which we defined as the proportion of the smaller range intersecting the larger range (where on the map); and _extent alignment_, which we defined as the ratio of the smaller range to the larger range (how much of the map).  For a species whose distribution is well understood and described in both datasets, we would expect to see a value near 100% for each dimension of alignment.  
+
+``` {r tally_quad_counts, echo = FALSE}
+dist_median <- round(median(spp_map_pairs$sm_perc,    na.rm = TRUE), 1)
+area_median <- round(median(spp_map_pairs$area_ratio, na.rm = TRUE), 1)
+q1_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio >= area_median)
+q2_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio >= area_median)
+q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio <  area_median)
+q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
+```
+
+> The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges
+(n = `r q1_count`; `r round(q1_count/nrow(spp_map_pairs) * 100, 1)` %).
+> The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in extent
+(n = `r q2_count`; `r round(q2_count/nrow(spp_map_pairs) * 100, 1)` %).
+> The lower right quadrant (quadrant 3) includes species for which the paired maps generally agree in range extent, but disagree on where those ranges lie - a more worrisome mismatch than that indicated by quadrant 2
+(n = `r q3_count`; `r round(q3_count/nrow(spp_map_pairs) * 100, 1)` %).
+> The lower left quadrant (quadrant 4) indicates species for which the map pairs agree poorly in both area and distribution
+(n = `r q4_count`; `r round(q4_count/nrow(spp_map_pairs) * 100, 1)` %).
 
 Dividing the map-paired species into quadrants based on median values for each dimension, we can examine the _implications_ of four different qualities of alignment. (FIG 3a)
 
@@ -94,14 +123,18 @@ n_q3 <- nrow(spp_list_quads %>% filter(quad == 'q3'))
 n_q4 <- nrow(spp_list_quads %>% filter(quad == 'q4'))
 ```
 
+Examining spatial alignment by taxonomic group (FIG 3b), we found that certain taxa were far more likely than others to be spatially well-aligned; in particular, wide-ranging pelagic organisms (50% or more of ocean area) such as marine mammals, tunas, and billfishes were more consistently well-aligned (quadrants 1 and 2) than demersal and reef organisms.  _propose an explanation here?_ 
 
-Examining spatial alignment by taxonomic group (FIG 3b), we found that certain taxa were far more likely than others to be spatially well-aligned; in particular, wide-ranging pelagic organisms such as marine mammals, tunas, and billfishes were more consistently well-aligned (quadrants 1 and 2) than demersal and reef organisms.  _explain reasoning?_ 
+
+![](figures/barchart_spp_gp_quads.png)
+
+> __Figure 3 (b):__ Spatial alignment of paired-map species by taxonomic group.
 
 <!--AquaMaps accounts for seafloor depth as a limiting factor, highly constraining the predicted habitat for photosynthesizing corals, while IUCN maps for coral species often include wide buffers that would extend far beyond appropriate depth for coral habitat, thus likely overestimating the actual species range (see SOM).  A similar mechanism may also drive poor extent alignment of other demersal and reef-associated organisms.-->
 
 Quadrant 1 contains species whose map pairs agree in both spatial distribution and the extent of described ranges, as we would expect for well-understood species.  Excellent and valuable, but not particularly interesting.  The extent-misaligned maps contained in quadrant 2, however, provide a richer set of examples to understand the fundamental differences between the datasets; examining these, we can identify several mechanisms that could cause such extent misalignment.  
 
-For `r n_q2_am_sm` of `r n_q2` species in this quadrant (`r round((n_q2_am_sm/n_q2) * 100, 1)`%), the IUCN extent is larger than the AquaMaps extent.  By itself, this is not surprising; but for many of these species, a quick look at the maps (see SOM for examples) shows that the IUCN range hews closely to the AquaMaps range, while adding a significant buffer zone.  Coral species dominate this quadrant (`r n_q2_corals` coral species - `r round(n_q2_corals/n_corals * 100, 1)`% of all corals and `r round(n_q2_corals/n_q2 * 100, 1)`% of all species in quadrant 2).  We suspect that many of these extent-misaligned map pairs can be easily explained: most corals and reef-associated organisms prefer shallower waters; seafloor depth is explicitly modeled in AquaMaps, but not explicitly considered in IUCN range considerations. ___include recommendation for IUCN range maps to be clipped to bathymetry where appropriate?___
+For `r n_q2_am_sm` of `r n_q2` species in this quadrant (`r round((n_q2_am_sm/n_q2) * 100, 1)`%), the IUCN extent is larger than the AquaMaps extent.  By itself, this is not surprising; but for many of these species, a quick look at the maps (see SOM for examples) shows that the IUCN range hews closely to the AquaMaps range, while adding a significant buffer zone.  Coral species dominate this quadrant (`r n_q2_corals` coral species - `r round(n_q2_corals/n_corals * 100, 1)`% of all corals and `r round(n_q2_corals/n_q2 * 100, 1)`% of all species in quadrant 2).  We suspect that many of these extent-misaligned map pairs can be easily explained: most corals and reef-associated organisms prefer shallower waters; seafloor depth is explicitly modeled in AquaMaps, but not explicitly considered in IUCN range considerations. ___include recommendation for IUCN range maps to be clipped to bathymetry where appropriate? or save til end?___
 
 ___wrap up something with quadrants 3 and 4:___ _In several instances, the AquaMaps map conformed to a small, local subset of the IUCN map (see SOM for examples - what was the Q4 graph?), in some cases due to some point locality observations being rejected by AquaMaps experts (EXAMPLES) and in other cases due to differences in species identification._ ___bleh - this needs help. Evidence? examples?___
 
@@ -130,3 +163,23 @@ Since the Ocean Health Index Species subgoal relies on spatial data from both da
 _do the analysis..._
 
 _Predictions:  What happens when using a 0% threshold instead of a 50%?  What happens when using IUCN rather than AM?  IUCN overestimates extent esp for coastal species?  More species will be included in MPAs so fewer apparent gap species.  Included range area inside MPAs will increase.  Policy implications?_
+
+-----
+
+## Wrap it up
+
+___Recommendations on data use?___
+
+* IUCN mapmakers
+    * at least clip polygons to bathymetry for depth-sensitive species, come on now people
+    * think carefully about quality of data in -- e.g. are all OBIS points equally valuable?  AquaMaps seems to disagree - but are they justified in doing so?
+
+* AquaMaps mapmakers
+    * get expert eyeballs on all the maps
+    * Explain rationale for discarding some of the data points - can there be a defined decision tool for this?
+    
+* Users
+    * understand that range maps tend to overestimate presence; AquaMaps are less likely to overestimate presence, but trade off for overestimating absence. Both better than simple point locality data.
+    * to use both together:
+        * consider setting AM presence threshold to 0% to create an extent of occurrence map, more like IUCN map.
+        * consider de-weighting IUCN for area-weighted calcs, for taxa in which IUCN is consistently overestimating presence
