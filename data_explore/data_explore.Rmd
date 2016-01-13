@@ -53,8 +53,8 @@ names(loiczid_raster) <- 'loiczid'
 
 ```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 ### this file created in data_prep
-spp_list <- read.csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'), stringsAsFactors = FALSE)
-
+spp_list <- read.csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'), 
+                     stringsAsFactors = FALSE)
 
 ```
 
@@ -102,11 +102,12 @@ pct_overlap_quartiles <- quantile(spp_list$sm_perc, na.rm = TRUE)[2:4]
 #   mutate(sciname_label = paste(str_sub(g, 1, 1), '. ', s, sep = '')) %>%
 #   dplyr::select(-g, -s)
 
+spp_list <- spp_list %>% mutate(data_poor = occurcells < 10)
 ### mongo plot time
 scatter_arearatio_vs_overlap <- ggplot(spp_list %>% 
                                          transform(popn_category = reorder(popn_category, category_score)),
                                        aes(x = area_ratio, y = sm_perc, 
-                                           color = popn_category,
+                                           color = data_poor,
                                            size = lg_area_pct)) + 
   ggtheme_plot + 
   ### color the quadrant backgrounds:

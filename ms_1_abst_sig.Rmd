@@ -1,7 +1,38 @@
 
 ## Abstract
+<!--
+Mapping and predicting species distributions is fundamental to the sciences of ecology, biogeography, and conservation, among many others.  Knowing where individuals of a species exist, and where they thrive, provides foundational information for 
+ understanding species ranges and diversity,
+ predicting species responses to human impacts and climate change,
+ and managing and protecting species effectively.
+A rich literature tackles the many dimensions of these questions.
+-->
+- Why are species distribution maps important
 
-_get to this later..._
+<!--
+Two important repositories _predict_ marine species ranges throughout the world's oceans – AquaMaps modeled species distribution maps (Kaschner et al. 2013) and International Union for Conservation of Nature (IUCN) species range maps (REF).  These spatial datasets are used for a wide range of purposes, including assessing marine species status (Halpern et al. 2012, Selig et al. 2013), evaluating global biodiversity patterns (Coll et al. 2010, Martin et al. 2014), predicting range shifts (Molinos et al. 2015), and setting conservation priorities (Klein et al. 2015). 
+-->
+Species maps from AquaMaps and the International Union for Conservation of Nature describe marine species ranges throughout the world's oceans, and are widely used in a wide range of biodiversity and conservation purposes. ___get across the point that these two datasets are the big ones___
+
+<!--
+The two datasets ostensibly describe the same information, but significant differences in methodology and intent could lead to dramatically different understandings of our marine ecosystems, with significant implications for policy and conservation recommendations.
+
+Importantly, biases in taxonomic or spatial coverage within a dataset could shift management or conservation actions away from places or species that are most in need.(maybe Jetz 2008?)  Inaccurate indications of presence or absence could lead to inefficient or ineffective marine reserve systems and management plans. (Rondinini et al. 2006) (Jetz 2008?)
+-->
+
+- These data sets are different, due to intent and methodology.
+- Spatial and taxa coverages are important to understand impacts on different analyses 
+    - taxa (probs) drives spatial
+    - small overlap provides opportunity to increase species without much redundancy
+- Comparisons of maps for overlapping species informs possible improvements
+    - improve method for outlining IUCN maps
+    - identify common problems and point toward solutions
+- How differences can affect outcomes of research and conservation studies
+
+<!--
+To understand the implications of differences between these two datasets, we compared how each data set represents the global spatial and taxonomic distribution of species.  For the relatively small number of species mapped in both datasets, we examined how well the species maps align. We then subjected two recent marine biodiversity studies - the Ocean Health Index biodiversity goal (Halpern et al. 2012) and a global MPA gap analysis (Klein et al. 2015) - to a sensitivity analysis, substituting one dataset over the other, to highlight the possible consequences of different data use decisions on our understanding of _the status of_ marine biodiversity.
+-->
+
 
 -----
 
