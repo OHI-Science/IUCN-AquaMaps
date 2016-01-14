@@ -2,13 +2,13 @@
 title: "Aligning species range data to better serve science and conservation"
 author: "Casey O'Hara, Jamie Afflerbach, Ben Halpern"
 output:
-  pdf_document:
-    number_sections: yes
-    toc: no
   html_document:
     highlight: haddock
     number_sections: yes
     theme: spacelab
+    toc: no
+  pdf_document:
+    number_sections: yes
     toc: no
   word_document: default
 ---
@@ -84,4 +84,9 @@ spp_am <- read.csv(spp_am_file, stringsAsFactors = FALSE)
 -----
 
 ``` {r references, child = 'ms_5_refs.Rmd'}
+```
+
+-----
+
+``` {r SOM, child = 'ms_6_supplemental.Rmd'}
 ```
