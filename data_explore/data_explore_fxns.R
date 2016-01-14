@@ -265,7 +265,7 @@ create_am_raster <- function(spp) {
                      which = 'am_prob', 
                      subsWithNA = TRUE)
   
-  write.raster(r_am_spp, file.path(dir_git, 'rasters', paste(str_replace(spp, ' ', '_'), '.tif', sep = '')))
+  writeRaster(r_am_spp, file.path(dir_git, 'rasters', paste(str_replace(spp, ' ', '_'), '.tif', sep = '')))
 }
 
 # spp <- 'Oculina varicosa'
