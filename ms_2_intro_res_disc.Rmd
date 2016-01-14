@@ -98,7 +98,7 @@ Quadrant 1 contains species whose map pairs agree in both spatial distribution a
 
 The extent-misaligned maps contained in quadrant 2 provide a richer set of examples to understand the fundamental differences between the datasets; examining these, we can identify several mechanisms that could cause such extent misalignment.  
 
-For `r n_q2_am_sm` of `r n_q2` species in this quadrant (`r round((n_q2_am_sm/n_q2) * 100, 1)`%), the IUCN extent is larger than the AquaMaps extent.  By itself, this is not surprising; but for many of these species, a quick look at the maps (see SOM for examples) shows that the IUCN range hews closely to the AquaMaps range, while adding a significant buffer zone.  Coral species dominate this quadrant (`r n_q2_corals` coral species - `r round(n_q2_corals/n_corals * 100, 1)`% of all corals and `r round(n_q2_corals/n_q2 * 100, 1)`% of all species in quadrant 2).  We suspect that many of these extent-misaligned map pairs can be easily explained: most corals and reef-associated organisms prefer shallower waters; seafloor depth is explicitly modeled in AquaMaps, but not explicitly considered in IUCN range considerations. (For examples and details, see SOM) 
+For `r n_q2_am_sm` of `r n_q2` species in quadrant 2 (`r round((n_q2_am_sm/n_q2) * 100, 1)`%), the IUCN extent is larger than the AquaMaps extent.  By itself, this is not surprising; but for many of these species, a quick look at the maps (see SOM for examples) shows that the IUCN range hews closely to the AquaMaps range, while adding a significant buffer zone.  Coral species dominate this quadrant (`r n_q2_corals` coral species - `r round(n_q2_corals/n_corals * 100, 1)`% of all corals and `r round(n_q2_corals/n_q2 * 100, 1)`% of all species in quadrant 2).  We suspect that many of these extent-misaligned map pairs can be easily explained: most corals and reef-associated organisms prefer shallower waters; seafloor depth is explicitly modeled in AquaMaps, but not explicitly considered in IUCN range considerations. (For examples and details, see SOM) 
 
 * ___verify some of the coral maps by saving raster, showing raster and polygons in QGIS against a bathymetry layer___
 * ___include recommendation for IUCN range maps to be clipped to bathymetry where appropriate? or save til end?___ 
@@ -107,8 +107,6 @@ The extent-alignment of species maps found in quadrant 3 can in many cases be at
 
 Quadrant 4 species maps seem to suffer from the same problem as those in quadrant 3, but here the AquaMaps extrapolation extends even further, pushing the extent alignment ratio lower.  In this quadrant, AquaMaps predicts a larger extent than IUCN for 70% of species represented in this quadrant, compared with just 30% of species in the entire set of overlapping maps _(this is supposed to show that much of this quadrant is based on overextrapolation of AquaMaps)_. 
 
-* ___Q4: more data-poor models and fewer reviewed species maps; data-rich models and expert review improve AquaMaps duh...___
-* ___recommend filtering for occurcells >= 10, and where possible, giving extra weight to reviewed maps___
 
 ___table to show data poor status and reviewed status for AquaMaps maps represented in the quadrant plot___
 

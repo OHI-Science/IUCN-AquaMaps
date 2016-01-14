@@ -87,3 +87,8 @@ spp_am <- read.csv(spp_am_file, stringsAsFactors = FALSE)
 
 ``` {r references, child = 'ms_5_refs.Rmd'}
 ```
+
+-----
+
+``` {r SOM, child = 'ms_6_supplemental.Rmd'}
+```
