@@ -253,4 +253,20 @@ plot_rangemap <- function(spp) {
     labs(title = spp, x = NULL, y = NULL) 
 }
 
+create_am_raster <- function(spp) {
+  map <- get_spp_map(spp)
+  
+  am_map <- map %>%
+    filter(!is.na(am_prob))
+  
+  r_am_spp  <-  subs(loiczid_raster, 
+                     am_map[ , c('loiczid', 'am_prob')], 
+                     by = 'loiczid', 
+                     which = 'am_prob', 
+                     subsWithNA = TRUE)
+  
+  write.raster(r_am_spp, file.path(dir_git, 'rasters', paste(str_replace(spp, ' ', '_'), '.tif', sep = '')))
+}
 
+# spp <- 'Oculina varicosa'
+# create_am_raster(spp)

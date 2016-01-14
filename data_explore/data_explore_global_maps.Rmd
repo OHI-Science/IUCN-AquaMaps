@@ -5,6 +5,8 @@ By counting the number of unique species are found in each of the half degree ce
 
 ```{r global map matched species, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
+library(rasterVis)
+
 ### find total species in each dataset for later percent calcs
 # am_n_tot   <- am_spp_cells %>% 
 #   filter(am_sid %in% unique(spp_list$am_sid)) %>%
@@ -84,6 +86,8 @@ Now look at full aquamaps species
 
 all_am_rast_file   <- file.path(dir_data, 'rasters/am_all_rast.tif')
 
+dir_am_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data/aquamaps/v2015/csv')
+
 if(!file.exists(all_am_rast_file)) {
   am_spp_cells_big <- fread(file.path(dir_am_data, 'hcaf_sp_native_trunc.csv')) %>%
     as.data.frame(stringsAsFactors = FALSE)
@@ -111,15 +115,15 @@ if(!file.exists(all_am_rast_file)) {
   all_am_map   <- raster(all_am_rast_file)
 }
 
-am_levelplot1 <- levelplot(all_am_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset')
+am_levelplot1 <- levelplot(all_am_map, main = 'Entire Aquamaps Dataset') # add in par.settings = myTheme
 
-all_am_ln_map <- log(all_am_map + 1)
-all_am_ln_map <- all_am_ln_map/maxValue(all_am_ln_map)
-am_levelplot1 <- levelplot(all_am_ln_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset: log-transformed relative species richness', 
-          colorkey = list(at = seq(0, 1, length = 15)))
+# all_am_ln_map <- log(all_am_map + 1)
+# all_am_ln_map <- all_am_ln_map/maxValue(all_am_ln_map)
+# am_levelplot1 <- levelplot(all_am_ln_map, par.settings = myTheme, main = 'Entire Aquamaps Dataset: log-transformed relative species richness', 
+#           colorkey = list(at = seq(0, 1, length = 15)))
 
 print(am_levelplot1)
-print(am_levelplot2)
+# print(am_levelplot2)
 
 # am_ln_pts <- as.data.frame(rasterToPoints(all_am_ln_map))
 # spp_richness_am_plot <- ggplot(am_ln_pts, aes(x = x, y = y)) +
@@ -141,6 +145,7 @@ Now look at full IUCN species
 ```{r all_iucn, eval = FALSE, echo = FALSE}
 
 all_iucn_rast_file   <- file.path(dir_data, 'rasters/iucn_all_rast.tif')
+dir_data_iucn <- file.path(dir_N, 'git-annex/globalprep/_raw_data/iucn_spp')
 
 if(!file.exists(all_iucn_rast_file)) {
   iucn_cells_file    <- file.path(dir_data_iucn, 'iucn_cells_2015.csv')
@@ -170,18 +175,18 @@ if(!file.exists(all_iucn_rast_file)) {
   all_iucn_map   <- raster(all_iucn_rast_file)
 }
 
-iucn_levelplot1 <- levelplot(all_iucn_map, par.settings = myTheme, main = 'Entire IUCN Dataset')
+iucn_levelplot1 <- levelplot(all_iucn_map, main = 'Entire IUCN Dataset') # add in par.settings = myTheme
 
-all_iucn_ln_map <- log(all_iucn_map + 1)
-all_iucn_ln_map <- all_iucn_ln_map/maxValue(all_iucn_ln_map)
-iucn_levelplot2 <- levelplot(all_iucn_ln_map, 
-          par.settings = myTheme, 
-          margin = list(axis = TRUE),
-          main = 'Entire IUCN Dataset: log-transformed relative species richness', 
-          colorkey = list(at = seq(0, 1, length = 15)))
+# all_iucn_ln_map <- log(all_iucn_map + 1)
+# all_iucn_ln_map <- all_iucn_ln_map/maxValue(all_iucn_ln_map)
+# iucn_levelplot2 <- levelplot(all_iucn_ln_map, 
+#           par.settings = myTheme, 
+#           margin = list(axis = TRUE),
+#           main = 'Entire IUCN Dataset: log-transformed relative species richness', 
+#           colorkey = list(at = seq(0, 1, length = 15)))
 
 print(iucn_levelplot1)
-print(iucn_levelplot2)
+# print(iucn_levelplot2)
 # iucn_ln_pts <- as.data.frame(rasterToPoints(all_iucn_ln_map))
 # spp_richness_iucn_plot <- ggplot(iucn_ln_pts, aes(x = x, y = y)) +
 #   ggtheme_map + 
