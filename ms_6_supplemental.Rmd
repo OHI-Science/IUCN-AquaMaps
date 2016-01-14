@@ -1,8 +1,25 @@
 # Supplemental Information
 
-### illustrative maps for different quadrants and different mechanistic problems
+## Info on data prep
 
-### descriptions of IUCN and AM data sets
+### processing AquaMaps
+
+* start with .sql files - three of 'em - how to get 'em?
+* turn into .csvs, which columns are critical for this analysis? simplify
+
+### downloading and processing IUCN maps
+
+* which data sets are included?
+* raster::extract() to convert polys to csvs
+* which columns are included?
+
+### creating master species list for co-listed species
+
+* using AquaMaps and IUCN, and IUCN master list, create the big list
+* which columns are included?
+* adjust this master list to use IUCN SID only for parent - eliminate the whole question of parent/subpop? for the purpose of this analysis
+
+## descriptions of IUCN and AM data sets
 
 IUCN: While the polygons roughly define regions of presence/absence, additional attributes provide information on extant/extinct ranges, native/introduced ranges, and seasonality.
 
@@ -25,7 +42,52 @@ ___Red List inclusion:___
 * Breaking down the quadrants by IUCN extinction risk categories (FIG 3c), we found that species with higher extinction risk tend to be better aligned between the two datasets, perhaps correlated to increased expert scrutiny.  Does higher perceived risk lead to increased attention, and thus better understanding of species distribution? Or conversely, does increased attention to species distribution reveal more species at risk?  Likely both mechanisms are at play on a case-by-case basis, depending on the species' taxon and region. _does this argument bear up to closer scrutiny? CR isn't dominated by Q1 any more_
 
 
-__Add'l maps to show mechanistic causes of quadrants__
+## illustrative maps for different quadrants and different mechanistic problems
+
+a few codes to indicate likely problems?
+
+- DC = depth clipping; IUCN extents go beyond reasonable depth for the species
+- DX = data excluded; AM excludes some observations that appear to be used for IUCN
+- DP = data poor (AquaMaps acknowledges data poor status? or use less than 10 data points as criteria)
+- NX = needs evaluation by expert; AM model likely predicts areas where species is unlikely to be found based on observed occurrences - does AM model reflect same as AM suitable habitat?
+
+Q2:
+
+| species                | quad | group           | codes   | notes |
+| -------                | ---- | -----           | -----   | ----- |
+| Conus episcopatus      | q2   | cones           |  DP, DX | d-match around Coral Triangle, but IUCN shows much more around Indian Ocean and S Pacific; also IUCN extents
+| Ctenochaetus binotatus | q2   |                 |         | IUCN extents beyond AM
+| Naso vlamingii         | q2   | acanthuridae    |         | IUCN extents beyond AM
+| Thalassoma purpureum   | q2   | wrasses         |         | IUCN extents beyond AM
+| Porites nigrescens     | q2   | corals 2        | DP      | AM limited to CT; IUCN shows far greater dist, and extents
+| Conus ammiralis        | q2   | cones           | DP      | AM  | limited to CT, IUCN shows in Madagascar; also extents
+| Conus tessulatus       | q2   | cones           |         | extents
+| Acropora sarmentosa    | q2   | corals 1        |         | extents; also AM shows HI but IUCN does not?
+| Holothuria fuscogilva  | q2   | sea cucumbers   |         | extents; also AM shows Mex and Central Am west coast, but IUCN does not (not available online?)
+| Oculina Varicosa       | q2   | corals 2        |         | lim to Caribbean; extents - this might be a good close-up map
+| Acanthocybium solandri | q2   | tunas/billfish  |         | mostly tropical by IUCN; AM shows much farther N and S
+
+Q3
+
+| species                | quad | group           | codes   | notes |
+| -------                | ---- | -----           | -----   | ----- |
+| Conus magnificus       | q3   |  cones          |         | IUCN distribution is more limited than AM distribution)
+| Abudefduf concolor     | q3   |  damselfish     |         | Baja for AM, southern Central Am for IUCN; maybe a good closeup map?  AM points from Baja to Peru incl Galapagos; some rejected pts from Caribbean and eastern Atlantic
+| Centropyge aurantonotus | q3  |  angelfish      |         | AM shows Caribbean; IUCN shows northern South America, also maybe a good closeup map? AM points from FL to south Brazil, but no Gulf of Mexico.
+| Chlorurus perspicillatus | q3 |  parrotfish     |         | IUCN shows only HI; AM shows dots all over S Pacific and near Marianas Islands
+| Sarda orientalis        | q3  |  tunas/billfish |         | limited dists by IUCN
+| Montastraea franksi     | q3  |  corals 2       | DP      | IUCN shows just in Caribbean; AM shows all up & down east coast of N America and S America
+
+Q4
+
+| species                  | quad | group   | codes   | notes |
+| -------                  | ---- | -----   | -----   | ----- |
+| Acanthurus nigroris      | q4   |         |         | IUCN dist limited to HI, while AM shows all over S Pacific and CT - AM observations all over S pacific...
+| Praealticus tanegasimae  | q4   | blenny  |         | IUCN shows limited dist around Japan/Marianas; AM shows much broader through CT and W Pacific - good local map?
+| Stethojulis marquesensis | q4   | wrasse  |         | IUCN shows only small cluster of islands (Marquesas?) while AM shows much broader across S Pacific
+| Canthigaster leoparda    | q4   | puffer  |         | IUCN limited spots around a couple of islands; AM shows all throughout CT
+| pentacheles snyderi      | q4   | lobster | DP      | AM shows all over - sim to depth profiles? while IUCN shows only a couple patches - HI? S Pacific, and S Indian oceans?  AM limits to specific FAO regions, which results in odd cutoffs; also shows some data points in N Atlantic which has an odd result.
+| Nephropsis sulcata       | q4   | lobster |         | IUCN shows odd ranges, most of which don't overlap with AM
 
 ## AquaMaps: Effect of changing "presence" threshold on apparent distribution
 
@@ -48,6 +110,7 @@ At a presence threshold of 40%, as used in the Ocean Health Index Species subgoa
 
 -----  
 
+<<<<<<< HEAD
 species to look more closely at:
 a few codes to indicate likely problems?
 - DC = depth clipping; IUCN extents go beyond reasonable depth for the species
@@ -65,7 +128,7 @@ Conus ammiralis (cones) - DP - AM limited to CT, IUCN shows in Madagascar; also 
 Conus tessulatus (cones) - extents
 Acropora sarmentosa (corals 1) - extents; also AM shows HI but IUCN does not?
 Holothuria fuscogilva (sea cucumbers) - extents; also AM shows Mex and Central Am west coast, but IUCN does not (not available online?)
-Oculina Varicosa (corals 2) - lim to Caribbean; extents - this might be a good close-up map
+Oculina varicosa (URM-Cn-5921) (corals part 1) - lim to Caribbean; extents - this might be a good close-up map
 Acanthocybium solandri (tunas/billfish) - mostly tropical by IUCN; AM shows much farther N and S
 
 Q3:
@@ -83,3 +146,5 @@ Stethojulis marquesensis (wrasse) - IUCN shows only small cluster of islands (Ma
 Canthigaster leoparda (puffer) - IUCN limited spots around a couple of islands; AM shows all throughout CT
 pentacheles snyderi (lobster) - DP - AM shows all over - sim to depth profiles? while IUCN shows only a couple patches - HI? S Pacific, and S Indian oceans?  AM limits to specific FAO regions, which results in odd cutoffs; also shows some data points in N Atlantic which has an odd result.
 Nephropsis sulcata (lobster) - IUCN shows odd ranges, most of which don't overlap with AM
+=======
+>>>>>>> 2bde1ea0cf3f0e8312264b3c91b7b89420931187

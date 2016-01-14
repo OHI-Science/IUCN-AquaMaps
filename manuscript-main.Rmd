@@ -2,13 +2,13 @@
 title: "Aligning species range data to better serve science and conservation"
 author: "Casey O'Hara, Jamie Afflerbach, Ben Halpern"
 output:
-  pdf_document:
-    number_sections: yes
-    toc: no
   html_document:
     highlight: haddock
     number_sections: yes
     theme: spacelab
+    toc: no
+  pdf_document:
+    number_sections: yes
     toc: no
   word_document: default
 ---
@@ -18,6 +18,8 @@ output:
 # library(ggplot2)
 # library(maps)
 # library(readr)
+
+
 # library(raster)
 # library(data.table)
 library(tidyr)
@@ -31,6 +33,8 @@ library(stringr)
 # dir_anx  <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
 # dir_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data')
 # dir_fig  <- file.path(getwd(), 'figures')
+
+
 ```
 
 ``` {r load data, echo = FALSE, warning = FALSE, message = FALSE}
@@ -84,4 +88,9 @@ spp_am <- read.csv(spp_am_file, stringsAsFactors = FALSE)
 -----
 
 ``` {r references, child = 'ms_5_refs.Rmd'}
+```
+
+-----
+
+``` {r SOM, child = 'ms_6_supplemental.Rmd'}
 ```

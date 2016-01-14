@@ -37,12 +37,17 @@ Need to:
 gather spp_all, spp_am, spp_am_v_iucn, spp_list_w_area_all and _trimmed into data folder.
 
 
-```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 ### get spp_all_complete from git-annex, bring to local repo.  The spp_all_complete
 ### file was created in ohiprep/globalprep/SPP_ICO/data_prep_SPP.R, running the
 ### function create_spp_master_lookup(source_pref = 'iucn', fn_tag = '_complete', reload = TRUE)
-spp_all_remote <- read.csv(file.path(dir_anx, scenario, 'int/spp_all_complete.csv'), 
-                           stringsAsFactors = FALSE)
+spp_all_remote <- read.csv(file.path(dir_anx, scenario, 'int/spp_all.csv'), 
+                           stringsAsFactors = FALSE) %>%
+  filter(!str_detect(spatial_source, 'subpop')) %>%
+  filter(!str_detect(spatial_source,  'alias')) %>%
+  select(am_sid, sciname, reviewed, iucn_sid, popn_trend,
+         popn_category, spp_group, id_no, spatial_source)
+
 write.csv(spp_all_remote, file.path(dir_data, 'spp_all.csv'), row.names = FALSE)
 
 ### create spp_am_v_iucn: the whole maplist narrowed down to just the overlapping species.
@@ -98,7 +103,7 @@ am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_20
 ### Create files for species list with area info, both a complete list and a trimmed list
 
 data_file <- file.path(dir_data, 'spp_list_w_area_all.csv')
-reload = TRUE
+reload <- TRUE
 if (!file.exists(data_file) | reload) {
   ### species info list - scinames, IUCN species ID, AM species ID, category etc
   spp_list_base <- read.csv(file.path(dir_data, 'spp_am_v_iucn.csv'),
