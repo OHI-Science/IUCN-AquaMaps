@@ -3,17 +3,6 @@
 
 _questions for abstract style: voice (passive vs active, 'we' vs 'this paper'), tense (present vs past)..._
 
-<!--
-Mapping and predicting species distributions is fundamental to the sciences of ecology, biogeography, and conservation, among many others.  Knowing where individuals of a species exist, and where they thrive, provides foundational information for 
- understanding species ranges and diversity,
- predicting species responses to human impacts and climate change,
- and managing and protecting species effectively.
-A rich literature tackles the many dimensions of these questions.
--->
-
-<!--
-Two important repositories _predict_ marine species ranges throughout the world's oceans – AquaMaps modeled species distribution maps (Kaschner et al. 2013) and International Union for Conservation of Nature (IUCN) species range maps (REF).  These spatial datasets are used for a wide range of purposes, including assessing marine species status (Halpern et al. 2012, Selig et al. 2013), evaluating global biodiversity patterns (Coll et al. 2010, Martin et al. 2014), predicting range shifts (Molinos et al. 2015), and setting conservation priorities (Klein et al. 2015). 
--->
 Two global datasets of species distribution maps - AquaMaps and the International Union for Conservation of Nature - dominate our understanding of marine species ranges throughout the world's oceans, and inform a wide range of biodiversity and conservation purposes.  Differences in methodology and intent between these two datasets drive differences in predicted species ranges, with significant implications for management and conservation decisions. 
 
 <!--
@@ -23,14 +12,9 @@ Importantly, biases in taxonomic or spatial coverage within a dataset could shif
 -->
 Together, the two datasets provide range information for XXX species, with only `r nrow(spp_map_pairs)` species common to both datasets.  ___what is the key takeaway for the taxonomic and spatial coverage analyses? can we say something about benefits of combining the two for better taxo coverage?___  
 
-For the subset of species included in both datasets, we examine the alignment of range maps by comparing distribution and extent of predicted ranges.  Categorizing the results based on quality of alignment, we identify several issues that commonly lead to disagreement in species range predictions.  Notably, IUCN maps often neglect considerations of bathymetry, leading to predictions of species presence at unsuitable depths, and AquaMaps maps for data-poor species often extrapolate presence far afield from known occurrences.  ___something about recommendations here? how this understanding can lead to better use of these datasets?___
+For the subset of species included in both datasets, we examine the alignment of range maps by comparing distribution and extent of predicted ranges.  Categorizing the results based on quality of alignment, we identify several issues that commonly lead to disagreement in species range predictions.  Notably, IUCN maps often disregard bathymetry for depth-limited species, leading to predictions of species presence at unsuitable depths, and AquaMaps maps for data-poor species often extrapolate presence far afield from known occurrences.  ___something about recommendations here? how this understanding can lead to better use of these datasets?___
 
 To understand the implications of these differences, we reexamined two recent global analyses that depend on these datasets: the Ocean Health Index and a global analysis of gaps in coverage of marine protected areas.  Variations in which dataset is used, and how, lead to significantly different estimates of species diversity and conservation effectiveness.
-
-<!--
-To understand the implications of differences between these two datasets, we compared how each data set represents the global spatial and taxonomic distribution of species.  For the relatively small number of species mapped in both datasets, we examined how well the species maps align. We then subjected two recent marine biodiversity studies - the Ocean Health Index biodiversity goal (Halpern et al. 2012) and a global MPA gap analysis (Klein et al. 2015) - to a sensitivity analysis, substituting one dataset over the other, to highlight the possible consequences of different data use decisions on our understanding of _the status of_ marine biodiversity.
--->
-
 
 -----
 

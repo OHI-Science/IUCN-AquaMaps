@@ -3,6 +3,8 @@
 
 ### Figure 1
 
+<a id = 'fig1'></a>
+
 ![](figures/bar_by_taxa_all.png)
 ``` {r barchart_by_taxa, echo = FALSE}
 n_spp <- spp_map_pairs %>%
@@ -19,15 +21,19 @@ n_bonyfish <- nrow(spp_map_pairs %>%
                                              'SURGEONFISH_TANGS_UNICORNFISH', 'ANGELFISH', 'TUNAS_BILLFISHES', 
                                              'DAMSELFISH', 'BONEFISH_TARPONS')))
 ```
-> __Figure 1(a):__ Number and proportion of species, listed by taxa, included in each dataset: IUCN, AquaMaps, or both.  AquaMaps encompasses a broader range of taxa than IUCN, while IUCN focuses on comprehensively assessing select taxonomic groups, typically at the level of order or family. Overlapping species are dominated by bony fishes (`r n_bonyfish` species, primarily tropical taxa) and corals (`r n_corals` species).
+
 
 ![](figures/all_aquamaps_map.png)
 
 ![](figures/all_iucn_map.png)
 
+>  __Figure 1(a):__ Number and proportion of species, listed by taxa, included in each dataset: IUCN, AquaMaps, or both.  AquaMaps encompasses a broader range of taxa than IUCN, while IUCN focuses on comprehensively assessing select taxonomic groups, typically at the level of order or family. Overlapping species are dominated by bony fishes (`r n_bonyfish` species, primarily tropical taxa) and corals (`r n_corals` species).
+
 > __Figure 1 (b, c):__ Global marine species richness according to (a) AquaMaps dataset and (b) IUCN dataset.  The frequency plot to the right of each map shows relative species count per cell at each latitude; while both datasets peak in tropical latitudes near the equator, the frequency for IUCN maps drops quickly beyond 30°N and 30°S, while the frequency for AquaMaps remains robust well into temperate latitudes.  The frequency plot above each map shows relative species count at each longitude, showing a slight bias in the IUCN dataset away from the Atlantic and eastern Pacific compared to AquaMaps. 
 
 ### Figure 2
+
+<a id = 'fig2'></a>
 
 ![](figures/AreaRatiovsPercOverlap.png)
 
@@ -59,6 +65,8 @@ q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio 
 
 
 ### Figure 3
+
+<a id = 'fig3'></a>
 
 ![Absolute change in SPP score](figures/SPP_scenarios/boxplot_abs_diff.png)
 
