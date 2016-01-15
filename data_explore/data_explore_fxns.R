@@ -25,7 +25,7 @@ ggtheme_map <- ggtheme_basic +
   theme(axis.text = element_blank())
 
 ### Function to create a species list from scratch... use when new data is available
-create_spp_list <- function(spp_list_base, data_file) {
+create_spp_list <- function(spp_list_base, data_file, am_spp_cells, iucn_spp_cells, loiczid_raster) {
   spp_list_build <- spp_list_base %>%
     mutate(total_area = NA,
            am_area    = NA,
@@ -38,9 +38,10 @@ create_spp_list <- function(spp_list_base, data_file) {
   
   
   #there's likely a better way to do this than a for loop (lapply or sapply?)
-  for (i in 1:nrow(spp_list_build)){ # i = 1
+  for (i in 1:nrow(spp_list_build)){ # i = 3
     spp     <- spp_list_build[i, ]$sciname #species name
-    spp_map <- get_spp_map(spp) #get species map
+    message(sprintf('Species: %s | am_sid: %s | iucn_sid: %s', spp, spp_list_build[i, ]$am_sid, spp_list_build[i, ]$iucn_sid))
+    spp_map <- get_spp_map(spp, spp_list_build, am_spp_cells, iucn_spp_cells) # get species map
     
     ###get just the aquamaps cells
     am_spp_map <- spp_map %>%
@@ -72,10 +73,6 @@ create_spp_list <- function(spp_list_base, data_file) {
       dplyr::select(loiczid, iucn_area, am_sid, am_prob, iucn_pres) %>%
       unique()
     
-    #TODO: incorporate the iucn_area (area of cell that species overlaps with...I think thats what it is)
-    
-    ###this is incorporated because there are some duplications for loiczids with IUCN cells. I'm guessing this is because of the parent/subpopulations?
-    
     if(TRUE %in% duplicated(iucn_map$loiczid)) next()
     
     ### rasterize IUCN map
@@ -92,7 +89,7 @@ create_spp_list <- function(spp_list_base, data_file) {
     ### Get total area (IUCN and AM combined)
     allCells <- spp_map %>%
       dplyr::select(loiczid) %>%
-      mutate(value=1) %>%
+      mutate(value = 1) %>%
       unique()
     
     
@@ -183,20 +180,22 @@ create_spp_list <- function(spp_list_base, data_file) {
 # This function takes a single species scientific name as input, then grabs all 
 # occurrence cells and associated Aquamaps probability and/or IUCN proportional area
 # per cell
-get_spp_map <- function(species){ # species = 'Acanthopagrus latus' # species = 'Abudefduf concolor'
-  spp_id <- spp_list %>%
-    filter(sciname == species & is.na(parent_sid)) %>%
+get_spp_map <- function(spp, spp_list_build, am_spp_cells, iucn_spp_cells) { # species = 'Acanthopagrus latus' # species = 'Abudefduf concolor'
+  spp_id <- spp_list_build %>%
+    filter(sciname == spp) %>%
     dplyr::select(am_sid, iucn_sid, sciname) %>%
     unique()
 
   am_spp_map   <- am_spp_cells %>%
     filter(am_sid == spp_id$am_sid) %>%
     rename(am_prob = prob)
+  if(nrow(am_spp_map) == 0)
+     message('no AquaMaps cells found')
   
   iucn_spp_map <- iucn_spp_cells %>%
-    filter(sciname == species)
+    filter(sciname == spp)
   if(nrow(iucn_spp_map) == 0) {
-    message(sprintf('Species %s has zero IUCN cells', species))
+    message('no IUCN cells found')
     spp_map <- am_spp_map %>%
       as.data.frame() %>%
       mutate(iucn_area = NA)

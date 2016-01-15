@@ -7,6 +7,7 @@ output: html_document
 
 # Libraries and Paths
 
+library(raster)
 library(readr)
 library(data.table)
 library(ggplot2)
@@ -26,7 +27,7 @@ dir_data <- file.path(dir_git, 'data')
 dir_data_remote <- file.path(dir_N, 'git-annex/globalprep/_raw_data')
 scenario <- 'v2016'
 
-if(basename(getwd()) != 'data_explore') setwd('data_explore')
+if(basename(getwd()) != 'data_explore') setwd('~/github/IUCN-AquaMaps/data_explore')
 source('data_explore_fxns.R')
 ### When knitting this, it automatically sets WD to be this directory...
 ### the 'setwd()' is there for running by chunk
@@ -97,10 +98,16 @@ iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_
 
 am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'), progress = TRUE)
 
+loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+loiczid_raster       <- raster(loiczid_raster_file)
+names(loiczid_raster) <- 'loiczid'
+
+
 ```
 
 ```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 ### Create files for species list with area info, both a complete list and a trimmed list
+
 
 data_file <- file.path(dir_data, 'spp_list_w_area_all.csv')
 reload <- TRUE
@@ -109,11 +116,13 @@ if (!file.exists(data_file) | reload) {
   spp_list_base <- read.csv(file.path(dir_data, 'spp_am_v_iucn.csv'),
                             stringsAsFactors = FALSE)
   
-  create_spp_list(spp_list_base, data_file)
+  create_spp_list(spp_list_base, data_file, am_spp_cells, iucn_spp_cells, loiczid_raster)
 }
 
 spp_list <- read.csv(data_file, stringsAsFactors = FALSE) 
 ### At this point, spp_list contains subpops and aliases, and zero-area IUCNs
+
+spp_am <- read.csv(file.path(dir_data, 'spp_am.csv'), stringsAsFactors = FALSE)
 
 spp_list <- spp_list %>%
   filter(!is.na(sm_perc)) %>%
