@@ -87,7 +87,7 @@ if(!file.exists(rast_base_file)) {
   rast_empty <- raster(ext = extent(rast_loiczid), resolution = 0.01)
   rast_base  <- raster::area(rast_empty) ### takes a while...
   
-  writeRaster(rast_base, rast_base_file)
+  writeRaster(rast_base, rast_base_file, overwrite = TRUE)
 } else {
   rast_base <- raster(rast_base_file)
 }
@@ -100,39 +100,62 @@ crs_wgs84 <- CRS(p4s_wgs84)
 ```
 
 ``` {r set_up_spatially_marine_raster}
+### This raster (at 0.01 degree resolution) contains flags on whether a cell
+### is "spatially marine" - i.e. overlaps (center?) with an ocean area.
+### This is separate from the WDPA "marine" flag.
+
+rast_marine_file <- file.path(dir_git, 'data/mpa_analysis/rast_marine.tif')
+reload <- FALSE
+if(reload == TRUE) {
 ### import OHI regions polygons, to determine spatially-marine areas
-dir_rgn   <- file.path(dir_N, 'git-annex/globalprep/spatial/v2015/data')
-lyr_rgn <- 'regions_gcs'
-poly_rgn <- readShapePoly(file.path(dir_rgn, lyr_rgn), 
-                           proj4string = crs_wgs84)
+  poly_marine_file <- file.path(dir_anx, 'explore_am_v_iucn/tmp_rasters/poly_marine.shp')
+  if(!file.exists(poly_marine_file)) {
+    dir_rgn   <- file.path(dir_N, 'git-annex/globalprep/spatial/v2015/data')
+    lyr_rgn <- 'regions_gcs'
+    poly_rgn <- readShapePoly(file.path(dir_rgn, lyr_rgn), 
+                               proj4string = crs_wgs84)
+    
+    ### filter out all polygons that are land or landlocked, and flag 
+    ### the rest as spatially-marine = 1
+    poly_marine <- poly_rgn[!str_detect(poly_rgn@data$rgn_typ, 'land'), ]
+    poly_marine@data <- poly_marine@data %>%
+      mutate(sp_mar = 1)
+    
+    # writePolyShape(poly_marine, poly_marine_file)
+    writeOGR(obj    = poly_marine,
+             dsn    = path.expand(dirname(poly_marine_file)),
+             layer  = str_replace(basename(poly_marine_file), '.shp', ''),
+             driver = 'ESRI Shapefile',
+             overwrite_layer = TRUE,
+             verbose = TRUE)
 
-### filter out all polygons that are land or landlocked, and flag the rest as spatially-marine = 1
-poly_marine <- poly_rgn[!str_detect(poly_rgn@data$rgn_typ, 'land'), ]
-poly_marine@data <- poly_marine@data %>%
-  mutate(sp_mar_flag = 1)
-
-# writePolyShape(poly_marine, file.path(dir_anx, 'explore_am_v_iucn/tmp_rasters/poly_sp_mar'))
-
-# rast_sp_mar <- rasterize(poly_marine, rast_base, value = sp_mar_flag) ### pretty slow... consider gdal_rasterize?
-
-# library(gdalUtils)
-# rast_sp_mar <- gdal_rasterize(
-#     src_datasource = file.path(dir_anx, 'explore_am_v_iucn/tmp_rasters/poly_sp_mar.shp')),
-#     dst_filename = file.path(dir_anx, 'explore_am_v_iucn/tmp_rasters/poly_sp_mar.tif'), 
-#       # destination for output
-#     a = 'sp_mar_flag', 
-#       # the attribute in the shapefile to be assigned to the cell values
-#     te = c(-180, -90, 180, 90), 
-#       # extents for output raster
-#     tr = c(.01, .01),  
-#       # resolution for output raster
-#     tap = TRUE, 
-#       # target aligned pixels - align coords of extent of output to values of -tr
-#     a_nodata = NA, 
-#       # nodata value for raster; otherwise they will be filled in with zeroes
-#     output_Raster = TRUE, 
-#       # return output as a RasterBrick? 
-#     verbose = TRUE)
+    } else {
+    poly_marine <- readShapePoly(poly_marine_file, 
+                               proj4string = crs_wgs84)
+  }
+  
+  # rast_marine <- rasterize(poly_marine, rast_base, value = sp_mar_flag) 
+  ### excruciatingly slow (interminable?)... consider gdal_rasterize?
+  
+  library(gdalUtils)
+  rast_marine <- gdal_rasterize(
+      src_datasource = poly_marine_file),
+      dst_filename   = rast_marine_file), 
+        # destination for output
+      a = 'sp_mar_flag', 
+        # the attribute in the shapefile to be assigned to the cell values
+      te = c(-180, -90, 180, 90), 
+        # extents for output raster
+      tr = c(.01, .01),  
+        # resolution for output raster
+      tap = TRUE, 
+        # target aligned pixels - align coords of extent of output to values of -tr
+      a_nodata = NA, 
+        # nodata value for raster; otherwise they will be filled in with zeroes
+      output_Raster = TRUE, 
+        # return output as a RasterBrick? 
+      verbose = TRUE)
+}
 
 ```
 
