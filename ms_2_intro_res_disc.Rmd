@@ -2,24 +2,6 @@
 output: html_document
 ---
 
-# Introduction
-
-_Peer beneath the waves anywhere in the world - a moody kelp forest, a bustling coral reefscape, the frigid depths beneath a polar ice sheet, the endless blue of the open ocean - and you will find a unique ecosystem defined as much by which species are absent as by which species are present._ Knowing where individuals of a species exist, and where they thrive, is fundamental to the sciences of ecology, biogeography, and conservation, among many others.  This knowledge provides foundational information for 
- understanding species ranges and diversity,
- predicting species responses to human impacts and climate change,
- and managing and protecting species effectively.
-A rich literature tackles the many dimensions of these questions.
-
-One major outcome of this body of science is the various compiled databases of species distribution maps. Two global-scale repositories _predict_ marine species ranges throughout the world's oceans – AquaMaps modeled species distribution maps (Kaschner et al. 2013) and International Union for Conservation of Nature (IUCN) species range maps (REF).  These two spatial datasets are used for a wide range of purposes, including assessing marine species status (Halpern et al. 2012, Selig et al. 2013), evaluating global biodiversity patterns (Coll et al. 2010, Martin et al. 2014), predicting range shifts (Molinos et al. 2015), and setting conservation priorities (Klein et al. 2015). 
-
-The two datasets ostensibly describe the same information, but significant differences in methodology and intent could lead to dramatically different understandings of our marine ecosystems, with significant implications for policy and conservation recommendations.  Importantly, biases in taxonomic or spatial coverage within a dataset could shift management and conservation actions away from places or species that are most in need.  Inaccurate indications of presence or absence could lead to ineffective marine reserve systems and management plans.(Rondinini et al. 2006) (Jetz 2008?)
-
-To understand the implications of differences between these two datasets, we compared how each data set represents the global spatial and taxonomic distribution of species.  For the relatively small number of species mapped in both datasets, we examined how well the species maps align and determined several issues that lead to misalignment between predicted species distributions. We then subjected two recent marine biodiversity studies - the Ocean Health Index biodiversity goal (Halpern et al. 2012) and a global analysis of gaps in protection afforded by marine protected areas (MPAs) (Klein et al. 2015) - to a sensitivity analysis, substituting one dataset over the other, to highlight the possible consequences of different data use decisions on our understanding of _the status of_ marine biodiversity.
-
------
-
-## Overview of AquaMaps and IUCN datasets  
-
 ``` {r calc species numbers, echo = FALSE}
 n_spp_am    <- nrow(spp_am)
 n_spp_am_reviewed <- nrow(spp_am %>% filter(reviewed == 1))
@@ -30,9 +12,31 @@ n_spp_iucn  <- nrow(spp_iucn_maps)
 n_spp_both  <- nrow(spp_map_pairs)
 p_both_am   <- round(n_spp_both/n_spp_am * 100, 1)
 p_both_iucn <- round(n_spp_both/n_spp_iucn * 100, 1)
+p_both_all  <- round(n_spp_both/nrow(spp_all) * 100, 1)
 ```
 
-The IUCN publishes species range maps as spatial vector polygon shapefiles, bundled by taxonomic groups.  Using GIS, experts outline spatial polygons to represent a given species' extent of occurrence, based on observation records and refined by expert understanding of the species' range and habitat preferences.  _IUCN releases a range map bundle for a taxonomic group once it has been "comprehensively assessed," i.e. at least 90% of the species within the taxonomic group have been evaluated (REF)._  While this mitigates sampling bias within taxa, it also means that entire taxonomic groups remain unavailable until they have met this threshold of comprehensive assessment.  
+# Introduction
+
+_Peer beneath the waves anywhere in the world - a moody kelp forest, a bustling coral reefscape, the frigid depths beneath a polar ice sheet, the endless blue of the open ocean - and you will find a unique ecosystem defined as much by which species are absent as by which species are abundant._ Knowing where individuals of a species thrive is fundamental to the sciences of ecology, biogeography, and conservation, among many others.  This knowledge provides foundational information for 
+ understanding species ranges and diversity,
+ predicting species responses to human impacts and climate change,
+ and managing and protecting species effectively.
+A rich literature tackles the many dimensions of these questions.
+
+One major outcome of this body of science is the various compiled databases of species distribution maps. Two global-scale repositories _predict_ marine species ranges throughout the world's oceans – AquaMaps modeled species distribution maps (Kaschner et al. 2013) and International Union for Conservation of Nature (IUCN) species range maps (REF).  These two spatial datasets are used for a wide range of purposes, including assessing marine species status (Halpern et al. 2012, Selig et al. 2013), evaluating global biodiversity patterns (Coll et al. 2010, Martin et al. 2014), predicting range shifts (Molinos et al. 2015), and setting conservation priorities (Klein et al. 2015). 
+
+The two datasets ostensibly describe the same information, but significant differences in methodology and intent could lead to dramatically different understandings of our marine ecosystems, with significant implications for policy and conservation recommendations.  Importantly, biases in taxonomic or spatial coverage within a dataset could shift management and conservation actions away from places or species that are most in need.  Inaccurate indications of presence or absence could lead to ineffective marine reserve systems and management plans.(Rondinini et al. 2006) (Jetz 2008?)
+
+To understand the implications of differences between the AquaMaps and IUCN datasets, we compared how each data source represents the global spatial and taxonomic distribution of species.  For the `r p_both_all`% of species mapped in both datasets, we examined how well the species maps align and determined several issues that lead to misalignment between predicted species distributions, and outlined possible improvements. 
+
+We then subjected two recent marine biodiversity studies - the Ocean Health Index biodiversity goal (Halpern et al. 2012) and a global analysis of gaps in protection afforded by marine protected areas (MPAs) (Klein et al. 2015) - to a sensitivity analysis, substituting one dataset over the other, to highlight the possible consequences of different data use decisions on our understanding of _the status of_ marine biodiversity. ___We found XXX... very briefly outline results?___
+
+-----
+
+## Overview of AquaMaps and IUCN datasets  
+
+
+The IUCN publishes species range maps as polygon shapefiles, bundled by taxonomic groups (REF).  Using a geographic information system (GIS), experts outline spatial polygons to represent a given species' extent of occurrence, based on observation records and refined by expert understanding of the species' range and habitat preferences.  _IUCN releases a range map bundle for a taxonomic group once it has been "comprehensively assessed," i.e. at least 90% of the species within the taxonomic group have been evaluated (REF)._  While this mitigates sampling bias within taxa, it also means that entire taxonomic groups remain unavailable until they have met this threshold of comprehensive assessment.  
 
 AquaMaps develops species distribution maps based on modeled relative environmental suitability.  For each mapped species, environmental preferences (e.g. temperature, depth, salinity) are deduced from occurrence records, published species databases such as FishBase, and expert knowledge.  The AquaMaps model overlays these environmental preferences atop a map of environmental attributes on a 0.5 degree grid, creating a global raster of probability of occurrence for each species.  A subset of the resulting distribution maps (`r n_spp_am_reviewed` of `r n_spp_am` species maps; `r p_spp_am_reviewed`%) have been checked or formally reviewed by experts, to validate and improve the parameters and underlying model.
 
@@ -112,6 +116,11 @@ _Other hypotheses/case studies to highlight other possible mechanistic differenc
 
 
 -----
+# Implications
+
+___From JSL:___ _I think you need a broader discussion of implications. How many times has IUCN/Aquamaps been cited? How long have they been around? What scales are the studies? Then you can muse about how results/interpretations would be different depending on which dataset they used, and reference Fig 3’s._
+
+_Then, say for example, the OHI uses these datasets together (don’t need to get too much into OHI background I think, maybe they don’t even need to know about the biodiversity goal?), but say that to try to combine them they use a threshold at 40% since others use this threshold (but check out the SOM for analyses about thresholds)_
 
 ## Application to OHI
 
