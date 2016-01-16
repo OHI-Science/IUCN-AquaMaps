@@ -15,9 +15,12 @@ _map pairs comparison_
 
 Using genus and species binomials to identify paired maps, we selected the subset of marine species that have range maps in both IUCN and AquaMaps current native distribution (n = `r nrow(spp_map_pairs)`).  We used the same criteria as outlined above to determine species presence within a cell.
 
-___from results/discussion:___ Overlaying paired distribution maps for a given species, we calculated two dimensions of spatial alignment: _distribution alignment_, which we defined as the proportion of the smaller range intersecting the larger range; and _area alignment_, which we defined as the ratio of the smaller range to the larger range.
+___from results/discussion: paraphrase or expand upon this___ Overlaying paired distribution maps for a given species, we calculated two dimensions of spatial alignment: _distribution alignment_, which we defined as the proportion of the smaller range intersecting the larger range; and _area alignment_, which we defined as the ratio of the smaller range to the larger range.
 
 $$\alpha_{dist} = \frac{A_{small \cap large}}{A_{large}} * 100\%$$
 
 $$\alpha_{area} = \frac{A_{small}}{A_{large}} * 100\%$$
 
+### Methods for OHI comparison
+
+### Methods for MPA Gap Analysis comparison

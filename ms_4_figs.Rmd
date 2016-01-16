@@ -59,7 +59,7 @@ q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio 
 
 ![](figures/barchart_spp_gp_quads.png)
 
-> __Figure 2 (b):__ Spatial alignment of paired-map species by taxonomic group.
+> __Figure 2 (b):__ Spatial alignment of paired-map species by taxonomic group. ___REDO with all corals grouped together!___  _Also - is it distracting to use order names for some groups and not others?  Some of the groups had pretty long names ("acanthuridae" is way shorter than "surgeonfish, tangs, and unicornfish")_
 
 <!--AquaMaps accounts for seafloor depth as a limiting factor, highly constraining the predicted habitat for photosynthesizing corals, while IUCN maps for coral species often include wide buffers that would extend far beyond appropriate depth for coral habitat, thus likely overestimating the actual species range (see SOM).  A similar mechanism may also drive poor extent alignment of other demersal and reef-associated organisms.-->
 
