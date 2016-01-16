@@ -73,13 +73,25 @@ Several steps to this:
     * Include species extinction risk in there too?
 
 ``` {r set_up_base_raster}
-### import AquaMaps half-degree loiczid raster - for extents and such
-rast_loiczid_file   <- file.path(dir_git, 'data/rasters/loiczid_raster.grd')
-rast_loiczid        <- raster(rast_loiczid_file)
-names(rast_loiczid) <- 'loiczid'
+### base raster will contain 0.01 degree cells from -180 to +180,
+### and -90 to +90, with the associated area of each cell.
+### Save it as a .tif in GitHub - about 50 
+rast_base_file <- file.path(dir_git, 'data/mpa_analysis/rast_base.tif')
 
-rast_base      <- raster(ext = extent(rast_loiczid), resolution = 0.01)
-rast_area_base <- raster::area(rast_base) ### takes a while...
+if(!file.exists(rast_base_file)) {
+  ### import AquaMaps half-degree loiczid raster - for extents and such
+  rast_loiczid_file   <- file.path(dir_git, 'data/rasters/loiczid_raster.grd')
+  rast_loiczid        <- raster(rast_loiczid_file)
+  names(rast_loiczid) <- 'loiczid'
+
+  rast_empty <- raster(ext = extent(rast_loiczid), resolution = 0.01)
+  rast_base  <- raster::area(rast_empty) ### takes a while...
+  
+  writeRaster(rast_base, rast_base_file)
+} else {
+  rast_base <- raster(rast_base_file)
+}
+
 
 ### as long as we're here, let's set up some objects for WGS 84 projection
 p4s_wgs84 <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0'
