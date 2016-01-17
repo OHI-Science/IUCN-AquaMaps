@@ -132,17 +132,20 @@ if(reload == TRUE) {
     } else {
     poly_marine <- readShapePoly(poly_marine_file, 
                                proj4string = crs_wgs84)
-  }
+    }
+  
+  plot(poly_marine, col = 'blue')
   
   # rast_marine <- rasterize(poly_marine, rast_base, value = sp_mar_flag) 
   ### excruciatingly slow (interminable?)... consider gdal_rasterize?
   
   library(gdalUtils)
   rast_marine <- gdal_rasterize(
-      src_datasource = poly_marine_file),
-      dst_filename   = rast_marine_file), 
+      src_datasource = poly_marine_file,
+      dst_filename   = rast_marine_file, 
         # destination for output
-      a = 'sp_mar', 
+      a = 'rgn_id', 
+#      a = 'sp_mar', 
         # the attribute in the shapefile to be assigned to the cell values
       te = c(-180, -90, 180, 90), 
         # extents for output raster
