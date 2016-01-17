@@ -104,11 +104,11 @@ crs_wgs84 <- CRS(p4s_wgs84)
 ### is "spatially marine" - i.e. overlaps (center?) with an ocean area.
 ### This is separate from the WDPA "marine" flag.
 
-rast_marine_file <- file.path(dir_git, 'data/mpa_analysis/rast_marine.tif')
+rast_marine_file <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters/rast_marine.tif')
 reload <- FALSE
 if(reload == TRUE) {
 ### import OHI regions polygons, to determine spatially-marine areas
-  poly_marine_file <- file.path(dir_anx, 'explore_am_v_iucn/tmp_rasters/poly_marine.shp')
+  poly_marine_file <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters/poly_marine.shp')
   if(!file.exists(poly_marine_file)) {
     dir_rgn   <- file.path(dir_N, 'git-annex/globalprep/spatial/v2015/data')
     lyr_rgn <- 'regions_gcs'
@@ -142,7 +142,7 @@ if(reload == TRUE) {
       src_datasource = poly_marine_file),
       dst_filename   = rast_marine_file), 
         # destination for output
-      a = 'sp_mar_flag', 
+      a = 'sp_mar', 
         # the attribute in the shapefile to be assigned to the cell values
       te = c(-180, -90, 180, 90), 
         # extents for output raster
