@@ -37,7 +37,7 @@ n_bonyfish <- nrow(spp_map_pairs %>%
 
 ![](figures/AreaRatiovsPercOverlap.png)
 
-> __Figure 2 (a):__ For each paired-map species, we calculated two dimensions of spatial alignment: _distribution alignment_, which we defined as the proportion of the smaller range intersecting the larger range (where on the map); and _extent alignment_, which we defined as the ratio of the smaller range to the larger range (how much of the map).  For a species whose distribution is well understood and described in both datasets, we would expect to see a value near 100% for each dimension of alignment.  
+> __Figure 2 (a):__ For each paired-map species, we calculated two dimensions of spatial alignment: _distribution alignment_, which we defined as the proportion of the smaller predicted range intersecting the larger predicted range (where on the map); and _extent alignment_, which we defined as the ratio of the smaller range area to the larger range area (how much of the map).  For a species whose distribution is well understood and described in both datasets, we would expect to see a value near 100% for each dimension of alignment.  
 
 ``` {r tally_quad_counts, echo = FALSE}
 dist_median <- round(median(spp_map_pairs$sm_perc,    na.rm = TRUE), 1)
@@ -52,7 +52,7 @@ q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio 
 (n = `r q1_count`; `r round(q1_count/nrow(spp_map_pairs) * 100, 1)` %).
 > The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in extent
 (n = `r q2_count`; `r round(q2_count/nrow(spp_map_pairs) * 100, 1)` %).
-> The lower right quadrant (quadrant 3) includes species for which the paired maps generally agree in range extent, but disagree on where those ranges lie - a more worrisome mismatch than that indicated by quadrant 2
+> The lower right quadrant (quadrant 3) includes species for which the paired maps generally agree in range extent, but disagree on where those ranges occur
 (n = `r q3_count`; `r round(q3_count/nrow(spp_map_pairs) * 100, 1)` %).
 > The lower left quadrant (quadrant 4) indicates species for which the map pairs agree poorly in both area and distribution
 (n = `r q4_count`; `r round(q4_count/nrow(spp_map_pairs) * 100, 1)` %).

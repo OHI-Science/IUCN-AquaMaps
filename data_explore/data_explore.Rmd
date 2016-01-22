@@ -178,7 +178,7 @@ scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
 scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
   labs(x = bquote('Extent alignment '*alpha['ext']*' (%)'), 
        y = bquote('Distribution alignment '*alpha['dist']*' (%)'), 
-       title = 'Distribution alignment vs Extent alignment',
+#       title = 'Distribution alignment vs Extent alignment',
        color = 'Risk', size = '% ocean range') 
 
 print(scatter_arearatio_vs_overlap)
@@ -190,7 +190,7 @@ ggsave(file.path(dir_fig, 'AreaRatiovsPercOverlap.png'), width = 6, height = 3.5
 ``` {r pct_overlap_vs_ratio_of_area_w_data_poor, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
 
-spp_list <- spp_list %>% mutate(data_poor = ifelse(occurcells < 10, '< 10', '>= 10')
+spp_list <- spp_list %>% mutate(data_poor = ifelse(occurcells < 10, '< 10', '>= 10'))
 ### mongo plot time
 scatter_arearatio_vs_overlap <- ggplot(spp_list %>% 
                                          transform(popn_category = reorder(popn_category, category_score)),
@@ -262,7 +262,7 @@ scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
 scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
   labs(x = bquote('Extent alignment '*alpha['ext']*' (%)'), 
        y = bquote('Distribution alignment '*alpha['dist']*' (%)'), 
-       title = 'Distribution alignment vs Extent alignment',
+#       title = 'Distribution alignment vs Extent alignment',
        color = 'AM model cells', size = '% ocean range') 
 
 print(scatter_arearatio_vs_overlap)
@@ -365,7 +365,7 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
   coord_flip() +
   labs(x = 'Taxonomic Group', 
        y = 'Relative proportion of species per quadrant', 
-       title = 'Taxonomic group by quadrant',
+#       title = 'Taxonomic group by quadrant',
        fill = 'Alignment')
 
 print(barchart_spp_gp_quads)
@@ -436,7 +436,7 @@ barchart_spp_risk_quads <- ggplot(spp_risk_quadrants %>%
   coord_flip() +
   labs(x = 'Risk category', 
        y = 'Relative proportion of species per quadrant', 
-       title = 'Risk category by quadrant',
+#       title = 'Risk category by quadrant',
        fill = 'Alignment')
 
 print(barchart_spp_risk_quads)
@@ -599,8 +599,9 @@ bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) 
             size = 3, angle = 90, hjust = 0, color = 'grey30') +
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) + 
-  labs(x = 'Class', y = 'Percent of mapped species',
-       title = 'Species maps by taxonomic class')
+  labs(# title = 'Species maps by taxonomic class',
+       x = 'Class', 
+       y = 'Percent of mapped species')
 print(bar_taxa2)
 ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), height = 3, width = 6)
 
@@ -618,8 +619,9 @@ bar_taxa3 <- ggplot(taxa_df_long3, aes(x = class, y = percent, fill = dataset)) 
             size = 3, angle = 90, hjust = 0, color = 'grey30') +
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
-  labs(x = 'Class', y = 'Percent of assessed mapped species',
-       title = 'Species maps by taxonomic class, Red List-assessed only')
+  labs(# title = 'Species maps by taxonomic class, Red List-assessed only',
+       x = 'Class', 
+       y = 'Percent of assessed mapped species')
 print(bar_taxa3)
 ggsave(filename = file.path(dir_fig, 'bar_by_taxa_assessed.png'), height = 3, width = 6)
 

@@ -1,6 +1,6 @@
 ---
 title: "Aligning species range data to better serve science and conservation"
-author: "Casey O'Hara, Jamie Afflerbach, Ben Halpern"
+author: "Casey O'Hara, Jamie Afflerbach, Benjamin S. Halpern"
 output:
   html_document:
     highlight: haddock

@@ -35,14 +35,31 @@ ___Red List inclusion:___
 
 ![](figures/bar_by_taxa_assessed.png)
 
-* _All IUCN-mapped species are also included in Red List species, but only `r p_spp_am_rl`% of AquaMaps species._
 
 ![](figures/barchart_spp_risk_quads.png)
 
 * Breaking down the quadrants by IUCN extinction risk categories (FIG 3c), we found that species with higher extinction risk tend to be better aligned between the two datasets, perhaps correlated to increased expert scrutiny.  Does higher perceived risk lead to increased attention, and thus better understanding of species distribution? Or conversely, does increased attention to species distribution reveal more species at risk?  Likely both mechanisms are at play on a case-by-case basis, depending on the species' taxon and region. _does this argument bear up to closer scrutiny? CR isn't dominated by Q1 any more_
 
+___table to show data poor status and reviewed status for AquaMaps maps represented in the quadrant plot___ _- perhaps update the quadrant plot to reveal data-poor species (and reviewed species? little overlap of reviewed & data-poor) instead of, say, red-list category which doesn't get discussed in the body of the paper?  then this table can go in SOM if we like it_
+
+| quadrant | n species | n data poor species | mean (median) data points | n reviewed species |
+| :------: | :-------: | :-----------------: | :-----------------------: | :----------------: |
+| all AM   |   22889   |        8749 (38.2%) |          57.1 (16)        |       1296  (5.7%) |
+| AM&IUCN  |    2166   |         457 (21.1%) |          89.9 (33)        |        290 (13.4%) |
+|   q1     |     401   |          33  (8.2%) |         233.0 (78)        |        100 (24.9%) |
+|   q2     |     682   |         151 (22.1%) |          77.4 (39)        |        100 (14.7%) |
+|   q3     |     682   |         114 (16.5%) |          52.4 (29)        |         65  (9.5%) |
+|   q4     |     410   |         159 (39.7%) |          32.1 (13)        |         25  (6.2%) |
 
 ## illustrative maps for different quadrants and different mechanistic problems
+
+Oculina varicosa - Ivory tree coral ![oculina_pic.jpg](figures/oculina/oculina_pic.jpg)
+
+* from IUCN: Colonies are found to depths of 152 m depth on limestone rubble, low-relief limestone outcrops, high-relief, steeply sloping prominences, and soft-bottom sloping habitats. Colonies are semi-isolated, patchy and low-growing in shallow water, or they form larger, massive coalescing aggregates (thickets or coppices) with substantial topographic relief in 50-100 m depth. In shallow waters (2-30m) the form is zooxanthellate, inhabiting limestone ledges. In deeper waters, an azooxanthellate form is known from the shelf edge off eastern Florida, USA from Ft. Pierce to Daytona (Reed 1980, 1983, 2002; Brooke and Young 2003).
+
+plotted against a 200 m bathymetry line: ![oculina_map.png](figures/oculina/oculina_map.png)
+
+<!--
 
 a few codes to indicate likely problems?
 
@@ -88,6 +105,8 @@ Q4
 | Canthigaster leoparda    | q4   | puffer  |         | IUCN limited spots around a couple of islands; AM shows all throughout CT
 | pentacheles snyderi      | q4   | lobster | DP      | AM shows all over - sim to depth profiles? while IUCN shows only a couple patches - HI? S Pacific, and S Indian oceans?  AM limits to specific FAO regions, which results in odd cutoffs; also shows some data points in N Atlantic which has an odd result.
 | Nephropsis sulcata       | q4   | lobster |         | IUCN shows odd ranges, most of which don't overlap with AM
+
+-->
 
 ## AquaMaps: Effect of changing "presence" threshold on apparent distribution
 
