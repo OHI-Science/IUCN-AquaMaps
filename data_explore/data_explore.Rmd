@@ -630,9 +630,16 @@ ggsave(filename = file.path(dir_fig, 'bar_by_taxa_assessed.png'), height = 3, wi
 
 *** 
 
-``` {r, child = 'data_explore_global_maps.Rmd', echo = FALSE, message = FALSE, eval = TRUE}
+``` {r, child = 'data_explore_global_maps.Rmd', echo = FALSE, message = FALSE, eval = FALSE}
 ```
 
+All AquaMaps species richness map:
+
+![figures/all_aquamaps_map.png]
+
+All IUCN species richness map:
+
+![figures/all_iucn_map.png]
 
 
 ``` {r, child = 'data_explore_am_thresh.Rmd', echo = FALSE, message = FALSE, eval = TRUE}

@@ -25,7 +25,12 @@ ggtheme_map <- ggtheme_basic +
   theme(axis.text = element_blank())
 
 ### Function to create a species list from scratch... use when new data is available
-create_spp_list <- function(spp_list_base, data_file, am_spp_cells, iucn_spp_cells, loiczid_raster) {
+create_spp_list <- function(spp_list_base, 
+                            data_file, 
+                            am_spp_cells, 
+                            iucn_spp_cells, 
+                            loiczid_raster) {
+
   spp_list_build <- spp_list_base %>%
     mutate(total_area = NA,
            am_area    = NA,

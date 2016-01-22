@@ -2,10 +2,11 @@
 
 By counting the number of unique species are found in each of the half degree cells we can then create a single global raster of number of species.
 
-
 ```{r global map matched species, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 library(rasterVis)
+
+cat('First off: map-paired species.  Map 1: AM dataset; map 2: IUCN dataset; maps 3 & 4: log-transformed AM & IUCN\n')
 
 ### find total species in each dataset for later percent calcs
 # am_n_tot   <- am_spp_cells %>% 
@@ -63,19 +64,19 @@ iucn_ln_map <- log(iucn_sp_map + 1)
 myTheme <- rasterTheme(region = brewer.pal('Blues', n = 9))
 
 levelplot(am_sp_map, par.settings = myTheme, 
-          main = 'Aquamaps Dataset', 
+#          main = 'Aquamaps Dataset', 
           colorkey = list( at = seq(0, 1063, length = 15)))
 
 levelplot(iucn_sp_map, par.settings = myTheme, 
-          main = 'IUCN Dataset', 
+#          main = 'IUCN Dataset', 
           colorkey = list(at = seq(0, 1063, length = 15)))
 
 levelplot(am_ln_map, par.settings = myTheme, 
-          main = 'Aquamaps Dataset', 
+#          main = 'Aquamaps Dataset', 
           colorkey = list( at = seq(0, maxValue(am_ln_map), length = 15)))
 
 levelplot(iucn_ln_map, par.settings = myTheme, 
-          main = 'IUCN Dataset', 
+#          main = 'IUCN Dataset', 
           colorkey = list(at = seq(0, maxValue(iucn_ln_map), length = 15)))
 
 ```
@@ -83,6 +84,8 @@ levelplot(iucn_ln_map, par.settings = myTheme,
 Now look at full aquamaps species
 
 ```{r all_aquamaps, eval = FALSE, echo = FALSE}
+
+cat('Full AM dataset, species richness\n')
 
 all_am_rast_file   <- file.path(dir_data, 'rasters/am_all_rast.tif')
 
@@ -115,7 +118,9 @@ if(!file.exists(all_am_rast_file)) {
   all_am_map   <- raster(all_am_rast_file)
 }
 
-am_levelplot1 <- levelplot(all_am_map, main = 'Entire Aquamaps Dataset') # add in par.settings = myTheme
+am_levelplot1 <- levelplot(all_am_map, 
+#                           main = 'Entire Aquamaps Dataset',
+                           par.settings = myTheme)
 
 # all_am_ln_map <- log(all_am_map + 1)
 # all_am_ln_map <- all_am_ln_map/maxValue(all_am_ln_map)
@@ -143,6 +148,8 @@ print(am_levelplot1)
 Now look at full IUCN species
 
 ```{r all_iucn, eval = FALSE, echo = FALSE}
+
+cat('Full IUCN dataset, species richness\n')
 
 all_iucn_rast_file   <- file.path(dir_data, 'rasters/iucn_all_rast.tif')
 dir_data_iucn <- file.path(dir_N, 'git-annex/globalprep/_raw_data/iucn_spp')
@@ -175,7 +182,9 @@ if(!file.exists(all_iucn_rast_file)) {
   all_iucn_map   <- raster(all_iucn_rast_file)
 }
 
-iucn_levelplot1 <- levelplot(all_iucn_map, main = 'Entire IUCN Dataset') # add in par.settings = myTheme
+iucn_levelplot1 <- levelplot(all_iucn_map, 
+                             #main = 'Entire IUCN Dataset',
+                             par.settings = myTheme)
 
 # all_iucn_ln_map <- log(all_iucn_map + 1)
 # all_iucn_ln_map <- all_iucn_ln_map/maxValue(all_iucn_ln_map)
@@ -228,7 +237,7 @@ levelplot(diff_ln_map,
           par.settings = myTheme, 
           pretty = TRUE,
           margin = list(axis = TRUE),
-          main = 'Difference in relative species richness (log-transformed): AquaMaps - IUCN', 
+#          main = 'Difference in relative species richness (log-transformed): AquaMaps - IUCN', 
           colorkey = list(at = seq(-1, 1, length = 15)))
 maxValue(all_am_ln_map)
 minValue(all_am_ln_map)

@@ -1,6 +1,6 @@
 Plotting species from q1 (well-matched) (see data_explore_quadmaps.html for plots)
 
-```{r plot_spp_from_q1, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+```{r plot_spp_from_q1, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 x <- 10
 y <- nrow(spp_list_q1)
@@ -24,7 +24,7 @@ for (spp in spp_names_q1) { # i = 1
 ```
 
 Plotting species from q2 (distribution-matched)
-```{r plot_spp_from_q2, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+```{r plot_spp_from_q2, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 x <- 10
 y <- nrow(spp_list_q2)
@@ -49,7 +49,7 @@ for (spp in spp_names_q2) { # i = 1
 
 
 Plotting species from q3 (area-matched)
-```{r plot_spp_from_q3, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+```{r plot_spp_from_q3, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 x <- 20
 y <- nrow(spp_list_q3)
@@ -73,7 +73,7 @@ for (spp in spp_names_q3) { # i = 1
 ```
 
 Plotting species from q4 (poorly matched)
-```{r plot_spp_from_q4, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+```{r plot_spp_from_q4, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 x <- 20
 y <- nrow(spp_list_q4)

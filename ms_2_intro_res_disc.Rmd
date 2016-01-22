@@ -33,6 +33,7 @@ To understand the implications of differences between the AquaMaps and IUCN data
 We then subjected two recent marine biodiversity studies - an assessment of the status of global biodiversity within the Ocean Health Index (Halpern et al. 2012, 2015) and a global analysis of gaps in protection afforded by marine protected areas (MPAs) (Klein et al. 2015) - to a sensitivity analysis. ... ___substituting___ one dataset over the other, to highlight the possible consequences of different data use decisions on our understanding of _the status of_ marine biodiversity. ___BSH suggestion: We used all unique species range data from both sources but substituted one dataset over the other for shared species to highlight the possible consequences of different data use decisions on our understanding of the status of and protection of marine biodiversity.___
 
 -----
+
 <!--
 ## Overview of AquaMaps and IUCN datasets  
 

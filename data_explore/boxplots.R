@@ -13,11 +13,27 @@ library(tidyr)
 library(stringr)
 library(ggplot2)
 
-dir_git  <- '~/github/ohiprep/globalprep/SPP_ICO/vAM_IUCN'
-st_base  <- read.csv(file.path(dir_git, 'data/spp_status_global_IUCNpref_prob0.4.csv'),  stringsAsFactors = FALSE)
-st_scen1 <- read.csv(file.path(dir_git, 'data/spp_status_global_IUCNpref_prob0.01.csv'), stringsAsFactors = FALSE)
-st_scen2 <- read.csv(file.path(dir_git, 'data/spp_status_global_AMpref_prob0.4.csv'),    stringsAsFactors = FALSE)
-st_scen3 <- read.csv(file.path(dir_git, 'data/spp_status_global_AMpref_prob0.01.csv'),   stringsAsFactors = FALSE)
+dir_data  <- '~/github/ohiprep/globalprep/SPP_ICO/vAM_IUCN'
+dir_fig <- '~/github/IUCN-AquaMaps/figures'
+
+### generic theme for all plots
+ggtheme_basic <- theme(axis.ticks = element_blank(),
+                       text = element_text(family = 'Helvetica', color = 'gray30', size = 8),
+                       plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
+                       legend.position = 'none')
+
+ggtheme_plot <- ggtheme_basic + 
+  theme(panel.border = element_blank(),
+        panel.grid.minor = element_blank(), 
+        panel.grid.major = element_line(colour = 'grey90'),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "grey30"))
+
+
+st_base  <- read.csv(file.path(dir_data, 'data/spp_status_global_IUCNpref_prob0.4.csv'),  stringsAsFactors = FALSE)
+st_scen1 <- read.csv(file.path(dir_data, 'data/spp_status_global_IUCNpref_prob0.01.csv'), stringsAsFactors = FALSE)
+st_scen2 <- read.csv(file.path(dir_data, 'data/spp_status_global_AMpref_prob0.4.csv'),    stringsAsFactors = FALSE)
+st_scen3 <- read.csv(file.path(dir_data, 'data/spp_status_global_AMpref_prob0.01.csv'),   stringsAsFactors = FALSE)
 
 ### scenario 1: prefer IUCN data; drop AM probability threshold to 0.01
 ### scenario 2: prefer AM data; keep AM prob thresh at 0.40
@@ -38,30 +54,40 @@ st_all <- st_all %>% mutate(absdiff1 = (st_1 - st_b)*100,
   
 bplot_abs <- ggplot(data = st_all %>% filter(str_detect(scenario, 'abs')),
                     aes(x = scenario, y = difference)) +
-  theme(text = element_text(family = 'Helvetica', color = 'gray30', size = 12),
-        plot.title = element_text(size = rel(1.5), hjust = 0, face = 'bold'),
-        legend.position = 'none') +
-  geom_point(position = position_jitter(w = .1), aes(color = scenario), alpha = .5) +
-  geom_boxplot(size = .75, fill = NA) +
-  labs(title = 'SPP status difference by scenario',
+  ggtheme_plot + 
+#   theme(text = element_text(family = 'Helvetica', color = 'gray30', size = 12),
+#         plot.title = element_text(size = rel(1.5), hjust = 0, face = 'bold'),
+#         legend.position = 'none') +
+  geom_violin(fill = 'grey90', draw_quantiles = c(.25, .5, .75)) +
+  geom_point(position = position_jitter(w = .3), aes(color = scenario), alpha = .5) +
+  geom_violin(fill = NA, draw_quantiles = c(.25, .5, .75)) +
+  #  geom_boxplot(size = .75, fill = NA) +
+  labs(# title = 'SPP status difference by scenario',
        x = 'Scenario',
-       y = 'Change in status') +
-  scale_x_discrete(labels = c('IUCN/AM, 1%', 'AM/IUCN, 40%', 'AM/IUCN, 1%'))
+       y = 'Change in SPP status') +
+  scale_x_discrete(labels = c('IUCN over AquaMaps, no threshold', 
+                              'AquaMaps over IUCN, 40% threshold', 
+                              'AquaMaps over IUCN, no threshold'))
 
 bplot_abs
-ggsave(file.path(dir_git, 'graphs/boxplot_abs_diff.png'))
+ggsave(file.path(dir_fig, 'boxplot_abs_diff.png'), height = 3, width = 6)
 
 bplot_rel <- ggplot(data = st_all %>% filter(str_detect(scenario, 'rel')),
                     aes(x = scenario, y = difference)) +
-  theme(text = element_text(family = 'Helvetica', color = 'gray30', size = 12),
-        plot.title = element_text(size = rel(1.5), hjust = 0, face = 'bold'),
-        legend.position = 'none') +
-  geom_point(position = position_jitter(w = .1), aes(color = scenario), alpha = .5) +
-  geom_boxplot(size = .75, fill = NA) +
-  labs(title = 'SPP status percent change by scenario',
+  ggtheme_plot + 
+#   theme(text = element_text(family = 'Helvetica', color = 'gray30', size = 12),
+#         plot.title = element_text(size = rel(1.5), hjust = 0, face = 'bold'),
+#         legend.position = 'none') +
+  geom_violin(fill = 'grey90', draw_quantiles = c(.25, .5, .75)) +
+  geom_point(position = position_jitter(w = .3), aes(color = scenario), alpha = .5) +
+  geom_violin(fill = NA, draw_quantiles = c(.25, .5, .75)) +
+  #  geom_boxplot(size = .75, fill = NA) +
+  labs(# title = 'SPP status percent change by scenario',
        x = 'Scenario',
-       y = '% Change in status') +
-  scale_x_discrete(labels = c('IUCN/AM, 1%', 'AM/IUCN, 40%', 'AM/IUCN, 1%'))
+       y = '% Change in SPP status') +
+  scale_x_discrete(labels = c('IUCN over AquaMaps, no threshold', 
+                              'AquaMaps over IUCN, 40% threshold', 
+                              'AquaMaps over IUCN, no threshold'))
 
 bplot_rel
-ggsave(file.path(dir_git, 'graphs/boxplot_rel_diff.png'))
+ggsave(file.path(dir_fig, 'boxplot_rel_diff.png'), height = 3, width = 6)

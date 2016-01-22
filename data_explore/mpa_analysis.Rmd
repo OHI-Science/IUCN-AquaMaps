@@ -99,6 +99,20 @@ crs_wgs84 <- CRS(p4s_wgs84)
 
 ```
 
+Dealing with rasters: 
+
+* how to ensure 1 km or better resolution?  WGS84 at 0.01 degree or Mollweide at 1 km
+    * WGS84 --> 36000 * 18000 cells = 648,000,000 cells...
+    * Mollweide --> 
+* options for creating rasters
+    * use arcpy as in LSP... global Mollweide raster of WDPA is about 50 MB; includes .tif and supporting files.  This is .5 km raster.  How is it so small?
+    * use gdal_rasterize seems to create multi-GB rasters; .tif only
+* why rasters?  avoid double-counting for overlapping parks.  WDPA is most important, but since that is in raster and AM is raster, easiest to keep it all in raster
+    * WDPA - capture park classification and year and marine flag
+    * spatial marine - capture whether cell includes ocean or not - clip to max N and S of WDPA?
+        * xMin,yMin -180.007,-72.95 : xMax,yMax 180,83.73
+* Use this R script to source arcPy script modified from LSP - need to run it on a PC with appropriate GDAL installation, most likely
+    
 ``` {r set_up_spatially_marine_raster}
 ### This raster (at 0.01 degree resolution) contains flags on whether a cell
 ### is "spatially marine" - i.e. overlaps (center?) with an ocean area.

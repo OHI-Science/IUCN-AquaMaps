@@ -63,7 +63,7 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
                                'NE' = 'grey70')) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  labs(x = 'Proportion of range area included when selecting a threshold of 0.4', 
+  labs(x = 'Proportion of extent included when selecting a threshold of 0.4', 
        y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3)))
 
 print(hist_area_vs_threshold)
@@ -99,7 +99,7 @@ hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) +
                                'NE' = 'grey70')) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  labs(x = 'Proportion of range area included when selecting a threshold of 0.4', 
+  labs(x = 'Proportion of extent included when selecting a threshold of 0.4', 
        y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3a)))
 
 ggsave(file.path(dir_fig, 'AMThreshold2.png'), width = 6, height = 3.5)
@@ -148,7 +148,7 @@ scatter_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = mean_
   geom_vline(xintercept = 0.40, color = 'blue', linetype = 'dashed') +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  labs(title = 'Mean (median) species range after presence threshold cutoff',
+  labs(# title = 'Mean (median) species range after presence threshold cutoff',
        x = 'Presence threshold cutoff', 
        y = 'Mean (median) relative species range')
 
@@ -193,7 +193,7 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
            label = 'R^2 = .995') + 
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  labs(title = 'Relative species range after presence threshold',
+  labs(# title = 'Relative species range after presence threshold',
        x = 'Presence threshold cutoff', 
        y = 'Mean (median) relative species range')
 
