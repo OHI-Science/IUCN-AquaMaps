@@ -1,6 +1,19 @@
 
 # Figures
 
+<!--
+
+From PNAS http://www.pnas.org/site/authors/preparation.xhtml:
+
+Only TIFF, EPS, and high-resolution PDF for Mac or PC are allowed for figures that will appear in the main text. Authors may submit PRC or U3D files for 3D images; these must be accompanied by 2D representations in TIFF, EPS, or high-resolution PDF format. (See SI below for supplementary material.) Color images must be in RGB (red, green, blue) mode. Include the font files for any text. Images must be final size, preferably one column width (8.7 cm). Figures wider than one column should be sized to 11.4 cm or 17.8 cm wide. Numbers, letters, and symbols should be no smaller than 6 points (2 mm) and no larger than 12 points (6 mm) after reduction and must be consistent. Composite figures must be preassembled. Figures must be submitted as separate files, not embedded in manuscript text. See the Digital Art Guidelines.
+
+See also: http://www.pnas.org/site/misc/digitalart.pdf
+
+Label like so: 
+Fig. 2.
+Diffraction patterns at three different angles and time-dependent structural changes of JDF-L1. (A–C) Diffraction images observed at different zone axes before time 0; n is the electron direction. (D) Femtosecond intensity changes of (200) and (201) spots with time. Two different types of dynamics were observed: a decay with a femtosecond time constant (see main text) and another without a decay.
+
+
 ___consider using HCL or HSV values for colors on plots?___ or ask Mel re: good color choices.  Make sure that colors have good contrast to show up on a black-and-white print...  Should the quad plot background be colored?  How else to quickly code the four quadrants relative to the quadrant-breakdown-by-taxa plot?
 
 **`hcl {grDevices}`**: Create a vector of colors from vectors specifying hue, chroma and luminance.
@@ -24,9 +37,11 @@ Arguments
 - `h`, `s`,`v`: numeric vectors of values in the range [0, 1] for ‘hue’, ‘saturation’ and ‘value’ to be combined to form a vector of colors. Values in shorter arguments are recycled.
 - `alpha`: numeric vector of values in the range [0, 1] for alpha transparency channel (0 means transparent and 1 means opaque).
 
+-->
+
 -----
 
-### Figure 1
+### Fig. 1
 
 <a id = 'fig1'></a>
 
@@ -52,17 +67,15 @@ n_bonyfish <- nrow(spp_map_pairs %>%
 
 ![](figures/all_iucn_map.png)
 
->  __Figure 1(a):__ Number and proportion of species, listed by taxa, included in each dataset: IUCN, AquaMaps, or both.  AquaMaps encompasses a broader range of taxa than IUCN, while IUCN focuses on comprehensively assessing select taxonomic groups, typically at the level of order or family. Overlapping species are dominated by bony fishes (`r n_bonyfish` species, primarily tropical taxa) and corals (`r n_corals` species).
-
-> __Figure 1 (b, c):__ Global marine species richness according to (b) AquaMaps dataset and (c) IUCN dataset.  The frequency plot to the right of each map shows relative species count per cell at each latitude; while both datasets peak in tropical latitudes near the equator, the frequency for IUCN maps drops quickly beyond 30°N and 30°S, while the frequency for AquaMaps remains robust well into temperate latitudes.  The frequency plot above each map shows relative species count at each longitude, showing a slight bias in the IUCN dataset away from the Atlantic and eastern Pacific compared to AquaMaps. 
+>  __Fig. 1.__ (A) Number and proportion of species, listed by taxa, included in each dataset: IUCN, AquaMaps, or both.  AquaMaps encompasses a broader range of taxa than IUCN, while IUCN focuses on comprehensively assessing select taxonomic groups, typically at the level of order or family. Overlapping species are dominated by bony fishes (`r n_bonyfish` species, primarily tropical taxa) and corals (`r n_corals` species).  (B, C) Global marine species richness according to (B) AquaMaps dataset and (C) IUCN dataset.  The frequency plot to the right of each map shows relative species count per cell at each latitude; while both datasets peak in tropical latitudes near the equator, the frequency for IUCN maps drops quickly beyond 30°N and 30°S, while the frequency for AquaMaps remains robust well into temperate latitudes.  The frequency plot above each map shows relative species count at each longitude, showing a slight bias in the IUCN dataset away from the Atlantic and eastern Pacific compared to AquaMaps. 
 
 ### Figure 2
 
 <a id = 'fig2'></a>
 
 ![](figures/AreaRatiovsPercOverlap.png)
+![](figures/barchart_spp_gp_quads.png)
 
-> __Figure 2 (a):__ For each paired-map species, we calculated two dimensions of spatial alignment: _distribution alignment_, which we defined as the proportion of the smaller predicted range intersecting the larger predicted range (where on the map); and _extent alignment_, which we defined as the ratio of the smaller range area to the larger range area (how much of the map).  For a species whose distribution is well understood and described in both datasets, we would expect to see a value near 100% for each dimension of alignment.  
 
 ``` {r tally_quad_counts, echo = FALSE}
 dist_median <- round(median(spp_map_pairs$sm_perc,    na.rm = TRUE), 1)
@@ -73,20 +86,15 @@ q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio 
 q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
 ```
 
-> The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges
+> __Fig. 2.__ (A) DESCRIPTION, then explanation... The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges
 (n = `r q1_count`; `r round(q1_count/nrow(spp_map_pairs) * 100, 1)` %).
 > The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in extent
 (n = `r q2_count`; `r round(q2_count/nrow(spp_map_pairs) * 100, 1)` %).
 > The lower right quadrant (quadrant 3) includes species for which the paired maps generally agree in range extent, but disagree on where those ranges occur
 (n = `r q3_count`; `r round(q3_count/nrow(spp_map_pairs) * 100, 1)` %).
 > The lower left quadrant (quadrant 4) indicates species for which the map pairs agree poorly in both area and distribution
-(n = `r q4_count`; `r round(q4_count/nrow(spp_map_pairs) * 100, 1)` %).
-
-![](figures/barchart_spp_gp_quads.png)
-
-> __Figure 2 (b):__ Spatial alignment of paired-map species by taxonomic group. ___REDO with all corals grouped together!___  _Also - is it distracting to use order names for some groups and not others?  Some of the groups had pretty long names ("acanthuridae" is way shorter than "surgeonfish, tangs, and unicornfish")_
-
-<!--AquaMaps accounts for seafloor depth as a limiting factor, highly constraining the predicted habitat for photosynthesizing corals, while IUCN maps for coral species often include wide buffers that would extend far beyond appropriate depth for coral habitat, thus likely overestimating the actual species range (see SOM).  A similar mechanism may also drive poor extent alignment of other demersal and reef-associated organisms.-->
+(n = `r q4_count`; `r round(q4_count/nrow(spp_map_pairs) * 100, 1)` %).  
+(B) Spatial alignment of paired-map species by taxonomic group. _is it distracting to use order names for some groups and not others?  Some of the groups had pretty long names ("acanthuridae" is way shorter than "surgeonfish, tangs, and unicornfish")_
 
 
 ### Figure 3
@@ -97,7 +105,7 @@ q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio 
 
 ___NOTE: These figures still need to be recreated using the latest and greatest data!___ _currently they use data generated in November or so, in ohiprep._
 
-> __Figure 3:__ Change in status score for the Species Subgoal within the global Ocean Health Index under three different scenarios. 
+> __Fig. 3.__ Change in status score for the Species Subgoal within the global Ocean Health Index under three different scenarios.
 
 | Scenario              | Priority data source | AquaMaps presence threshold |
 | --------------------- | :------------------: | :-------------------------: |
@@ -106,7 +114,7 @@ ___NOTE: These figures still need to be recreated using the latest and greatest 
 | Scenario 2            | AquaMaps             |  >= 40%                     |
 | Scenario 3            | AquaMaps             |   > 0%                      |
 
-> * Scenario 1 shows the effect of reducing the presence threshold for AquaMaps presence.  Reducing the threshold will always increase the apparent range of a species, therefore the slight decrease in average score suggests increased spatial representation of threatened species.
-> * Scenario 2 shows the effect of preferring AquaMaps data over IUCN, while maintaining the same presence threshold.  This will have different effects depending on the species; in general, AquaMaps ranges are smaller than IUCN ranges, so many but not all overlapping species will see a decrease in represented range.  The slight bump in mean score may indicate a small increase in spatial representation of low-risk species, a small decrease in spatial representation of high-risk species, or more likely a combination of both.
-> * Scenario 3 shows the effect of preferring AquaMaps data over IUCN, while eliminating the presence threshold.  Just as a presence threshold of zero in scenario 1 drives a decrease in average score relative to the baseline, the zero threshold in scenario 3 drives a decrease in scores relative to scenario 2.  The large decrease seems to indicate that within the set of paired-map species, a zero threshold greatly increases the spatial representation of high-risk species relative to low-risk species.
+> * Scenario 1 shows the effect of reducing the presence threshold for AquaMaps presence.  Reducing the threshold increases the apparent range of a species; the slight decrease in average score suggests increased spatial representation of threatened species.
+> * Scenario 2 shows the effect of prioritizing AquaMaps data over IUCN, while maintaining the same presence threshold.  This will have different effects depending on the species; in general, AquaMaps ranges are smaller than IUCN ranges, so most overlapping species will see a decrease in represented range.  The slight bump in mean score may indicate a small increase in spatial representation of low-risk species, a small decrease in spatial representation of high-risk species, or more likely a combination of both.
+> * Scenario 3 shows the effect of prioritizing AquaMaps data over IUCN, while eliminating the presence threshold.  Just as a presence threshold of zero in scenario 1 drives a decrease in average score relative to the baseline, the zero threshold in scenario 3 drives a decrease in scores relative to scenario 2.  The large decrease indicates that within the set of paired-map species, a zero threshold greatly increases the spatial representation of high-risk species relative to low-risk species.
 

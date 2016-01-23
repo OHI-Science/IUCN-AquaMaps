@@ -2,16 +2,34 @@
 title: "Aligning species range data to better serve science and conservation"
 author: "Casey O'Hara, Jamie Afflerbach, Benjamin S. Halpern"
 output:
+  pdf_document:
+    number_sections: yes
+    toc: no
   html_document:
     highlight: haddock
     number_sections: yes
     theme: spacelab
     toc: no
-  pdf_document:
-    number_sections: yes
-    toc: no
   word_document: default
 ---
+
+<!--
+
+from PNAS (http://www.pnas.org/site/authors/preparation.xhtml):
+
+PNAS generally uses a two-column format averaging 67 characters, including spaces, per line. The maximum length of a regular research article is 6 pages (or 10 pages for PNAS Plus articles), including all text, spaces, and the number of characters displaced by figures, tables, and equations.
+
+An online submission tool provides authors with an estimation of whether their manuscript fits within the PNAS length requirements (see Length Estimate FAQ). Use the following guidelines to determine whether your manuscript exceeds the page-length requirements before submission:
+
+Text: When submitting tables, figures, and/or equations in addition to text, keep the text for your manuscript under 39,000 characters (including spaces).
+Figures: Calculated at 180 characters per cm in height for one column and 360 characters per cm in height for two columns; a figure wider than 8.7 cm is two columns wide.
+Tables and equations: Calculated at 60 characters per line for one column and 120 per line for two columns; a table with more than 60 characters per line is two columns wide.
+If the text in a figure or table is deemed illegible for production, the figure or table may be enlarged to improve legibility. Add the word count to the character count to obtain a character count that includes spaces.
+
+See also: http://www.pnascentral.org/html/pnas_length_estimate_instructions.html
+
+-->
+
 
 ``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
 
