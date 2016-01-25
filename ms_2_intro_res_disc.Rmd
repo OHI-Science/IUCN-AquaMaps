@@ -55,7 +55,7 @@ The IUCN publishes species range maps as polygon shapefiles, bundled by taxonomi
 
 The methodologies behind these datasets imply differences in prediction of species distribution due to errors of commission (falsely indicating species presence) and omission (falsely indicating species absence).  Geographic range data such as IUCN range maps generally include large commission errors, while predicted distribution models such as AquaMaps will likely include fewer commission errors but more omission errors.  Each type of error bears different implications for conservation goals (Rondinini, 2006).
 
-The two datasets have notably different taxonomic (Fig. 1A) and regional (Fig. 1B,C) coverage. IUCN-mapped species focus on tropical latitudes and away from the Atlantic and Eastern Pacific compared to AquaMaps-mapped species. These differences can be mitigated by using both datasets, but the underlying methodological differences complicate such direct comparisons. _and furthermore requires resolving differences (or choosing one source over the other) for the `r format(n_spp_both, big.mark = ',')` shared species._
+The two datasets have notably different taxonomic (Fig. 1A) and regional (Fig. 1B,C) coverage. IUCN-mapped species focus on tropical latitudes and away from the Atlantic and Eastern Pacific compared to AquaMaps-mapped species. These differences can be mitigated by using both datasets, but the underlying methodological differences complicate such direct comparisons. <!--_and furthermore requires resolving differences (or choosing one source over the other) for the `r format(n_spp_both, big.mark = ',')` shared species._-->
 
 -----
 
@@ -107,7 +107,10 @@ Klein et al. (2015) compared the global distribution of species to the global di
 
 ___working on the analysis...___
 
-_Predictions:  What happens when using a 0% threshold instead of a 50%?  What happens when using IUCN rather than AM?  IUCN tends to overestimate extent esp for coastal species?  More species will be included in MPAs so fewer apparent gap species.  Included range area inside MPAs will increase.  Policy implications?_
+_Predictions: What happens when using a 0% threshold instead of a 50%? What happens when using IUCN rather than AM?_
+* _IUCN tends to overestimate extent esp for coastal species?  How much of this area will fall within MPAs and how much will fall outside, proportionally? this affects protection ratio._
+* _More area means more species (relatively) will be at least partially included in MPAs so fewer apparent gap species?_
+* _Policy implications?  Can also tie this back to the predictions of Rondinini et al re: effects of commission/omission errors_
 
 -----
 
