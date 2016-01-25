@@ -7,7 +7,7 @@ ggtheme_basic <- theme(axis.ticks = element_blank(),
         legend.position = 'right')
 
 ggtheme_plot <- ggtheme_basic + 
-  theme(panel.border = element_blank(),
+  theme(panel.border     = element_blank(),
         panel.grid.minor = element_blank(), 
         panel.grid.major = element_line(colour = 'grey90'),
         panel.background = element_blank(),

@@ -5,6 +5,8 @@ ___still need work on captions; then separate captions from images___
 
 <!--
 
+Figures: Calculated at 180 characters per cm in height for one column and 360 characters per cm in height for two columns; a figure wider than 8.7 cm is two columns wide.
+
 From PNAS http://www.pnas.org/site/authors/preparation.xhtml:
 
 Only TIFF, EPS, and high-resolution PDF for Mac or PC are allowed for figures that will appear in the main text. Authors may submit PRC or U3D files for 3D images; these must be accompanied by 2D representations in TIFF, EPS, or high-resolution PDF format. (See SI below for supplementary material.) Color images must be in RGB (red, green, blue) mode. Include the font files for any text. Images must be final size, preferably one column width (8.7 cm). Figures wider than one column should be sized to 11.4 cm or 17.8 cm wide. Numbers, letters, and symbols should be no smaller than 6 points (2 mm) and no larger than 12 points (6 mm) after reduction and must be consistent. Composite figures must be preassembled. Figures must be submitted as separate files, not embedded in manuscript text. See the Digital Art Guidelines.

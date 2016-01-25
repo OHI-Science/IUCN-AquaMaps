@@ -16,6 +16,15 @@ p_both_iucn  <- round(n_spp_both/n_spp_iucn * 100, 1)
 p_both_all   <- round(n_spp_both/n_spp_all  * 100, 1)
 ```
 
+| Section                   |   Word #   | Char # (w/spc) |
+| :------                   |    ------: |    ------: |
+| Introduction              |  512 words |  3411 char |
+| Results/Discussion        |  802 words |  5410 char |
+| Implications (incomplete) |  532 words |  3334 char |
+| Conclusions               |  390 words |  2813 char |
+| Methods (incomplete)      |  612 words |  3889 char |
+| total body                | 2848 words | 18857 char |
+
 # Introduction
 
 <!--

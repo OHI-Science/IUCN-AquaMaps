@@ -1,6 +1,6 @@
 ###(6) Looking at how many and what type (threat category) of species we are losing by setting a threshold of 0.4 on the aquamaps species
 
-This looks at the full Aquamaps dataset... should it be limited to species with valid categories?
+This looks at the full 2014 Aquamaps dataset... should it be limited to species with valid categories?
 
 ```{r aquamaps_load_data, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 
@@ -48,11 +48,15 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
   geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
   geom_vline(xintercept = spp_df3_mean, color = 'darkred', linetype = 'dashed') + 
   annotate('text', x = spp_df3_mean, y = .16, hjust = 0, vjust = -.5,
-           angle = 90, size = 2, color = 'grey20',
+           angle = 90, 
+           #size = 2, 
+           color = 'grey20',
            label = 'mean') + 
   geom_vline(xintercept = spp_df3_med, color = 'grey30', linetype = 'dashed') + 
   annotate('text', x = spp_df3_med, y = .16, hjust = 0, vjust = -.5,
-           angle = 90, size = 2, color = 'grey20',
+           angle = 90, 
+           #size = 2, 
+           color = 'grey20',
            label = 'median') + 
   scale_fill_manual(values = c('LC' = 'green4', 
                                'NT' = 'greenyellow', 
@@ -68,7 +72,8 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
 
 print(hist_area_vs_threshold)
 
-ggsave(file.path(dir_fig, 'AMThreshold.png'), width = 6, height = 3.5)
+ggsave(file.path(dir_fig, 'AMThreshold.png'), 
+       width = 17.8, height = 9, units = 'cm')
 ```
 
 ```{r hist_lost_area_w_threshold_ne_dd_removed, warning = FALSE, message = FALSE, echo = FALSE}
@@ -84,11 +89,15 @@ hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) +
   geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
   geom_vline(xintercept = spp_df3a_mean, color = 'darkred', linetype = 'dashed') + 
   annotate('text', x = spp_df3a_mean, y = .16, hjust = 0, vjust = -.5,
-           angle = 90, size = 2, color = 'grey20',
+           angle = 90, 
+           #size = 2, 
+           color = 'grey20',
            label = 'mean') + 
   geom_vline(xintercept = spp_df3a_med, color = 'grey30', linetype = 'dashed') + 
   annotate('text', x = spp_df3a_med, y = .16, hjust = 0, vjust = -.5,
-           angle = 90, size = 2, color = 'grey20',
+           angle = 90, 
+           #size = 2, 
+           color = 'grey20',
            label = 'median') + 
   scale_fill_manual(values = c('LC' = 'green4', 
                                'NT' = 'greenyellow', 
@@ -102,7 +111,8 @@ hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) +
   labs(x = 'Proportion of extent included when selecting a threshold of 0.4', 
        y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3a)))
 
-ggsave(file.path(dir_fig, 'AMThreshold2.png'), width = 6, height = 3.5)
+ggsave(file.path(dir_fig, 'AMThreshold2.png'), 
+       width = 17.8, height = 9, units = 'cm')
 
 print(hist_area_vs_threshold2)
 
@@ -152,7 +162,8 @@ scatter_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = mean_
        x = 'Presence threshold cutoff', 
        y = 'Mean (median) relative species range')
 
-ggsave(file.path(dir_fig, 'scatter_AMThreshold.png'), width = 6, height = 3.5)
+ggsave(file.path(dir_fig, 'scatter_AMThreshold.png'), 
+       width = 17.8, height = 9, units = 'cm')
 
 print(scatter_area_vs_threshold)
 
@@ -180,17 +191,24 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
   geom_vline(xintercept = 0.50, color = 'blue', linetype = 'dashed') +
   geom_vline(xintercept = 0.60, color = 'blue', linetype = 'dashed') +
   annotate('text', x = .40, y = .05, hjust = 0, vjust = -.5,
-           angle = 90, size = 2, color = 'grey20',
+           angle = 90, 
+           #size = 2, 
+           color = 'grey20',
            label = 'Ocean Health Index: 40%') + 
   annotate('text', x = .50, y = .05, hjust = 0, vjust = -.5,
-           angle = 90, size = 2, color = 'grey20',
+           angle = 90, 
+           #size = 2, 
+           color = 'grey20',
            label = 'MPA Gap Analysis: 50%') + 
   annotate('text', x = .60, y = .05, hjust = 0, vjust = -.5,
-           angle = 90, size = 2, color = 'grey20',
+           angle = 90, 
+           #size = 2, 
+           color = 'grey20',
            label = 'Marine mammals: 60%') + 
   annotate('text', x = .75, y = .85,
-           size = 2, color = 'grey20',
-           label = 'R^2 = .995') + 
+           #size = 2, 
+           color = 'grey20',
+           label = 'R^2^ = .995') + 
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
   labs(# title = 'Relative species range after presence threshold',
@@ -199,7 +217,8 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
 
 print(ribbon_area_vs_threshold)
 
-ggsave(file.path(dir_fig, 'ribbon_AMThreshold.png'), width = 6, height = 3.5)
+ggsave(file.path(dir_fig, 'ribbon_AMThreshold.png'), 
+       width = 17.8, height = 6, units = 'cm')
 
 
 

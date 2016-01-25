@@ -140,13 +140,15 @@ scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
   annotate(geom = 'text',
            x = area_ratio_quartiles[2], y = 5,
            hjust = 0, vjust = 0,
-           color = 'grey40', size = 2,
+           color = 'grey30', 
+           size = 2,
            fontface = 'bold.italic', angle = 90,
            label = sprintf('Median = %s%%', round(area_ratio_quartiles[2], 1))) +
   annotate(geom = 'text',
            x = 5, y = pct_overlap_quartiles[2],
            hjust = 0, vjust = 0,
-           color = 'grey40', size = 2,
+           color = 'grey30', 
+           size = 2,
            fontface = 'bold.italic', angle = 0,
            label = sprintf('Median = %s%%', round(pct_overlap_quartiles[2], 1)))
   
@@ -183,7 +185,7 @@ scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
 
 print(scatter_arearatio_vs_overlap)
 
-ggsave(file.path(dir_fig, 'AreaRatiovsPercOverlap.png'), width = 6, height = 3.5)
+ggsave(file.path(dir_fig, 'AreaRatiovsPercOverlap.png'), width = 17.8, height = 9, units = 'cm')
 
 ```
 
@@ -224,13 +226,15 @@ scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
   annotate(geom = 'text',
            x = area_ratio_quartiles[2], y = 5,
            hjust = 0, vjust = 0,
-           color = 'grey40', size = 2,
+           color = 'grey30', 
+           size = 2,
            fontface = 'bold.italic', angle = 90,
            label = sprintf('Median = %s%%', round(area_ratio_quartiles[2], 1))) +
   annotate(geom = 'text',
            x = 5, y = pct_overlap_quartiles[2],
            hjust = 0, vjust = 0,
-           color = 'grey40', size = 2,
+           color = 'grey30', 
+           size = 2,
            fontface = 'bold.italic', angle = 0,
            label = sprintf('Median = %s%%', round(pct_overlap_quartiles[2], 1)))
   
@@ -267,7 +271,7 @@ scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
 
 print(scatter_arearatio_vs_overlap)
 
-ggsave(file.path(dir_fig, 'AreaRatiovsPercOverlap-data_poor.png'), width = 6, height = 3.5)
+ggsave(file.path(dir_fig, 'AreaRatiovsPercOverlap-data_poor.png'), width = 17.8, height = 9, units = 'cm')
 
 ```
 
@@ -361,7 +365,9 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
                                'q3 area-matched'   = 'orange', 
                                'q4 poorly matched' = 'orangered2')) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
-  geom_text(aes(label = sprintf('n = %s', n_spp), y = .05), hjust = 0, size = 2, color = 'grey20') +
+  geom_text(aes(label = sprintf('n = %s', n_spp), y = .05), hjust = 0, 
+            #size = 2, 
+            color = 'grey20') +
   coord_flip() +
   labs(x = 'Taxonomic Group', 
        y = 'Relative proportion of species per quadrant', 
@@ -371,7 +377,7 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
 print(barchart_spp_gp_quads)
 ggsave(plot = barchart_spp_gp_quads,
        filename = file.path(dir_fig, 'barchart_spp_gp_quads.png'),
-       width = 6, height = 3.5)
+       width = 17.8, height = 7, units = 'cm')
 
 write.csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads.csv'), row.names = FALSE)
 
@@ -432,7 +438,9 @@ barchart_spp_risk_quads <- ggplot(spp_risk_quadrants %>%
                                'q3 area-matched'   = 'orange', 
                                'q4 poorly matched' = 'orangered2')) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
-  geom_text(aes(label = sprintf('n = %s', n_spp), y = .05), hjust = 0, size = 2, color = 'grey20') +
+  geom_text(aes(label = sprintf('n = %s', n_spp), y = .05), hjust = 0, 
+            #size = 2, 
+            color = 'grey20') +
   coord_flip() +
   labs(x = 'Risk category', 
        y = 'Relative proportion of species per quadrant', 
@@ -442,7 +450,7 @@ barchart_spp_risk_quads <- ggplot(spp_risk_quadrants %>%
 print(barchart_spp_risk_quads)
 ggsave(plot = barchart_spp_risk_quads,
        filename = file.path(dir_fig, 'barchart_spp_risk_quads.png'),
-       width = 6, height = 1.75)
+       width = 17.8, height = 7, units = 'cm')
 
 ```
 
@@ -575,15 +583,15 @@ knitr::kable(taxa_df %>%
 ``` {r plot bar charts by taxa, echo = FALSE, message = FALSE, warning = FALSE}
 ### bar charts comparing number of species in each class for each data set
 
-taxa_df_long1 <- taxa_df %>%
-  dplyr::select(class, AquaMaps = n_am_class_all, IUCN = n_iucn_class_all, Both = n_class_both) %>%
-  gather(dataset, n_spp, AquaMaps:Both)
-bar_taxa1 <- ggplot(taxa_df_long1, aes(x = class, y = n_spp)) +
-  ggtheme_plot + 
-  geom_bar(stat = 'identity') +
-  facet_grid(dataset ~ ., scales = 'free_y') +
-  theme(axis.text.x = element_text(angle = 75, hjust = 1))
-print(bar_taxa1)
+# taxa_df_long1 <- taxa_df %>%
+#   dplyr::select(class, AquaMaps = n_am_class_all, IUCN = n_iucn_class_all, Both = n_class_both) %>%
+#   gather(dataset, n_spp, AquaMaps:Both)
+# bar_taxa1 <- ggplot(taxa_df_long1, aes(x = class, y = n_spp)) +
+#   ggtheme_plot + 
+#   geom_bar(stat = 'identity') +
+#   facet_grid(dataset ~ ., scales = 'free_y') +
+#   theme(axis.text.x = element_text(angle = 75, hjust = 1))
+# print(bar_taxa1)
 
 taxa_df_long2 <- taxa_df %>%
   dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
@@ -596,14 +604,16 @@ bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) 
   geom_bar(stat = 'identity', alpha = .5) +
   scale_fill_manual(values = c('AquaMaps' = 'red', 'Both' = 'mediumorchid', 'IUCN' = 'blue')) +
   geom_text(aes(label = sprintf('n = %s', n_total), y = 3), 
-            size = 3, angle = 90, hjust = 0, color = 'grey30') +
+            size = 3, 
+            angle = 90, hjust = 0, color = 'grey30') +
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) + 
   labs(# title = 'Species maps by taxonomic class',
        x = 'Class', 
        y = 'Percent of mapped species')
 print(bar_taxa2)
-ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), height = 3, width = 6)
+ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
+       width = 17.8, height = 7, units = 'cm')
 
 taxa_df_long3 <- taxa_df %>%
   dplyr::select(class, AquaMaps = n_am_class_solo_ass, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
@@ -616,14 +626,16 @@ bar_taxa3 <- ggplot(taxa_df_long3, aes(x = class, y = percent, fill = dataset)) 
   geom_bar(stat = 'identity', alpha = .5) +
   scale_fill_manual(values = c('AquaMaps' = 'red', 'Both' = 'mediumorchid', 'IUCN' = 'blue')) +
   geom_text(aes(label = sprintf('n = %s', n_total), y = 3), 
-            size = 3, angle = 90, hjust = 0, color = 'grey30') +
+            #size = 3, 
+            angle = 90, hjust = 0, color = 'grey30') +
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
   labs(# title = 'Species maps by taxonomic class, Red List-assessed only',
        x = 'Class', 
        y = 'Percent of assessed mapped species')
 print(bar_taxa3)
-ggsave(filename = file.path(dir_fig, 'bar_by_taxa_assessed.png'), height = 3, width = 6)
+ggsave(filename = file.path(dir_fig, 'bar_by_taxa_assessed.png'), 
+       width = 17.8, height = 6, units = 'cm')
 
 ```
 
@@ -635,11 +647,11 @@ ggsave(filename = file.path(dir_fig, 'bar_by_taxa_assessed.png'), height = 3, wi
 
 All AquaMaps species richness map:
 
-![figures/all_aquamaps_map.png]
+![figures/all_aquamaps_map.png](../figures/all_aquamaps_map.png)
 
 All IUCN species richness map:
 
-![figures/all_iucn_map.png]
+![figures/all_iucn_map.png](../figures/all_iucn_map.png)
 
 
 ``` {r, child = 'data_explore_am_thresh.Rmd', echo = FALSE, message = FALSE, eval = TRUE}
