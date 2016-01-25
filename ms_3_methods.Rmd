@@ -1,14 +1,12 @@
 
 # Methods
 
-### comparison of taxonomic and regional distribution
+**Comparison of taxonomic and regional distribution:** 
+To examine the overall taxonomic distribution across the spatial datasets (Fig. 1A), we grouped species by taxonomic class and data source (IUCN, AquaMaps, or both), and examined the proportion of each class represented in each data source category.
 
-To examine the overall taxonomic distribution across the spatial datasets (Fig. 1a), we grouped species by taxonomic class and data source (IUCN, AquaMaps, or both), and examined the proportion of each class represented in each data source category.
+To compare the spatial representation of the two datasets directly, we rasterized the IUCN species polygons to the same 0.5° grid as the AquaMaps species maps; species presence within a grid cell was determined by any non-zero overlap of a species polygon with the cell, and species richness per cell was simply the count of the species present.  For the AquaMaps dataset, we determined per-cell species richness by counting all species with non-zero probability of occurrence, to best approximate the "extent of occurrence" generally indicated by IUCN maps.  We represented relative distribution of species richness for each dataset by plotting average species count against latitude and longitude (Fig. 1B, 1C).
 
-To compare the spatial representation of the two datasets directly, we rasterized the IUCN species polygons to the same 0.5° grid as the AquaMaps species maps; species presence within a grid cell was determined by any non-zero overlap of a species polygon with the cell, and species richness per cell was simply the count of the species present.  For the AquaMaps dataset, we determined per-cell species richness by counting all species with non-zero probability of occurrence, to best approximate the "extent of occurrence" generally indicated by IUCN maps.  We represented relative distribution of species richness for each dataset by plotting average species count against latitude and longitude (Fig. 1b, 1c).
-
-### comparison of paired maps
-
+**Comparison of paired maps:** 
 Using genus and species binomials as a matching key, we selected the subset of marine species that have range maps in both IUCN and AquaMaps current native distribution.  To avoid double-counting, we removed subpopulations and species aliases.  We determined species presence within each spatial cell using the same criteria as outlined above.
 
 Overlaying paired distribution maps for a given species, we defined and calculated _distribution alignment_ and _extent alignment_ and plotted these in Fig. 2:
@@ -19,17 +17,15 @@ $$\alpha_{area} = \frac{A_{small}}{A_{large}} * 100\%$$
 
 We visually inspected a random selection of paired distribution maps from each quadrant to identify possible mechanistic causes of misalignment.  To verify that IUCN predicted unsuitable habitat for depth limited species, we used QGIS (REF) to overlay a selection of IUCN and AquaMaps maps with a 200 meter bathymetry contour.
 
-### Methods for OHI comparison
-
+**Methods for OHI case study: **
 Using methods and supplemental materials from OHI (Halpern et al. 2012, 2015), we modified the original code for OHI 2015 Species status (SPP) (REF), allowing for flexibility in prioritized data source and AquaMaps presence threshold.  We ran the SPP code three times, prioritizing IUCN over AquaMaps for a 0% threshold, and prioritizing AquaMaps over IUCN for both a 40% and 0% threshold.  We compared each of these to the output of the published OHI 2015 SPP model (prioritizing IUCN over AquaMaps at a 40% threshold).
 
-### Methods for MPA Gap Analysis comparison
-
+**Methods for MPA Gap Analysis case study:** 
 Based upon the methods described in Klein et al. 2015, we reconstructed the analysis using the subset of protected areas spatially covering a marine area and classified as IUCN I-IV ___(Klein paper, table 1, subset 4 - seems to be the one they focus on the most)___, converting the World Database of Protected Areas (WDPA, REF) dataset to a raster of 0.5° cells indicating proportion of protected area within the cell ___(consider also: filter on STATUS == 'Designated', and filter out those pesky fishery management areas and manatee speed zones...)___.  To verify our reconstruction we ran the analysis using the AquaMaps dataset available in April 2015 (REF) at a presence threshold of 50%.  We then updated the analysis using the most recent AquaMaps dataset (REF?) at 50% threshold
 
 * Possible analyses:
     * run AquaMaps (new data) with threshold at 0%
-        * already done in original paper, but redo it to compare to AM + IUCN scenario below
+        * already done in original paper for old data, but redo it to compare to AM + IUCN scenario below
     * run with AquaMaps only, but filtering out data-poor species?
     * run with IUCN maps only in place of AquaMaps?
     * run with AquaMaps and IUCN both, using 0% threshold; which preferred? 

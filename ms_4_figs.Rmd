@@ -1,5 +1,7 @@
 
-# Figures
+# Figures and captions
+
+___still need work on captions; then separate captions from images___
 
 <!--
 
@@ -56,9 +58,10 @@ n_spp <- spp_map_pairs %>%
 n_corals   <- nrow(spp_map_pairs %>% 
                      filter(str_detect(spp_group, 'CORAL')))
 n_bonyfish <- nrow(spp_map_pairs %>% 
-                     filter(spp_group %in% c('WRASSES', 'COMBTOOTHBLENNIES', 'BUTTERFLYFISH', 
-                                             'PUFFERFISH', 'GROUPERS', 'SEABREAMS_PORGIES', 'PARROTFISH', 
-                                             'SURGEONFISH_TANGS_UNICORNFISH', 'ANGELFISH', 'TUNAS_BILLFISHES', 
+                     filter(spp_group %in% c('WRASSES', 'BUTTERFLYFISH', 'PARROTFISH',
+                                             'COMBTOOTHBLENNIES', 'SEABREAMS_PORGIES', 
+                                             'PUFFERFISH', 'GROUPERS', 'TUNAS_BILLFISHES', 
+                                             'SURGEONFISH_TANGS_UNICORNFISH', 'ANGELFISH', 
                                              'DAMSELFISH', 'BONEFISH_TARPONS')))
 ```
 
@@ -67,7 +70,7 @@ n_bonyfish <- nrow(spp_map_pairs %>%
 
 ![](figures/all_iucn_map.png)
 
->  __Fig. 1.__ (A) Number and proportion of species, listed by taxa, included in each dataset: IUCN, AquaMaps, or both.  AquaMaps encompasses a broader range of taxa than IUCN, while IUCN focuses on comprehensively assessing select taxonomic groups, typically at the level of order or family. Overlapping species are dominated by bony fishes (`r n_bonyfish` species, primarily tropical taxa) and corals (`r n_corals` species).  (B, C) Global marine species richness according to (B) AquaMaps dataset and (C) IUCN dataset.  The frequency plot to the right of each map shows relative species count per cell at each latitude; while both datasets peak in tropical latitudes near the equator, the frequency for IUCN maps drops quickly beyond 30°N and 30°S, while the frequency for AquaMaps remains robust well into temperate latitudes.  The frequency plot above each map shows relative species count at each longitude, showing a slight bias in the IUCN dataset away from the Atlantic and eastern Pacific compared to AquaMaps. 
+>  __Fig. 1.__ (A) Number and proportion of species by taxa included in each dataset.  AquaMaps encompasses a broader range of taxa than IUCN, while IUCN focuses on comprehensively assessing select taxonomic groups, typically at the level of order or family. Overlapping species are dominated by bony fishes (`r n_bonyfish` species, primarily tropical taxa) and corals (`r n_corals` species).  (B, C) Global marine species richness according to (B) AquaMaps dataset and (C) IUCN dataset.  The margin frequency plots show relative species count per cell at each latitude and longitude; while both datasets peak in tropical latitudes near the equator, the frequency for IUCN maps drops quickly beyond 30°N and 30°S, while the frequency for AquaMaps remains robust well into temperate latitudes.  The longitude frequency plots show a slight bias in the IUCN dataset away from the Atlantic and eastern Pacific compared to AquaMaps. 
 
 ### Figure 2
 
@@ -86,7 +89,7 @@ q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio 
 q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
 ```
 
-> __Fig. 2.__ (A) DESCRIPTION, then explanation... The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges
+> __Fig. 2.__ (A) Distribution alignment (overlap of smaller range within larger) versus extent ratio (the ratio of smaller range area to the larger range area) for `r n_spp_both` species included in both IUCN and AquaMaps datasets.  The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges
 (n = `r q1_count`; `r round(q1_count/nrow(spp_map_pairs) * 100, 1)` %).
 > The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in extent
 (n = `r q2_count`; `r round(q2_count/nrow(spp_map_pairs) * 100, 1)` %).
@@ -94,7 +97,7 @@ q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio 
 (n = `r q3_count`; `r round(q3_count/nrow(spp_map_pairs) * 100, 1)` %).
 > The lower left quadrant (quadrant 4) indicates species for which the map pairs agree poorly in both area and distribution
 (n = `r q4_count`; `r round(q4_count/nrow(spp_map_pairs) * 100, 1)` %).  
-(B) Spatial alignment of paired-map species by taxonomic group. _is it distracting to use order names for some groups and not others?  Some of the groups had pretty long names ("acanthuridae" is way shorter than "surgeonfish, tangs, and unicornfish")_
+(B) Alignment breakdown of paired-map species by taxonomic group. _is it distracting to use order names for some groups and not others?  Some of the IUCN taxonomic groups had pretty long names ("acanthuridae" is way shorter than "surgeonfish, tangs, and unicornfish")_
 
 
 ### Figure 3

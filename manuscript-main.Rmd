@@ -1,7 +1,8 @@
 ---
 title: "Aligning species range data to better serve science and conservation"
-author: "Casey O'Hara, Jamie Afflerbach, Benjamin S. Halpern"
+author: "Casey O'Hara^1^, Jamie Afflerbach^1^, Benjamin S. Halpern^1, 2, 3^"
 output:
+  word_document: default
   pdf_document:
     number_sections: yes
     toc: no
@@ -10,8 +11,28 @@ output:
     number_sections: yes
     theme: spacelab
     toc: no
-  word_document: default
 ---
+
+<!--Title: Titles should be no more than three typeset lines (generally 135 characters including spaces) and should be comprehensible to a broad scientific audience. Please provide a short title of fewer than 50 characters for mobile devices and RSS feeds.-->
+
+
+_Classification:_
+
+* BIOLOGICAL SCIENCES: 
+    * Ecology? Environmental Sciences? Sustainability Science?
+
+_Author affiliation:_ <!--Include department, institution, and complete address, with the ZIP/postal code, for each author. Use superscripts to match authors with institutions. Authors are encouraged to supply their ORCID ID at submission-->
+
+1. National Center for Ecological Analysis and Synthesis, 735 State Street, Suite 300, Santa Barbara CA 93101
+2. Bren School of Environmental Science and Management, University of California, Santa Barbara CA 93106
+3. Imperial College London, Silwood Park Campus, Ascot, United Kingdom (need address?)
+
+_Corresponding author:_ <!--Corresponding author: The name, complete address, telephone number, and email address of the author to whom correspondence and proofs should be sent. Email addresses will appear in the article footnotes.-->
+
+* Casey O'Hara, National Center for Ecological Analysis and Synthesis, 735 State Street, Suite 300, Santa Barbara CA 93101; _NCEAS phone #?_; ohara@nceas.ucsb.edu
+
+
+_Keywords:_ <!--Keywords are listed below the abstract of the published article. At least three keywords are required at submission.--> TBD
 
 <!--
 
