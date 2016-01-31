@@ -38,23 +38,62 @@ Need to:
 gather spp_all, spp_am, spp_am_v_iucn, spp_list_w_area_all and _trimmed into data folder.
 
 
-```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+```{r get_spp_all, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 ### get spp_all_complete from git-annex, bring to local repo.  The spp_all_complete
 ### file was created in ohiprep/globalprep/SPP_ICO/data_prep_SPP.R, running the
 ### function create_spp_master_lookup(source_pref = 'iucn', fn_tag = '_complete', reload = TRUE)
 spp_all_remote <- read.csv(file.path(dir_anx, scenario, 'int/spp_all.csv'), 
-                           stringsAsFactors = FALSE) %>%
+                           stringsAsFactors = FALSE) 
+spp_all_remote_clean <- spp_all_remote %>%
   filter(!str_detect(spatial_source, 'subpop')) %>%
-  filter(!str_detect(spatial_source,  'alias')) %>%
-  select(am_sid, sciname, reviewed, iucn_sid, popn_trend,
-         popn_category, spp_group, id_no, spatial_source)
+  filter(!str_detect(spatial_source,  'alias'))
+### At this point, plenty of duplicates:
+### * This code returns 518 duplicated names:
+###     length(spp_all_remote_clean$sciname) - length(unique(spp_all_remote_clean$sciname))
+### * some are AM subpops which were ignored in processing the remote spp_all file.
+###   Note: all subpops have an identified parent, so can filter them out without
+###   losing any species.
+###   code to verify this:
+###     z_parent <- spp_all_remote_clean %>% 
+###       filter(!is.na(subpop_sid) & spatial_source == 'am')
+###     z_subpop <- spp_all_remote_clean %>% 
+###       filter(!is.na(parent_sid) & spatial_source == 'am')
+###     nrow(z_subpop %>% filter(!sciname %in% z_parent$sciname))
+### * some are duplicated IUCN parents (e.g. Dermochelys coriacea) that will be 
+###   eliminated when select(-iucn_subpop) column and then unique()
 
-write.csv(spp_all_remote, file.path(dir_data, 'spp_all.csv'), row.names = FALSE)
+### filter out spatial_source == 'am' that also have parent_sid (i.e.
+### these are AM-mapped subpopulations); then: 
+### select away the iucn_subpop, parent_sid, and subpop_sid (among others),
+### these are creating false unique rows.
+spp_all <- spp_all_remote_clean %>%
+  filter(!(spatial_source == 'am' & !is.na(parent_sid))) %>%
+  dplyr::select(am_sid, sciname, reviewed, iucn_sid, popn_trend,
+         popn_category, spp_group, id_no, spatial_source) %>%
+  unique()
+### At this point, still some duped scinames - these are ones with multiple IUCN
+### SIDs that are not designated as parents or subpops.  We will brute-force
+### this by just eliminating the duplicated rows, keeping only the first instance.
+### By arranging by iucn_sid, we will keep the lowest value, which seems to
+### generally correspond to the parent...
+spp_all <- spp_all %>%
+  arrange(iucn_sid)
+spp_all <- spp_all[!duplicated(spp_all$sciname), ]
 
+length(spp_all$sciname) - length(unique(spp_all_remote_clean$sciname))
+### no duped scinames - same length as original (cleaned) list
+
+write.csv(spp_all, file.path(dir_data, 'spp_all.csv'), row.names = FALSE)
+
+```
+
+```{r get_other_vars, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 ### create spp_am_v_iucn: the whole maplist narrowed down to just the overlapping species.
 ### Overlaps detected from spatial_source containing 'iucn' (b/c source_pref = 'iucn' above),
 ### that also have a non-NA AquaMaps ID code.
-spp_am_v_iucn <- spp_all_remote %>%
+spp_all <- read.csv(file.path(dir_data, 'spp_all.csv'), stringsAsFactors = FALSE)
+
+spp_am_v_iucn <- spp_all %>%
   filter(str_detect(spatial_source, 'iucn') & !is.na(am_sid)) %>%
   unique()
 write.csv(spp_am_v_iucn, file.path(dir_data, 'spp_am_v_iucn.csv'), 
@@ -64,16 +103,23 @@ write.csv(spp_am_v_iucn, file.path(dir_data, 'spp_am_v_iucn.csv'),
 spp_iucn_marine <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_marine.csv'), 
                             stringsAsFactors = FALSE)
 spp_iucn_marine <- spp_iucn_marine %>%
-  select(sciname, iucn_sid, iucn_category = category, popn_trend, parent_sid, subpop_sid)
+  dplyr::select(sciname, iucn_sid, iucn_category = category, 
+                popn_trend, parent_sid, subpop_sid) %>%
+  unique()
 write.csv(spp_iucn_marine, file.path(dir_data, 'spp_iucn_marine.csv'), 
           row.names = FALSE)
           
 ### pull spp_iucn_maps_all.csv from git-annex and bring to local repo
 spp_iucn_maps <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_maps_all.csv'), 
-                            stringsAsFactors = FALSE)
+                            stringsAsFactors = FALSE) %>%
+  rename(iucn_sid = id_no)
+
 spp_iucn_maps <- spp_iucn_maps %>%
   filter(!str_detect(spp_group, 'MARINEFISH')) %>%
-  filter(id_no %in% spp_iucn_marine$iucn_sid)   ### ditch terrestrial and freshwater spp
+  filter(iucn_sid %in% spp_iucn_marine$iucn_sid) %>% ### ditch terrestrial and freshwater spp
+  unique() %>%
+  arrange(iucn_sid)
+spp_iucn_maps <- spp_iucn_maps[!duplicated(spp_iucn_maps$sciname), ]
 write.csv(spp_iucn_maps, file.path(dir_data, 'spp_iucn_maps.csv'), 
           row.names = FALSE)
 
