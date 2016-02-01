@@ -178,41 +178,6 @@ write.csv(spp_am_v_iucn, file.path(dir_data, 'spp_am_v_iucn.csv'),
           row.names = FALSE)
 ```
 
-``` {r pull_files_to_local, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
-### pull spp_iucn_marine.csv from git-annex and bring to local repo
-spp_iucn_marine <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_marine.csv'), 
-                            stringsAsFactors = FALSE)
-spp_iucn_marine <- spp_iucn_marine %>%
-  dplyr::select(sciname, iucn_sid, iucn_category = category, 
-                popn_trend, parent_sid, subpop_sid) %>%
-  unique()
-write.csv(spp_iucn_marine, file.path(dir_data, 'spp_iucn_marine.csv'), 
-          row.names = FALSE)
-          
-### pull spp_iucn_maps_all.csv from git-annex and bring to local repo
-spp_iucn_maps <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_maps_all.csv'), 
-                            stringsAsFactors = FALSE) %>%
-  rename(iucn_sid = id_no)
-
-spp_iucn_maps <- spp_iucn_maps %>%
-  filter(!str_detect(spp_group, 'MARINEFISH')) %>%
-  filter(iucn_sid %in% spp_iucn_marine$iucn_sid) %>% ### ditch terrestrial and freshwater spp
-  unique() %>%
-  arrange(iucn_sid)
-spp_iucn_maps <- spp_iucn_maps[!duplicated(spp_iucn_maps$sciname), ]
-write.csv(spp_iucn_maps, file.path(dir_data, 'spp_iucn_maps.csv'), 
-          row.names = FALSE)
-
-### pull speciesoccursum.csv from git-annex and bring to local repo
-spp_am <- read.csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv'), 
-                   stringsAsFactors = FALSE)
-spp_am <- spp_am %>%
-  mutate(sciname = paste(str_trim(genus), str_trim(species), sep = ' '))
-write.csv(spp_am, file.path(dir_data, 'spp_am.csv'), 
-          row.names = FALSE)
-
-```
-
 ```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE, results = 'hide'}
 
 # Data files
@@ -255,8 +220,6 @@ spp_list <- spp_list %>%
   # filter(!is.na(sm_perc)) %>%
   ### will ditch the ones where no IUCN polygon exists - or are these species
   ### whose ranges only occur in cells beyond the LOICZID grid?
-spp_list <- spp_list %>%
-  filter(!str_detect(spatial_source, 'subpop') & !str_detect(spatial_source, 'alias')) 
 spp_list <- spp_list %>%
   left_join(read.csv(file.path(dir_data, 'sciname_lookups/spp_groupnames.csv'), 
                      stringsAsFactors = FALSE),

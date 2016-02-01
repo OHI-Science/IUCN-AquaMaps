@@ -78,12 +78,10 @@ if(basename(getwd()) != 'IUCN-AquaMaps') setwd('~/github/IUCN-AquaMaps')
 ### filters out presence = Extinct from IUCN cells.
 
 data_file <- 'data/spp_list_w_area_trimmed.csv'
-spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE) %>%
-#  filter(!is.na(popn_category)) %>% ### filter out unassessed species
-  filter(!is.na(sm_perc))           ### filter out NA maps (usually IUCN maps with no polygons)
+spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE) 
+### NOTE: as of Jan 31, includes all map pairs, even ones where IUCN area == 0
 
 ### generate other lists
-
 spp_all_file <- 'data/spp_all.csv'
 spp_all <- read.csv(spp_all_file, stringsAsFactors = FALSE)
 
@@ -92,8 +90,7 @@ spp_iucn_marine <- read.csv(iucn_marine_file, stringsAsFactors = FALSE)
 
 iucn_maps_file <- 'data/spp_iucn_maps.csv'
 spp_iucn_maps <- read.csv(iucn_maps_file, stringsAsFactors = FALSE) %>%
-  filter(spp_group != 'hagfishes') %>%           ### not from IUCN...
-  filter(sciname %in% spp_iucn_marine$sciname)   ### ditch freshwater spp
+  filter(spp_group != 'hagfishes')           ### not from IUCN...
 
 spp_am_file <- 'data/spp_am.csv'
 spp_am <- read.csv(spp_am_file, stringsAsFactors = FALSE)
