@@ -78,9 +78,10 @@ if(basename(getwd()) != 'IUCN-AquaMaps') setwd('~/github/IUCN-AquaMaps')
 ### filters out presence = Extinct from IUCN cells.
 
 data_file <- 'data/spp_list_w_area_trimmed.csv'
-spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE) %>%
-#  filter(!is.na(popn_category)) %>% ### filter out unassessed species
-  filter(!is.na(sm_perc))           ### filter out NA maps (usually IUCN maps with no polygons)
+spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE)
+### NOTE: as of 1/31, there are supposedly 2246 paired maps; but
+### only 2003 unique IUCN species names in the maps list - presumably 
+### the remainder are NA area (no polygons in LOICZID area)
 
 ### generate other lists
 
