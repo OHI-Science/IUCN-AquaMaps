@@ -37,6 +37,40 @@ Need to:
 
 gather spp_all, spp_am, spp_am_v_iucn, spp_list_w_area_all and _trimmed into data folder.
 
+``` {r pull_files_to_local, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+### pull spp_iucn_marine.csv from git-annex and bring to local repo
+spp_iucn_marine <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_marine.csv'), 
+                            stringsAsFactors = FALSE)
+spp_iucn_marine <- spp_iucn_marine %>%
+  dplyr::select(sciname, iucn_sid, iucn_category = category, 
+                popn_trend, parent_sid, subpop_sid) %>%
+  unique()
+write.csv(spp_iucn_marine, file.path(dir_data, 'spp_iucn_marine.csv'), 
+          row.names = FALSE)
+          
+### pull spp_iucn_maps_all.csv from git-annex and bring to local repo
+spp_iucn_maps <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_maps_all.csv'), 
+                            stringsAsFactors = FALSE) %>%
+  rename(iucn_sid = id_no)
+
+spp_iucn_maps <- spp_iucn_maps %>%
+  filter(!str_detect(spp_group, 'MARINEFISH')) %>%
+  filter(iucn_sid %in% spp_iucn_marine$iucn_sid) %>% ### ditch terrestrial and freshwater spp
+  unique() %>%
+  arrange(iucn_sid)
+spp_iucn_maps <- spp_iucn_maps[!duplicated(spp_iucn_maps$sciname), ]
+write.csv(spp_iucn_maps, file.path(dir_data, 'spp_iucn_maps.csv'), 
+          row.names = FALSE)
+
+### pull speciesoccursum.csv from git-annex and bring to local repo
+spp_am <- read.csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv'), 
+                   stringsAsFactors = FALSE)
+spp_am <- spp_am %>%
+  mutate(sciname = paste(str_trim(genus), str_trim(species), sep = ' '))
+write.csv(spp_am, file.path(dir_data, 'spp_am.csv'), 
+          row.names = FALSE)
+
+```
 
 ```{r get_spp_all, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 ### get spp_all_complete from git-annex, bring to local repo.  The spp_all_complete
@@ -83,6 +117,50 @@ spp_all <- spp_all[!duplicated(spp_all$sciname), ]
 length(spp_all$sciname) - length(unique(spp_all_remote_clean$sciname))
 ### no duped scinames - same length as original (cleaned) list
 
+### But, some of the extracted IUCN maps don't appear on this list! add 'em in.
+spp_iucn_marine   <- read.csv(file.path(dir_data, 'spp_iucn_marine.csv'), 
+                              stringsAsFactors = FALSE)
+spp_iucn_maps_new <- read.csv(file.path(dir_data, 'spp_iucn_maps.csv'), 
+                              stringsAsFactors = FALSE) %>%
+  filter(!sciname %in% spp_all$sciname) %>%
+  filter(!str_detect(sciname, 'subpop')) %>% ### a Hawaiian subpop... ditch it!
+  select(-iucn_subpop)
+spp_all1 <- spp_all %>%
+  full_join(spp_iucn_maps_new)
+
+### Also, some of the AM listings have disappeared due to name conflicts
+### - aliases, etc.
+spp_am_new <- read.csv(file.path(dir_data, 'spp_am.csv'), 
+                       stringsAsFactors = FALSE) %>%
+  rename(am_sid = speciesid) %>%
+  filter(!am_sid %in% spp_all$am_sid) %>%
+  dplyr::select(am_sid, sciname, reviewed, iucn_sid = iucn_id,
+                popn_category = iucn_code) %>%
+  mutate(spatial_source = 'am',
+         iucn_sid      = as.integer(iucn_sid),
+         popn_category = ifelse(popn_category == 'LR/lc', 'LC', popn_category),
+         popn_category = ifelse(popn_category == 'LR/nt', 'NT', popn_category),
+         popn_category = ifelse(popn_category == 'N.E.',  'NE', popn_category))
+
+### 600 new spp_am not in spp_all from remote source, by am_sid.
+### 12 of these, however, list iucn_sids that match existing iucn_sid.
+### * for species with iucn_sid that match, and no am_sid, add am_sid to 
+###   existing record (use existing values for other fields; drop new values).
+### * for species with iucn_sid that match, and with a different am_sid, no action.
+### * for species with non-matching or NA iucn_sid, just add to list.
+spp_am_new_iucnmatch <- spp_am_new %>% 
+  filter(!is.na(iucn_sid) & iucn_sid %in% spp_all$iucn_sid) %>%
+  dplyr::select(iucn_sid, am_sid_new = am_sid, reviewed_new = reviewed)
+spp_all2 <- spp_all1 %>%
+  left_join(spp_am_new_iucnmatch, by = 'iucn_sid') %>%
+  mutate(am_sid   = ifelse(is.na(am_sid) & !is.na(am_sid_new), am_sid_new, am_sid),
+         reviewed = ifelse(is.na(am_sid) & !is.na(am_sid_new), reviewed_new, reviewed)) %>%
+  select(-am_sid_new, -reviewed_new)
+spp_all <- spp_all2 %>%
+  full_join(spp_am_new %>%
+              filter(!iucn_sid %in% spp_am_new_iucnmatch$iucn_sid),
+            by = c("am_sid", "sciname", "reviewed", "iucn_sid", "popn_category", "spatial_source"))
+
 write.csv(spp_all, file.path(dir_data, 'spp_all.csv'), row.names = FALSE)
 
 ```
@@ -98,7 +176,9 @@ spp_am_v_iucn <- spp_all %>%
   unique()
 write.csv(spp_am_v_iucn, file.path(dir_data, 'spp_am_v_iucn.csv'), 
           row.names = FALSE)
+```
 
+``` {r pull_files_to_local, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 ### pull spp_iucn_marine.csv from git-annex and bring to local repo
 spp_iucn_marine <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_marine.csv'), 
                             stringsAsFactors = FALSE)
