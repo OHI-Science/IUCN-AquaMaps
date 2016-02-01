@@ -166,14 +166,16 @@ if (!file.exists(data_file) | reload) {
 }
 
 spp_list <- read.csv(data_file, stringsAsFactors = FALSE) 
-### At this point, spp_list contains subpops and aliases, and zero-area IUCNs
+### At this point, spp_list zero-area IUCNs due to missing (?) polygons (maybe points?)
 
 spp_am <- read.csv(file.path(dir_data, 'spp_am.csv'), stringsAsFactors = FALSE)
 
 spp_list <- spp_list %>%
-  filter(!is.na(sm_perc)) %>%
+  mutate(sm_perc = ifelse(!is.na(sm_perc), 0, sm_perc))
+  # filter(!is.na(sm_perc)) %>%
   ### will ditch the ones where no IUCN polygon exists - or are these species
   ### whose ranges only occur in cells beyond the LOICZID grid?
+spp_list <- spp_list %>%
   filter(!str_detect(spatial_source, 'subpop') & !str_detect(spatial_source, 'alias')) 
 spp_list <- spp_list %>%
   left_join(read.csv(file.path(dir_data, 'sciname_lookups/spp_groupnames.csv'), 
