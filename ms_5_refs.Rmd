@@ -26,7 +26,7 @@ Jones, M.C., S.R. Dyeb, J.K. Pinnegar and W.W.L. Cheung (2012). Modelling commer
 
 Coll, M., C. Piroddi, J. Steenbeek, K. Kaschner, F. Ben Rais Lasram et al. (2010). The biodiversity of the Mediterranean Sea: estimates, patterns, and threats. PLoS ONE 5(8): e11842. PDF _used AquaMaps to predict Med biodiversity.  Also: Threshold = 0._
 
-Martin C.S., Fletcher R., Jones M.C., Kaschner K., Sullivan E., Tittensor D.P., Mcowen C., Geffert J.L., van Bochove J.W., Thomas H., Blyth S., Ravillious C., Tolley M., Stanwell-Smith D. (2014). Manual of marine and coastal datasets of biodiversity importance. May 2014 release. Cambridge (UK): UNEP World Conservation Monitoring Centre. 28 pp. (+ 4 annexes totalling 174 pp. and one e-supplement). PDF _report on marine data sets and data gaps etc, incl both IUCN and AM_
+Martin C.S., Fletcher R., Jones M.C., Kaschner K., Sullivan E., Tittensor D.P., Mcowen C., Geffert J.L., van Bochove J.W., Thomas H., Blyth S., Ravillious C., Tolley M., Stanwell-Smith D. (2014). Manual of marine and coastal datasets of biodiversity importance. May 2014 release. Cambridge (UK): UNEP World Conservation Monitoring Centre. 28 pp. (+ 4 annexes totalling 174 pp. and one e-supplement). PDF _review of marine data sets and data gaps etc, incl both IUCN and AM as well as many others_
 
 -----
 
@@ -38,7 +38,7 @@ Pimm 2014 The biodiversity of species and their rates of extinction, distribtuio
 
 Rondinini 2006 Tradeoffs of different types of species occurrence data for use in systematic conservation planning _compares point locality, range maps, and distribution models in terms of omission and commission errors; also outlines Extent of Occurrence and Area of Occupancy distinctions._
 
-García Molinos, Jorge, Benjamin S. Halpern, David S. Schoeman, Christopher J. Brown, Wolfgang Kiessling, Pippa J. Moore, John M. Pandolfi, Elvira S. Poloczanska, Anthony J. Richardson, and Michael T. Burrows. “Climate Velocity and the Future Global Redistribution of Marine Biodiversity.” Nature Climate Change advance online publication (August 31, 2015). doi:10.1038/nclimate2769.
+García Molinos, Jorge, Benjamin S. Halpern, David S. Schoeman, Christopher J. Brown, Wolfgang Kiessling, Pippa J. Moore, John M. Pandolfi, Elvira S. Poloczanska, Anthony J. Richardson, and Michael T. Burrows. “Climate Velocity and the Future Global Redistribution of Marine Biodiversity.” Nature Climate Change advance online publication (August 31, 2015). doi:10.1038/nclimate2769.
 
 Halpern, Benjamin S., Catherine Longo, Darren Hardy, Karen L. McLeod, Jameal F. Samhouri, Steven K. Katona, Kristin Kleisner, et al. “An Index to Assess the Health and Benefits of the Global Ocean.” Nature 488, no. 7413 (August 30, 2012): 615–20. doi:10.1038/nature11397.
 
@@ -52,3 +52,4 @@ Selig, Elizabeth R., Catherine Longo, Benjamin S. Halpern, Benjamin D. Best, Dar
     * IUCN Red List - accessed 12/21/2015
 
 * AquaMaps reference, and accessed date?
+

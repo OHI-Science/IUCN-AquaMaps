@@ -23,14 +23,12 @@ Using methods and supplemental materials from OHI (Halpern et al. 2012, 2015), w
 **Methods for MPA Gap Analysis case study:** 
 Based upon the methods described in Klein et al. 2015, we reconstructed the analysis using the subset of protected areas spatially covering a marine area and classified as IUCN I-IV ___(Klein paper, table 1, subset 4 - seems to be the one they focus on the most)___, converting the World Database of Protected Areas (WDPA, REF) dataset to a raster of 0.5° cells indicating proportion of protected area within the cell ___(consider also: filter on STATUS == 'Designated', and filter out those pesky fishery management areas and manatee speed zones...)___.  To verify our reconstruction we ran the analysis using the AquaMaps dataset available in April 2015 (REF) at a presence threshold of 50%.  We then updated the analysis using the most recent AquaMaps dataset (REF?) at 50% threshold
 
-* Possible analyses:
+* Possible analyses: <!--BSH: priorities are 1 (AM only), 3 (IUCN only) and 4 (AM + IUCN).-->
     * run AquaMaps (new data) with threshold at 0%
         * already done in original paper for old data, but redo it to compare to AM + IUCN scenario below
-    * run with AquaMaps only, but filtering out data-poor species?
-    * run with IUCN maps only in place of AquaMaps?
-    * run with AquaMaps and IUCN both, using 0% threshold; which preferred? 
-        * Should we clip corals (and coral-associated taxa) to 200 meter bathymetry, just for fun?
-* Which aspects of the analysis should we focus on?:
+    * run with IUCN maps only in place of AquaMaps? _<!--BSH: this seems a bit silly, since AM has so many more species, but worth doing to make the point, I think.-->_
+    * run with AquaMaps and IUCN both, using 0% threshold; which preferred? _<!--BSH: I think this would be good to do, with AM as priority.  We can then compare to AM only, as you note above.  This tells us exactly what is gained by including the additional 1500 species (or whatever) that are only in IUCN.-->_
+* Which aspects of the analysis should we focus on?: _<!--BSH: I’m guessing it will be hard to see differences in the maps (except for the IUCN only example), so probably best to focus on figure 1 presentation of results.-->_
     * overall vs broken down by taxonomic groups? (see paper, figure 1)
-    * spatial distribution of gap species (see paper, figure 2)
+    * spatial distribution of gap species (see paper, figure 2) <!--
 
