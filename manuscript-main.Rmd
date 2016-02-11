@@ -2,13 +2,13 @@
 title: "Aligning marine species range data to better serve science and conservation"
 author: "Casey O'Hara^1^, Jamie Afflerbach^1^, Benjamin S. Halpern<sup>1, 2, 3</sup>"
 output:
+  pdf_document:
+    number_sections: yes
+    toc: no
   html_document:
     highlight: haddock
     number_sections: yes
     theme: spacelab
-    toc: no
-  pdf_document:
-    number_sections: yes
     toc: no
   word_document: default
 ---

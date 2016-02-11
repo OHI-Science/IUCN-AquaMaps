@@ -39,14 +39,13 @@ gather spp_all, spp_am, spp_am_v_iucn, spp_list_w_area_all and _trimmed into dat
 
 ``` {r pull_files_to_local, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 ### pull spp_iucn_marine.csv from git-annex and bring to local repo
-spp_iucn_marine <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_marine.csv'), 
+spp_iucn <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_cleaned.csv'), 
                             stringsAsFactors = FALSE)
-spp_iucn_marine <- spp_iucn_marine %>%
-  dplyr::select(sciname, iucn_sid, iucn_category = category, 
+spp_iucn <- spp_iucn %>%
+  dplyr::select(sciname, iucn_sid, iucn_category, 
                 popn_trend, parent_sid, subpop_sid) %>%
   unique()
-write.csv(spp_iucn_marine, file.path(dir_data, 'spp_iucn_marine.csv'), 
-          row.names = FALSE)
+write_csv(spp_iucn, file.path(dir_data, 'spp_iucn.csv'))
           
 ### pull spp_iucn_maps_all.csv from git-annex and bring to local repo
 spp_iucn_maps <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_maps_all.csv'), 
@@ -55,20 +54,24 @@ spp_iucn_maps <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_maps_all.cs
 
 spp_iucn_maps <- spp_iucn_maps %>%
   filter(!str_detect(spp_group, 'MARINEFISH')) %>%
-  filter(iucn_sid %in% spp_iucn_marine$iucn_sid) %>% ### ditch terrestrial and freshwater spp
   unique() %>%
   arrange(iucn_sid)
-spp_iucn_maps <- spp_iucn_maps[!duplicated(spp_iucn_maps$sciname), ]
-write.csv(spp_iucn_maps, file.path(dir_data, 'spp_iucn_maps.csv'), 
-          row.names = FALSE)
 
-### pull speciesoccursum.csv from git-annex and bring to local repo
-spp_am <- read.csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv'), 
+### At this point, still some duplicated iucn_sids, due to several
+### names matching a single ID.  Not sure which names might be in
+### AquaMaps though, so leave 'em in.
+
+write_csv(spp_iucn_maps, file.path(dir_data, 'spp_iucn_maps.csv'))
+
+### pull cleaned spp_am data from git-annex and bring to local repo
+spp_am <- read.csv(file.path(dir_anx, scenario, 'int/spp_am_cleaned.csv'), 
                    stringsAsFactors = FALSE)
-spp_am <- spp_am %>%
-  mutate(sciname = paste(str_trim(genus), str_trim(species), sep = ' '))
-write.csv(spp_am, file.path(dir_data, 'spp_am.csv'), 
-          row.names = FALSE)
+write_csv(spp_am, file.path(dir_data, 'spp_am.csv'))
+
+### pull raw aquamaps species list from git-annex and bring to local repo
+spp_am_raw <- read.csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv'), 
+                   stringsAsFactors = FALSE)
+write_csv(spp_am_raw, file.path(dir_data, 'speciesoccursum.csv'))
 
 ```
 
@@ -82,10 +85,10 @@ spp_all_remote_clean <- spp_all_remote %>%
   filter(!str_detect(spatial_source, 'subpop')) %>%
   filter(!str_detect(spatial_source,  'alias'))
 ### At this point, plenty of duplicates:
-### * This code returns 518 duplicated names:
+### * This code returns 984 duplicated names:
 ###     length(spp_all_remote_clean$sciname) - length(unique(spp_all_remote_clean$sciname))
 ### * some are AM subpops which were ignored in processing the remote spp_all file.
-###   Note: all subpops have an identified parent, so can filter them out without
+###   Note: All subpops have an identified parent, so can filter them out without
 ###   losing any species.
 ###   code to verify this:
 ###     z_parent <- spp_all_remote_clean %>% 
@@ -103,7 +106,7 @@ spp_all_remote_clean <- spp_all_remote %>%
 spp_all <- spp_all_remote_clean %>%
   filter(!(spatial_source == 'am' & !is.na(parent_sid))) %>%
   dplyr::select(am_sid, sciname, reviewed, iucn_sid, popn_trend,
-         popn_category, spp_group, id_no, spatial_source) %>%
+         popn_category, spp_group, id_no, spatial_source, name_verified) %>%
   unique()
 ### At this point, still some duped scinames - these are ones with multiple IUCN
 ### SIDs that are not designated as parents or subpops.  We will brute-force
@@ -118,32 +121,31 @@ length(spp_all$sciname) - length(unique(spp_all_remote_clean$sciname))
 ### no duped scinames - same length as original (cleaned) list
 
 ### But, some of the extracted IUCN maps don't appear on this list! add 'em in.
-spp_iucn_marine   <- read.csv(file.path(dir_data, 'spp_iucn_marine.csv'), 
-                              stringsAsFactors = FALSE)
 spp_iucn_maps_new <- read.csv(file.path(dir_data, 'spp_iucn_maps.csv'), 
                               stringsAsFactors = FALSE) %>%
   filter(!sciname %in% spp_all$sciname) %>%
   filter(!str_detect(sciname, 'subpop')) %>% ### a Hawaiian subpop... ditch it!
   select(-iucn_subpop)
+
 spp_all1 <- spp_all %>%
   full_join(spp_iucn_maps_new)
 
 ### Also, some of the AM listings have disappeared due to name conflicts
 ### - aliases, etc.
-spp_am_new <- read.csv(file.path(dir_data, 'spp_am.csv'), 
+spp_am_new <- read.csv(file.path(dir_data, 'speciesoccursum.csv'), 
                        stringsAsFactors = FALSE) %>%
-  rename(am_sid = speciesid) %>%
-  filter(!am_sid %in% spp_all$am_sid) %>%
-  dplyr::select(am_sid, sciname, reviewed, iucn_sid = iucn_id,
+  mutate(sciname = paste(str_trim(genus), str_trim(species)),
+         iucn_sid = as.integer(iucn_id)) %>%
+  dplyr::select(am_sid = speciesid, sciname, reviewed, iucn_sid,
                 popn_category = iucn_code) %>%
+  filter(!am_sid %in% spp_all$am_sid) %>%
   mutate(spatial_source = 'am',
-         iucn_sid      = as.integer(iucn_sid),
          popn_category = ifelse(popn_category == 'LR/lc', 'LC', popn_category),
          popn_category = ifelse(popn_category == 'LR/nt', 'NT', popn_category),
          popn_category = ifelse(popn_category == 'N.E.',  'NE', popn_category))
 
-### 600 new spp_am not in spp_all from remote source, by am_sid.
-### 12 of these, however, list iucn_sids that match existing iucn_sid.
+### 545 new spp_am not in spp_all from remote source, by am_sid.
+### 24 of these, however, list iucn_sids that match existing iucn_sid.
 ### * for species with iucn_sid that match, and no am_sid, add am_sid to 
 ###   existing record (use existing values for other fields; drop new values).
 ### * for species with iucn_sid that match, and with a different am_sid, no action.
@@ -156,12 +158,12 @@ spp_all2 <- spp_all1 %>%
   mutate(am_sid   = ifelse(is.na(am_sid) & !is.na(am_sid_new), am_sid_new, am_sid),
          reviewed = ifelse(is.na(am_sid) & !is.na(am_sid_new), reviewed_new, reviewed)) %>%
   select(-am_sid_new, -reviewed_new)
-spp_all <- spp_all2 %>%
+spp_all3 <- spp_all2 %>%
   full_join(spp_am_new %>%
               filter(!iucn_sid %in% spp_am_new_iucnmatch$iucn_sid),
             by = c("am_sid", "sciname", "reviewed", "iucn_sid", "popn_category", "spatial_source"))
 
-write.csv(spp_all, file.path(dir_data, 'spp_all.csv'), row.names = FALSE)
+write_csv(spp_all3, file.path(dir_data, 'spp_all.csv'))
 
 ```
 
@@ -173,9 +175,16 @@ spp_all <- read.csv(file.path(dir_data, 'spp_all.csv'), stringsAsFactors = FALSE
 
 spp_am_v_iucn <- spp_all %>%
   filter(str_detect(spatial_source, 'iucn') & !is.na(am_sid)) %>%
+  filter(!is.na(id_no)) %>%
   unique()
-write.csv(spp_am_v_iucn, file.path(dir_data, 'spp_am_v_iucn.csv'), 
-          row.names = FALSE)
+# length(unique(spp_am_v_iucn$am_sid)); length(unique(spp_am_v_iucn$iucn_sid))
+### NOTE: 2377 unique scientific names; but 2315 unique am_sid and 2280 unique iucn_sid.
+x <- spp_am_v_iucn[duplicated(spp_am_v_iucn$am_sid)   | duplicated(spp_am_v_iucn$am_sid,   fromLast = TRUE), ] %>%
+  select(sciname, iucn_sid, am_sid, id_no, spatial_source, name_verified)
+y <- spp_am_v_iucn[duplicated(spp_am_v_iucn$iucn_sid) | duplicated(spp_am_v_iucn$iucn_sid, fromLast = TRUE), ] %>%
+  select(sciname, iucn_sid, am_sid, id_no, spatial_source, name_verified)
+
+write_csv(spp_am_v_iucn, file.path(dir_data, 'spp_am_v_iucn.csv'))
 ```
 
 ```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE, results = 'hide'}
@@ -232,3 +241,7 @@ write.csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'),
 
 ```
 
+``` {r get_counts, echo = FALSE}
+x <- occ_search(scientificName = spp_iucn_marine$sciname[1:100], fields = 'minimal', limit = 25)
+y <- sapply(x, function(x) x$meta$count)
+```
