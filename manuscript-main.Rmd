@@ -2,13 +2,13 @@
 title: "Aligning marine species range data to better serve science and conservation"
 author: "Casey O'Hara^1^, Jamie Afflerbach^1^, Benjamin S. Halpern<sup>1, 2, 3</sup>"
 output:
+  pdf_document:
+    number_sections: yes
+    toc: no
   html_document:
     highlight: haddock
     number_sections: yes
     theme: spacelab
-    toc: no
-  pdf_document:
-    number_sections: yes
     toc: no
   word_document: default
 ---
@@ -78,6 +78,7 @@ if(basename(getwd()) != 'IUCN-AquaMaps') setwd('~/github/IUCN-AquaMaps')
 ### filters out presence = Extinct from IUCN cells.
 
 data_file <- 'data/spp_list_w_area_trimmed.csv'
+spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE)
 spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE) 
 ### NOTE: as of Jan 31, includes all map pairs, even ones where IUCN area == 0
 
@@ -85,16 +86,14 @@ spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE)
 spp_all_file <- 'data/spp_all.csv'
 spp_all <- read.csv(spp_all_file, stringsAsFactors = FALSE)
 
-iucn_marine_file <- 'data/spp_iucn_marine.csv'
-spp_iucn_marine <- read.csv(iucn_marine_file, stringsAsFactors = FALSE) 
+# iucn_marine_file <- 'data/spp_iucn_marine.csv'
+# spp_iucn_marine <- read.csv(iucn_marine_file, stringsAsFactors = FALSE) 
 
 iucn_maps_file <- 'data/spp_iucn_maps.csv'
-spp_iucn_maps <- read.csv(iucn_maps_file, stringsAsFactors = FALSE) %>%
-  filter(spp_group != 'hagfishes')           ### not from IUCN...
+spp_iucn_maps <- read.csv(iucn_maps_file, stringsAsFactors = FALSE)
 
 spp_am_file <- 'data/spp_am.csv'
 spp_am <- read.csv(spp_am_file, stringsAsFactors = FALSE)
-
 
 ```
 
