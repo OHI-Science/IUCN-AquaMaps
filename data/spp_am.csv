@@ -13766,7 +13766,6 @@ W-Oph-244279,NA,null,Ophiura leptoctenia,TRUE
 W-Oph-244282,NA,null,Ophiura luetkenii,TRUE
 W-Oph-124913,NA,null,Ophiura albida,TRUE
 SLB-189282,NA,null,Ophiosphalma jolliense,TRUE
-SLB-189282,NA,null,Ophiosphalma jolliensis,FALSE
 W-Oph-243641,NA,null,Ophioderma panamensis,TRUE
 W-Oph-245673,NA,null,Ophioderma variegatum,TRUE
 W-Oph-158073,NA,null,Ophioderma brevispina,TRUE
@@ -14718,7 +14717,6 @@ Chn-c52065c0-9805-4194-99b0-c065a99ff036,NA,null,Shinkaia crosnieri,TRUE
 W-Bch-410818,NA,null,Austinograea alayseae,TRUE
 SLB-119654,NA,null,Bythograea microps,TRUE
 SLB-119657,NA,null,Cyanagraea praedator,TRUE
-SLB-119657,NA,null,Cyanagraea preadator,FALSE
 W-Bch-107266,NA,null,Segonzacia mesatlantica,TRUE
 W-Oph-124862,NA,null,Ophioctenella acies,TRUE
 W-Oph-238164,NA,null,Ophiolamina eprae,TRUE
@@ -14821,13 +14819,11 @@ W-Msc-527846,NA,null,Bankia bipalmulata,TRUE
 W-Msc-527848,NA,null,Bankia campanellata,TRUE
 SLB-129288,NA,null,Bankia tenuis,TRUE
 SLB-129289,NA,null,Nausitora dunlopei,TRUE
-SLB-129289,NA,null,Nausitora dunlopi,FALSE
 SLB-129290,NA,null,Kuphus polythalamia,TRUE
 W-Msc-506753,NA,null,Laternula boschasina,TRUE
 SLB-129308,NA,null,Bryopa lata,TRUE
 W-Msc-558782,NA,null,Chicoreus asianus,TRUE
 SLB-171199,NA,null,Nassarius acuminatus,TRUE
-SLB-171199,NA,null,Nassarius accuminatus,FALSE
 SLB-129350,NA,null,Nassarius scalaris,TRUE
 W-Msc-428372,LC,null,Conus sulcatus,TRUE
 W-Msc-428225,LC,null,Conus orbignyi,TRUE
@@ -15569,7 +15565,6 @@ W-Msc-426467,LC,null,Conus crocatus,TRUE
 W-Msc-426462,LC,null,Conus consors,TRUE
 W-Msc-426459,LC,null,Conus coffeae,TRUE
 SLB-100648,LC,null,Conus circumactus,TRUE
-SLB-100648,LC,null,Conus circumactis,FALSE
 W-Msc-426405,LC,null,Conus boeticus,TRUE
 W-Msc-426315,LC,null,Conus ammiralis,TRUE
 W-Msc-426369,LC,null,Conus aureus,TRUE
@@ -16552,7 +16547,6 @@ SLB-156584,NA,null,Cantellius acutum,TRUE
 SLB-156587,NA,null,Cantellius gregarius,FALSE
 SLB-156590,NA,null,Cantellius secundus,TRUE
 SLB-156601,NA,null,Savignium milleporae,TRUE
-SLB-156601,NA,null,Savignium milliporae,FALSE
 Chn-7f0774f3-5b42-4ba3-a812-0023f32acd55,NA,null,Nobia grandis,TRUE
 SLB-192953,NA,null,Pyrgoma cancellatum,TRUE
 Chn-91d6ff61-f86d-44af-9745-128e70b9b535,NA,null,Pyrgopsella stellula,FALSE
@@ -16712,7 +16706,6 @@ SLB-166079,NA,null,Homalopoma eoa,TRUE
 SLB-166080,NA,null,Homalopoma laevigatum,TRUE
 W-Msc-532063,NA,null,Pisulina adamsiana,TRUE
 SLB-166102,LC,null,Clithon chlorostoma,TRUE
-SLB-166102,LC,null,Clithon chlorostomus,FALSE
 W-Msc-559789,NA,null,Smaragdia paulucciana,TRUE
 SLB-166122,NA,null,Bittium variegatum,FALSE
 SLB-166128,NA,null,Cerithium lissum,TRUE
@@ -20096,7 +20089,6 @@ W-Por-169379,NA,null,Iotrochota birotulata,TRUE
 SLB-70230,NA,null,Iphigenia brasiliana,TRUE
 SLB-181495,NA,null,Iphimediella cyclogena,TRUE
 SLB-181498,NA,null,Iphimediella margueritei,TRUE
-SLB-181498,NA,null,Iphimediella margueretei,FALSE
 SLB-181584,NA,null,Iphimediella serrata,TRUE
 W-Cum-110462,NA,null,Iphinoe trispinosa,TRUE
 W-Por-165020,NA,null,Ircinia felix,TRUE

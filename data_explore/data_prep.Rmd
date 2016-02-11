@@ -176,15 +176,36 @@ spp_all <- read.csv(file.path(dir_data, 'spp_all.csv'), stringsAsFactors = FALSE
 spp_am_v_iucn <- spp_all %>%
   filter(str_detect(spatial_source, 'iucn') & !is.na(am_sid)) %>%
   filter(!is.na(id_no)) %>%
+  filter(!str_detect(spp_group, 'MARINEFISH')) %>%
   unique()
 # length(unique(spp_am_v_iucn$am_sid)); length(unique(spp_am_v_iucn$iucn_sid))
-### NOTE: 2377 unique scientific names; but 2315 unique am_sid and 2280 unique iucn_sid.
-x <- spp_am_v_iucn[duplicated(spp_am_v_iucn$am_sid)   | duplicated(spp_am_v_iucn$am_sid,   fromLast = TRUE), ] %>%
-  select(sciname, iucn_sid, am_sid, id_no, spatial_source, name_verified)
-y <- spp_am_v_iucn[duplicated(spp_am_v_iucn$iucn_sid) | duplicated(spp_am_v_iucn$iucn_sid, fromLast = TRUE), ] %>%
-  select(sciname, iucn_sid, am_sid, id_no, spatial_source, name_verified)
+### NOTE: 2345 unique scientific names; but 2283 unique am_sid and 2249 unique iucn_sid.
+### Some unique species (as identified by am_sid and iucn_sid) have multiple
+### scinames.  At this point, not really important what the sciname is?
+spp_am_v_iucn1 <- spp_am_v_iucn %>%
+  group_by(am_sid, iucn_sid) %>%
+  mutate(dupes = n() - 1,
+         first_instance = sciname == first(sciname)) %>%
+  filter(!(dupes > 0 & !first_instance)) %>%
+  select(-dupes, -first_instance) %>%
+  ungroup()
+# length(unique(spp_am_v_iucn1$am_sid)); length(unique(spp_am_v_iucn1$iucn_sid))
 
-write_csv(spp_am_v_iucn, file.path(dir_data, 'spp_am_v_iucn.csv'))
+### What species are represented by the duplicated IUCN ID numbers?  These
+### are species that IUCN experts lumped together (via synonyms etc) 
+### but are treated as separate by AquaMaps (the reverse does not seem
+### to happen)...  There are 64 AM species IDs and only 30 IUCN species IDs.  
+### How to treat in the mapping?
+### * lump AM species together and plot against a single IUCN species map?
+###   That would occur in the area determining function - group by iucn_sid
+###   and map all am_sids against that iucn_sid
+x <- spp_am_v_iucn1 %>%
+  group_by(iucn_sid) %>%
+  filter(n() > 1)
+# length(unique(x$am_sid)); length(unique(x$iucn_sid))
+  
+
+write_csv(spp_am_v_iucn1, file.path(dir_data, 'spp_am_v_iucn.csv'))
 ```
 
 ```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE, results = 'hide'}
@@ -213,8 +234,7 @@ data_file <- file.path(dir_data, 'spp_list_w_area_all.csv')
 reload <- TRUE
 if (!file.exists(data_file) | reload) {
   ### species info list - scinames, IUCN species ID, AM species ID, category etc
-  spp_list_base <- read.csv(file.path(dir_data, 'spp_am_v_iucn.csv'),
-                            stringsAsFactors = FALSE)
+  spp_list_base <- read_csv(file.path(dir_data, 'spp_am_v_iucn.csv'))
   
   create_spp_list(spp_list_base, data_file, am_spp_cells, iucn_spp_cells, loiczid_raster)
 }
