@@ -28203,7 +28203,6 @@ Fis-54327,Scorpaenopsis oxycephala,null,NA,NA,NA,NA,NA,am,TRUE
 Fis-163779,Hyporthodus nigritus,NA,7860,NA,NA,GROUPERS,NA,iucn,TRUE
 Fis-163781,Hyporthodus niveatus,NA,7861,NA,NA,GROUPERS,NA,iucn,TRUE
 NA,Epinephelus jordani,NA,14049,NA,NA,GROUPERS,NA,iucn,TRUE
-NA,Physeter catodon,NA,41755,NA,NA,MARINE_MAMMALS,NA,iucn,TRUE
 Fis-163783,Hyporthodus quernus,NA,44675,NA,NA,GROUPERS,NA,iucn,TRUE
 Fis-163777,Hyporthodus flavolimbatus,NA,64400,NA,NA,GROUPERS,NA,iucn,TRUE
 Fis-163780,Epinephelus peruanus,NA,132734,NA,NA,GROUPERS,NA,iucn,TRUE
@@ -28274,9 +28273,9 @@ NA,Stereomastis sculpta,NA,185022,NA,NA,LOBSTERS,NA,iucn,TRUE
 NA,Stereomastis talismani,NA,185022,NA,NA,LOBSTERS,NA,iucn,TRUE
 NA,Polycheles surdus,NA,185023,NA,NA,LOBSTERS,NA,iucn,TRUE
 NA,Stereomastis evexa,NA,185033,NA,NA,LOBSTERS,NA,iucn,TRUE
-NA,Stereomastis sculpta,NA,185037,NA,NA,LOBSTERS,NA,iucn,TRUE
 NA,Polycheles pacificus,NA,185037,NA,NA,LOBSTERS,NA,iucn,TRUE
 NA,Stereomastis pacifica,NA,185037,NA,NA,LOBSTERS,NA,iucn,TRUE
+NA,Stereomastis sculpta,NA,185037,NA,NA,LOBSTERS,NA,iucn,TRUE
 NA,Polycheles galil,NA,185069,NA,NA,LOBSTERS,NA,iucn,TRUE
 NA,Polycheles kermadecensis,NA,185071,NA,NA,LOBSTERS,NA,iucn,TRUE
 NA,Polycheles perarmatus,NA,185084,NA,NA,LOBSTERS,NA,iucn,TRUE

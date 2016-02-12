@@ -24,218 +24,180 @@ ggtheme_plot <- ggtheme_basic +
 ggtheme_map <- ggtheme_basic +
   theme(axis.text = element_blank())
 
+#################################################################=
 ### Function to create a species list from scratch... use when new data is available
-create_spp_list <- function(spp_list_base, 
-                            data_file, 
-                            am_spp_cells, 
-                            iucn_spp_cells, 
-                            loiczid_raster) {
-
+create_spp_list <- function(spp_list_base, data_file, am_spp_cells, 
+                            iucn_spp_cells, loiczid_raster) {
   spp_list_build <- spp_list_base %>%
-    mutate(total_area = NA,
-           am_area    = NA,
-           iucn_area  = NA,
-           perc       = NA,
-           am_perc    = NA,
-           iucn_perc  = NA,
+    mutate(area_total = NA,  area_am = NA,  area_iucn = NA,
+           area_overlap = NA,
            sm_perc    = NA, #filled with % of smaller range that is within the larger range
            sm_range   = NA) #what range is smaller
   
+  i         <- 0 ### initialize the counting index
+  am_thresh <- 0 ### set the aquamaps presence threshold
+  sid_vector <- unique(spp_list_build$iucn_sid)
+  message(sprintf('There are a total of %s distinct species, by IUCN SID', 
+                  length(sid_vector)))
   
-  #there's likely a better way to do this than a for loop (lapply or sapply?)
-  for (i in 1:nrow(spp_list_build)){ # i = 3
-    spp     <- spp_list_build[i, ]$sciname #species name
-    message(sprintf('Species: %s | am_sid: %s | iucn_sid: %s', spp, spp_list_build[i, ]$am_sid, spp_list_build[i, ]$iucn_sid))
-    spp_map <- get_spp_map(spp, spp_list_build, am_spp_cells, iucn_spp_cells) # get species map
+  for (sid in sid_vector) { 
+    # sid <- spp_list_build$iucn_sid[1]
+    # sid <- 2058  sid <- 41711  sid <- 64412 ### these are doubled-up IDs
+    ### use iucn_sid as index, since some include multiple am_sid
+    i <- i + 1
+    sids <- spp_list_build %>% 
+      select(am_sid, iucn_sid, sciname) %>%
+      filter(iucn_sid == sid)
+    rowindex <- (spp_list_build$iucn_sid == sid)
     
-    ###get just the aquamaps cells
-    am_spp_map <- spp_map %>%
-      filter(!is.na(am_prob))%>%
-      dplyr::select(loiczid, am_sid, am_prob) %>% 
-      ### add in am_prob when we want to look at probability
+    message(sprintf('%s. Processing species iucn_sid: %s \n   am_sid(s):  %s \n   sciname(s): %s', 
+                    i, sid, paste(sids$am_sid, collapse = ', '), paste(sids$sciname, collapse = ' ')))
+    map_iucn <- get_spp_map(sid, iucn_spp_cells) %>%
+      mutate(iucn_pres = ifelse(area_iucn > 0, 1, 0))
+    map_am   <- get_spp_map(sids$am_sid, am_spp_cells) %>%
+      mutate(am_pres = ifelse(am_prob >= am_thresh, 1, 0))
+
+    ### rasterize aquamaps map
+    if(any(duplicated(map_am$loiczid))) message('Duplicated cells in am spp map')
+    map_am <- map_am %>%
+      dplyr::select(loiczid, am_pres) %>% 
       unique()
     
-    if(any(duplicated(am_spp_map$loiczid))){
-      am_spp_map <- am_spp_map %>%
-        dplyr::select(loiczid, am_sid) %>% 
-        unique()
-    }
-    
-    ### rasterize aquamaps map
-    r_am_spp <- subs(loiczid_raster, 
-                     am_spp_map[ , c('loiczid', 'am_sid')], 
-                     by = 'loiczid', 
-                     which = 'am_sid', 
+    r_am_spp <- subs(x = loiczid_raster, y = map_am %>% select(loiczid, am_pres), 
+                     by = 'loiczid', which = 'am_pres', 
                      subsWithNA = TRUE)
     
-    spp_list_build[i, ]$am_area <- area(r_am_spp, na.rm = TRUE) %>%
-      cellStats(., stat='sum')
-    
-    
-    ###  get the iucn cells
-    iucn_map <- spp_map %>%
-      mutate(iucn_pres = iucn_area > 0) %>%
-      dplyr::select(loiczid, iucn_area, am_sid, am_prob, iucn_pres) %>%
-      unique()
-    
-    if(TRUE %in% duplicated(iucn_map$loiczid)) next()
-    
     ### rasterize IUCN map
-    r_iucn_spp <- subs(loiczid_raster, 
-                       iucn_map[ , c('loiczid', 'iucn_pres')], 
-                       by = 'loiczid', 
-                       which = 'iucn_pres', 
+    if(TRUE %in% duplicated(map_iucn$loiczid)) stop('Duplicated cells in IUCN map')
+    r_iucn_spp <- subs(loiczid_raster, map_iucn %>% select(loiczid, iucn_pres), 
+                       by = 'loiczid', which = 'iucn_pres', 
                        subsWithNA = TRUE)
-    
-    spp_list_build[i, ]$iucn_area <- area(r_iucn_spp, na.rm = TRUE) %>%
+
+    ### Start calculating areas etc.
+    area_iucn <- area(r_iucn_spp, na.rm = TRUE) %>%
       cellStats(., stat = 'sum')
-    
+    area_am   <- area(r_am_spp, na.rm = TRUE) %>%
+      cellStats(., stat = 'sum')
+    spp_list_build[rowindex, ]$area_iucn <- area_iucn
+    spp_list_build[rowindex, ]$area_am   <- area_am
     
     ### Get total area (IUCN and AM combined)
-    allCells <- spp_map %>%
-      dplyr::select(loiczid) %>%
-      mutate(value = 1) %>%
-      unique()
+    all_cells <- data.frame(loiczid = unique(c(map_iucn$loiczid, map_am$loiczid)),
+                           spp_pres = 1)
+    r_all_cells <- subs(loiczid_raster, all_cells, 
+                       by = 'loiczid', which = 'spp_pres', 
+                       subsWithNA = TRUE)
+    area_total  <- area(r_all_cells, na.rm = TRUE) %>% cellStats(., stat = 'sum')
+    spp_list_build[rowindex, ]$area_total <- area_total
+
+    ### Get total overlap (IUCN and AM together). If area_iucn = 0, just assign 0
+    if(area_iucn != 0) {
+      overlap_cells <- unique(map_iucn$loiczid[map_iucn$loiczid %in% map_am$loiczid])
+      if(length(overlap_cells) > 0) {
+        overlap_cells <- data.frame(loiczid = overlap_cells,
+                                  spp_pres = 1)
+        r_overlap_cells <- subs(loiczid_raster, overlap_cells, 
+                                by = 'loiczid', which = 'spp_pres', 
+                                subsWithNA = TRUE)
+        area_overlap <- area(r_overlap_cells, na.rm = TRUE) %>% cellStats(., stat = 'sum')
+      } else area_overlap <- 0 ### if no overlapping cells, assign zero
+    } else area_overlap <- 0 ### if no IUCN map cells, assign zero
+    spp_list_build[rowindex, ]$area_overlap <- area_overlap
     
-    
-    fullRange <- subs(loiczid_raster, 
-                      allCells[ , c('loiczid', 'value')], 
-                      by = 'loiczid', 
-                      which = 'value', 
-                      subsWithNA = TRUE)
-    
-    spp_list_build[i, ]$total_area <- area(fullRange, na.rm = TRUE) %>%
-      cellStats(., stat = 'sum')
-    
-    ### get percent overlap of map
-    
-    #iucn map cells
-    cells_iucn <- iucn_map %>%
-      filter(iucn_pres == TRUE) %>%
-      .$loiczid
-    cells_am <- am_spp_map %>%
-      filter(!is.na(am_sid)) %>%
-      .$loiczid
-    
-    cells_total   <- unique(spp_map$loiczid)
-    cells_overlap <- intersect(cells_iucn, cells_am)
-    
-    #percent overlap
-    perc <- (length(cells_overlap) / length(cells_total)) * 100
-    spp_list_build[i, ]$perc <- perc
-    
-    am_only   <- setdiff(cells_am, cells_iucn)
-    iucn_only <- setdiff(cells_iucn, cells_am)
-    
-    perc_am   <- (length(am_only) / length(cells_total)) * 100
-    perc_iucn <- (length(iucn_only) / length(cells_total)) * 100
-    
-    spp_list_build[i, ]$am_perc   <- perc_am
-    spp_list_build[i, ]$iucn_perc <- perc_iucn
-    
-    spp_list_build[i, ]$sm_range <- ifelse(length(cells_am)<length(cells_iucn), 'AM', 'IUCN') 
-    ### what dataset has the smaller range
-    spp_list_build[i, ]$sm_perc <- length(cells_overlap)/min(length(cells_am), length(cells_iucn)) * 100 
-    ### this is the total percent of smaller range encompassed in the larger range
-    
-    cat(sprintf('%s: For species %s, %.2f%% of both datasets overlap, %.2f%% is just AquaMaps and %.2f%% is just IUCN\n', 
-                i, spp, perc, perc_am, perc_iucn))
+    message(sprintf('   Species iucn_sid %s: smaller range is %s. Smaller-in-larger is %.2f%%, A_sm:A_lg is %.2f%%.',
+                    sid, ifelse(area_am < area_iucn, 'AquaMaps', 'IUCN'), 
+                    ifelse(area_am < area_iucn, area_overlap/area_am*100, area_overlap/area_iucn*100),
+                    ifelse(area_am < area_iucn, area_am/area_iucn*100, area_iucn/area_am*100)))
   }
   
-  
-  # for Conus arenatus, the IUCN map gives 4 duplicate cells, but each of the entries has a different iucn_area...which doesn't make sense
-  
-  #row 985 for Acanthurus leucopareius - AM is giving duplicate loiczids but with different am_prob...which is so strange. Looked
-  # at the raw data and it seems to be in the raw data... (JA on 8/31/15)
-  
-  #remove non IUCN species and log total area (for use later on)
   spp_list_build <- spp_list_build %>%
-    filter(spp_group != 'hagfishes' & spp_group != 'non-homalopsids') %>%
-    mutate(log_total_area = log(total_area))
-  
-  spp_list_build <- spp_list_build %>%
-    mutate(area_ratio = am_area / iucn_area,
+    mutate(sm_range   = ifelse(area_am < area_iucn, 'AM', 'IUCN'),
+           sm_perc    = ifelse(area_am < area_iucn, (area_overlap / area_am) * 100, (area_overlap / area_iucn) * 100),
+           area_ratio = area_am / area_iucn,
            area_ratio = ifelse(area_ratio > 1, 1 / area_ratio, area_ratio),
            area_ratio = area_ratio * 100)
   
   spp_list_build <- spp_list_build %>%
-    mutate(lg_area = ifelse(am_area > iucn_area, am_area, iucn_area),
-           sm_area = ifelse(am_area < iucn_area, am_area, iucn_area),
-           lg_area_pct = 100 * lg_area / max(total_area, na.rm = TRUE)) %>% ### use largest data set as approx for total ocean range
+    mutate(lg_area = ifelse(area_am > area_iucn, area_am, area_iucn),
+           sm_area = ifelse(area_am < area_iucn, area_am, area_iucn),
+           lg_area_pct = 100 * lg_area / max(area_total, na.rm = TRUE)) %>% 
+             ### use largest data set as approx for total ocean range
     select(-lg_area, -sm_area)
   
   spp_list_build <- spp_list_build %>%
-    mutate(total_area  = round(total_area, 1),
-           am_area     = round(am_area, 1),
-           iucn_area   = round(iucn_area, 1),
-           perc        = round(perc, 3),
-           am_perc     = round(am_perc, 3),
-           iucn_perc   = round(iucn_perc, 3),
+    mutate(area_total  = round(area_total, 1),
+           area_am     = round(area_am, 1),
+           area_iucn   = round(area_iucn, 1),
            sm_perc     = round(sm_perc, 3),
-           log_total_area = round(log_total_area, 3),
            area_ratio  = round(area_ratio, 3),
-           lg_area_pct = round(lg_area_pct, 3)
-    ) %>%
+           lg_area_pct = round(lg_area_pct, 3)) %>%
     mutate(reviewed = as.integer(reviewed)) ### 'null' values force this to be character... this converts '1' to 1, and 'null' to NA
   
-  write.csv(spp_list_build, file = data_file, row.names = FALSE)
+  print(head(spp_list_build))
+  write_csv(spp_list_build, data_file)
 }
 
+#################################################################=
 ### Species Map Function ###
-# This function takes a single species scientific name as input, then grabs all 
-# occurrence cells and associated Aquamaps probability and/or IUCN proportional area
-# per cell
-get_spp_map <- function(spp, spp_list_build, am_spp_cells, iucn_spp_cells) { # species = 'Acanthopagrus latus' # species = 'Abudefduf concolor'
-  spp_id <- spp_list_build %>%
-    filter(sciname == spp) %>%
-    dplyr::select(am_sid, iucn_sid, sciname) %>%
-    unique()
-
-  am_spp_map   <- am_spp_cells %>%
-    filter(am_sid == spp_id$am_sid) %>%
-    rename(am_prob = prob)
-  if(nrow(am_spp_map) == 0)
-     message('no AquaMaps cells found')
+# This function takes a dataframe of loiczid per species ID, and a target species ID 
+### (as single or vector).  Return a df of cells ready to be rasterized.  
+### If AquaMaps, returned df includes aquamaps probability; if IUCN, returned
+### df includes proportional area.
+get_spp_map <- function(sid, spp_cells) { 
+  data_type <- ifelse('am_sid' %in% names(spp_cells), 'am', 'iucn')
   
-  iucn_spp_map <- iucn_spp_cells %>%
-    filter(sciname == spp)
-  if(nrow(iucn_spp_map) == 0) {
-    message('no IUCN cells found')
-    spp_map <- am_spp_map %>%
-      as.data.frame() %>%
-      mutate(iucn_area = NA)
+  if(data_type == 'am') {
+    ### if AquaMaps, process it thusly:
+    spp_map <- spp_cells %>%
+      filter(am_sid %in% sid) %>%
+      rename(am_prob = prob)
+    if(nrow(spp_map) == 0)
+      message('no AquaMaps cells found')
   } else {
-    iucn_spp_map <- iucn_spp_map %>%
-      group_by(loiczid) %>%        
-      summarize(iucn_area = max(prop_area))
-    ### The group_by() and summarize() are to collapse cells with overlapped polygons, fixing the duplicate 'by' issue
-    spp_map <- full_join(iucn_spp_map, am_spp_map, by = 'loiczid') %>%
-      as.data.frame()
+    ### if IUCN, process it thusly:
+    spp_map <- spp_cells %>%
+      filter(iucn_sid %in% sid)
+    if(nrow(spp_map) == 0) {
+      message('no IUCN cells found')
+      spp_map <- spp_map %>%
+        as.data.frame() %>%
+        select(iucn_sid, loiczid) %>%
+        mutate(area_iucn = NA)
+    } else {
+      spp_map <- spp_map %>%
+        group_by(iucn_sid, loiczid) %>%        
+        summarize(area_iucn = max(prop_area))
+      ### The group_by() and summarize() are to collapse cells with 
+      ### overlapped polygons, fixing the duplicate 'by' issue.
+      ### Note: this drops presence, sciname, and subpop columns
+    }
   }
-  
-  return(spp_map)
+  return(spp_map %>% unique() %>% as.data.frame())
 }
 
+#################################################################=
 ### Plot Species Map function
 ### uses ggplot to create a formatted map of species ranges, including
 ### Aquamaps, IUCN, and overlapped ranges; returns the plot object.
-plot_rangemap <- function(spp) {
-  map <- get_spp_map(spp)
-  
-  am_map <- map %>%
-    filter(!is.na(am_prob))
+plot_rangemap <- function(sid) {
+  map_iucn <- get_spp_map(sid, iucn_spp_cells) %>%
+    mutate(iucn_pres = ifelse(area_iucn > 0, 1, 0)) %>%
+    select(-area_iucn, -iucn_sid) %>%
+    unique()
+  map_am   <- get_spp_map(sids$am_sid, am_spp_cells) %>%
+    mutate(am_pres = ifelse(am_prob >= am_thresh, 1, 0)) %>%
+    select(-am_sid, -am_prob) %>%
+    unique()
   
   r_am_spp  <-  subs(loiczid_raster, 
-                     am_map[ , c('loiczid', 'am_prob')], 
+                     map_am[ , c('loiczid', 'am_pres')], 
                      by = 'loiczid', 
-                     which = 'am_prob', 
+                     which = 'am_pres', 
                      subsWithNA = TRUE)
   r_am_spp[!is.na(r_am_spp)] <- 1
   
-  iucn_map <- map %>%
-    mutate(iucn_pres = iucn_area > 0)
   r_iucn_spp <- subs(loiczid_raster, 
-                     iucn_map[ , c('loiczid', 'iucn_pres')], 
+                     map_iucn[ , c('loiczid', 'iucn_pres')], 
                      by = 'loiczid', 
                      which = 'iucn_pres', 
                      subsWithNA = TRUE)
@@ -243,9 +205,9 @@ plot_rangemap <- function(spp) {
   spp_pts <- as.data.frame(rasterToPoints(r_iucn_spp)) %>%
     full_join(as.data.frame(rasterToPoints(r_am_spp)),
               by = c('x', 'y')) %>%
-    mutate(presence = ifelse(am_prob & is.na(iucn_pres), 'am',
-                             ifelse(iucn_pres & is.na(am_prob), 'iucn',
-                                    ifelse(iucn_pres & am_prob, 'both', NA))))
+    mutate(presence = ifelse(am_pres & is.na(iucn_pres), 'am',
+                             ifelse(iucn_pres & is.na(am_pres), 'iucn',
+                                    ifelse(iucn_pres & am_pres, 'both', NA))))
   
   spp_plot <- ggplot(spp_pts, aes(x = x, y = y)) +
     ggtheme_map + 
@@ -254,9 +216,10 @@ plot_rangemap <- function(spp) {
     borders('world', color='gray40', fill='gray45', size = .1) +  # create a layer of borders
     scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
     scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2)) +
-    labs(title = spp, x = NULL, y = NULL) 
+    labs(title = sprintf('IUCN species ID: %s', sid), x = NULL, y = NULL) 
 }
 
+#################################################################=
 create_am_raster <- function(spp) {
   map <- get_spp_map(spp)
   

@@ -208,27 +208,42 @@ x <- spp_am_v_iucn1 %>%
 write_csv(spp_am_v_iucn1, file.path(dir_data, 'spp_am_v_iucn.csv'))
 ```
 
-```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE, results = 'hide'}
+```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE}
+
+spp_am_v_iucn <- read_csv(file.path(dir_data, 'spp_am_v_iucn.csv'))
 
 # Data files
 #iucn spp cells WITHOUT extinct locations of IUCN subpopulations
-iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'), 
-                           col_types = 'cdddd', progress = TRUE) %>%
-  as.data.frame() %>%
-  filter(presence != 5) ### removes extinct subpopulations
+message('Building IUCN species to cell table.  This might take a few minutes.')
+iucn_map_files      <- file.path(dir_anx, 'iucn_intersections', list.files(file.path(dir_anx, 'iucn_intersections')))
+iucn_spp_cells <- lapply(iucn_map_files, data.table::fread) %>%
+  bind_rows()
+iucn_spp_cells <- iucn_spp_cells %>%
+  rename(iucn_sid = id_no, loiczid = LOICZID) %>%
+  mutate(iucn_sid = as.integer(iucn_sid),
+         presence = as.integer(presence),
+         loiczid  = as.integer(loiczid)) %>%
+  filter(iucn_sid %in% spp_am_v_iucn$iucn_sid) %>%
+  filter(presence != 5)
+### length(unique(iucn_spp_cells$iucn_sid)) results in 2013 species found...
+### some species with no cells reported.  2249 listed in the am v iucn file.
 
-am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'), progress = TRUE)
+message('Loading AquaMaps species to cell table.  This might take a few minutes.')
+am_spp_cells <- fread(file.path(dir_data_remote, 'aquamaps/v2015/csv/hcaf_sp_native_trunc.csv'), 
+                         showProgress = TRUE)
+am_spp_cells <- am_spp_cells %>%
+  rename(am_sid = speciesid, prob = probability) %>%
+  filter(am_sid %in% spp_am_v_iucn$am_sid)
+### length(unique(am_spp_cells$am_sid)) results in 2283 species found - great!
 
 loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
 loiczid_raster       <- raster(loiczid_raster_file)
 names(loiczid_raster) <- 'loiczid'
 
-
 ```
 
 ```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 ### Create files for species list with area info, both a complete list and a trimmed list
-
 
 data_file <- file.path(dir_data, 'spp_list_w_area_all.csv')
 reload <- TRUE
@@ -242,8 +257,6 @@ if (!file.exists(data_file) | reload) {
 spp_list <- read.csv(data_file, stringsAsFactors = FALSE) 
 ### At this point, spp_list zero-area IUCNs due to missing (?) polygons (maybe points?)
 
-spp_am <- read.csv(file.path(dir_data, 'spp_am.csv'), stringsAsFactors = FALSE)
-
 spp_list <- spp_list %>%
   mutate(sm_perc = ifelse(!is.na(sm_perc), 0, sm_perc))
   # filter(!is.na(sm_perc)) %>%
@@ -253,11 +266,13 @@ spp_list <- spp_list %>%
   left_join(read.csv(file.path(dir_data, 'sciname_lookups/spp_groupnames.csv'), 
                      stringsAsFactors = FALSE),
             by = 'spp_group') %>%
-  left_join(spp_am %>% select(am_sid = speciesid, occurcells),
+  left_join(read.csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv'), 
+                   stringsAsFactors = FALSE) %>% 
+              select(am_sid = speciesid, occurcells),
             by = 'am_sid')
 
-write.csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'), 
-          row.names = FALSE)
+
+write_csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 
 ```
 
