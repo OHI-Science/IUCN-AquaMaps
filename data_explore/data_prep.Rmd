@@ -285,7 +285,27 @@ write_csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 
 ```
 
-``` {r get_counts, echo = FALSE}
-x <- occ_search(scientificName = spp_iucn_marine$sciname[1:100], fields = 'minimal', limit = 25)
+``` {r spp_all with observation counts}
+spp_all <- read_csv(file.path(dir_data, 'spp_all.csv'))
+
+library(rgbif)
+# library(robis)
+
+x <- occ_search(scientificName = spp_all$sciname[1:100], fields = 'minimal', limit = 5)
 y <- sapply(x, function(x) x$meta$count)
+z <- data.frame(sciname = names(y), obs = y)
+
+z <- z %>% 
+  left_join(spp_all %>%
+              select(iucn_sid, am_sid, sciname),
+            by = 'sciname') %>%
+  left_join(read_csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv')) %>%
+                       select(am_sid = speciesid, occurcells),
+                     by = 'am_sid') %>%
+  mutate(ln_obs        = log(obs + 1),
+         ln_occurcells = log(occurcells + 1))
+
+plot(ln_obs ~ ln_occurcells, data = z)
+
 ```
+
