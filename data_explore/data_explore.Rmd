@@ -37,9 +37,7 @@ source('data_explore_fxns.R')
 # Data files
 #iucn spp cells WITHOUT extinct locations of IUCN subpopulations
 iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'), 
-                           col_types = 'cdddd', progress = TRUE) %>%
-  as.data.frame() %>%
-  filter(presence != 5) ### removes extinct subpopulations
+                           col_types = 'cdddd', progress = TRUE)
 
 am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'), progress = TRUE)
 
