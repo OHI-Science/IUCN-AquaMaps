@@ -285,13 +285,17 @@ write_csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 
 ```
 
-``` {r spp_all with observation counts}
+``` {r counts_spp_all_observations}
 spp_all <- read_csv(file.path(dir_data, 'spp_all.csv'))
 
 library(rgbif)
 # library(robis)
 
-x <- occ_search(scientificName = spp_all$sciname[1:100], fields = 'minimal', limit = 5)
+system.time({
+  x <- occ_search(scientificName = spp_all$sciname, fields = 'minimal', limit = 1)
+  ### seems linear - 10 names ~ 2.5 sec, 100 names ~ 25 sec, 1000 names, ~250 sec
+  ### so 30000 names ~ 7500 sec or 2 hours
+})
 y <- sapply(x, function(x) x$meta$count)
 z <- data.frame(sciname = names(y), obs = y)
 
@@ -306,6 +310,10 @@ z <- z %>%
          ln_occurcells = log(occurcells + 1))
 
 plot(ln_obs ~ ln_occurcells, data = z)
+plot(obs ~ occurcells, data = z)
+print(summary(lm(obs ~ occurcells, data = z)))
+
+write_csv(z, file.path(dir_anx, 'explore_am_v_iucn/occurrence_df.csv'))
 
 ```
 
