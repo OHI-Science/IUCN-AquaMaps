@@ -1,81 +1,81 @@
-"spp_group_text","n_spp","quad","n_quad","pct_quad","pct_q1"
-"Acanthuridae",70,"q1 well-matched",8,0.114285714285714,0.114285714285714
-"Angelfish",69,"q1 well-matched",10,0.144927536231884,0.144927536231884
-"Blenniidae",258,"q1 well-matched",25,0.0968992248062016,0.0968992248062016
-"Bonefish/Tarpons",5,"q1 well-matched",1,0.2,0.2
-"Butterflyfish",110,"q1 well-matched",13,0.118181818181818,0.118181818181818
-"Cone snails",124,"q1 well-matched",2,0.0161290322580645,0.0161290322580645
-"Corals",505,"q1 well-matched",109,0.215841584158416,0.215841584158416
-"Damselfish",27,"q1 well-matched",3,0.111111111111111,0.111111111111111
-"Groupers",103,"q1 well-matched",38,0.368932038834951,0.368932038834951
-"Lobsters",123,"q1 well-matched",19,0.154471544715447,0.154471544715447
-"Marine Mammals",69,"q1 well-matched",43,0.623188405797101,0.623188405797101
-"Parrotfish",85,"q1 well-matched",11,0.129411764705882,0.129411764705882
-"Pufferfish",110,"q1 well-matched",18,0.163636363636364,0.163636363636364
-"Sea Cucumbers",30,"q1 well-matched",3,0.1,0.1
-"Sparidae",87,"q1 well-matched",38,0.436781609195402,0.436781609195402
-"Tunas/Billfishes",47,"q1 well-matched",19,0.404255319148936,0.404255319148936
-"Wrasses",333,"q1 well-matched",41,0.123123123123123,0.123123123123123
-"Mangroves",2,"q1 well-matched",0,0,0
-"Sea grasses",7,"q1 well-matched",0,0,0
-"Terr. Mammals",2,"q1 well-matched",0,0,0
-"Acanthuridae",70,"q2 dist-matched",28,0.4,0.114285714285714
-"Angelfish",69,"q2 dist-matched",8,0.115942028985507,0.144927536231884
-"Blenniidae",258,"q2 dist-matched",35,0.135658914728682,0.0968992248062016
-"Bonefish/Tarpons",5,"q2 dist-matched",0,0,0.2
-"Butterflyfish",110,"q2 dist-matched",25,0.227272727272727,0.118181818181818
-"Cone snails",124,"q2 dist-matched",74,0.596774193548387,0.0161290322580645
-"Corals",505,"q2 dist-matched",294,0.582178217821782,0.215841584158416
-"Damselfish",27,"q2 dist-matched",9,0.333333333333333,0.111111111111111
-"Groupers",103,"q2 dist-matched",20,0.194174757281553,0.368932038834951
-"Lobsters",123,"q2 dist-matched",20,0.16260162601626,0.154471544715447
-"Marine Mammals",69,"q2 dist-matched",17,0.246376811594203,0.623188405797101
-"Parrotfish",85,"q2 dist-matched",14,0.164705882352941,0.129411764705882
-"Pufferfish",110,"q2 dist-matched",19,0.172727272727273,0.163636363636364
-"Sea Cucumbers",30,"q2 dist-matched",17,0.566666666666667,0.1
-"Sparidae",87,"q2 dist-matched",19,0.218390804597701,0.436781609195402
-"Tunas/Billfishes",47,"q2 dist-matched",13,0.276595744680851,0.404255319148936
-"Wrasses",333,"q2 dist-matched",62,0.186186186186186,0.123123123123123
-"Mangroves",2,"q2 dist-matched",2,1,0
-"Sea grasses",7,"q2 dist-matched",6,0.857142857142857,0
-"Terr. Mammals",2,"q2 dist-matched",0,0,0
-"Acanthuridae",70,"q3 area-matched",21,0.3,0.114285714285714
-"Angelfish",69,"q3 area-matched",32,0.463768115942029,0.144927536231884
-"Blenniidae",258,"q3 area-matched",119,0.461240310077519,0.0968992248062016
-"Bonefish/Tarpons",5,"q3 area-matched",3,0.6,0.2
-"Butterflyfish",110,"q3 area-matched",54,0.490909090909091,0.118181818181818
-"Cone snails",124,"q3 area-matched",22,0.17741935483871,0.0161290322580645
-"Corals",505,"q3 area-matched",79,0.156435643564356,0.215841584158416
-"Damselfish",27,"q3 area-matched",9,0.333333333333333,0.111111111111111
-"Groupers",103,"q3 area-matched",37,0.359223300970874,0.368932038834951
-"Lobsters",123,"q3 area-matched",41,0.333333333333333,0.154471544715447
-"Marine Mammals",69,"q3 area-matched",7,0.101449275362319,0.623188405797101
-"Parrotfish",85,"q3 area-matched",43,0.505882352941176,0.129411764705882
-"Pufferfish",110,"q3 area-matched",47,0.427272727272727,0.163636363636364
-"Sea Cucumbers",30,"q3 area-matched",5,0.166666666666667,0.1
-"Sparidae",87,"q3 area-matched",18,0.206896551724138,0.436781609195402
-"Tunas/Billfishes",47,"q3 area-matched",13,0.276595744680851,0.404255319148936
-"Wrasses",333,"q3 area-matched",130,0.39039039039039,0.123123123123123
-"Mangroves",2,"q3 area-matched",0,0,0
-"Sea grasses",7,"q3 area-matched",1,0.142857142857143,0
-"Terr. Mammals",2,"q3 area-matched",1,0.5,0
-"Acanthuridae",70,"q4 poorly matched",13,0.185714285714286,0.114285714285714
-"Angelfish",69,"q4 poorly matched",19,0.27536231884058,0.144927536231884
-"Blenniidae",258,"q4 poorly matched",79,0.306201550387597,0.0968992248062016
-"Bonefish/Tarpons",5,"q4 poorly matched",1,0.2,0.2
-"Butterflyfish",110,"q4 poorly matched",18,0.163636363636364,0.118181818181818
-"Cone snails",124,"q4 poorly matched",26,0.209677419354839,0.0161290322580645
-"Corals",505,"q4 poorly matched",23,0.0455445544554455,0.215841584158416
-"Damselfish",27,"q4 poorly matched",6,0.222222222222222,0.111111111111111
-"Groupers",103,"q4 poorly matched",8,0.0776699029126214,0.368932038834951
-"Lobsters",123,"q4 poorly matched",43,0.349593495934959,0.154471544715447
-"Marine Mammals",69,"q4 poorly matched",2,0.0289855072463768,0.623188405797101
-"Parrotfish",85,"q4 poorly matched",17,0.2,0.129411764705882
-"Pufferfish",110,"q4 poorly matched",26,0.236363636363636,0.163636363636364
-"Sea Cucumbers",30,"q4 poorly matched",5,0.166666666666667,0.1
-"Sparidae",87,"q4 poorly matched",12,0.137931034482759,0.436781609195402
-"Tunas/Billfishes",47,"q4 poorly matched",2,0.0425531914893617,0.404255319148936
-"Wrasses",333,"q4 poorly matched",100,0.3003003003003,0.123123123123123
-"Mangroves",2,"q4 poorly matched",0,0,0
-"Sea grasses",7,"q4 poorly matched",0,0,0
-"Terr. Mammals",2,"q4 poorly matched",1,0.5,0
+spp_group_text,n_spp,quad,n_quad,pct_quad,pct_q1
+Angelfish,69,q1 well-matched,11,0.159420289855072,0.159420289855072
+Bonefish/Tarpon,4,q1 well-matched,2,0.5,0.5
+Butterflyfish,111,q1 well-matched,16,0.144144144144144,0.144144144144144
+Combtooth Blennies,252,q1 well-matched,24,0.0952380952380952,0.0952380952380952
+Cone snails,125,q1 well-matched,3,0.024,0.024
+Corals,362,q1 well-matched,77,0.212707182320442,0.212707182320442
+Damselfish,46,q1 well-matched,9,0.195652173913043,0.195652173913043
+Groupers,103,q1 well-matched,41,0.398058252427184,0.398058252427184
+Lobsters,127,q1 well-matched,23,0.181102362204724,0.181102362204724
+Marine Mammals,52,q1 well-matched,36,0.692307692307692,0.692307692307692
+Pufferfish,108,q1 well-matched,19,0.175925925925926,0.175925925925926
+ Reptiles,26,q1 well-matched,7,0.269230769230769,0.269230769230769
+Seabreams/Porgies,84,q1 well-matched,39,0.464285714285714,0.464285714285714
+Sea Cucumbers,30,q1 well-matched,3,0.1,0.1
+Surgeons/Tangs/Unicornfish,71,q1 well-matched,9,0.126760563380282,0.126760563380282
+Tunas/Billfish,48,q1 well-matched,20,0.416666666666667,0.416666666666667
+Wrasses,418,q1 well-matched,60,0.143540669856459,0.143540669856459
+Mangroves,4,q1 well-matched,0,0,0
+Sea grasses,4,q1 well-matched,0,0,0
+Terr. Mammals,2,q1 well-matched,0,0,0
+Angelfish,69,q2 dist-matched,8,0.115942028985507,0.159420289855072
+Bonefish/Tarpon,4,q2 dist-matched,0,0,0.5
+Butterflyfish,111,q2 dist-matched,24,0.216216216216216,0.144144144144144
+Combtooth Blennies,252,q2 dist-matched,38,0.150793650793651,0.0952380952380952
+Cone snails,125,q2 dist-matched,73,0.584,0.024
+Corals,362,q2 dist-matched,221,0.610497237569061,0.212707182320442
+Damselfish,46,q2 dist-matched,14,0.304347826086957,0.195652173913043
+Groupers,103,q2 dist-matched,18,0.174757281553398,0.398058252427184
+Lobsters,127,q2 dist-matched,19,0.149606299212598,0.181102362204724
+Marine Mammals,52,q2 dist-matched,14,0.269230769230769,0.692307692307692
+Pufferfish,108,q2 dist-matched,22,0.203703703703704,0.175925925925926
+ Reptiles,26,q2 dist-matched,11,0.423076923076923,0.269230769230769
+Seabreams/Porgies,84,q2 dist-matched,20,0.238095238095238,0.464285714285714
+Sea Cucumbers,30,q2 dist-matched,16,0.533333333333333,0.1
+Surgeons/Tangs/Unicornfish,71,q2 dist-matched,26,0.366197183098592,0.126760563380282
+Tunas/Billfish,48,q2 dist-matched,14,0.291666666666667,0.416666666666667
+Wrasses,418,q2 dist-matched,78,0.186602870813397,0.143540669856459
+Mangroves,4,q2 dist-matched,4,1,0
+Sea grasses,4,q2 dist-matched,4,1,0
+Terr. Mammals,2,q2 dist-matched,0,0,0
+Angelfish,69,q3 area-matched,31,0.449275362318841,0.159420289855072
+Bonefish/Tarpon,4,q3 area-matched,1,0.25,0.5
+Butterflyfish,111,q3 area-matched,52,0.468468468468468,0.144144144144144
+Combtooth Blennies,252,q3 area-matched,114,0.452380952380952,0.0952380952380952
+Cone snails,125,q3 area-matched,20,0.16,0.024
+Corals,362,q3 area-matched,47,0.129834254143646,0.212707182320442
+Damselfish,46,q3 area-matched,16,0.347826086956522,0.195652173913043
+Groupers,103,q3 area-matched,34,0.330097087378641,0.398058252427184
+Lobsters,127,q3 area-matched,39,0.307086614173228,0.181102362204724
+Marine Mammals,52,q3 area-matched,2,0.0384615384615385,0.692307692307692
+Pufferfish,108,q3 area-matched,44,0.407407407407407,0.175925925925926
+ Reptiles,26,q3 area-matched,8,0.307692307692308,0.269230769230769
+Seabreams/Porgies,84,q3 area-matched,14,0.166666666666667,0.464285714285714
+Sea Cucumbers,30,q3 area-matched,5,0.166666666666667,0.1
+Surgeons/Tangs/Unicornfish,71,q3 area-matched,19,0.267605633802817,0.126760563380282
+Tunas/Billfish,48,q3 area-matched,12,0.25,0.416666666666667
+Wrasses,418,q3 area-matched,165,0.394736842105263,0.143540669856459
+Mangroves,4,q3 area-matched,0,0,0
+Sea grasses,4,q3 area-matched,0,0,0
+Terr. Mammals,2,q3 area-matched,1,0.5,0
+Angelfish,69,q4 poorly matched,19,0.27536231884058,0.159420289855072
+Bonefish/Tarpon,4,q4 poorly matched,1,0.25,0.5
+Butterflyfish,111,q4 poorly matched,19,0.171171171171171,0.144144144144144
+Combtooth Blennies,252,q4 poorly matched,76,0.301587301587302,0.0952380952380952
+Cone snails,125,q4 poorly matched,29,0.232,0.024
+Corals,362,q4 poorly matched,17,0.0469613259668508,0.212707182320442
+Damselfish,46,q4 poorly matched,7,0.152173913043478,0.195652173913043
+Groupers,103,q4 poorly matched,10,0.0970873786407767,0.398058252427184
+Lobsters,127,q4 poorly matched,46,0.362204724409449,0.181102362204724
+Marine Mammals,52,q4 poorly matched,0,0,0.692307692307692
+Pufferfish,108,q4 poorly matched,23,0.212962962962963,0.175925925925926
+ Reptiles,26,q4 poorly matched,0,0,0.269230769230769
+Seabreams/Porgies,84,q4 poorly matched,11,0.130952380952381,0.464285714285714
+Sea Cucumbers,30,q4 poorly matched,6,0.2,0.1
+Surgeons/Tangs/Unicornfish,71,q4 poorly matched,17,0.23943661971831,0.126760563380282
+Tunas/Billfish,48,q4 poorly matched,2,0.0416666666666667,0.416666666666667
+Wrasses,418,q4 poorly matched,115,0.27511961722488,0.143540669856459
+Mangroves,4,q4 poorly matched,0,0,0
+Sea grasses,4,q4 poorly matched,0,0,0
+Terr. Mammals,2,q4 poorly matched,1,0.5,0

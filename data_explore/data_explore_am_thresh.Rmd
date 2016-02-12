@@ -145,10 +145,10 @@ thresh_df_summary <- threshold_df %>%
   group_by(thresh) %>%
   summarize(mean_prop   = mean(proportion, na.rm = TRUE),
             median_prop = median(proportion, na.rm = TRUE),
-            quant09 = quantile(proportion, .09),
+            quant09 = quantile(proportion, .05),
             quant25 = quantile(proportion, .25),
             quant75 = quantile(proportion, .75),
-            quant91 = quantile(proportion, .91))
+            quant91 = quantile(proportion, .95))
 
 scatter_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = mean_prop)) + 
   ggtheme_plot + 

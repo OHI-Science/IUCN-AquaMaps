@@ -35,7 +35,7 @@ source('data_explore_fxns.R')
 
 Need to:
 
-gather spp_all, spp_am, spp_am_v_iucn, spp_list_w_area_all and _trimmed into data folder.
+gather spp_all, spp_am, spp_iucn, spp_iucn_maps, and spp_am_raw into local data folder.
 
 ``` {r pull_files_to_local, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 ### pull spp_iucn_marine.csv from git-annex and bring to local repo
@@ -106,7 +106,8 @@ spp_all_remote_clean <- spp_all_remote %>%
 spp_all <- spp_all_remote_clean %>%
   filter(!(spatial_source == 'am' & !is.na(parent_sid))) %>%
   dplyr::select(am_sid, sciname, reviewed, iucn_sid, popn_trend,
-         popn_category, spp_group, id_no, spatial_source, name_verified) %>%
+                popn_category, category_score, spp_group, 
+                id_no, spatial_source, name_verified) %>%
   unique()
 ### At this point, still some duped scinames - these are ones with multiple IUCN
 ### SIDs that are not designated as parents or subpops.  We will brute-force
@@ -215,7 +216,7 @@ spp_am_v_iucn <- read_csv(file.path(dir_data, 'spp_am_v_iucn.csv'))
 # Data files
 #iucn spp cells WITHOUT extinct locations of IUCN subpopulations
 message('Building IUCN species to cell table.  This might take a few minutes.')
-iucn_map_files      <- file.path(dir_anx, 'iucn_intersections', list.files(file.path(dir_anx, 'iucn_intersections')))
+iucn_map_files <- file.path(dir_anx, 'iucn_intersections', list.files(file.path(dir_anx, 'iucn_intersections')))
 iucn_spp_cells <- lapply(iucn_map_files, data.table::fread) %>%
   bind_rows()
 iucn_spp_cells <- iucn_spp_cells %>%
@@ -260,10 +261,12 @@ spp_list <- read.csv(data_file, stringsAsFactors = FALSE)
 ### At this point, spp_list zero-area IUCNs due to missing (?) polygons (maybe points?)
 
 spp_list <- spp_list %>%
-  mutate(sm_perc = ifelse(!is.na(sm_perc), 0, sm_perc))
-  # filter(!is.na(sm_perc)) %>%
+  mutate(sm_perc = ifelse(is.na(sm_perc), 0, sm_perc)) %>%
+  filter(!area_iucn == 0)
   ### will ditch the ones where no IUCN polygon exists - or are these species
   ### whose ranges only occur in cells beyond the LOICZID grid?
+
+### attach group name text field, and occurcells field
 spp_list <- spp_list %>%
   left_join(read.csv(file.path(dir_data, 'sciname_lookups/spp_groupnames.csv'), 
                      stringsAsFactors = FALSE),
@@ -273,6 +276,10 @@ spp_list <- spp_list %>%
               select(am_sid = speciesid, occurcells),
             by = 'am_sid')
 
+cat_score_df <- data.frame(popn_category  = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE'),
+                           category_score = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0,   NA,  NA))
+spp_list <- spp_list %>%
+  left_join(cat_score_df, by = 'popn_category')
 
 write_csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 
