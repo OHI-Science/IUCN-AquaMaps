@@ -1,4 +1,5 @@
 ### support functions for obis_count()
+library(httr)
 
 obis_url <- function() {
   getOption("robis_url", "http://api.iobis.org/")
@@ -51,6 +52,7 @@ obis_count <- function(
   offset <- 0
   i <- 0
   occ_list <- list() ### initialize occurrence count list
+  ptm_total <- proc.time()
   
   for (sciname in scinames) {
     i <- i + 1
@@ -68,18 +70,27 @@ obis_count <- function(
     if(!is.null(res$message)) {
       lastpage = TRUE
       warning(res$message)
-      obis_occ <- NA
+      occ_count <- NA
     } else {
-      obis_occ <- res$count
+      occ_count <- res$count
     }
-    tmp_df <- data.frame('sciname' = sciname, 'occ_count' = obis_occ, stringsAsFactors = FALSE)
+    tmp_df <- data.frame('sciname' = sciname, 'obis_occ' = occ_count, stringsAsFactors = FALSE)
     
-    ptm <- round((proc.time() - ptm)[["elapsed"]], 2)
-    if(verbose) message(i, '. Species ', sciname, '; Occurrence count: ', obis_occ, '; Total time: ', ptm, ' seconds')
-    else if(i == round(i, -2)) message('# species processed: ', i)
+    if(verbose) {
+      ptm <- round((proc.time() - ptm)[["elapsed"]], 2)
+      message(i, '. Species ', sciname, '; Occurrence count: ', occ_count, 
+              '; Elapsed time: ', ptm, ' seconds')
+    } else if(i == round(i, -2)) {
+      ptm <- round((proc.time() - ptm_total)[["elapsed"]], 2)
+      message(i, ' species processed of ', length(scinames), 
+              '; Total time: ', ptm, ' seconds')
+    } 
     
     occ_list[[i]] <- tmp_df
   }
+  
+  ptm <- round((proc.time() - ptm_total)[["elapsed"]], 2)
+  message('Total: ', i, ' species processed; Total time: ', ptm, ' seconds')
   
   occ_df <- rbind_all(occ_list)
 
