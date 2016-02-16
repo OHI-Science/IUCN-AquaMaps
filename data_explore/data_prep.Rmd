@@ -292,28 +292,44 @@ library(rgbif)
 # library(robis)
 
 system.time({
-  x <- occ_search(scientificName = spp_all$sciname, fields = 'minimal', limit = 1)
+  x <- occ_search(scientificName = spp_all$sciname[1:100], fields = 'minimal', limit = 1)
   ### seems linear - 10 names ~ 2.5 sec, 100 names ~ 25 sec, 1000 names, ~250 sec
   ### so 30000 names ~ 7500 sec or 2 hours
 })
 y <- sapply(x, function(x) x$meta$count)
-z <- data.frame(sciname = names(y), obs = y)
+gbif_occur <- data.frame(sciname = names(y), gbif_occ = y)
 
-z <- z %>% 
+gbif_occur <- gbif_occur %>% 
   left_join(spp_all %>%
               select(iucn_sid, am_sid, sciname),
             by = 'sciname') %>%
   left_join(read_csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv')) %>%
                        select(am_sid = speciesid, occurcells),
-                     by = 'am_sid') %>%
-  mutate(ln_obs        = log(obs + 1),
-         ln_occurcells = log(occurcells + 1))
+                     by = 'am_sid')
 
-plot(ln_obs ~ ln_occurcells, data = z)
-plot(obs ~ occurcells, data = z)
-print(summary(lm(obs ~ occurcells, data = z)))
+# plot(ln_obs ~ ln_occurcells, data = gbif_occur)
+# plot(obs ~ occurcells, data = gbif_occur)
+# print(summary(lm(obs ~ occurcells, data = gbif_occur)))
 
-write_csv(z, file.path(dir_anx, 'explore_am_v_iucn/occurrence_df.csv'))
+write_csv(gbif_occur, file.path(dir_data, 'gbif_occurrence_df.csv'))
+
+source('obis_count.R')
+scinames <- spp_all$sciname[1:100]
+
+obis_occur <- obis_count(scinames)
+
+obis_occur <- obis_occur %>% 
+  left_join(spp_all %>%
+              select(iucn_sid, am_sid, sciname),
+            by = 'sciname') %>%
+  left_join(read_csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv')) %>%
+                       select(am_sid = speciesid, occurcells),
+                     by = 'am_sid')
+
+write_csv(obis_occur, file.path(dir_data, 'obis_occurrence_df.csv'))
+
+totes_occur <- obis_occur %>%
+  left_join(gbif_occur)
 
 ```
 
