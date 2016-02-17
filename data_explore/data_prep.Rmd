@@ -7,10 +7,8 @@ output: html_document
 
 # Libraries and Paths
 
-library(raster)
 library(readr)
 library(data.table)
-library(ggplot2)
 library(tidyr)
 library(dplyr)
 library(stringr)
@@ -28,7 +26,7 @@ dir_data_remote <- file.path(dir_N, 'git-annex/globalprep/_raw_data')
 scenario <- 'v2016'
 
 if(basename(getwd()) != 'data_explore') setwd('~/github/IUCN-AquaMaps/data_explore')
-source('data_explore_fxns.R')
+# source('data_explore_fxns.R')
 ### When knitting this, it automatically sets WD to be this directory...
 ### the 'setwd()' is there for running by chunk
 ```
@@ -39,8 +37,7 @@ gather spp_all, spp_am, spp_iucn, spp_iucn_maps, and spp_am_raw into local data 
 
 ``` {r pull_files_to_local, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 ### pull spp_iucn_marine.csv from git-annex and bring to local repo
-spp_iucn <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_cleaned.csv'), 
-                            stringsAsFactors = FALSE)
+spp_iucn <- read_csv(file.path(dir_anx, scenario, 'int/spp_iucn_cleaned.csv'))
 spp_iucn <- spp_iucn %>%
   dplyr::select(sciname, iucn_sid, iucn_category, 
                 popn_trend, parent_sid, subpop_sid) %>%
@@ -48,8 +45,7 @@ spp_iucn <- spp_iucn %>%
 write_csv(spp_iucn, file.path(dir_data, 'spp_iucn.csv'))
           
 ### pull spp_iucn_maps_all.csv from git-annex and bring to local repo
-spp_iucn_maps <- read.csv(file.path(dir_anx, scenario, 'int/spp_iucn_maps_all.csv'), 
-                            stringsAsFactors = FALSE) %>%
+spp_iucn_maps <- read_csv(file.path(dir_anx, scenario, 'int/spp_iucn_maps_all.csv')) %>%
   rename(iucn_sid = id_no)
 
 spp_iucn_maps <- spp_iucn_maps %>%
@@ -64,13 +60,11 @@ spp_iucn_maps <- spp_iucn_maps %>%
 write_csv(spp_iucn_maps, file.path(dir_data, 'spp_iucn_maps.csv'))
 
 ### pull cleaned spp_am data from git-annex and bring to local repo
-spp_am <- read.csv(file.path(dir_anx, scenario, 'int/spp_am_cleaned.csv'), 
-                   stringsAsFactors = FALSE)
+spp_am <- read_csv(file.path(dir_anx, scenario, 'int/spp_am_cleaned.csv'))
 write_csv(spp_am, file.path(dir_data, 'spp_am.csv'))
 
 ### pull raw aquamaps species list from git-annex and bring to local repo
-spp_am_raw <- read.csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv'), 
-                   stringsAsFactors = FALSE)
+spp_am_raw <- read_csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv'))
 write_csv(spp_am_raw, file.path(dir_data, 'speciesoccursum.csv'))
 
 ```
@@ -79,8 +73,7 @@ write_csv(spp_am_raw, file.path(dir_data, 'speciesoccursum.csv'))
 ### get spp_all_complete from git-annex, bring to local repo.  The spp_all_complete
 ### file was created in ohiprep/globalprep/SPP_ICO/data_prep_SPP.R, running the
 ### function create_spp_master_lookup(source_pref = 'iucn', fn_tag = '_complete', reload = TRUE)
-spp_all_remote <- read.csv(file.path(dir_anx, scenario, 'int/spp_all.csv'), 
-                           stringsAsFactors = FALSE) 
+spp_all_remote <- read_csv(file.path(dir_anx, scenario, 'int/spp_all.csv'))
 spp_all_remote_clean <- spp_all_remote %>%
   filter(!str_detect(spatial_source, 'subpop')) %>%
   filter(!str_detect(spatial_source,  'alias'))
@@ -122,8 +115,7 @@ length(spp_all$sciname) - length(unique(spp_all_remote_clean$sciname))
 ### no duped scinames - same length as original (cleaned) list
 
 ### But, some of the extracted IUCN maps don't appear on this list! add 'em in.
-spp_iucn_maps_new <- read.csv(file.path(dir_data, 'spp_iucn_maps.csv'), 
-                              stringsAsFactors = FALSE) %>%
+spp_iucn_maps_new <- read_csv(file.path(dir_data, 'spp_iucn_maps.csv')) %>%
   filter(!sciname %in% spp_all$sciname) %>%
   filter(!str_detect(sciname, 'subpop')) %>% ### a Hawaiian subpop... ditch it!
   select(-iucn_subpop)
@@ -133,8 +125,7 @@ spp_all1 <- spp_all %>%
 
 ### Also, some of the AM listings have disappeared due to name conflicts
 ### - aliases, etc.
-spp_am_new <- read.csv(file.path(dir_data, 'speciesoccursum.csv'), 
-                       stringsAsFactors = FALSE) %>%
+spp_am_new <- read_csv(file.path(dir_data, 'speciesoccursum.csv')) %>%
   mutate(sciname = paste(str_trim(genus), str_trim(species)),
          iucn_sid = as.integer(iucn_id)) %>%
   dplyr::select(am_sid = speciesid, sciname, reviewed, iucn_sid,
@@ -172,7 +163,7 @@ write_csv(spp_all3, file.path(dir_data, 'spp_all.csv'))
 ### create spp_am_v_iucn: the whole maplist narrowed down to just the overlapping species.
 ### Overlaps detected from spatial_source containing 'iucn' (b/c source_pref = 'iucn' above),
 ### that also have a non-NA AquaMaps ID code.
-spp_all <- read.csv(file.path(dir_data, 'spp_all.csv'), stringsAsFactors = FALSE)
+spp_all <- read_csv(file.path(dir_data, 'spp_all.csv'))
 
 spp_am_v_iucn <- spp_all %>%
   filter(str_detect(spatial_source, 'iucn') & !is.na(am_sid)) %>%
@@ -239,17 +230,17 @@ am_spp_cells <- am_spp_cells %>%
 ### length(unique(am_spp_cells$am_sid)) results in 2283 species found - great!
 write_csv(am_spp_cells, file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'))
 
-loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
-loiczid_raster       <- raster(loiczid_raster_file)
-names(loiczid_raster) <- 'loiczid'
-
 ```
 
 ```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 ### Create files for species list with area info, both a complete list and a trimmed list
 
+loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+loiczid_raster       <- raster::raster(loiczid_raster_file)
+names(loiczid_raster) <- 'loiczid'
+
 data_file <- file.path(dir_data, 'spp_list_w_area_all.csv')
-reload <- TRUE
+reload <- FALSE
 if (!file.exists(data_file) | reload) {
   ### species info list - scinames, IUCN species ID, AM species ID, category etc
   spp_list_base <- read_csv(file.path(dir_data, 'spp_am_v_iucn.csv'))
@@ -257,7 +248,7 @@ if (!file.exists(data_file) | reload) {
   create_spp_list(spp_list_base, data_file, am_spp_cells, iucn_spp_cells, loiczid_raster)
 }
 
-spp_list <- read.csv(data_file, stringsAsFactors = FALSE) 
+spp_list <- read_csv(data_file) 
 ### At this point, spp_list zero-area IUCNs due to missing (?) polygons (maybe points?)
 
 spp_list <- spp_list %>%
@@ -268,11 +259,9 @@ spp_list <- spp_list %>%
 
 ### attach group name text field, and occurcells field
 spp_list <- spp_list %>%
-  left_join(read.csv(file.path(dir_data, 'sciname_lookups/spp_groupnames.csv'), 
-                     stringsAsFactors = FALSE),
+  left_join(x <- read_csv(file.path(dir_data, 'sciname_lookups/spp_groupnames.csv')),
             by = 'spp_group') %>%
-  left_join(read.csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv'), 
-                   stringsAsFactors = FALSE) %>% 
+  left_join(read_csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv')) %>% 
               select(am_sid = speciesid, occurcells),
             by = 'am_sid')
 
@@ -285,10 +274,10 @@ write_csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 
 ```
 
-``` {r counts_spp_all_observations}
+``` {r counts_spp_all_observations, echo = FALSE}
 spp_all <- read_csv(file.path(dir_data, 'spp_all.csv'))
 
-library(rgbif)
+# library(rgbif)
 
 # system.time({
 #   x <- occ_search(scientificName = spp_all$sciname[1:100], fields = 'minimal', limit = 1)
@@ -310,26 +299,68 @@ library(rgbif)
 # plot(obs ~ occurcells, data = gbif_occur)
 # print(summary(lm(obs ~ occurcells, data = gbif_occur)))
 
-# write_csv(gbif_occur, file.path(dir_data, 'gbif_occurrence_df.csv'))
-gbif_occur <- read_csv(file.path(dir_data, 'gbif_occurrence_df.csv'))
+# write_csv(gbif_occur, file.path(dir_data, 'gbif_occurrence.csv'))
+gbif_occur <- read_csv(file.path(dir_data, 'gbif_occurrence.csv'))
 
-source('obis_count.R')
-scinames <- spp_all$sciname
-
-obis_occur <- obis_count(scinames)
-
-obis_occur <- obis_occur %>% 
-  left_join(spp_all %>%
-              select(iucn_sid, am_sid, sciname),
-            by = 'sciname') %>%
-  left_join(read_csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv')) %>%
-                       select(am_sid = speciesid, occurcells),
-                     by = 'am_sid')
-
-write_csv(obis_occur, file.path(dir_data, 'obis_occurrence.csv'))
+# source('obis_count.R')
+# scinames <- spp_all$sciname
+# 
+# obis_occur <- obis_count(scinames)
+# obis_occur <- obis_count(scinames[26500:26600], verbose = TRUE)
+# 
+# obis_occur <- obis_occur %>% 
+#   left_join(spp_all %>%
+#               select(iucn_sid, am_sid, sciname),
+#             by = 'sciname') %>%
+#   left_join(read_csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv')) %>%
+#                        select(am_sid = speciesid, occurcells),
+#                      by = 'am_sid')
+# 
+# write_csv(obis_occur, file.path(dir_data, 'obis_occurrence.csv'))
+obis_occur <- read_csv(file.path(dir_data, 'obis_occurrence.csv'))
 
 totes_occur <- obis_occur %>%
-  left_join(gbif_occur)
+  left_join(gbif_occur) %>%
+  rowwise() %>%
+  mutate(mean_occ = mean(c(gbif_occ, obis_occ), na.rm = TRUE))
 
 ```
 
+__Possible "data poor" indicators:__
+
+* (of matched species) how does bottom decile get distributed across quadrants
+* use mean of OBIS and GBIF, and just report average (or median?) occurrences across all species in each quadrant
+* also use similar method for AM occurcells
+
+``` {r data_poor_analysis, echo = FALSE, eval = FALSE}
+spp_quads <- read_csv(file.path(dir_data, 'spp_list_quads.csv')) %>% 
+  select(am_sid, iucn_sid, occurcells, quad) %>%
+  unique()
+### This contains all mapped species, discarding those with no actual IUCN maps
+
+spp_occ_counts <- spp_quads %>%
+  left_join(totes_occur) %>%
+  group_by(iucn_sid, am_sid, quad) %>%
+  summarize(occurcells = mean(occurcells, na.rm = TRUE), occ = mean(mean_occ, na.rm = TRUE)) %>%
+  group_by(iucn_sid, quad) %>%
+  summarize(occurcells = sum(occurcells, na.rm = TRUE), occ = sum(occ, na.rm = TRUE)) %>%
+  ungroup()
+
+btm_dec_occurcells <- spp_occ_counts$occurcells %>% quantile(c(.1, .25))
+btm_dec_occ <- spp_occ_counts$occ %>% quantile(c(.1, .25))
+
+quad_count_means <- spp_occ_counts %>%
+  mutate(quad = ifelse(quad == 'q4', 'q4', 'q123')) %>%
+  group_by(quad) %>%
+  summarize(mean_occurcells = mean(occurcells),
+            mean_occ        = mean(occ),
+            med_occurcells  = median(occurcells),
+            med_occ         = median(occ),
+            dp_am_10 = sum(occurcells <= btm_dec_occurcells[1])/n(),
+            dp_am_25 = sum(occurcells <= btm_dec_occurcells[2])/n(),
+            dp_gb_10 = sum(occ <= btm_dec_occ[1])/n(),
+            dp_gb_25 = sum(occ <= btm_dec_occ[2])/n())
+
+write_csv(quad_count_means, file.path(dir_data, 'quads_data_poor.csv'))
+
+```

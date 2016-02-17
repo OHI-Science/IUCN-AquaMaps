@@ -6,8 +6,8 @@ output: html_document
 n_spp_all    <- nrow(spp_all)
 n_spp_am     <- nrow(spp_am)
 n_spp_am_rev <- nrow(spp_am %>% filter(reviewed == 1))
-n_spp_iucn   <- nrow(spp_iucn_maps)
-n_spp_both   <- nrow(spp_map_pairs)
+n_spp_iucn   <- length(spp_iucn_maps$iucn_sid %>% unique())
+n_spp_both   <- length(spp_map_pairs$iucn_sid %>% unique())
 
 p_spp_am     <- round(nrow(spp_am)/n_spp_all * 100, 1)
 p_spp_am_rev <- round(n_spp_am_rev/n_spp_am * 100, 1)
@@ -42,7 +42,7 @@ One major outcome of this body of science is the various compiled databases of s
 
 The two datasets ostensibly describe the same information, but significant differences in methodology and intent could lead to dramatically different understandings of our marine ecosystems, with significant implications for policy and conservation recommendations.  Importantly, biases in taxonomic or spatial coverage within a dataset could shift management and conservation actions away from places or species that are most in need.  Inaccurate indications of presence or absence could lead to ineffective marine reserve systems and management plans (Rondinini et al. 2006) (Jetz 2008?).
 
-To understand the implications of differences between the AquaMaps and IUCN datasets, we compare how each data source represents the global spatial and taxonomic distribution of species.  Most notably, AquaMaps includes range maps for many more species (currently `r format(n_spp_am, big.mark = ',')` species; `r p_spp_am`% of total), such that most global analyses related to biodiversity to date have used AquaMaps (IUCN range map data exist for only `r format(n_spp_iucn, big.mark = ',')` species).  For the `r format(n_spp_both, big.mark = ',')` species (`r p_both_all`% of total) mapped in both datasets, we examine how well the maps align, determine several issues that lead to misalignment between predicted species distributions, and outline possible improvements. <!--BSH: I think Jamie makes this comment below, but we may need to be able to substantiate this somehow.  Is there a way to quickly figure out how many studies have used AM vs. IUCN?  CCO: What about age - AquaMaps is pretty recent; before that, would IUCN have been the dominant dataset for marine?  Maybe we can track citations of AquaMaps, but citations of IUCN I think are generic - just cite the Red List - not referencing spatial information specifically, much less marine.-->
+To understand the implications of differences between the AquaMaps and IUCN datasets, we compare how each data source represents the global spatial and taxonomic distribution of species.  Most notably, AquaMaps includes range maps for many more species (currently `r format(n_spp_am, big.mark = ',')` species; `r p_spp_am`% of total), such that most global analyses related to biodiversity to date have used AquaMaps (IUCN range map data exist for only `r format(n_spp_iucn, big.mark = ',')` unique species).  For the `r format(n_spp_both, big.mark = ',')` species (`r p_both_all`% of total) mapped in both datasets, we examine how well the maps align, determine several issues that lead to misalignment between predicted species distributions, and outline possible improvements. <!--BSH: I think Jamie makes this comment below, but we may need to be able to substantiate this somehow.  Is there a way to quickly figure out how many studies have used AM vs. IUCN?  CCO: What about age - AquaMaps is pretty recent; before that, would IUCN have been the dominant dataset for marine?  Maybe we can track citations of AquaMaps, but citations of IUCN I think are generic - just cite the Red List - not referencing spatial information specifically, much less marine.-->
 
 We then subject two recent marine biodiversity studies - an assessment of the status of global biodiversity within the Ocean Health Index (Halpern et al. 2012, 2015) and a global analysis of gaps in protection afforded by marine protected areas (MPAs) (Klein et al. 2015) - to a sensitivity analysis. ... ___substituting___ one dataset over the other, to highlight the possible consequences of different data use decisions on our understanding of _the status of_ marine biodiversity. ___BSH suggestion: We used all unique species range data from both sources but substituted one dataset over the other for shared species to highlight the possible consequences of different data use decisions on our understanding of the status of and protection of marine biodiversity.___
 
@@ -81,6 +81,14 @@ n_q4_rev <- nrow(spp_list_quads %>% filter(quad == 'q4' & !is.na(reviewed)))
 p_q4_rev <- round(n_q4_rev/n_q4 * 100, 1)
 n_q123_rev <- nrow(spp_list_quads %>% filter(quad != 'q4' &  !is.na(reviewed)))
 p_q123_rev <- round(n_q123_rev/n_spp_both * 100, 1)
+
+quad_count_means <- read_csv(file.path(dir_data, 'quads_data_poor.csv')) %>%
+  arrange(quad)
+dp_med_am_q4    <- quad_count_means$med_occurcells[4]
+dp_med_am_q123  <- quad_count_means$med_occurcells_total[1]
+dp_med_occ_q4   <- quad_count_means$med_occ[4]
+dp_med_occ_q123 <- quad_count_means$med_occ_total[1]
+
 ```
 
 To explore differences in species distribution and range between the two datasets, we plotted the distribution alignment (where on the map) against the ratio of extent (how much of the map) for each shared species (Fig. 2A). 
@@ -96,7 +104,7 @@ Species found in the lower right quadrant (n = `r n_q3`) often represent cases o
 
 <!--The most vexing cases are in the lower left quadrant (n = `r n_q4`), where neither distribution nor extent match.  Often these mismatches arise when AquaMaps relies on limited data to predict species presence well beyond known occurrences.  Indeed, `r p_q4_datapoor`% (n = `r n_q4_datapoor`) of these cases are data-poor (in which the AquaMaps environmental envelope model is based on fewer than 10 known cell occurrences), compared with `r p_q123_datapoor`% for species in the other three quadrants.  Only `r p_q4_rev`% (n = `r n_q4_rev`) of AquaMaps maps in this quadrant have undergone expert review, compared with `r p_q123_rev`% of species in the other three quadrants. <!--BSH: This implies the problem is solely with AM.  Are there no issues with IUCN maps that cause problems in this quadrant?--> <!--___The data-poor condition likely applies to IUCN as well - AM using OBIS points to generate models, and IUCN is probably doing the same.  Check, and rework.  This means AM is creating errors of commission, while IUCN may be committing errors of omission for poorly-studied species and/or regions - compounding the total problem.___-->
 
-The most vexing cases are in the lower left quadrant (n = `r n_q4`), where neither distribution nor extent match.  When extrapolating from limited observations, the AquaMaps model often predicts species presence well beyond known occurrences; at the same time, IUCN range maps .  Indeed, `r p_q4_datapoor`% (n = `r n_q4_datapoor`) of these cases are data-poor (in which the AquaMaps environmental envelope model is based on fewer than 10 known cell occurrences ___is there a good way to get the number of OBIS observations for each of these species, as an external validation of data-poor?)___, compared with `r p_q123_datapoor`% for species in the other three quadrants.  Only `r p_q4_rev`% (n = `r n_q4_rev`) of AquaMaps maps in this quadrant have undergone expert review, compared with `r p_q123_rev`% of species in the other three quadrants. <!--BSH: This implies the problem is solely with AM.  Are there no issues with IUCN maps that cause problems in this quadrant?--> ___The data-poor condition likely applies to IUCN as well - AM using OBIS points to generate models, and IUCN is probably doing the same.  Check, and rework.  This means AM is creating errors of commission, while IUCN may be committing errors of omission for poorly-studied species and/or regions - compounding the total problem.___
+The most vexing cases are in the lower left quadrant (n = `r n_q4`), where neither distribution nor extent match well. Data-poor species are more common in this quadrant; indeed, the median number of species occurrence records (summing (averaging?) OBIS and GBIF occurrences) for this quadrant is `r dp_med_am_q4`, compared to a median of `r dp_med_am_q123` for species in the other three quadrants.  When extrapolating from limited observations, the AquaMaps model often predicts species presence well beyond known occurrences, introducing commission errors; at the same time, IUCN range maps generally target known occurrences, possibly introducing omission errors for data-limited species.
 
 -----
 

@@ -45,15 +45,13 @@ http_request <- function(method, path, query) {
 
 ##########################################################################
 
-obis_count <- function(
-  scinames,
-  verbose = FALSE) {
+obis_count <- function(scinames, verbose = FALSE) {
 
   offset <- 0
   i <- 0
-  occ_list <- list() ### initialize occurrence count list
+  occ_list <- vector('list', length = length(scinames)) ### initialize occurrence count list
   ptm_total <- proc.time()
-  
+ 
   for (sciname in scinames) {
     i <- i + 1
     lastpage <- FALSE
