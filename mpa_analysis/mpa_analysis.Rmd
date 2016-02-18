@@ -25,7 +25,7 @@ dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
 
-if(basename(getwd()) != 'data_explore') setwd('data_explore')
+if(basename(getwd()) != 'IUCN-AquaMaps') setwd(dir_git)
 
 ### When knitting this, it automatically sets WD to be this directory...
 ### the 'setwd()' is there for running by chunk
@@ -54,7 +54,7 @@ Several steps to this:
     * less than 1km^2^ was mentioned in paper as resolution of MPA data.  Rasterize to 0.01 degree x 0.01 degree?  
         * this results in max cell size of 1.11 km x 1.11 km at the equator.
         * -180 to +180 longitude; min/max latitude use min/max from AquaMaps
-    * WDPA_MPA layer: value = IUCN category (1-6, with NA = 7?) combined with marine flag and marine overlap flag?
+    * WDPA_MPA layer: value = IUCN category (1-4, with NA = 7?) combined with marine flag and marine overlap flag?
         * first digit IUCN category; second digit marine flag; third digit marine overlap?
             * rasterize by IUCN category (unprotected, call NA?)
             * then rasterize again by marine field (0 or 1)
@@ -76,7 +76,7 @@ Several steps to this:
 ### base raster will contain 0.01 degree cells from -180 to +180,
 ### and -90 to +90, with the associated area of each cell.
 ### Save it as a .tif in GitHub - about 50 
-rast_base_file <- file.path(dir_git, 'data/mpa_analysis/rast_base.tif')
+rast_base_file <- file.path(dir_git, 'mpa_analysis/rast_base.tif')
 
 if(!file.exists(rast_base_file)) {
   ### import AquaMaps half-degree loiczid raster - for extents and such
@@ -112,13 +112,15 @@ Dealing with rasters:
     * spatial marine - capture whether cell includes ocean or not - clip to max N and S of WDPA?
         * xMin,yMin -180.007,-72.95 : xMax,yMax 180,83.73
 * Use this R script to source arcPy script modified from LSP - need to run it on a PC with appropriate GDAL installation, most likely
-    
+
+
 ``` {r set_up_spatially_marine_raster}
+
 ### This raster (at 0.01 degree resolution) contains flags on whether a cell
 ### is "spatially marine" - i.e. overlaps (center?) with an ocean area.
 ### This is separate from the WDPA "marine" flag.
 
-rast_marine_file <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters/rast_marine.tif')
+rast_marine_file <- file.path(dir_git, 'mpa_analysis/rast_marine.tif')
 reload <- FALSE
 if(reload == TRUE) {
 ### import OHI regions polygons, to determine spatially-marine areas
@@ -135,8 +137,11 @@ if(reload == TRUE) {
     poly_marine@data <- poly_marine@data %>%
       mutate(sp_mar = 1)
     
+    poly_mar_union <- raster::union(poly_marine)
+    poly_mar_union <- rgeos::gUnaryUnion(poly_marine)
+    
     # writePolyShape(poly_marine, poly_marine_file)
-    writeOGR(obj    = poly_marine,
+    writeOGR(obj    = poly_mar_union,
              dsn    = path.expand(dirname(poly_marine_file)),
              layer  = str_replace(basename(poly_marine_file), '.shp', ''),
              driver = 'ESRI Shapefile',
