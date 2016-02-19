@@ -93,9 +93,6 @@ if(!file.exists(rast_base_file)) {
 }
 
 
-### as long as we're here, let's set up some objects for WGS 84 projection
-p4s_wgs84 <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0'
-crs_wgs84 <- CRS(p4s_wgs84)
 
 ```
 
@@ -120,11 +117,15 @@ Dealing with rasters:
 ### is "spatially marine" - i.e. overlaps (center?) with an ocean area.
 ### This is separate from the WDPA "marine" flag.
 
+### as long as we're here, let's set up some objects for WGS 84 projection
+p4s_wgs84 <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0'
+crs_wgs84 <- CRS(p4s_wgs84)
+
 rast_marine_file <- file.path(dir_git, 'mpa_analysis/rast_marine.tif')
 reload <- FALSE
 if(reload == TRUE) {
 ### import OHI regions polygons, to determine spatially-marine areas
-  poly_marine_file <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters/poly_marine.shp')
+  poly_marine_file <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters/poly_marine1.shp')
   if(!file.exists(poly_marine_file)) {
     dir_rgn   <- file.path(dir_N, 'git-annex/globalprep/spatial/v2015/data')
     lyr_rgn <- 'regions_gcs'
@@ -137,11 +138,26 @@ if(reload == TRUE) {
     poly_marine@data <- poly_marine@data %>%
       mutate(sp_mar = 1)
     
-    poly_mar_union <- raster::union(poly_marine)
-    poly_mar_union <- rgeos::gUnaryUnion(poly_marine)
+    poly_list <- list()
+    poly_rows <- nrow(poly_marine)
+    n_entities <- 20
+    for (i in 1:ceiling(poly_rows/n_entities)) { # i = 1
+      min_row <- (i - 1) * n_entities + 1
+      max_row <- min(i * n_entities, poly_rows)
+      poly_tmp <- poly_marine[min_row:max_row, ]
+      message(sprintf('%s. Entities [%s:%s]', i, min_row, max_row))
+      print(system.time({
+        poly_tmp2 <- rgeos::gUnaryUnion(poly_tmp)
+      })[3])
+      poly_list[i] <- poly_tmp2
+    }
+
+    poly_mar_frankenstein <- spRbind(poly_list)
+    
+    # poly_mar_union <- rgeos::gUnaryUnion(poly_marine)
     
     # writePolyShape(poly_marine, poly_marine_file)
-    writeOGR(obj    = poly_mar_union,
+    writeOGR(obj    = poly_mar_frankenstein,
              dsn    = path.expand(dirname(poly_marine_file)),
              layer  = str_replace(basename(poly_marine_file), '.shp', ''),
              driver = 'ESRI Shapefile',
