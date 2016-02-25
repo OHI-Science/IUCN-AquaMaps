@@ -8,7 +8,6 @@ output: html_document
 # Libraries and Paths
 
 library(rgdal)
-library(maptools)
 library(raster)
 library(readr)
 library(tidyr)
@@ -29,107 +28,9 @@ if(basename(getwd()) != 'IUCN-AquaMaps') setwd(dir_git)
 
 ### When knitting this, it automatically sets WD to be this directory...
 ### the 'setwd()' is there for running by chunk
-```
 
-``` {r set_up_wdpa_mpa_polys}
-
-### import WDPA database polygons from original .gdb
-# gdb_wdpa   <- file.path(dir_N, 'git-annex/globalprep/_raw_data/wdpa_mpa/WDPA_Jan2015_Public/WDPA_Jan2015_Public.gdb')
-# lyr_wdpa <- 'WDPA_poly_Jan2015'
-# 
-# poly_wdpa <- readOGR(dsn = gdb_wdpa, layer = lyr_wdpa, stringsAsFactors = FALSE)
-
-### import WDPA database polygons from saved .shp
-dir_wdpa   <- file.path(dir_N, 'git-annex/globalprep/_raw_data/wdpa_mpa/WDPA_Jan2015_Public')
-lyr_wdpa    <- 'WDPA_poly_Jan2015'
-lyr_mpa     <- 'WDPA_poly_Jan2015_mpa'
-lyr_mpa_mar <- 'WDPA_poly_Jan2015_mpa_mar'
-
-if(!file.exists(file.path(dir_wdpa, paste(lyr_mpa, '.shp', sep = '')))) {
-  poly_wdpa <- readOGR(dsn = dir_wdpa, layer = lyr_wdpa, stringsAsFactors = FALSE)
-
-#   nrow(poly_wdpa@data)
-#   poly_wdpa@data$IUCN_CAT %>% unique()
-  
-  prot_code_df <- data.frame('IUCN_CAT'  = c('I', 'Ia', 'Ib', 'II', 'III', 'IV', 'V', 'VI'),
-                             'prot_code' = c(  1,   1,    1,    2,     3,    4,   5,    6))
-# poly_wdpa_save <- poly_wdpa
-  poly_wdpa@data <- poly_wdpa@data %>%
-    left_join(prot_code_df, by = 'IUCN_CAT') %>%
-    mutate(prot_code = ifelse(is.na(prot_code), 7, prot_code))
-  
-  poly_mpa <- poly_wdpa[poly_wdpa@data$STATUS == 'Designated', ]
-  poly_mpa <- poly_mpa[poly_mpa@data$prot_code <= 4, ]
-  
-  poly_mpa_marine <- poly_mpa[poly_mpa@data$MARINE == 1, ]
-
-  writeOGR(poly_mpa, dsn = dir_wdpa, layer = lyr_mpa,
-           driver = 'ESRI Shapefile')
-  writeOGR(poly_mpa_marine, dsn = dir_wdpa, layer = lyr_mpa_mar,
-           driver = 'ESRI Shapefile')
-}
-
-poly_mpa <- readOGR(dir_wdpa, lyr_mpa, stringsAsFactors = FALSE)
-### create simplified polygon
-polys_mpa_area <- lapply(poly_mpa@polygons, function(x) x@area)
-poly_mpa1 <- poly_mpa[polys_mpa_area > 1e-5, ]
-poly_mpa1 <- poly_simplify(poly_mpa1, thresh = 1e-5, verbose = TRUE)
-
-### sort by STATUS_YR, descending, so gdal_rasterize will assign newer
-### values then overwrite (where applicable) with older values
-poly_mpa2 <- poly_mpa1[order(z <- poly_mpa1@data$STATUS_YR, decreasing = TRUE), ]
-
-writeOGR(poly_mpa1, dsn = dir_wdpa,
-         layer = paste(lyr_mpa, '1', sep = ''),
-         driver = 'ESRI Shapefile')
-  
-}
-```
-
-unique(poly_mpa@data$STATUS_YR)
-table(poly_mpa@data$STATUS_YR)
-hist(poly_mpa@data$STATUS_YR[poly_mpa@data$STATUS_YR > 0])
-summary(poly_mpa@data$STATUS_YR[poly_mpa@data$STATUS_YR > 0])
-
-``` {r rasterize_that_shit}
-dir_rast <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters')
-
-### Get source from WDPA_MPA data location
-src <- path.expand(file.path(dir_wdpa, paste(lyr_mpa, '1.shp', sep = '')))
-### gdal_rasterize to temp directory
-tmp_dst <- file.path(dir_rast, 'tmp', paste(lyr_mpa, '1.tif', sep = '')) %>%
-  path.expand
-### then writeRaster to final directory, to save smaller file
-fnl_dst <- file.path(dir_rast, paste(lyr_mpa, '1.tif', sep = '')) %>%
-  path.expand
-  
-### Set extents and resolution
-ext  <- c(-180, -90, 180, 90)
-reso <- c(.01, .01)
-
-ptm <- proc.time()
-tmp_rast <- gdalUtils::gdal_rasterize(
-  src_datasource = src,
-  dst_filename   = tmp_dst, 
-    # destination for output
-  a = 'STATUS_YR', 
-    # the attribute in the shapefile to be assigned to the cell values
-  te = ext, 
-    # extents for output raster
-  tr = reso,  
-    # resolution for output raster
-  a_nodata = NA, 
-    # nodata value for raster; otherwise they will be filled in with zeroes
-  output_Raster = TRUE,
-    # return output as a RasterBrick? 
-  verbose = TRUE)
-message('Rasterized ', src, '; \n  ', round((proc.time() - ptm)[3], 2), ' seconds')
-
-ptm <- proc.time()
-raster::writeRaster(tmp_rast, fnl_dst, overwrite = TRUE)
-message('Write ', src, '\n  to ', fnl_dst, '; \n  ', round((proc.time() - ptm)[3], 2), ' seconds')
-remove(tmp_rast)
-unlink(tmp_dst)
+p4s_wgs84 <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0'
+crs_wgs84 <- CRS(p4s_wgs84)
 
 ```
 
@@ -197,3 +98,116 @@ poly_simplify <- function(poly_set, thresh, verbose = FALSE) {
 }
 
 ```
+
+``` {r set_up_wdpa_mpa_polys}
+
+### import WDPA database polygons from original .gdb
+# gdb_wdpa   <- file.path(dir_N, 'git-annex/globalprep/_raw_data/wdpa_mpa/WDPA_Jan2015_Public/WDPA_Jan2015_Public.gdb')
+# lyr_wdpa <- 'WDPA_poly_Jan2015'
+# 
+# poly_wdpa <- readOGR(dsn = gdb_wdpa, layer = lyr_wdpa, stringsAsFactors = FALSE)
+
+### import WDPA database polygons from saved .shp
+dir_wdpa   <- file.path(dir_N, 'git-annex/globalprep/_raw_data/wdpa_mpa/WDPA_Jan2015_Public')
+lyr_wdpa    <- 'WDPA_poly_Jan2015'
+lyr_mpa     <- 'WDPA_poly_Jan2015_mpa'
+lyr_mpa_mar <- 'WDPA_poly_Jan2015_mpa_mar'
+
+if(!file.exists(file.path(dir_wdpa, paste(lyr_mpa, '.shp', sep = '')))) {
+  poly_wdpa <- readOGR(dsn = dir_wdpa, layer = lyr_wdpa, stringsAsFactors = FALSE)
+
+#   nrow(poly_wdpa@data)
+#   poly_wdpa@data$IUCN_CAT %>% unique()
+  
+  prot_code_df <- data.frame('IUCN_CAT'  = c('Ia', 'Ib', 'II', 'III', 'IV', 'V', 'VI'),
+                             'prot_code' = c(  1,    1,    2,     3,    4,   5,    6))
+# poly_wdpa_save <- poly_wdpa
+  poly_wdpa@data <- poly_wdpa@data %>%
+    left_join(prot_code_df, by = 'IUCN_CAT') %>%
+    mutate(prot_code = ifelse(is.na(prot_code), 7, prot_code))
+  
+  poly_mpa <- poly_wdpa[poly_wdpa@data$STATUS == 'Designated', ]
+  poly_mpa <- poly_mpa[poly_mpa@data$prot_code <= 4, ]
+  
+  poly_mpa_marine <- poly_mpa[poly_mpa@data$MARINE == 1, ]
+
+  writeOGR(poly_mpa, dsn = dir_wdpa, layer = lyr_mpa,
+           driver = 'ESRI Shapefile', overwrite_layer = TRUE)
+  writeOGR(poly_mpa_marine, dsn = dir_wdpa, layer = lyr_mpa_mar,
+           driver = 'ESRI Shapefile', overwrite_layer = TRUE)
+}
+
+poly_mpa <- readOGR(dir_wdpa, lyr_mpa, stringsAsFactors = FALSE)
+# poly_mpa <- readShapePoly(fn = file.path(dir_wdpa, lyr_mpa),
+#                           proj4string = crs_wgs84,
+#                           stringsAsFactors = FALSE)
+
+### create simplified polygon
+polys_mpa_area <- lapply(poly_mpa@polygons, function(x) x@area)
+poly_mpa1 <- poly_mpa[polys_mpa_area > 1e-5, ]
+poly_mpa1 <- poly_simplify(poly_mpa1, thresh = 1e-5, verbose = TRUE)
+
+### sort by STATUS_YR, descending, so gdal_rasterize will assign newer
+### values then overwrite (where applicable) with older values
+poly_mpa1 <- poly_mpa1[order(poly_mpa1@data$STATUS_YR, decreasing = TRUE), ]
+
+# writeOGR(poly_mpa1, dsn = dir_wdpa,
+#          layer = paste(lyr_mpa, '1', sep = ''),
+#          driver = 'ESRI Shapefile')
+maptools::writePolyShape(poly_mpa1, 
+                         fn = file.path(dir_wdpa, paste(lyr_mpa, '1', sep = '')))
+### copy .prj:
+file.copy(from = file.path(dir_wdpa, paste(lyr_mpa, '.prj', sep = '')), 
+          to = file.path(dir_wdpa, paste(lyr_mpa, '1.prj', sep = '')))
+
+  
+```
+
+unique(poly_mpa@data$STATUS_YR)
+table(poly_mpa@data$STATUS_YR)
+hist(poly_mpa@data$STATUS_YR[poly_mpa@data$STATUS_YR > 0])
+summary(poly_mpa@data$STATUS_YR[poly_mpa@data$STATUS_YR > 0])
+
+``` {r rasterize_that_shit}
+dir_rast <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters')
+
+### Get source from WDPA_MPA data location
+src <- path.expand(file.path(dir_wdpa, paste(lyr_mpa, '1.shp', sep = '')))
+### gdal_rasterize to temp directory
+tmp_dst <- file.path(dir_rast, 'tmp', paste(lyr_mpa, '1.tif', sep = '')) %>%
+  path.expand
+### then writeRaster to final directory, to save smaller file
+fnl_dst <- file.path(dir_rast, paste(lyr_mpa, '1.tif', sep = '')) %>%
+  path.expand
+  
+### Set extents and resolution
+ext  <- c(-180, -90, 180, 90)
+reso <- c(.01, .01)
+
+ptm <- proc.time()
+tmp_rast <- gdalUtils::gdal_rasterize(
+  src_datasource = src,
+  dst_filename   = tmp_dst, 
+    # destination for output
+  a = 'STATUS_YR', 
+    # the attribute in the shapefile to be assigned to the cell values
+  te = ext, 
+    # extents for output raster
+  tr = reso,  
+    # resolution for output raster
+  a_nodata = NA, 
+    # nodata value for raster; otherwise they will be filled in with zeroes
+  output_Raster = TRUE,
+    # return output as a RasterBrick? 
+  verbose = TRUE)
+message('Rasterized ', src, '; \n  ', round((proc.time() - ptm)[3], 2), ' seconds')
+
+ptm <- proc.time()
+raster::writeRaster(tmp_rast, fnl_dst, 
+                    progress = 'text', overwrite = TRUE)
+message('Write ', src, '\n  to ', fnl_dst, '; \n  ', round((proc.time() - ptm)[3], 2), ' seconds')
+remove(tmp_rast)
+unlink(tmp_dst)
+
+```
+
