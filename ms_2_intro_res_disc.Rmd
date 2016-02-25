@@ -157,3 +157,8 @@ __Suggestions for data users:__
 * Using both datasets together can increase the taxonomic and spatial breadth of coverage, as long as the differences between the datasets can be reasonably minimized.  Consider:
     * An AquaMaps presence threshold of 0% most closely approximates the "limits of distribution" defined by IUCN range maps.
     * Additional filters on AquaMaps distribution criteria, such as expert review status or the number of occurrence cells used to generate the species model, can help avoid overextrapolation for data poor species.
+    
+Conclusions:
+combine datasets for increased number of species; identify data-poor species to improve confidence in range estimates
+differences in methodology create significant differences in results; errors of both commission and omission
+importance to conservation management - different types of errors have different implications

@@ -125,13 +125,14 @@ lyr_wdpa <- 'WDPA_poly_Jan2015'
 poly_wdpa <- readShapePoly(file.path(dir_wdpa, lyr_wdpa), 
                            proj4string = crs_wgs84)
 
+poly_wdpa@data$IUCN_CLASS %>% unique()
+
 prot_code_df <- data.frame('IUCN_CLASS' = c('I', 'IIa', 'IIb', 'III', 'IV', 'V', 'V', NA),
                            'prot_code'  = c( 1,    2,     2,     3,     4,   5,   6,   7))
 poly_wdpa@data <- poly_wdpa@data %>%
   left_join(prot_code_df, by = 'IUCN_CLASS')
 
 poly_mpa <- poly_wdpa[poly_wdpa@data$MARINE == 1, ]
-poly_mpa <- poly_wdpa[poly_wdpa@data$prot_code <= 4, ]
-
+poly_mpa <- poly_mpa[poly_mpa@data$prot_code <= 4, ]
 
 ```
