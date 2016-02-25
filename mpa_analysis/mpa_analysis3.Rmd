@@ -1,0 +1,190 @@
+---
+title: 'MPA Gap Analysis: IUCN and AquaMaps'
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Libraries and Paths
+
+library(rgdal)
+library(maptools)
+library(raster)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
+           'Darwin'  = '/Volumes/data_edit',
+           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
+
+if(basename(getwd()) != 'IUCN-AquaMaps') setwd(dir_git)
+
+### When knitting this, it automatically sets WD to be this directory...
+### the 'setwd()' is there for running by chunk
+```
+
+# MPA gap analysis
+
+Several steps to this:
+
+* set up WDPA database in a raster format for easy use
+* perform gap analysis for WDPA-MPA data base (which year?) vs AquaMaps 2014, with 50% threshold - replicate the original analysis
+* reperform the analysis with latest/greatest WDPA-MPA database, and AquaMaps 2015, with 50% threshold and 0% threshold
+* perform the analysis with latest/greatest WDPA-MPA database, and IUCN shapefiles
+
+## set up WDPA raster
+
+* direct extract method: extract WDPA polygons against half-degree cells, with proportion; value = year (or combo code)
+    * all protected areas
+    * 'marine' = 1
+    * 'marine' = 1 and IUCN I - IV
+    * clip WDPA to ocean regions, then IUCN I - IV.
+    * NOTE: using extract() could result in double-counting - at least make sure total protected area per cell is not greater than 1.
+        * maybe check any cells with protection > 50% and protected areas n > 1?
+    * this method would be excruciatingly slow.
+* to avoid double-counting for overlapping polygons - rasterize WDPA to fine scale first
+    * less than 1km^2^ was mentioned in paper as resolution of MPA data.  Rasterize to 0.01 degree x 0.01 degree?  
+        * this results in max cell size of 1.11 km x 1.11 km at the equator.
+        * -180 to +180 longitude; min/max latitude use min/max from AquaMaps
+    * WDPA_MPA layer: value = IUCN category (1-4, with NA = 7?) combined with marine flag and marine overlap flag?
+        * first digit IUCN category; second digit marine flag; third digit marine overlap?
+            * rasterize by IUCN category (unprotected, call NA?)
+            * then rasterize again by marine field (0 or 1)
+            * then rasterize land (or ocean) (0 or 1)
+            * then add 'em up to construct full raster at 0.01 degree resolution
+        * for year-to-year analysis, could recreate this layer for older years by filtering out newer protected areas
+            * this allows for a cell's protection class to change over time?
+            * could do this every, say, 5 years - to more quickly capture the trend across a span of, say, 25 years.
+    * Cell area layer: use raster::area() to create a single layer of cell areas at this new resolution.
+    * aggregate cells up to 0.5 degree cells, by protected area within each cell for each type of analysis
+        * summarize to data.frame of loiczid, with area of protection (and total area?)?
+        * create different protected-area layer for each protection scenario
+* AquaMaps layer: use as is
+* To analyze for each species:
+    * Summarize total area and total protected area (for a given protection scenario) for the species
+    * Include species extinction risk in there too?
+
+``` {r set_up_base_raster}
+### base raster will contain 0.01 degree cells from -180 to +180,
+### and -90 to +90, with the associated area of each cell.
+### Save it as a .tif in GitHub - about 50 
+rast_base_file <- file.path(dir_git, 'mpa_analysis/rast_base.tif')
+
+if(!file.exists(rast_base_file)) {
+  ### import AquaMaps half-degree loiczid raster - for extents and such
+  rast_loiczid_file   <- file.path(dir_git, 'data/rasters/loiczid_raster.grd')
+  rast_loiczid        <- raster(rast_loiczid_file)
+  names(rast_loiczid) <- 'loiczid'
+
+  rast_empty <- raster(ext = extent(rast_loiczid), resolution = 0.01)
+  rast_base  <- raster::area(rast_empty) ### takes a while...
+  
+  writeRaster(rast_base, rast_base_file, overwrite = TRUE)
+} else {
+  rast_base <- raster(rast_base_file)
+}
+
+
+
+```
+
+Dealing with rasters: 
+
+* how to ensure 1 km or better resolution?  WGS84 at 0.01 degree or Mollweide at 1 km
+    * WGS84 --> 36000 * 18000 cells = 648,000,000 cells...
+    * Mollweide --> 
+* options for creating rasters
+    * use arcpy as in LSP... global Mollweide raster of WDPA is about 50 MB; includes .tif and supporting files.  This is .5 km raster.  How is it so small?
+    * use gdal_rasterize seems to create multi-GB rasters; .tif only
+* why rasters?  avoid double-counting for overlapping parks.  WDPA is most important, but since that is in raster and AM is raster, easiest to keep it all in raster
+    * WDPA - capture park classification and year and marine flag
+    * spatial marine - capture whether cell includes ocean or not - clip to max N and S of WDPA?
+        * xMin,yMin -180.007,-72.95 : xMax,yMax 180,83.73
+* Use this R script to source arcPy script modified from LSP - need to run it on a PC with appropriate GDAL installation, most likely
+
+
+``` {r set_up_spatially_marine_raster}
+
+### This raster (at 0.01 degree resolution) contains flags on whether a cell
+### is "spatially marine" - i.e. overlaps (center?) with an ocean area.
+### This is separate from the WDPA "marine" flag.
+
+### as long as we're here, let's set up some objects for WGS 84 projection
+p4s_wgs84 <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0'
+crs_wgs84 <- CRS(p4s_wgs84)
+
+rast_marine_file <- file.path(dir_git, 'mpa_analysis/rast_marine.tif')
+reload <- FALSE
+if(reload == TRUE) {
+### import OHI regions polygons, to determine spatially-marine areas
+  poly_marine_file <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters/poly_marine1.shp')
+  if(!file.exists(poly_marine_file)) {
+    dir_rgn   <- file.path(dir_N, 'git-annex/globalprep/spatial/v2015/data')
+    lyr_rgn <- 'regions_gcs'
+    poly_rgn <- readShapePoly(file.path(dir_rgn, lyr_rgn), 
+                               proj4string = crs_wgs84)
+    
+    ### filter out all polygons that are land or landlocked, and flag 
+    ### the rest as spatially-marine = 1
+    poly_marine <- poly_rgn[!str_detect(poly_rgn@data$rgn_typ, 'land'), ]
+
+    # writePolyShape(poly_marine, poly_marine_file)
+    writeOGR(obj    = poly_marine,
+             dsn    = path.expand(dirname(poly_marine_file)),
+             layer  = str_replace(basename(poly_marine_file), '.shp', ''),
+             driver = 'ESRI Shapefile',
+             overwrite_layer = TRUE,
+             verbose = TRUE)
+  } 
+  
+  library(gdalUtils)
+  rast_marine <- gdal_rasterize(
+      src_datasource = poly_marine_file,
+      dst_filename   = rast_marine_file, 
+        # destination for output
+      a = 'rgn_id', 
+        # the attribute in the shapefile to be assigned to the cell values
+      te = c(-180, -90, 180, 90), 
+        # extents for output raster
+      tr = c(.01, .01),  
+        # resolution for output raster
+      tap = TRUE, 
+        # target aligned pixels - align coords of extent of output to values of -tr
+      a_nodata = NA, 
+        # nodata value for raster; otherwise they will be filled in with zeroes
+      output_Raster = TRUE, 
+        # return output as a RasterBrick? 
+      verbose = TRUE)
+}
+
+```
+
+``` {r set_up_wdpa_raster}
+
+### import WDPA database polygons from original .gdb
+# gdb_wdpa   <- file.path(dir_N, 'git-annex/globalprep/_raw_data/wdpa_mpa/WDPA_Jan2015_Public/WDPA_Jan2015_Public.gdb')
+# lyr_wdpa <- 'WDPA_poly_Jan2015'
+# 
+# poly_wdpa <- readOGR(dsn = gdb_wdpa, layer = lyr_wdpa, stringsAsFactors = FALSE)
+
+### import WDPA database polygons from saved .shp
+dir_wdpa   <- file.path(dir_N, 'git-annex/globalprep/_raw_data/wdpa_mpa/WDPA_Jan2015_Public')
+lyr_wdpa <- 'WDPA_poly_Jan2015'
+poly_wdpa <- readShapePoly(file.path(dir_wdpa, lyr_wdpa), 
+                           proj4string = crs_wgs84)
+
+prot_code_df <- data.frame('IUCN_CLASS' = c('I', 'IIa', 'IIb', 'III', 'IV', 'V', 'V', NA),
+                           'prot_code'  = c( 1,    2,     2,     3,     4,   5,   6,   7))
+poly_wdpa@data <- poly_wdpa@data %>%
+  left_join(prot_code_df, by = 'IUCN_CLASS') %>%
+  mutate(prot_code = prot_code + MARINE)
+
+```

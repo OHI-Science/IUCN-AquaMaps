@@ -8,7 +8,6 @@ output: html_document
 # Libraries and Paths
 
 library(rgdal)
-library(maptools)
 library(raster)
 library(readr)
 library(tidyr)
@@ -29,89 +28,78 @@ if(basename(getwd()) != 'IUCN-AquaMaps') setwd(dir_git)
 
 ### When knitting this, it automatically sets WD to be this directory...
 ### the 'setwd()' is there for running by chunk
+
+p4s_wgs84 <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0'
+crs_wgs84 <- CRS(p4s_wgs84)
+
 ```
 
-# MPA gap analysis
+``` {r simplify_polys_function}
+poly_simplify <- function(poly_set, thresh, verbose = FALSE) {
+  if(class(poly_set) == 'list') poly_set <- poly_set[[1]]
+#   if(verbose) {
+#     message('Counting subpolys in poly set:')
+#     poly_counts <- sapply(poly_set@polygons, function(x) length(x@Polygons))
+#     print(poly_counts)
+#   }
 
-Several steps to this:
-
-* set up WDPA database in a raster format for easy use
-* perform gap analysis for WDPA-MPA data base (which year?) vs AquaMaps 2014, with 50% threshold - replicate the original analysis
-* reperform the analysis with latest/greatest WDPA-MPA database, and AquaMaps 2015, with 50% threshold and 0% threshold
-* perform the analysis with latest/greatest WDPA-MPA database, and IUCN shapefiles
-
-## set up WDPA raster
-
-* direct extract method: extract WDPA polygons against half-degree cells, with proportion; value = year (or combo code)
-    * all protected areas
-    * 'marine' = 1
-    * 'marine' = 1 and IUCN I - IV
-    * clip WDPA to ocean regions, then IUCN I - IV.
-    * NOTE: using extract() could result in double-counting - at least make sure total protected area per cell is not greater than 1.
-        * maybe check any cells with protection > 50% and protected areas n > 1?
-    * this method would be excruciatingly slow.
-* to avoid double-counting for overlapping polygons - rasterize WDPA to fine scale first
-    * less than 1km^2^ was mentioned in paper as resolution of MPA data.  Rasterize to 0.01 degree x 0.01 degree?  
-        * this results in max cell size of 1.11 km x 1.11 km at the equator.
-        * -180 to +180 longitude; min/max latitude use min/max from AquaMaps
-    * WDPA_MPA layer: value = IUCN category (1-4, with NA = 7?) combined with marine flag and marine overlap flag?
-        * first digit IUCN category; second digit marine flag; third digit marine overlap?
-            * rasterize by IUCN category (unprotected, call NA?)
-            * then rasterize again by marine field (0 or 1)
-            * then rasterize land (or ocean) (0 or 1)
-            * then add 'em up to construct full raster at 0.01 degree resolution
-        * for year-to-year analysis, could recreate this layer for older years by filtering out newer protected areas
-            * this allows for a cell's protection class to change over time?
-            * could do this every, say, 5 years - to more quickly capture the trend across a span of, say, 25 years.
-    * Cell area layer: use raster::area() to create a single layer of cell areas at this new resolution.
-    * aggregate cells up to 0.5 degree cells, by protected area within each cell for each type of analysis
-        * summarize to data.frame of loiczid, with area of protection (and total area?)?
-        * create different protected-area layer for each protection scenario
-* AquaMaps layer: use as is
-* To analyze for each species:
-    * Summarize total area and total protected area (for a given protection scenario) for the species
-    * Include species extinction risk in there too?
-
-``` {r set_up_base_raster}
-### base raster will contain 0.01 degree cells from -180 to +180,
-### and -90 to +90, with the associated area of each cell.
-### Save it as a .tif in GitHub - about 50 
-rast_base_file <- file.path(dir_git, 'mpa_analysis/rast_base.tif')
-
-if(!file.exists(rast_base_file)) {
-  ### import AquaMaps half-degree loiczid raster - for extents and such
-  rast_loiczid_file   <- file.path(dir_git, 'data/rasters/loiczid_raster.grd')
-  rast_loiczid        <- raster(rast_loiczid_file)
-  names(rast_loiczid) <- 'loiczid'
-
-  rast_empty <- raster(ext = extent(rast_loiczid), resolution = 0.01)
-  rast_base  <- raster::area(rast_empty) ### takes a while...
+  ### filter out tiny sub-polygons -----
+  ### create area list for filtering.  Area will be in square degrees... 
+  polys_area <- lapply(poly_set@polygons, function(x) sapply(x@Polygons, function(y) y@area))
+      
+  if(verbose) {
+    message('Polygon area quantiles:')
+    print(quantile(unlist(polys_area)))
+  }
   
-  writeRaster(rast_base, rast_base_file, overwrite = TRUE)
-} else {
-  rast_base <- raster(rast_base_file)
+  ### check to make sure threshold 
+#   if(verbose) {
+#     message('Smallest "main" subpolygon, i.e. smallest EEZ, in this set:')
+#     poly_small <- min(unlist(lapply(polys_area, function(x) (max(x)))))
+#     if(poly_small < thresh) message('Smallest poly smaller than threshold value of ', thresh)
+#     for (j in 1:length(polys_area)) {
+#       message(sprintf('rgn %s: largest polygon %.5f (%s)', poly_set@data$rgn_id[j], 
+#                       max(polys_area[[j]]), poly_set@data$rgn_nam[j]))
+#     }
+#   }
+    
+  mainPolys <- lapply(polys_area, function(x) which(x > thresh))
+
+  for(i in 1:length(mainPolys)) {
+    if(length(mainPolys[[i]]) >= 1 && mainPolys[[i]][1] >= 1) {
+      poly_set@polygons[[i]]@Polygons  <- poly_set@polygons[[i]]@Polygons[mainPolys[[i]]]
+      poly_set@polygons[[i]]@plotOrder <- 1:length(poly_set@polygons[[i]]@Polygons)
+    }
+  }
+
+  plot_order_max <- max(poly_set@plotOrder)
+  poly_list_length <- length(poly_set@polygons)
+  message('Plot order max: ', plot_order_max, '; length poly list: ', poly_list_length)
+
+  if(plot_order_max != poly_list_length) {
+    message('NOT SAME LENGTH?!')
+    stop()
+    # poly_set@plotOrder <- 1:length(poly_set@polygons)
+    # is plotOrder necessary to be continuous?  that would explain this line.
+  }
+  
+  if(verbose) {
+#     message('Counting subpolys in modified poly set:')
+#     poly_counts <- sapply(poly_set@polygons, function(x) length(x@Polygons))
+#     print(poly_counts)
+    
+    polys_area_new <- lapply(poly_set@polygons, function(x) sapply(x@Polygons, function(y) y@area))
+      
+    message('Polygon area quantiles after adjustment:')
+    print(quantile(unlist(polys_area_new)))
+  }
+  
+  return(poly_set)
 }
 
-
-
 ```
 
-Dealing with rasters: 
-
-* how to ensure 1 km or better resolution?  WGS84 at 0.01 degree or Mollweide at 1 km
-    * WGS84 --> 36000 * 18000 cells = 648,000,000 cells...
-    * Mollweide --> 
-* options for creating rasters
-    * use arcpy as in LSP... global Mollweide raster of WDPA is about 50 MB; includes .tif and supporting files.  This is .5 km raster.  How is it so small?
-    * use gdal_rasterize seems to create multi-GB rasters; .tif only
-* why rasters?  avoid double-counting for overlapping parks.  WDPA is most important, but since that is in raster and AM is raster, easiest to keep it all in raster
-    * WDPA - capture park classification and year and marine flag
-    * spatial marine - capture whether cell includes ocean or not - clip to max N and S of WDPA?
-        * xMin,yMin -180.007,-72.95 : xMax,yMax 180,83.73
-* Use this R script to source arcPy script modified from LSP - need to run it on a PC with appropriate GDAL installation, most likely
-
-
-``` {r set_up_wdpa_raster}
+``` {r set_up_wdpa_mpa_polys}
 
 ### import WDPA database polygons from original .gdb
 # gdb_wdpa   <- file.path(dir_N, 'git-annex/globalprep/_raw_data/wdpa_mpa/WDPA_Jan2015_Public/WDPA_Jan2015_Public.gdb')
@@ -121,18 +109,105 @@ Dealing with rasters:
 
 ### import WDPA database polygons from saved .shp
 dir_wdpa   <- file.path(dir_N, 'git-annex/globalprep/_raw_data/wdpa_mpa/WDPA_Jan2015_Public')
-lyr_wdpa <- 'WDPA_poly_Jan2015'
-poly_wdpa <- readShapePoly(file.path(dir_wdpa, lyr_wdpa), 
-                           proj4string = crs_wgs84)
+lyr_wdpa    <- 'WDPA_poly_Jan2015'
+lyr_mpa     <- 'WDPA_poly_Jan2015_mpa'
+lyr_mpa_mar <- 'WDPA_poly_Jan2015_mpa_mar'
 
-poly_wdpa@data$IUCN_CLASS %>% unique()
+if(!file.exists(file.path(dir_wdpa, paste(lyr_mpa, '.shp', sep = '')))) {
+  poly_wdpa <- readOGR(dsn = dir_wdpa, layer = lyr_wdpa, stringsAsFactors = FALSE)
 
-prot_code_df <- data.frame('IUCN_CLASS' = c('I', 'IIa', 'IIb', 'III', 'IV', 'V', 'V', NA),
-                           'prot_code'  = c( 1,    2,     2,     3,     4,   5,   6,   7))
-poly_wdpa@data <- poly_wdpa@data %>%
-  left_join(prot_code_df, by = 'IUCN_CLASS')
+#   nrow(poly_wdpa@data)
+#   poly_wdpa@data$IUCN_CAT %>% unique()
+  
+  prot_code_df <- data.frame('IUCN_CAT'  = c('Ia', 'Ib', 'II', 'III', 'IV', 'V', 'VI'),
+                             'prot_code' = c(  1,    1,    2,     3,    4,   5,    6))
+# poly_wdpa_save <- poly_wdpa
+  poly_wdpa@data <- poly_wdpa@data %>%
+    left_join(prot_code_df, by = 'IUCN_CAT') %>%
+    mutate(prot_code = ifelse(is.na(prot_code), 7, prot_code))
+  
+  poly_mpa <- poly_wdpa[poly_wdpa@data$STATUS == 'Designated', ]
+  poly_mpa <- poly_mpa[poly_mpa@data$prot_code <= 4, ]
+  
+  poly_mpa_marine <- poly_mpa[poly_mpa@data$MARINE == 1, ]
 
-poly_mpa <- poly_wdpa[poly_wdpa@data$MARINE == 1, ]
-poly_mpa <- poly_mpa[poly_mpa@data$prot_code <= 4, ]
+  writeOGR(poly_mpa, dsn = dir_wdpa, layer = lyr_mpa,
+           driver = 'ESRI Shapefile', overwrite_layer = TRUE)
+  writeOGR(poly_mpa_marine, dsn = dir_wdpa, layer = lyr_mpa_mar,
+           driver = 'ESRI Shapefile', overwrite_layer = TRUE)
+}
+
+poly_mpa <- readOGR(dir_wdpa, lyr_mpa, stringsAsFactors = FALSE)
+# poly_mpa <- readShapePoly(fn = file.path(dir_wdpa, lyr_mpa),
+#                           proj4string = crs_wgs84,
+#                           stringsAsFactors = FALSE)
+
+### create simplified polygon
+polys_mpa_area <- lapply(poly_mpa@polygons, function(x) x@area)
+poly_mpa1 <- poly_mpa[polys_mpa_area > 1e-5, ]
+poly_mpa1 <- poly_simplify(poly_mpa1, thresh = 1e-5, verbose = TRUE)
+
+### sort by STATUS_YR, descending, so gdal_rasterize will assign newer
+### values then overwrite (where applicable) with older values
+poly_mpa1 <- poly_mpa1[order(poly_mpa1@data$STATUS_YR, decreasing = TRUE), ]
+
+# writeOGR(poly_mpa1, dsn = dir_wdpa,
+#          layer = paste(lyr_mpa, '1', sep = ''),
+#          driver = 'ESRI Shapefile')
+maptools::writePolyShape(poly_mpa1, 
+                         fn = file.path(dir_wdpa, paste(lyr_mpa, '1', sep = '')))
+### copy .prj:
+file.copy(from = file.path(dir_wdpa, paste(lyr_mpa, '.prj', sep = '')), 
+          to = file.path(dir_wdpa, paste(lyr_mpa, '1.prj', sep = '')))
+
+  
+```
+
+unique(poly_mpa@data$STATUS_YR)
+table(poly_mpa@data$STATUS_YR)
+hist(poly_mpa@data$STATUS_YR[poly_mpa@data$STATUS_YR > 0])
+summary(poly_mpa@data$STATUS_YR[poly_mpa@data$STATUS_YR > 0])
+
+``` {r rasterize_that_shit}
+dir_rast <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters')
+
+### Get source from WDPA_MPA data location
+src <- path.expand(file.path(dir_wdpa, paste(lyr_mpa, '1.shp', sep = '')))
+### gdal_rasterize to temp directory
+tmp_dst <- file.path(dir_rast, 'tmp', paste(lyr_mpa, '1.tif', sep = '')) %>%
+  path.expand
+### then writeRaster to final directory, to save smaller file
+fnl_dst <- file.path(dir_rast, paste(lyr_mpa, '1.tif', sep = '')) %>%
+  path.expand
+  
+### Set extents and resolution
+ext  <- c(-180, -90, 180, 90)
+reso <- c(.01, .01)
+
+ptm <- proc.time()
+tmp_rast <- gdalUtils::gdal_rasterize(
+  src_datasource = src,
+  dst_filename   = tmp_dst, 
+    # destination for output
+  a = 'STATUS_YR', 
+    # the attribute in the shapefile to be assigned to the cell values
+  te = ext, 
+    # extents for output raster
+  tr = reso,  
+    # resolution for output raster
+  a_nodata = NA, 
+    # nodata value for raster; otherwise they will be filled in with zeroes
+  output_Raster = TRUE,
+    # return output as a RasterBrick? 
+  verbose = TRUE)
+message('Rasterized ', src, '; \n  ', round((proc.time() - ptm)[3], 2), ' seconds')
+
+ptm <- proc.time()
+raster::writeRaster(tmp_rast, fnl_dst, 
+                    progress = 'text', overwrite = TRUE)
+message('Write ', src, '\n  to ', fnl_dst, '; \n  ', round((proc.time() - ptm)[3], 2), ' seconds')
+remove(tmp_rast)
+unlink(tmp_dst)
 
 ```
+

@@ -1,0 +1,449 @@
+---
+title: 'MPA Gap Analysis: IUCN and AquaMaps'
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Libraries and Paths
+
+library(raster)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
+           'Darwin'  = '/Volumes/data_edit',
+           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
+
+if(basename(getwd()) != 'IUCN-AquaMaps') setwd(dir_git)
+
+### When knitting this, it automatically sets WD to be this directory...
+### the 'setwd()' is there for running by chunk
+```
+
+# MPA gap analysis
+
+Several steps to this:
+
+* set up WDPA database in a raster format for easy use
+* perform gap analysis for WDPA-MPA data base (which year?) vs AquaMaps 2014, with 50% threshold - replicate the original analysis
+* reperform the analysis with latest/greatest WDPA-MPA database, and AquaMaps 2015, with 50% threshold and 0% threshold
+* perform the analysis with latest/greatest WDPA-MPA database, and IUCN shapefiles
+
+## set up WDPA raster
+
+* Create polygon subset of WDPA database
+    * STATUS = 'Designated'
+    * IUCN_CAT = I - IV
+    * Simplify polygons to make it easier for rasterization
+        * cut any main polygons less than 10% of a raster cell.  Raster
+          cells are .01 x .01 degree, so area = .0001; cut any less than 1e-5.
+          Do the same for subpolygons within a larger polygon.
+    * Inverse order by `STATUS_YR`, so oldest is at the end (for `gdal_rasterize()`)
+* To avoid double-counting for overlapping polygons - rasterize WDPA to fine scale first
+    * less than 1km^2^ was mentioned in paper as resolution of MPA data.  
+      Rasterize to 0.01 degree x 0.01 degree  
+        * this results in max cell size of 1.11 km x 1.11 km at the equator.
+    * Use STATUS_YR as field; see note above about ordering polygons
+      for use in `gdal_rasterize()`
+
+## Set up marine raster
+
+* Create polygons subset of OHI regions, for only marine regions
+* Rasterize to same resolution as above.
+
+## Create raster of WDPA IUCN I-IV and spatially marine
+
+* Intersect the two rasters so only protected areas within spatially marine
+  areas are included.
+
+## Aggregate protected area layer to LOICZID scale (0.5 deg)
+
+* Use raster::extract? each LOICZID gets 2500 subcells noting NA (not
+  protected) or a value (protected); turn this into proportion of
+  LOICZID cell that is protected.
+* Also need to do this to find the proportion of LOICZID cell that is
+  spatially marine - if not fully marine, the protected proportion will
+  be larger; but the area will be smaller (from AquaMaps, or recalc)
+    * e.g. a single LOICZID is 60% marine (1500 marine cells), and 48%
+      protected (1200 protected cells, which are by def marine).  So
+      protected proportion = 48/60 = 80% protection of the marine area
+      within this cell.
+
+* AquaMaps layer: use as is
+* To analyze for each species:
+    * Summarize total area and total protected area (for a given protection scenario) for the species
+    * Include species extinction risk in there too?
+
+``` {r set_up_base_raster}
+### DO WE NEED THIS? Use area at 0.5 degree level; most cells this will be pretty close.
+### base raster will contain 0.01 degree cells from -180 to +180,
+### and -90 to +90, with the associated area of each cell.
+### Save it as a .tif in GitHub - about 50 
+# rast_base_file <- file.path(dir_git, 'mpa_analysis/rast_base.tif')
+# 
+# if(!file.exists(rast_base_file)) {
+#   ### import AquaMaps half-degree loiczid raster - for extents and such
+#   rast_loiczid_file   <- file.path(dir_git, 'data/rasters/loiczid_raster.grd')
+#   rast_loiczid        <- raster(rast_loiczid_file)
+#   names(rast_loiczid) <- 'loiczid'
+# 
+#   rast_empty <- raster(ext = extent(rast_loiczid), resolution = 0.01)
+#   rast_base  <- raster::area(rast_empty) ### takes a while...
+#   
+#   writeRaster(rast_base, rast_base_file,
+#               progress = 'text', overwrite = TRUE)
+# } else {
+#   rast_base <- raster(rast_base_file)
+# }
+
+
+
+```
+
+
+``` {r load_rasters}
+
+dir_rast <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters')
+rast_mpa_mar_file <- file.path(dir_rast, 'rast_mpa_mar.tif')
+rast_mar_file <- file.path(dir_rast, 'rast_marine.tif')
+
+if(!file.exists(rast_mpa_mar_file)) {
+  rast_mpa_file <- file.path(dir_rast, 'WDPA_poly_Jan2015_mpa1.tif')
+  
+  rast_mar <- raster(rast_mar_file)
+  rast_mpa <- raster(rast_mpa_file)
+  
+  rast_mpa_mar <- mask(rast_mpa, rast_mar, 
+                       filename = rast_mpa_mar_file, 
+                       overwrite = TRUE,
+                       progress = 'text')
+} else {
+  rast_mar            <- raster(rast_mar_file)
+  names(rast_mar)     <- 'rgn_id'
+  rast_mpa_mar        <- raster(rast_mpa_mar_file)
+  names(rast_mpa_mar) <- 'status_yr'
+}
+
+```
+
+``` {r aggregate_to_loiczid}
+rast_loiczid_file   <- file.path(dir_git, 'data/rasters/loiczid_raster.grd')
+rast_loiczid        <- raster(rast_loiczid_file)
+names(rast_loiczid) <- 'loiczid'
+
+rast_loiczid_01_file <- file.path(dir_rast, 'rast_loiczid_01.tif')
+if(!file.exists(rast_loiczid_01_file)) {
+  rast_loiczid_01 <- resample(rast_loiczid, rast_mpa_mar, 
+                            method = 'ngb',
+                            progress = 'text',
+                            filename = rast_loiczid_01_file)
+# writeRaster(rast_loiczid_01, rast_loiczid_01_file, progress = 'text')
+} else {
+  rast_loiczid_01 <- raster(rast_loiczid_01_file)
+}
+```
+
+``` {r summarize counts of marine and MPAs by cell}
+
+### Count marine cells in each LOICZID cell
+mar_df_file <- file.path(dir_git, 'mpa_analysis/loiczid_marine.csv')
+if(!file.exists(mar_df_file)) {
+  is_marine_df <- zonal(rast_mar, 
+                        z = rast_loiczid_01, 
+                        fun = 'count',
+                        progress = 'text') %>%
+    as.data.frame() %>%
+    rename(loiczid = zone)
+  write_csv(is_marine_df, mar_df_file)
+}
+
+### Count all protected cells in each LOICZID cell
+### NOTE: loses status_yr values - so filter by year for each iteration
+yr_list <- c('y1990', 'y1995', 'y2000', 'y2005', 'y2010', 'y2014', 'y2015')
+mpa_csvs_missing <- !file.exists(file.path(dir_git, sprintf('mpa_analysis/loiczid_mpa_%s.csv', yr_list)))
+
+if(any(mpa_csvs_missing)) {
+  yr_list1 <- yr_list[mpa_csvs_missing]
+  message('Creating marine protected area rasters for years:')
+  message('  ', paste(yr_list, collapse = ', '))
+  for (yr in yr_list1) { # yr <- yr_list1[1]
+    message('filtering MPAs to those designated prior to ', str_replace(yr, 'y', ''))
+    rast_is_mpa <- rast_mpa_mar
+    data_year <- as.integer(str_replace(yr, 'y', ''))
+    values(rast_is_mpa)[values(rast_mpa_mar) >= data_year] <- NA
+      ### NOTE: 2015 MPA dataset includes up to 2014; 2014 dataset goes
+      ###   through 2013; etc.
+    message('counting protected cells per LOICZID for ', yr)
+    is_mpa_df <- zonal(rast_is_mpa, 
+                       z = rast_loiczid_01, 
+                       fun = 'count',
+                       progress = 'text') %>%
+      as.data.frame() %>%
+      rename(loiczid = zone)
+    write_csv(is_mpa_df, 
+              file.path(dir_git, sprintf('mpa_analysis/loiczid_mpa_%s.csv', yr)))
+  }
+}
+```
+
+First step:
+
+* Create data frame of LOICZID vs MPA coverage and marine area
+    * note: using raster-generated marine area, not AquaMaps reported marine
+      area - need to look into how different these are.
+        * 7% of cells differ in calculated vs reported area
+        * most of these differences cluster very near zero
+
+For each species:
+
+* for each "present" LOICZID cell
+    * determine total area: overall cell area (in km2) * marine area (cells/2500)
+    * determine protected area: overall cell area (in km2) * protected area (cells/2500)
+* sum total area and protected area across all "present" LOICZID cells
+* report: 
+    * ratio of (protected area:total area) (dimensionless, percentage)
+    * total marine area and total protected area (km2)
+    * species name, ID, taxonomic group, extinction risk
+
+``` {r combine_mpa_areas}
+
+dir_am_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data/aquamaps/v2015/csv/')
+
+hcaf <- read_csv(file.path(dir_am_data, 'hcaf_truncated.csv')) %>%
+  select(loiczid, cellarea, oceanarea)
+
+cell_df <- read_csv(file.path(dir_git, 'mpa_analysis/loiczid_marine.csv'),
+  col_types = 'dd') %>%
+  rename(marine_ct = count) %>%
+  left_join(hcaf, by = 'loiczid') %>%
+  mutate(marine_pct  = marine_ct/2500,
+         marine_area = marine_pct * cellarea) %>%
+  select(-marine_ct)
+  
+for (yr in yr_list) { # yr <- yr_list[1]
+  fn <- file.path(dir_git, sprintf('mpa_analysis/loiczid_mpa_%s.csv', yr))
+  df <- read_csv(fn, col_types = 'dd')
+  names(df)[2] <- yr
+  cell_df <- cell_df %>%
+    left_join(df, by = 'loiczid')
+  cell_df[ , paste(yr, '_pct', sep = '')]  <- cell_df[ , yr]/2500
+  cell_df[ , paste(yr, '_area', sep = '')] <- cell_df[ , paste(yr, '_pct', sep = '')] * cell_df$cellarea
+  
+  ### remove intermediate columns
+  cell_df[ , yr] <- NULL
+  cell_df[ , paste(yr, '_pct', sep = '')] <- NULL
+}
+
+# ### check diffs in oceanarea vs marine_area
+# x <- cell_df %>% 
+#   filter(oceanarea != marine_area) %>%
+#   select(loiczid, oceanarea, marine_area, cellarea)
+# ### 18158 cells out of 259200 = 7%
+# x <- x %>% mutate(pct_diff = (marine_area - oceanarea)/cellarea)
+# hist(x$pct_diff)
+# ### most differences cluster right around zero.  Not going to worry about it!
+
+```
+
+``` {r apply loiczid area df to species list}
+
+### Assemble the AM species-cell df with info on marine area and 
+### protected area per cell
+am_spp_cells <- read_csv(file.path(dir_am_data, 'hcaf_sp_native_trunc.csv'))
+am_spp_cells <- am_spp_cells %>%
+  left_join(cell_df, by = 'loiczid')
+
+### filter to the appropriate threshold...
+thresh <- 0.50
+
+am_spp_cells_filt <- am_spp_cells %>%
+  filter(probability >= thresh)
+
+### group by speciesid, then summarize sum(marine area), sum(protected area), ratio
+am_spp_mpas <- am_spp_cells %>%
+  group_by(speciesid) %>%
+  summarize(cellarea_tot = sum(cellarea), 
+            ocean_range  = sum(oceanarea), 
+            marine_range = sum(marine_area),
+            mpa1990 = sum(y1990_area),
+            mpa1995 = sum(y1995_area),
+            mpa2000 = sum(y2000_area),
+            mpa2005 = sum(y2005_area),
+            mpa2010 = sum(y2010_area),
+            mpa2014 = sum(y2014_area),
+            mpa2015 = sum(y2015_area),
+            pct1990 = mpa1990/marine_range,
+            pct1995 = mpa1995/marine_range,
+            pct2000 = mpa2000/marine_range,
+            pct2005 = mpa2005/marine_range,
+            pct2010 = mpa2010/marine_range,
+            pct2014 = mpa2014/marine_range,
+            pct2015 = mpa2015/marine_range)
+```
+
+``` {r recreate Klein results}
+
+area_mpa <- cell_df %>%
+  summarize(marine_area  = sum(marine_area), 
+            mpa_tot_1990 = sum(y1990_area), 
+            mpa_tot_1995 = sum(y1995_area), 
+            mpa_tot_2000 = sum(y2000_area), 
+            mpa_tot_2005 = sum(y2005_area), 
+            mpa_tot_2010 = sum(y2010_area), 
+            mpa_tot_2014 = sum(y2014_area), 
+            mpa_tot_2015 = sum(y2015_area))
+#   marine_area  mpa_tot_1990  mpa_tot_1995  mpa_tot_2000  mpa_tot_2005   mpa_tot_2010   mpa_tot_2014
+#   362,657,307       351,592       532,098       748,172       932,817      1,137,142      2,885,465
+
+### Recreate Klein results, using 2014 AquaMaps
+mpa_klein_am2014 <- read_csv(file.path(dir_am_data, 'hcaf_sp_native_trunc_2014.csv'))
+mpa_klein_am2014 <- mpa_klein_am2014 %>%
+  left_join(cell_df, by = 'loiczid')
+
+### filter to the appropriate threshold...
+thresh <- 0.50
+
+mpa_klein_am2014_filt <- mpa_klein_am2014 %>%
+  filter(probability >= thresh)
+
+### group by speciesid, then summarize sum(marine area), sum(protected area), ratio
+mpa_klein_am2014 <- mpa_klein_am2014 %>%
+  group_by(speciesid) %>%
+  summarize(marine_range = sum(marine_area),
+            mpa2014 = sum(y2014_area),
+            pct2014 = mpa2014/marine_range)
+
+mpa_klein_am2014 <- mpa_klein_am2014 %>%
+  mutate(cat2014 = ifelse(pct2014 == 0,                       'gap', NA),
+         cat2014 = ifelse(pct2014 > 0    & pct2014 <= 0.02,  '0-2%', cat2014),
+         cat2014 = ifelse(pct2014 > 0.02 & pct2014 <= 0.05,  '2-5%', cat2014),
+         cat2014 = ifelse(pct2014 > 0.05 & pct2014 <= 0.10, '5-10%', cat2014),
+         cat2014 = ifelse(pct2014 > 0.10,                    '>10%', cat2014))
+
+mpa_klein_orig <- mpa_klein_am2014 %>%
+  group_by(cat2014) %>%
+  summarize(n_tot = nrow(mpa_klein_am2014), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
+
+#   cat2014 n_tot n_cat pct_cat
+#       gap 17348   378     2.2
+#      0-2% 17348  8859    51.2
+#      2-5% 17348  6728    38.7
+#     5-10% 17348  1096     6.3
+#      >10% 17348   287     1.7
+
+### Redo analysis using 50% threshold, but new AquaMaps database
+### * select just 2014 and 2015, at 50% threshold, and group by
+###   same categories that the original paper did.
+mpa_klein_am2015 <- am_spp_mpas %>%
+  select(speciesid, marine_range, mpa2014, mpa2015, pct2014, pct2015)
+
+mpa_klein_am2015 <- mpa_klein_am2015 %>%
+  mutate(cat2014 = ifelse(pct2014 == 0,                       'gap', NA),
+         cat2014 = ifelse(pct2014 > 0    & pct2014 <= 0.02,  '0-2%', cat2014),
+         cat2014 = ifelse(pct2014 > 0.02 & pct2014 <= 0.05,  '2-5%', cat2014),
+         cat2014 = ifelse(pct2014 > 0.05 & pct2014 <= 0.10, '5-10%', cat2014),
+         cat2014 = ifelse(pct2014 > 0.10,                    '>10%', cat2014),
+         cat2015 = ifelse(pct2015 == 0,                       'gap', NA),
+         cat2015 = ifelse(pct2015 > 0    & pct2015 <= 0.02,  '0-2%', cat2015),
+         cat2015 = ifelse(pct2015 > 0.02 & pct2015 <= 0.05,  '2-5%', cat2015),
+         cat2015 = ifelse(pct2015 > 0.05 & pct2015 <= 0.10, '5-10%', cat2015),
+         cat2015 = ifelse(pct2015 > 0.10,                    '>10%', cat2015))
+
+mpa_klein_sum2014 <- mpa_klein_am2015 %>%
+  group_by(cat2014) %>%
+  summarize(n_tot = nrow(mpa_klein_am2015), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
+
+mpa_klein_sum2015 <- mpa_klein_am2015 %>%
+  group_by(cat2015) %>%
+  summarize(n_tot = nrow(mpa_klein_am2015), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
+ 
+#   cat2014 n_tot n_cat pct_cat
+#       gap 22889   552    2.4
+#      0-2% 22889 11546   50.4
+#      2-5% 22889  8947   39.1
+#     5-10% 22889  1456    6.4
+#      >10% 22889   388    1.7
+
+#   cat2015 n_tot n_cat pct_cat
+#       gap 22889   552     2.4
+#      0-2% 22889 11520    50.3
+#      2-5% 22889  8960    39.1
+#     5-10% 22889  1466     6.4
+#      >10% 22889   391     1.7
+
+```
+
+### Original study (Klein 2015) vs new analyses
+
+| study           | Protected areas    | Area (km^2^) | Gap  |  0–2% |  2–5% | 5–10% | >10% |
+| :-------------: | :----------------- | :----------: | :--: | :---: | :---: | :---: | :--: |
+| Klein 2015      | IUCN I-IV, Sp. Mar |   2,967,898  | 1.4% | 42.3% | 46.8% |  6.9% | 2.6% |
+| am2014, mpa2014 | IUCN I-IV, Sp. Mar |   2,885,465  | 2.2% | 51.1% | 38.8% |  6.3% | 1.7% |
+| am2015, mpa2015 | IUCN I-IV, Sp. Mar |   2,889,758  | 2.4% | 50.3% | 39.1% |  6.4% | 1.7% |
+| am2015, mpa2014 | IUCN I-IV, Sp. Mar |   2,885,465  | 2.4% | 50.4% | 39.1% |  6.4% | 1.7% |
+| am2015, mpa2000 | IUCN I-IV, Sp. Mar |     748,172  | 3.5% | 91.6% |  4.4% |  0.4% | 0.1% |
+| am2015, mpa1990 | IUCN I-IV, Sp. Mar |     351,592  | 4.0% | 94.2% |  1.6% |  0.1% | 0.0% |
+
+``` {r check results for 1990 and 2000}
+mpa_spp <- am_spp_mpas %>%
+  select(speciesid, marine_range, mpa1990, mpa2000, pct1990, pct2000)
+
+mpa_spp <- mpa_spp %>%
+  mutate(cat1990 = ifelse(pct1990 == 0,                       'gap', NA),
+         cat1990 = ifelse(pct1990 > 0    & pct1990 <= 0.02,  '0-2%', cat1990),
+         cat1990 = ifelse(pct1990 > 0.02 & pct1990 <= 0.05,  '2-5%', cat1990),
+         cat1990 = ifelse(pct1990 > 0.05 & pct1990 <= 0.10, '5-10%', cat1990),
+         cat1990 = ifelse(pct1990 > 0.10,                    '>10%', cat1990),
+         cat1995 = ifelse(pct1995 == 0,                       'gap', NA),
+         cat1995 = ifelse(pct1995 > 0    & pct1995 <= 0.02,  '0-2%', cat1995),
+         cat1995 = ifelse(pct1995 > 0.02 & pct1995 <= 0.05,  '2-5%', cat1995),
+         cat1995 = ifelse(pct1995 > 0.05 & pct1995 <= 0.10, '5-10%', cat1995),
+         cat1995 = ifelse(pct1995 > 0.10,                    '>10%', cat1995),
+         cat2000 = ifelse(pct2000 == 0,                       'gap', NA),
+         cat2000 = ifelse(pct2000 > 0    & pct2000 <= 0.02,  '0-2%', cat2000),
+         cat2000 = ifelse(pct2000 > 0.02 & pct2000 <= 0.05,  '2-5%', cat2000),
+         cat2000 = ifelse(pct2000 > 0.05 & pct2000 <= 0.10, '5-10%', cat2000),
+         cat2000 = ifelse(pct2000 > 0.10,                    '>10%', cat2000),
+         cat2005 = ifelse(pct2005 == 0,                       'gap', NA),
+         cat2005 = ifelse(pct2005 > 0    & pct2005 <= 0.02,  '0-2%', cat2005),
+         cat2005 = ifelse(pct2005 > 0.02 & pct2005 <= 0.05,  '2-5%', cat2005),
+         cat2005 = ifelse(pct2005 > 0.05 & pct2005 <= 0.10, '5-10%', cat2005),
+         cat2005 = ifelse(pct2005 > 0.10,                    '>10%', cat2005),
+         cat2010 = ifelse(pct2010 == 0,                       'gap', NA),
+         cat2010 = ifelse(pct2010 > 0    & pct2010 <= 0.02,  '0-2%', cat2010),
+         cat2010 = ifelse(pct2010 > 0.02 & pct2010 <= 0.05,  '2-5%', cat2010),
+         cat2010 = ifelse(pct2010 > 0.05 & pct2010 <= 0.10, '5-10%', cat2010),
+         cat2010 = ifelse(pct2010 > 0.10,                    '>10%', cat2010))
+
+mpa_spp_1990 <- mpa_spp %>%
+  group_by(cat1990) %>%
+  summarize(n_tot = nrow(mpa_spp), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
+
+mpa_spp_2000 <- mpa_spp %>%
+  group_by(cat2000) %>%
+  summarize(n_tot = nrow(mpa_spp), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
+
+#   cat1990 n_tot n_cat pct_cat
+#       gap 22889   925     4.0
+#      0-2% 22889 21569    94.2
+#      2-5% 22889   376     1.6
+#     5-10% 22889    18     0.1
+#      >10% 22889     1     0.0
+# 
+#   cat2000 n_tot n_cat pct_cat
+#       gap 22889   801     3.5
+#      0-2% 22889 20973    91.6
+#      2-5% 22889  1004     4.4
+#     5-10% 22889    92     0.4
+#      >10% 22889    19     0.1
+
+```

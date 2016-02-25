@@ -1,0 +1,154 @@
+---
+title: 'MPA Gap Analysis: IUCN and AquaMaps'
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Libraries and Paths
+
+library(rgdal)
+library(maptools)
+library(raster)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
+           'Darwin'  = '/Volumes/data_edit',
+           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
+
+if(basename(getwd()) != 'IUCN-AquaMaps') setwd(dir_git)
+
+### When knitting this, it automatically sets WD to be this directory...
+### the 'setwd()' is there for running by chunk
+```
+
+
+``` {r set_up_spatially_marine_raster}
+
+### This raster (at 0.01 degree resolution) contains flags on whether a cell
+### is "spatially marine" - i.e. overlaps (center?) with an ocean area.
+### This is separate from the WDPA "marine" flag.
+
+### as long as we're here, let's set up some objects for WGS 84 projection
+p4s_wgs84 <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0'
+crs_wgs84 <- CRS(p4s_wgs84)
+
+rast_marine_file <- file.path(dir_git, 'mpa_analysis/rast_marine.tif')
+reload <- FALSE
+if(reload == TRUE) {
+### import OHI regions polygons, to determine spatially-marine areas
+  poly_marine_file <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters/poly_marine1.shp')
+  if(!file.exists(poly_marine_file)) {
+    dir_rgn   <- file.path(dir_N, 'git-annex/globalprep/spatial/v2015/data')
+    lyr_rgn <- 'regions_gcs'
+    poly_rgn <- readShapePoly(file.path(dir_rgn, lyr_rgn), 
+                               proj4string = crs_wgs84)
+    
+    ### filter out all polygons that are land or landlocked, and flag 
+    ### the rest as spatially-marine = 1
+    poly_marine <- poly_rgn[!str_detect(poly_rgn@data$rgn_typ, 'land'), ]
+
+    # writePolyShape(poly_marine, poly_marine_file)
+    writeOGR(obj    = poly_marine,
+             dsn    = path.expand(dirname(poly_marine_file)),
+             layer  = str_replace(basename(poly_marine_file), '.shp', ''),
+             driver = 'ESRI Shapefile',
+             overwrite_layer = TRUE,
+             verbose = TRUE)
+  } 
+  
+  library(gdalUtils)
+  rast_marine <- gdal_rasterize(
+      src_datasource = poly_marine_file,
+      dst_filename   = rast_marine_file, 
+        # destination for output
+      a = 'rgn_id', 
+        # the attribute in the shapefile to be assigned to the cell values
+      te = c(-180, -90, 180, 90), 
+        # extents for output raster
+      tr = c(.01, .01),  
+        # resolution for output raster
+      tap = TRUE, 
+        # target aligned pixels - align coords of extent of output to values of -tr
+      a_nodata = NA, 
+        # nodata value for raster; otherwise they will be filled in with zeroes
+      output_Raster = TRUE, 
+        # return output as a RasterBrick? 
+      verbose = TRUE)
+}
+
+```
+
+``` {r simplify_polys_function}
+poly_simplify <- function(poly_set, thresh, verbose = FALSE) {
+  if(class(poly_set) == 'list') poly_set <- poly_set[[1]]
+#   if(verbose) {
+#     message('Counting subpolys in poly set:')
+#     poly_counts <- sapply(poly_set@polygons, function(x) length(x@Polygons))
+#     print(poly_counts)
+#   }
+
+  ### filter out tiny sub-polygons -----
+  ### create area list for filtering.  Area will be in square degrees... 
+  polys_area <- lapply(poly_set@polygons, function(x) sapply(x@Polygons, function(y) y@area))
+      
+  if(verbose) {
+    message('Polygon area quantiles:')
+    print(quantile(unlist(polys_area)))
+  }
+  
+  ### check to make sure threshold 
+#   if(verbose) {
+#     message('Smallest "main" subpolygon, i.e. smallest EEZ, in this set:')
+#     poly_small <- min(unlist(lapply(polys_area, function(x) (max(x)))))
+#     if(poly_small < thresh) message('Smallest poly smaller than threshold value of ', thresh)
+#     for (j in 1:length(polys_area)) {
+#       message(sprintf('rgn %s: largest polygon %.5f (%s)', poly_set@data$rgn_id[j], 
+#                       max(polys_area[[j]]), poly_set@data$rgn_nam[j]))
+#     }
+#   }
+    
+  mainPolys <- lapply(polys_area, function(x) which(x > thresh))
+
+  for(i in 1:length(mainPolys)) {
+    if(length(mainPolys[[i]]) >= 1 && mainPolys[[i]][1] >= 1) {
+      poly_set@polygons[[i]]@Polygons  <- poly_set@polygons[[i]]@Polygons[mainPolys[[i]]]
+      poly_set@polygons[[i]]@plotOrder <- 1:length(poly_set@polygons[[i]]@Polygons)
+    }
+  }
+
+  plot_order_max <- max(poly_set@plotOrder)
+  poly_list_length <- length(poly_set@polygons)
+  message('Plot order max: ', plot_order_max, '; length poly list: ', poly_list_length)
+
+  if(plot_order_max != poly_list_length) {
+    message('NOT SAME LENGTH?!')
+    stop()
+    # poly_set@plotOrder <- 1:length(poly_set@polygons)
+    # is plotOrder necessary to be continuous?  that would explain this line.
+  }
+  
+  if(verbose) {
+#     message('Counting subpolys in modified poly set:')
+#     poly_counts <- sapply(poly_set@polygons, function(x) length(x@Polygons))
+#     print(poly_counts)
+    
+    polys_area_new <- lapply(poly_set@polygons, function(x) sapply(x@Polygons, function(y) y@area))
+      
+    message('Polygon area quantiles after adjustment:')
+    print(quantile(unlist(polys_area_new)))
+  }
+  
+  return(poly_set)
+}
+
+```
