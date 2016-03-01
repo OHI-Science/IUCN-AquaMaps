@@ -21,36 +21,45 @@ Appendices: PNAS prefers that authors submit individual source files to ensure r
 
 -->
 
-## Info on data prep
+#Outline
 
-### processing AquaMaps
+## Data processing
 
-* start with .sql files - three of 'em - how to get 'em?
-* turn into .csvs, which columns are critical for this analysis? simplify
+All code is publicly available and freely downloadable [here on GitHub](link to github).
 
-### downloading and processing IUCN maps
+### AquaMaps
 
-* which data sets are included?
-* raster::extract() to convert polys to csvs
-* which columns are included?
+AquaMaps data was provided by AquaMaps directly via ftp. Three SQL files were sent that contained (1) list of all `r nrow(spp_am)` species and their taxonomic information, (2) information for all (292,000?) half degree cells used for range mapping and (3) the probability of occurrence per cell for all `r nrow(spp_am)` species. These were extracted into .csv form using R Statistical Software. 
 
-### creating master species list for co-listed species
 
-* using AquaMaps and IUCN, and IUCN master list, create the big list
-* which columns are included?
-* adjust this master list to use IUCN SID only for parent - eliminate the whole question of parent/subpop? for the purpose of this analysis
+___Probably just cut, but maybe include in Suppl Materials. - BH___: The release of AquaMaps distribution maps is not limited to comprehensively-assessed taxa, and maps are available across a much larger range of taxonomic classes; however, there is no guarantee that the list of species included within each class is a representative cross section of the entire class.
 
-## descriptions of IUCN and AM data sets
+#### Possible figures
+- Map of all cells
+- Map of # of species per cell
+- Example aquamaps (one species range)
+
+### IUCN
 
 IUCN: While the polygons roughly define regions of presence/absence, additional attributes provide information on extant/extinct ranges, native/introduced ranges, and seasonality.
 
 As of December 2015, IUCN had published species distribution maps for `r nrow(spp_iucn_maps)` marine species across 24 taxonomic groups.  For this analysis, we did not consider IUCN range maps for bird species, as those data are hosted separately by BirdLife International.
 
- As of December 2015, AquaMaps current native distribution maps have been produced for `r nrow(spp_am)` species.  
- 
- ___Move to supplementary materials. - BH___: For example, as of this writing, IUCN has released no spatial data for class Elasmobranchii (cartilaginous fishes including sharks and rays); and while IUCN offers a large number of maps within class Actinopterygii (ray-finned bony fishes), the available maps include only a few primarily tropical taxonomic sub-groups, such as wrasses, damselfish, butterflyfish, tunas, and billfishes, but are missing economically important subgroups including salmon, rockfish, and clupeids.  However, IUCN's criterion of comprehensive assessment greatly reduces the risk of sample bias within the bounds of the assessed taxonomic groups.
 
-___Probably just cut, but maybe include in Suppl Materials. - BH___: The release of AquaMaps distribution maps is not limited to comprehensively-assessed taxa, and maps are available across a much larger range of taxonomic classes; however, there is no guarantee that the list of species included within each class is a representative cross section of the entire class.
+* which data sets are included?
+* raster::extract() to convert polys to csvs
+* which columns are included?
+
+JA: I think here we only need a few sentences describing how we downloaded the data and on what date. Link to the IUCN spatial data website.
+
+IUCN data is provided as polygon shapefiles. These vectors were rasterized to the same cell resolution as AquaMaps data (0.5 degrees).
+
+#### Possible figures
+
+
+
+#### Caveats
+For example, as of this writing, IUCN has released no spatial data for class Elasmobranchii (cartilaginous fishes including sharks and rays); and while IUCN offers a large number of maps within class Actinopterygii (ray-finned bony fishes), the available maps include only a few primarily tropical taxonomic sub-groups, such as wrasses, damselfish, butterflyfish, tunas, and billfishes, but are missing economically important subgroups including salmon, rockfish, and clupeids.  However, IUCN's criterion of comprehensive assessment greatly reduces the risk of sample bias within the bounds of the assessed taxonomic groups.
 
 ___Red List inclusion:___
 
