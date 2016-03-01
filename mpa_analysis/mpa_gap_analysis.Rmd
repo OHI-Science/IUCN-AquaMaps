@@ -83,41 +83,17 @@ Several steps to this:
     * Summarize total area and total protected area (for a given protection scenario) for the species
     * Include species extinction risk in there too?
 
-``` {r set_up_base_raster}
-### DO WE NEED THIS? Use area at 0.5 degree level; most cells this will be pretty close.
-### base raster will contain 0.01 degree cells from -180 to +180,
-### and -90 to +90, with the associated area of each cell.
-### Save it as a .tif in GitHub - about 50 
-# rast_base_file <- file.path(dir_git, 'mpa_analysis/rast_base.tif')
-# 
-# if(!file.exists(rast_base_file)) {
-#   ### import AquaMaps half-degree loiczid raster - for extents and such
-#   rast_loiczid_file   <- file.path(dir_git, 'data/rasters/loiczid_raster.grd')
-#   rast_loiczid        <- raster(rast_loiczid_file)
-#   names(rast_loiczid) <- 'loiczid'
-# 
-#   rast_empty <- raster(ext = extent(rast_loiczid), resolution = 0.01)
-#   rast_base  <- raster::area(rast_empty) ### takes a while...
-#   
-#   writeRaster(rast_base, rast_base_file,
-#               progress = 'text', overwrite = TRUE)
-# } else {
-#   rast_base <- raster(rast_base_file)
-# }
-
-
-
-```
-
 
 ``` {r load_rasters}
 
 dir_rast <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters')
-rast_mpa_mar_file <- file.path(dir_rast, 'rast_mpa_mar.tif')
+rast_mpa_mar_file <- file.path(dir_rast, 'rast_mpa_mar_i-iv.tif')
+# rast_mpa_mar_file <- file.path(dir_rast, 'wdpa_all_mar_klein_i-iv.tif')
 rast_mar_file <- file.path(dir_rast, 'rast_marine.tif')
 
 if(!file.exists(rast_mpa_mar_file)) {
-  rast_mpa_file <- file.path(dir_rast, 'WDPA_poly_Jan2015_mpa1.tif')
+#   rast_mpa_file <- file.path(dir_rast, 'WDPA_poly_Jan2015_mpa_i-iv-des.tif')
+   rast_mpa_file <- file.path(dir_rast, 'WDPA_poly_Jan2015_mpa_i-iv-all.tif')
   
   rast_mar <- raster(rast_mar_file)
   rast_mpa <- raster(rast_mpa_file)
@@ -146,7 +122,6 @@ if(!file.exists(rast_loiczid_01_file)) {
                             method = 'ngb',
                             progress = 'text',
                             filename = rast_loiczid_01_file)
-# writeRaster(rast_loiczid_01, rast_loiczid_01_file, progress = 'text')
 } else {
   rast_loiczid_01 <- raster(rast_loiczid_01_file)
 }
@@ -155,7 +130,7 @@ if(!file.exists(rast_loiczid_01_file)) {
 ``` {r summarize counts of marine and MPAs by cell}
 
 ### Count marine cells in each LOICZID cell
-mar_df_file <- file.path(dir_git, 'mpa_analysis/loiczid_marine.csv')
+mar_df_file <- file.path(dir_git, 'mpa_analysis/celldata/loiczid_marine.csv')
 if(!file.exists(mar_df_file)) {
   is_marine_df <- zonal(rast_mar, 
                         z = rast_loiczid_01, 
@@ -164,17 +139,22 @@ if(!file.exists(mar_df_file)) {
     as.data.frame() %>%
     rename(loiczid = zone)
   write_csv(is_marine_df, mar_df_file)
-}
+} 
 
 ### Count all protected cells in each LOICZID cell
 ### NOTE: loses status_yr values - so filter by year for each iteration
 yr_list <- c('y1990', 'y1995', 'y2000', 'y2005', 'y2010', 'y2014', 'y2015')
-mpa_csvs_missing <- !file.exists(file.path(dir_git, sprintf('mpa_analysis/loiczid_mpa_%s.csv', yr_list)))
+mpa_cvs_files <- c(file.path(dir_git, 
+                             sprintf('mpa_analysis/celldata/loiczid_mpa_i-iv_%s.csv', 
+                                     yr_list)))
+# mpa_cvs_files <- c(file.path(dir_git, 
+#                              sprintf('mpa_analysis/celldata/loiczid_mpa_klein_i-iv_%s.csv', 
+#                                      yr_list)))
+yr_list1 <- yr_list[!file.exists(mpa_cvs_files)]
 
-if(any(mpa_csvs_missing)) {
-  yr_list1 <- yr_list[mpa_csvs_missing]
+if(length(yr_list1) > 0) {
   message('Creating marine protected area rasters for years:')
-  message('  ', paste(yr_list, collapse = ', '))
+  message('  ', paste(yr_list1, collapse = ', '))
   for (yr in yr_list1) { # yr <- yr_list1[1]
     message('filtering MPAs to those designated prior to ', str_replace(yr, 'y', ''))
     rast_is_mpa <- rast_mpa_mar
@@ -190,9 +170,11 @@ if(any(mpa_csvs_missing)) {
       as.data.frame() %>%
       rename(loiczid = zone)
     write_csv(is_mpa_df, 
-              file.path(dir_git, sprintf('mpa_analysis/loiczid_mpa_%s.csv', yr)))
+              mpa_cvs_files[yr_list == yr])
   }
 }
+### These files get loaded later; no need to hog memory by loading them here.
+
 ```
 
 First step:
@@ -217,11 +199,15 @@ For each species:
 ``` {r combine_mpa_areas}
 
 dir_am_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data/aquamaps/v2015/csv/')
+yr_list <- c('y1990', 'y1995', 'y2000', 'y2005', 'y2010', 'y2014', 'y2015')
 
+### get AquaMaps file of cells to translate cell IDs to area and ocean area
 hcaf <- read_csv(file.path(dir_am_data, 'hcaf_truncated.csv')) %>%
   select(loiczid, cellarea, oceanarea)
 
-cell_df <- read_csv(file.path(dir_git, 'mpa_analysis/loiczid_marine.csv'),
+### attach the AquaMaps areas to the calculated percentages of marine area
+### note: AquaMaps calculated areas differ from my calculated areas - see below
+cell_df <- read_csv(file.path(dir_git, 'mpa_analysis/celldata/loiczid_marine.csv'),
   col_types = 'dd') %>%
   rename(marine_ct = count) %>%
   left_join(hcaf, by = 'loiczid') %>%
@@ -229,8 +215,17 @@ cell_df <- read_csv(file.path(dir_git, 'mpa_analysis/loiczid_marine.csv'),
          marine_area = marine_pct * cellarea) %>%
   select(-marine_ct)
   
+### load each analysis year (in yr_list) and join them all together
+### to note protection status year of each cell.
+
+### Use this to point toward the 'i-iv-all' files (for all STATUS) or
+### 'i-iv-des' (for STATUS == 'Designated')
+mpa_file_base <- 'mpa_analysis/celldata/loiczid_mpa_i-iv_%s.csv'
+# mpa_file_base <- 'mpa_analysis/celldata/loiczid_mpa_klein_i-iv_%s.csv'
+# mpa_file_base <- 'mpa_analysis/celldata/loiczid_mpa_i-iv-des_%s.csv'
+
 for (yr in yr_list) { # yr <- yr_list[1]
-  fn <- file.path(dir_git, sprintf('mpa_analysis/loiczid_mpa_%s.csv', yr))
+  fn <- file.path(dir_git, sprintf(mpa_file_base, yr))
   df <- read_csv(fn, col_types = 'dd')
   names(df)[2] <- yr
   cell_df <- cell_df %>%
@@ -254,41 +249,7 @@ for (yr in yr_list) { # yr <- yr_list[1]
 
 ```
 
-``` {r apply loiczid area df to species list}
-
-### Assemble the AM species-cell df with info on marine area and 
-### protected area per cell
-am_spp_cells <- read_csv(file.path(dir_am_data, 'hcaf_sp_native_trunc.csv'))
-am_spp_cells <- am_spp_cells %>%
-  left_join(cell_df, by = 'loiczid')
-
-### filter to the appropriate threshold...
-thresh <- 0.50
-
-am_spp_cells_filt <- am_spp_cells %>%
-  filter(probability >= thresh)
-
-### group by speciesid, then summarize sum(marine area), sum(protected area), ratio
-am_spp_mpas <- am_spp_cells %>%
-  group_by(speciesid) %>%
-  summarize(cellarea_tot = sum(cellarea), 
-            ocean_range  = sum(oceanarea), 
-            marine_range = sum(marine_area),
-            mpa1990 = sum(y1990_area),
-            mpa1995 = sum(y1995_area),
-            mpa2000 = sum(y2000_area),
-            mpa2005 = sum(y2005_area),
-            mpa2010 = sum(y2010_area),
-            mpa2014 = sum(y2014_area),
-            mpa2015 = sum(y2015_area),
-            pct1990 = mpa1990/marine_range,
-            pct1995 = mpa1995/marine_range,
-            pct2000 = mpa2000/marine_range,
-            pct2005 = mpa2005/marine_range,
-            pct2010 = mpa2010/marine_range,
-            pct2014 = mpa2014/marine_range,
-            pct2015 = mpa2015/marine_range)
-```
+# recreate Klein results using aquamaps 2014 data
 
 ``` {r recreate Klein results}
 
@@ -301,8 +262,6 @@ area_mpa <- cell_df %>%
             mpa_tot_2010 = sum(y2010_area), 
             mpa_tot_2014 = sum(y2014_area), 
             mpa_tot_2015 = sum(y2015_area))
-#   marine_area  mpa_tot_1990  mpa_tot_1995  mpa_tot_2000  mpa_tot_2005   mpa_tot_2010   mpa_tot_2014
-#   362,657,307       351,592       532,098       748,172       932,817      1,137,142      2,885,465
 
 ### Recreate Klein results, using 2014 AquaMaps
 mpa_klein_am2014 <- read_csv(file.path(dir_am_data, 'hcaf_sp_native_trunc_2014.csv'))
@@ -312,7 +271,7 @@ mpa_klein_am2014 <- mpa_klein_am2014 %>%
 ### filter to the appropriate threshold...
 thresh <- 0.50
 
-mpa_klein_am2014_filt <- mpa_klein_am2014 %>%
+mpa_klein_am2014 <- mpa_klein_am2014 %>%
   filter(probability >= thresh)
 
 ### group by speciesid, then summarize sum(marine area), sum(protected area), ratio
@@ -333,17 +292,75 @@ mpa_klein_orig <- mpa_klein_am2014 %>%
   group_by(cat2014) %>%
   summarize(n_tot = nrow(mpa_klein_am2014), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
 
+### Not filtering on status, but all in shapefile are status == 'Designated'
 #   cat2014 n_tot n_cat pct_cat
-#       gap 17348   378     2.2
-#      0-2% 17348  8859    51.2
-#      2-5% 17348  6728    38.7
-#     5-10% 17348  1096     6.3
-#      >10% 17348   287     1.7
+#       gap 17344   282     1.6
+#      0-2% 17344  7728    44.6
+#      2-5% 17344  7738    44.6
+#     5-10% 17344  1188     6.8
+#      >10% 17344   408     2.4
+
+```
+
+# run analysis using 2015 aquamaps
+
+``` {r apply loiczid area df to species list}
+
+### Assemble the AM species-cell df with info on marine area and 
+### protected area per cell
+am_spp_cells <- read_csv(file.path(dir_am_data, 'hcaf_sp_native_trunc.csv'))
+am_spp_cells <- am_spp_cells %>%
+  left_join(cell_df, by = 'loiczid')
+
+### filter to the appropriate threshold...
+thresh <- 0.50
+
+am_spp_cells_filt <- am_spp_cells %>%
+  filter(probability >= thresh)
+
+### group by speciesid, then summarize sum(marine area), 
+### sum(protected area), ratio
+am_spp_mpas_filt <- am_spp_cells_filt %>%
+  group_by(speciesid) %>%
+  summarize(cellarea_tot = sum(cellarea), 
+            ocean_range  = sum(oceanarea), 
+            marine_range = sum(marine_area),
+            mpa1990 = sum(y1990_area),
+            mpa1995 = sum(y1995_area),
+            mpa2000 = sum(y2000_area),
+            mpa2005 = sum(y2005_area),
+            mpa2010 = sum(y2010_area),
+            mpa2014 = sum(y2014_area),
+            mpa2015 = sum(y2015_area),
+            pct1990 = mpa1990/marine_range,
+            pct1995 = mpa1995/marine_range,
+            pct2000 = mpa2000/marine_range,
+            pct2005 = mpa2005/marine_range,
+            pct2010 = mpa2010/marine_range,
+            pct2014 = mpa2014/marine_range,
+            pct2015 = mpa2015/marine_range)
+```
+
+``` {r redo klein for new AquaMaps with 2015 mpas}
+
+area_mpa <- cell_df %>%
+  summarize(marine_area  = sum(marine_area), 
+            mpa_tot_1990 = sum(y1990_area), 
+            mpa_tot_1995 = sum(y1995_area), 
+            mpa_tot_2000 = sum(y2000_area), 
+            mpa_tot_2005 = sum(y2005_area), 
+            mpa_tot_2010 = sum(y2010_area), 
+            mpa_tot_2014 = sum(y2014_area), 
+            mpa_tot_2015 = sum(y2015_area))
+
+#   marine_area mpa_tot_1990 mpa_tot_1995 mpa_tot_2000 mpa_tot_2005 mpa_tot_2010 mpa_tot_2014 mpa_tot_2015
+#         (dbl)        (dbl)        (dbl)        (dbl)        (dbl)        (dbl)        (dbl)        (dbl)
+# 1   362657307     353355.3     534137.2     750217.9     935137.1      1140272      2888600      2896875
 
 ### Redo analysis using 50% threshold, but new AquaMaps database
 ### * select just 2014 and 2015, at 50% threshold, and group by
 ###   same categories that the original paper did.
-mpa_klein_am2015 <- am_spp_mpas %>%
+mpa_klein_am2015 <- am_spp_mpas_filt %>%
   select(speciesid, marine_range, mpa2014, mpa2015, pct2014, pct2015)
 
 mpa_klein_am2015 <- mpa_klein_am2015 %>%
@@ -366,36 +383,27 @@ mpa_klein_sum2015 <- mpa_klein_am2015 %>%
   group_by(cat2015) %>%
   summarize(n_tot = nrow(mpa_klein_am2015), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
  
+# > mpa_klein_sum2014
 #   cat2014 n_tot n_cat pct_cat
-#       gap 22889   552    2.4
-#      0-2% 22889 11546   50.4
-#      2-5% 22889  8947   39.1
-#     5-10% 22889  1456    6.4
-#      >10% 22889   388    1.7
-
+#       gap 22885   797     3.5
+#      0-2% 22885 11038    48.2
+#      2-5% 22885  8713    38.1
+#     5-10% 22885  1650     7.2
+#      >10% 22885   687     3.0
+# 
+# > mpa_klein_sum2015
 #   cat2015 n_tot n_cat pct_cat
-#       gap 22889   552     2.4
-#      0-2% 22889 11520    50.3
-#      2-5% 22889  8960    39.1
-#     5-10% 22889  1466     6.4
-#      >10% 22889   391     1.7
+#       gap 22885   797     3.5
+#      0-2% 22885 10990    48.0
+#      2-5% 22885  8747    38.2
+#     5-10% 22885  1661     7.3
+#      >10% 22885   690     3.0
 
 ```
 
-### Original study (Klein 2015) vs new analyses
-
-| study           | Protected areas    | Area (km^2^) | Gap  |  0–2% |  2–5% | 5–10% | >10% |
-| :-------------: | :----------------- | :----------: | :--: | :---: | :---: | :---: | :--: |
-| Klein 2015      | IUCN I-IV, Sp. Mar |   2,967,898  | 1.4% | 42.3% | 46.8% |  6.9% | 2.6% |
-| am2014, mpa2014 | IUCN I-IV, Sp. Mar |   2,885,465  | 2.2% | 51.1% | 38.8% |  6.3% | 1.7% |
-| am2015, mpa2015 | IUCN I-IV, Sp. Mar |   2,889,758  | 2.4% | 50.3% | 39.1% |  6.4% | 1.7% |
-| am2015, mpa2014 | IUCN I-IV, Sp. Mar |   2,885,465  | 2.4% | 50.4% | 39.1% |  6.4% | 1.7% |
-| am2015, mpa2000 | IUCN I-IV, Sp. Mar |     748,172  | 3.5% | 91.6% |  4.4% |  0.4% | 0.1% |
-| am2015, mpa1990 | IUCN I-IV, Sp. Mar |     351,592  | 4.0% | 94.2% |  1.6% |  0.1% | 0.0% |
-
-``` {r check results for 1990 and 2000}
-mpa_spp <- am_spp_mpas %>%
-  select(speciesid, marine_range, mpa1990, mpa2000, pct1990, pct2000)
+``` {r check results for 1990 through 2010 at 50%}
+mpa_spp <- am_spp_mpas_filt %>%
+  select(speciesid, marine_range, mpa1990:mpa2010, pct1990:pct2010)
 
 mpa_spp <- mpa_spp %>%
   mutate(cat1990 = ifelse(pct1990 == 0,                       'gap', NA),
@@ -428,8 +436,20 @@ mpa_spp_1990 <- mpa_spp %>%
   group_by(cat1990) %>%
   summarize(n_tot = nrow(mpa_spp), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
 
+mpa_spp_1995 <- mpa_spp %>%
+  group_by(cat1995) %>%
+  summarize(n_tot = nrow(mpa_spp), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
+
 mpa_spp_2000 <- mpa_spp %>%
   group_by(cat2000) %>%
+  summarize(n_tot = nrow(mpa_spp), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
+
+mpa_spp_2005 <- mpa_spp %>%
+  group_by(cat2005) %>%
+  summarize(n_tot = nrow(mpa_spp), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
+
+mpa_spp_2010 <- mpa_spp %>%
+  group_by(cat2010) %>%
   summarize(n_tot = nrow(mpa_spp), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
 
 #   cat1990 n_tot n_cat pct_cat
@@ -439,11 +459,142 @@ mpa_spp_2000 <- mpa_spp %>%
 #     5-10% 22889    18     0.1
 #      >10% 22889     1     0.0
 # 
+#   cat1995 n_tot n_cat pct_cat
+#       gap 22889   878     3.8
+#      0-2% 22889 21111    92.2
+#      2-5% 22889   817     3.6
+#     5-10% 22889    70     0.3
+#      >10% 22889    13     0.1
+#
 #   cat2000 n_tot n_cat pct_cat
 #       gap 22889   801     3.5
 #      0-2% 22889 20973    91.6
 #      2-5% 22889  1004     4.4
 #     5-10% 22889    92     0.4
 #      >10% 22889    19     0.1
+#
+#   cat2005 n_tot n_cat pct_cat
+#       gap 22889   608     2.7
+#      0-2% 22889 19828    86.6
+#      2-5% 22889  2174     9.5
+#     5-10% 22889   205     0.9
+#      >10% 22889    74     0.3
+# 
+#   cat2010 n_tot n_cat pct_cat
+#       gap 22889   578     2.5
+#      0-2% 22889 18670    81.6
+#      2-5% 22889  3278    14.3
+#     5-10% 22889   288     1.3
+#      >10% 22889    75     0.3
+
+argh <- am_spp_mpas_filt %>%
+  select(-(mpa1990:mpa2015)) %>%
+  gather(key = year, value = pct, pct1990:pct2015) %>%
+  mutate(year = str_replace(year, 'pct', '')) %>%
+  group_by(year)
+
+hist_plot <- ggplot(data = argh, aes(x = pct, color = year)) + 
+  geom_density() +
+  scale_x_continuous(limits = c(0, .05))
+#  scale_x_log10()
+
+hist_plot
+ggsave(file.path(dir_git, 'figures/mpa_analysis_dist.png'))
+```
+
+### Original study (Klein 2015) vs new analyses
+
+| study           | Protected areas    | Area (km^2^) | Gap  |  0–2% |  2–5% | 5–10% | >10% |
+| :-------------: | :----------------- | :----------: | :--: | :---: | :---: | :---: | :--: |
+| Klein et al 2015| IUCN I-IV, Sp. Mar |   2,967,898  | 1.4% | 42.3% | 46.8% |  6.9% | 2.6% |
+| am2014, mpa2014 | IUCN I-IV, Sp. Mar |   2,915,745  | 1.6% | 44.6% | 44.6% |  6.8% | 2.4% |
+| .               | .                  | .            | .    | .     | .     | .     | .    |
+| am2015, mpa2015 | IUCN I-IV, Sp. Mar |   2,889,758  | 2.4% | 50.3% | 39.1% |  6.4% | 1.7% |
+| am2015, mpa2014 | IUCN I-IV, Sp. Mar |   2,885,465  | 2.4% | 50.4% | 39.1% |  6.4% | 1.7% |
+| am2015, mpa2010 | IUCN I-IV, Sp. Mar |   1,137,142  | 2.5% | 81.6% | 14.3% |  1.3% | 0.3% |
+| am2015, mpa2005 | IUCN I-IV, Sp. Mar |     932,817  | 2.7% | 86.6% |  9.5% |  0.9% | 0.3% |
+| am2015, mpa2000 | IUCN I-IV, Sp. Mar |     748,172  | 3.5% | 91.6% |  4.4% |  0.4% | 0.1% |
+| am2015, mpa1995 | IUCN I-IV, Sp. Mar |     532,098  | 3.8% | 92.2% |  3.6% |  0.3% | 0.1% |
+| am2015, mpa1990 | IUCN I-IV, Sp. Mar |     351,592  | 4.0% | 94.2% |  1.6% |  0.1% | 0.0% |
+
+max protected species = Fis-160882
+
+``` {r iucn_only}
+### compare results using only IUCN species maps
+dir_iucn_data <- '/var/data/ohi/git-annex/globalprep/_raw_data/iucn_spp'
+iucn_cells_file <- file.path(dir_iucn_data, 'iucn_cells_2015.csv')
+iucn_spp_cells <- read_csv(iucn_cells_file, col_types = 'cddddc') %>%
+  as.data.frame(stringsAsFactors = FALSE)
+
+# iucn_spp_cells <- read_csv(file.path(dir_am_data, 'hcaf_sp_native_trunc.csv'))
+iucn_spp_cells <- iucn_spp_cells %>%
+  left_join(cell_df, by = 'loiczid')
+
+### group by speciesid, then summarize sum(marine area), sum(protected area), ratio
+iucn_spp_sum <- iucn_spp_cells %>%
+  group_by(iucn_sid) %>%
+  summarize(cellarea_tot = sum(cellarea), 
+            ocean_range  = sum(oceanarea), 
+            marine_range = sum(marine_area),
+            mpa2015 = sum(y2015_area),
+            pct2015 = mpa2015/marine_range)
+
+iucn_spp_sum <- iucn_spp_sum %>%
+  mutate(cat2015 = ifelse(pct2015 == 0,                       'gap', NA),
+         cat2015 = ifelse(pct2015 > 0    & pct2015 <= 0.02,  '0-2%', cat2015),
+         cat2015 = ifelse(pct2015 > 0.02 & pct2015 <= 0.05,  '2-5%', cat2015),
+         cat2015 = ifelse(pct2015 > 0.05 & pct2015 <= 0.10, '5-10%', cat2015),
+         cat2015 = ifelse(pct2015 > 0.10,                    '>10%', cat2015))
+
+iucn_spp_sum2 <- iucn_spp_sum %>%
+  group_by(cat2015) %>%
+  summarize(n_tot = nrow(iucn_spp_sum), n_cat = n(), pct_cat = round(n_cat/n_tot * 100, 1))
 
 ```
+
+``` {r combine IUCN and AM with 0% thresh, AM on top}
+
+### use iucn_spp_sum from above, and create am_spp_sum for 0% thresh.
+iucn_spp_sum
+
+am_spp_mpas_0 <- am_spp_cells %>%
+  group_by(speciesid) %>%
+  summarize(cellarea_tot = sum(cellarea), 
+            ocean_range  = sum(oceanarea), 
+            marine_range = sum(marine_area),
+            mpa2015 = sum(y2015_area),
+            pct2015 = mpa2015/marine_range)
+
+am_spp_sum <- am_spp_sum %>%
+  mutate(cat2015 = ifelse(pct2015 == 0,                       'gap', NA),
+         cat2015 = ifelse(pct2015 > 0    & pct2015 <= 0.02,  '0-2%', cat2015),
+         cat2015 = ifelse(pct2015 > 0.02 & pct2015 <= 0.05,  '2-5%', cat2015),
+         cat2015 = ifelse(pct2015 > 0.05 & pct2015 <= 0.10, '5-10%', cat2015),
+         cat2015 = ifelse(pct2015 > 0.10,                    '>10%', cat2015))
+
+# combine by bringing in species list with IUCN SID mapped to AM SID;
+# use all with AM SID, and then add in IUCN spp that are not mapped to an AM SID
+
+```
+
+``` {r get_iucn_cells}
+reload = TRUE
+  dir_iucn_data <- '/var/data/ohi/git-annex/globalprep/_raw_data/iucn_spp'
+  iucn_cells_file <- file.path(dir_iucn_data, 'iucn_cells_2015.csv')
+  if(!file.exists(iucn_cells_file) | reload) {
+    message(sprintf('Building IUCN species to cell table.  This might take a few minutes.\n'))
+    iucn_map_files      <- file.path(dir_anx, 'iucn_intersections', list.files(file.path(dir_anx, 'iucn_intersections')))
+    iucn_cells_spp_list <- lapply(iucn_map_files, read.csv) # read each into dataframe within a list
+    iucn_cells_spp      <- bind_rows(iucn_cells_spp_list)   # combine list of dataframes to single dataframe
+    # This creates a full data frame of all IUCN species, across all species groups, for all cells.
+    # Probably big...
+    names(iucn_cells_spp) <- tolower(names(iucn_cells_spp))
+    write_csv(iucn_cells_spp, iucn_cells_file)
+  } else {
+    iucn_cells_spp <- read_csv(iucn_cells_file, col_types = 'cddddc') %>%
+      as.data.frame(stringsAsFactors = FALSE)
+  }
+  
+}
+```
+
