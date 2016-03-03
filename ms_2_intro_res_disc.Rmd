@@ -139,6 +139,8 @@ _Predictions: What happens when using a 0% threshold instead of a 50%? What happ
 * _More area means more species (relatively) will be at least partially included in MPAs so fewer apparent gap species?_
 * _Policy implications?  Can also tie this back to the predictions of Rondinini et al re: effects of commission/omission errors_
 
+
+
 -----
 
 # Conclusions

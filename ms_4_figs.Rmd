@@ -123,3 +123,12 @@ ___NOTE: These figures still need to be recreated using the latest and greatest 
 > * Scenario 2 shows the effect of prioritizing AquaMaps data over IUCN, while maintaining the same presence threshold.  This will have different effects depending on the species; in general, AquaMaps ranges are smaller than IUCN ranges, so most overlapping species will see a decrease in represented range.  The slight bump in mean score may indicate a small increase in spatial representation of low-risk species, a small decrease in spatial representation of high-risk species, or more likely a combination of both. _CCO: Too much detail here? Just get the main point – probably a mixture of more/less good/bad – can’t draw much of a conclusion other than that scores change all over.  BSH: You’ll need a sentence or two explaining this result, but keep it brief.  Extra text, if deemed useful, can be put into the SOM._
 > * Scenario 3 shows the effect of prioritizing AquaMaps data over IUCN, while eliminating the presence threshold.  Just as a presence threshold of zero in scenario 1 drives a decrease in average score relative to the baseline, the zero threshold in scenario 3 drives a decrease in scores relative to scenario 2.  The large decrease indicates that within the set of paired-map species, a zero threshold greatly increases the spatial representation of high-risk species relative to low-risk species. _similar note as scenario 2_
 
+### Figure 4
+
+<a id = 'fig4'></a>
+
+![Change in MPA coverage](figures/barchart_mpa_gap.png)
+
+> __Fig. 4.__
+
+`r knitr::kable(read_csv(file.path(dir_data, 'mpa_all_runs_summary.csv')))`

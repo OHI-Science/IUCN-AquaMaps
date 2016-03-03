@@ -1,0 +1,179 @@
+---
+title: 'MPA Gap Analysis: IUCN and AquaMaps'
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Libraries and Paths
+
+library(raster)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
+           'Darwin'  = '/Volumes/data_edit',
+           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
+
+if(basename(getwd()) != 'IUCN-AquaMaps') setwd(dir_git)
+
+### When knitting this, it automatically sets WD to be this directory...
+### the 'setwd()' is there for running by chunk
+```
+
+# MPA gap analysis
+
+Several steps to this:
+
+* set up WDPA database in a raster format for easy use
+* perform gap analysis for WDPA-MPA data base (which year?) vs AquaMaps 2014, with 50% threshold - replicate the original analysis
+* reperform the analysis with latest/greatest WDPA-MPA database, and AquaMaps 2015, with 50% threshold and 0% threshold
+* perform the analysis with latest/greatest WDPA-MPA database, and IUCN shapefiles
+
+## set up WDPA raster
+
+* Create polygon subset of WDPA database
+    * STATUS = 'Designated'
+    * IUCN_CAT = I - IV
+    * Simplify polygons to make it easier for rasterization
+        * cut any main polygons less than 10% of a raster cell.  Raster
+          cells are .01 x .01 degree, so area = .0001; cut any less than 1e-5.
+          Do the same for subpolygons within a larger polygon.
+    * Inverse order by `STATUS_YR`, so oldest is at the end (for `gdal_rasterize()`)
+* To avoid double-counting for overlapping polygons - rasterize WDPA to fine scale first
+    * less than 1km^2^ was mentioned in paper as resolution of MPA data.  
+      Rasterize to 0.01 degree x 0.01 degree  
+        * this results in max cell size of 1.11 km x 1.11 km at the equator.
+    * Use STATUS_YR as field; see note above about ordering polygons
+      for use in `gdal_rasterize()`
+
+## Set up marine raster
+
+* Create polygons subset of OHI regions, for only marine regions
+* Rasterize to same resolution as above.
+
+## Create raster of WDPA IUCN I-IV and spatially marine
+
+* Intersect the two rasters so only protected areas within spatially marine
+  areas are included.
+
+## Aggregate protected area layer to LOICZID scale (0.5 deg)
+
+* Use raster::extract? each LOICZID gets 2500 subcells noting NA (not
+  protected) or a value (protected); turn this into proportion of
+  LOICZID cell that is protected.
+* Also need to do this to find the proportion of LOICZID cell that is
+  spatially marine - if not fully marine, the protected proportion will
+  be larger; but the area will be smaller (from AquaMaps, or recalc)
+    * e.g. a single LOICZID is 60% marine (1500 marine cells), and 48%
+      protected (1200 protected cells, which are by def marine).  So
+      protected proportion = 48/60 = 80% protection of the marine area
+      within this cell.
+
+* AquaMaps layer: use as is
+* To analyze for each species:
+    * Summarize total area and total protected area (for a given protection scenario) for the species
+    * Include species extinction risk in there too?
+
+
+``` {r load_rasters}
+
+dir_rast <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters')
+rast_mpa_mar_file <- file.path(dir_rast, 'rast_mpa_mar_i-iv.tif')
+# rast_mpa_mar_file <- file.path(dir_rast, 'wdpa_all_mar_klein_i-iv.tif')
+rast_mar_file <- file.path(dir_rast, 'rast_marine.tif')
+
+if(!file.exists(rast_mpa_mar_file)) {
+#   rast_mpa_file <- file.path(dir_rast, 'WDPA_poly_Jan2015_mpa_i-iv-des.tif')
+   rast_mpa_file <- file.path(dir_rast, 'WDPA_poly_Jan2015_mpa_i-iv-all.tif')
+  
+  rast_mar <- raster(rast_mar_file)
+  rast_mpa <- raster(rast_mpa_file)
+  
+  rast_mpa_mar <- mask(rast_mpa, rast_mar, 
+                       filename = rast_mpa_mar_file, 
+                       overwrite = TRUE,
+                       progress = 'text')
+} else {
+  rast_mar            <- raster(rast_mar_file)
+  names(rast_mar)     <- 'rgn_id'
+  rast_mpa_mar        <- raster(rast_mpa_mar_file)
+  names(rast_mpa_mar) <- 'status_yr'
+}
+
+```
+
+``` {r aggregate_to_loiczid}
+rast_loiczid_file   <- file.path(dir_git, 'data/rasters/loiczid_raster.grd')
+rast_loiczid        <- raster(rast_loiczid_file)
+names(rast_loiczid) <- 'loiczid'
+
+rast_loiczid_01_file <- file.path(dir_rast, 'rast_loiczid_01.tif')
+if(!file.exists(rast_loiczid_01_file)) {
+  rast_loiczid_01 <- resample(rast_loiczid, rast_mpa_mar, 
+                            method = 'ngb',
+                            progress = 'text',
+                            filename = rast_loiczid_01_file)
+} else {
+  rast_loiczid_01 <- raster(rast_loiczid_01_file)
+}
+```
+
+``` {r summarize counts of marine and MPAs by cell}
+
+### Count marine cells in each LOICZID cell
+mar_df_file <- file.path(dir_git, 'mpa_analysis/celldata/loiczid_marine.csv')
+if(!file.exists(mar_df_file)) {
+  is_marine_df <- zonal(rast_mar, 
+                        z = rast_loiczid_01, 
+                        fun = 'count',
+                        progress = 'text') %>%
+    as.data.frame() %>%
+    rename(loiczid = zone)
+  write_csv(is_marine_df, mar_df_file)
+} 
+
+### Count all protected cells in each LOICZID cell
+### NOTE: loses status_yr values - so filter by year for each iteration
+yr_list <- c('y1990', 'y1995', 'y2000', 'y2005', 'y2010', 'y2014', 'y2015')
+mpa_cvs_files <- c(file.path(dir_git, 
+                             sprintf('mpa_analysis/celldata/loiczid_mpa_i-iv_%s.csv', 
+                                     yr_list)))
+# mpa_cvs_files <- c(file.path(dir_git, 
+#                              sprintf('mpa_analysis/celldata/loiczid_mpa_klein_i-iv_%s.csv', 
+#                                      yr_list)))
+yr_list1 <- yr_list[!file.exists(mpa_cvs_files)]
+
+if(length(yr_list1) > 0) {
+  message('Creating marine protected area rasters for years:')
+  message('  ', paste(yr_list1, collapse = ', '))
+  for (yr in yr_list1) { # yr <- yr_list1[1]
+    message('filtering MPAs to those designated prior to ', str_replace(yr, 'y', ''))
+    rast_is_mpa <- rast_mpa_mar
+    data_year <- as.integer(str_replace(yr, 'y', ''))
+    values(rast_is_mpa)[values(rast_mpa_mar) >= data_year] <- NA
+      ### NOTE: 2015 MPA dataset includes up to 2014; 2014 dataset goes
+      ###   through 2013; etc.
+    message('counting protected cells per LOICZID for ', yr)
+    is_mpa_df <- zonal(rast_is_mpa, 
+                       z = rast_loiczid_01, 
+                       fun = 'count',
+                       progress = 'text') %>%
+      as.data.frame() %>%
+      rename(loiczid = zone)
+    write_csv(is_mpa_df, 
+              mpa_cvs_files[yr_list == yr])
+  }
+}
+### These files get loaded later; no need to hog memory by loading them here.
+
+```
+
