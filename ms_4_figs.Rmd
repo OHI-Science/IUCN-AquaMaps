@@ -73,8 +73,6 @@ n_bonyfish <- nrow(spp_map_pairs %>%
 
 >  __Fig. 1.__ (A) Number and proportion of species by taxa included in each dataset.  AquaMaps encompasses a broader range of taxa than IUCN, while IUCN focuses on comprehensively assessing select taxonomic groups, typically at the level of order or family. Overlapping species are dominated by bony fishes (`r n_bonyfish` species, primarily tropical taxa) and corals (`r n_corals` species).  (B, C) Global marine species richness according to (B) AquaMaps dataset and (C) IUCN dataset.  The margin frequency plots show relative species count per cell at each latitude and longitude; while both datasets peak in tropical latitudes near the equator, the frequency for IUCN maps drops quickly beyond 30°N and 30°S, while the frequency for AquaMaps remains robust well into temperate latitudes.  The longitude frequency plots show a slight bias in the IUCN dataset away from the Atlantic and eastern Pacific compared to AquaMaps. 
 
-### Figure 2 <!--Ditto of Fig. 2B – can you move the N = XX values to be outside the bars (to the right) instead of within them?-->
-
 <a id = 'fig2'></a>
 
 ![](figures/AreaRatiovsPercOverlap.png)
@@ -90,7 +88,6 @@ q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio 
 q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
 ```
 
-_CCO: a lot of this is duplicated in body… tell the story more briefly here; BSH: Yes, make very brief, probably cutting most of this._
 > __Fig. 2.__ (A) Distribution alignment (overlap of smaller range within larger) versus extent ratio (the ratio of smaller range area to the larger range area) for `r n_spp_both` species included in both IUCN and AquaMaps datasets.  The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges
 (n = `r q1_count`; `r round(q1_count/nrow(spp_map_pairs) * 100, 1)` %).
 > The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in extent
@@ -99,7 +96,7 @@ _CCO: a lot of this is duplicated in body… tell the story more briefly here; B
 (n = `r q3_count`; `r round(q3_count/nrow(spp_map_pairs) * 100, 1)` %).
 > The lower left quadrant (quadrant 4) indicates species for which the map pairs agree poorly in both area and distribution
 (n = `r q4_count`; `r round(q4_count/nrow(spp_map_pairs) * 100, 1)` %).  
-(B) Alignment breakdown of paired-map species by taxonomic group. _is it distracting to use order names for some groups and not others?  Some of the IUCN taxonomic groups had pretty long names ("acanthuridae" is way shorter than "surgeonfish, tangs, and unicornfish")_ _BSH: No, but just be sure to note this difference in the legend._ ___NOTE: including the order names might imply the whole order is covered... not necessarily so?  Use IUCN taxo groups!___
+(B) Alignment breakdown of paired-map species by taxonomic group.
 
 
 ### Figure 3
@@ -108,20 +105,13 @@ _CCO: a lot of this is duplicated in body… tell the story more briefly here; B
 
 ![Absolute change in SPP score](figures/boxplot_abs_diff.png)
 
-___NOTE: These figures still need to be recreated using the latest and greatest data!___ _currently they use data generated in November or so, in ohiprep._ | _BSH: It will be worth noting in the main text of the paper the range of values, i.e., that individual countries can see differences from -12 to +6 (depending on scenario).  Those are pretty big differences within a country, even if the overall global number doesn’t change more than a few points._
-
 > __Fig. 3.__ Change in status score for the Species Subgoal within the global Ocean Health Index under three different scenarios.
+> Scenario 1 shows the effect of reducing the probability threshold for AquaMaps presence to more accurately track the definition of IUCN “limits of distribution."  Reducing the threshold increases the apparent range of a species; the slight decrease in average score suggests increased spatial representation of threatened species.
+> Scenario 2 shows the effect of prioritizing AquaMaps data over IUCN, while maintaining the 40% presence threshold.  In general, AquaMaps ranges are smaller than IUCN ranges, so most overlapping species will see a decrease in represented range.  The slight bump in mean score may indicate a small increase in spatial representation of low-risk species, a small decrease in spatial representation of high-risk species, or a combination of both.
+> Scenario 3 shows the effect of prioritizing AquaMaps data over IUCN, and simultaneously eliminating the presence threshold.  The zero threshold in scenario 3 drives a decrease in scores relative to scenario 2.  The large decrease indicates that a zero threshold greatly increases the spatial representation of high-risk species.
 
-| Scenario              | Priority data source | AquaMaps presence threshold |
-| --------------------- | :------------------: | :-------------------------: |
-| Scenario 0 (current)  | IUCN                 |  >= 40%                     |
-| Scenario 1            | IUCN                 |   > 0%                      |
-| Scenario 2            | AquaMaps             |  >= 40%                     |
-| Scenario 3            | AquaMaps             |   > 0%                      |
+___NOTE: This figure still needs to be recreated using the latest and greatest data!___ _currently they use data generated in November or so, in ohiprep._
 
-> * Scenario 1 shows the effect of reducing the probability threshold for AquaMaps presence.  Reducing the threshold increases the apparent range of a species; the slight decrease in average score suggests increased spatial representation of threatened species. _CCO: Reference how this more accurately tracks the definition of IUCN “limits of distribution”?  BSH: I don’t think you need to directly reference this comparison, but these scenarios are helpful to understand what’s going on, so they’ll need some explanation/implications._
-> * Scenario 2 shows the effect of prioritizing AquaMaps data over IUCN, while maintaining the same presence threshold.  This will have different effects depending on the species; in general, AquaMaps ranges are smaller than IUCN ranges, so most overlapping species will see a decrease in represented range.  The slight bump in mean score may indicate a small increase in spatial representation of low-risk species, a small decrease in spatial representation of high-risk species, or more likely a combination of both. _CCO: Too much detail here? Just get the main point – probably a mixture of more/less good/bad – can’t draw much of a conclusion other than that scores change all over.  BSH: You’ll need a sentence or two explaining this result, but keep it brief.  Extra text, if deemed useful, can be put into the SOM._
-> * Scenario 3 shows the effect of prioritizing AquaMaps data over IUCN, while eliminating the presence threshold.  Just as a presence threshold of zero in scenario 1 drives a decrease in average score relative to the baseline, the zero threshold in scenario 3 drives a decrease in scores relative to scenario 2.  The large decrease indicates that within the set of paired-map species, a zero threshold greatly increases the spatial representation of high-risk species relative to low-risk species. _similar note as scenario 2_
 
 ### Figure 4
 
@@ -129,6 +119,7 @@ ___NOTE: These figures still need to be recreated using the latest and greatest 
 
 ![Change in MPA coverage](figures/barchart_mpa_gap.png)
 
-> __Fig. 4.__
+> __Fig. 4.__  Percent of species range covered by MPAs based upon methods in Klein et al. (2015).  Scenario 1 replicates the original results, measuring protected range of species in AquaMaps 2014 dataset, with a 50% presence threshold, against the 2014 World Database of Protected Areas, filtered for IUCN categories I-IV that overlap marine areas.  Scenario 2 updates the results using the 2015 AquaMaps dataset; the small changes despite the inclusion of an additional 5545 species demonstrates the robustness of the conclusions of Klein et al. (2015).  Scenario 3, using 2015 AquaMaps data, drops the presence threshold to zero, showing an expected decrease in gap species, but also a decrease in species with 5% or greater protected range.  Scenario 4 adds an additional 1745 species unique to the IUCN dataset, resulting in increases in gap species and species with less than 2% coverage.  Scenario 5 examines species MPA coverage using only the IUCN dataset.
+
 
 `r knitr::kable(read_csv(file.path(dir_data, 'mpa_all_runs_summary.csv')))`

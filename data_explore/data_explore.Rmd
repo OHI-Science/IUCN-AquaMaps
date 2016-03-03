@@ -609,6 +609,40 @@ ggsave(filename = file.path(dir_fig, 'bar_by_taxa_assessed.png'),
 
 *** 
 
+# Years for IUCN maps?
+
+``` {r get_iucn_citation_info, echo = FALSE}
+
+  ### Queries shapefiles and extracts column headers.  Use to help identify which
+  ### species groups have no id_no field, and possibly other fields to help 
+  ### differentiate.
+
+dir_iucn_shp <- file.path(dir_N, 'git-annex/globalprep/_raw_data/iucn_spp/iucn_shp')
+groups_list <- as.data.frame(list.files(dir_iucn_shp)) %>%
+  rename(shp_fn = `list.files(dir_iucn_shp)`) %>%
+  filter(tools::file_ext(shp_fn) == 'shp') %>%
+  mutate(shp_fn = str_replace(shp_fn, '.shp', ''))
+
+iucn_shp_info <- data.frame()
+
+for (spp_gp in groups_list$shp_fn) { # spp_gp <- groups_list$shp_fn[3]
+  spp_dbf <- foreign::read.dbf(file.path(dir_iucn_shp, sprintf('%s.dbf', spp_gp)))
+  message('file read successfully... ')
+  cites <- spp_dbf %>%
+    select(id_no, compiler, year, citation) %>%
+    unique() %>%
+    mutate(spp_group = spp_gp)
+
+  iucn_shp_info <- bind_rows(iucn_shp_info, cites)
+  message('binding to list...\n')
+}
+
+### oldest records go back to late 70s for terrestrial mammals; then skip to 2004 for a marine turtle map.
+
+```
+
+***
+
 ``` {r, child = 'data_explore_global_maps.Rmd', echo = FALSE, message = FALSE, eval = FALSE}
 ```
 

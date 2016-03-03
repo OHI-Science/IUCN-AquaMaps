@@ -53,3 +53,29 @@ Selig, Elizabeth R., Catherine Longo, Benjamin S. Halpern, Benjamin D. Best, Dar
 
 * AquaMaps reference, and accessed date?
 
+
+Predicting the distributions of marine organisms at the global scale
+Ready, J., Kaschner, K., South, A. B., Eastwood, P. D., Rees, T., Rius, J., ... & Froese, R. (2010). Predicting the distributions of marine organisms at the global scale. Ecological Modelling, 221(3), 467-478.
+Cited by 75 
+
+[PDF] Mapping world-wide distributions of marine mammal species using a relative environmental suitability (RES) model
+K Kaschner, R Watson, AW Trites, D Pauly - Marine Ecology Progress …, 2006 - vliz.be
+ABSTRACT: The lack of comprehensive sighting data sets precludes the application of 
+standard habitat suitability modeling approaches to predict distributions of the majority of 
+marine mammal species on very large scales. As an alternative, we developed an ...
+Cited by 167 Related articles All 12 versions Web of Science: 86 Cite Save
+
+[DOC] from aquamaps.org
+[DOC] AquaMaps
+K Kaschner, J Rius-Barile, K Kesner-Reyes… - Predicted range maps …, 2013 - aquamaps.org
+AquaMaps is an approach to generating model-based, large-scale predictions of currently 
+known natural occurrence of marine species. Models are constructed from estimates of the 
+environmental tolerance of a given species with respect to depth, salinity, temperature, ...
+Cited by 64 Related articles All 3 versions Cite Save More
+
+[HTML] Current and future patterns of global marine mammal biodiversity
+K Kaschner, DP Tittensor, J Ready, T Gerrodette… - PLoS …, 2011 - journals.plos.org
+Abstract Quantifying the spatial distribution of taxa is an important prerequisite for the 
+preservation of biodiversity, and can provide a baseline against which to measure the 
+impacts of climate change. Here we analyse patterns of marine mammal species richness ...
+Cited by 73 Related articles All 20 versions Web of Science: 34 Cite Save More
