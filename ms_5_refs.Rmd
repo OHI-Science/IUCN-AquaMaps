@@ -12,70 +12,52 @@ Journal articles are cited as follows:
 10. Neuhaus J-M, Sitcher L, Meins F, Jr, Boller T (1991) A short C-terminal sequence is necessary and sufficient for the targeting of chitinases to the plant vacuole. Proc Natl Acad Sci USA 88(22):10362–10366.
 -->
 
-__Key AquaMaps publications:__
+Kaschner K et al. (2015) AquaMaps: Predicted range maps for aquatic species. World wide web electronic publication, www.aquamaps.org, Version 08/2015.
 
-Kaschner, K., R. Watson, A. W. Trites, D. Pauly (2006). Mapping world-wide distributions of marine mammal species using a relative environmental suitability (RES) model.  Marine Ecology Progress Series 316: 285–310. _check this citation journal name..._ _This outlines the basic RES methodology - AM development_
+IUCN (2015). The IUCN Red List of Threatened Species. Version 2015-4. <http://www.iucnredlist.org>. Downloaded on 21 December 2015.
 
-Kaschner, K., D.P. Tittensor, J. Ready, T Gerrodette and B. Worm (2011). Current and Future Patterns of Global Marine Mammal Biodiversity. PLoS ONE 6(5): e19653. PDF _just what the title says - AM development, presence threshold 60%, also analyzes richness as a function of threshold_
+Halpern BS et al. "An index to assess the health and benefits of the global ocean." Nature 488.7413 (2012): 615-620. _doi:10.1038/nature11397._
 
-Ready, J., K. Kaschner, A.B. South, P.D Eastwood, T. Rees, J. Rius, E. Agbayani, S. Kullander and R. Froese (2010). Predicting the distributions of marine organisms at the global scale. Ecological Modelling 221(3): 467-478. PDF _Presents AM; assessing AquaMaps against other presence-only species models_
+Halpern BS et al. (2015). Patterns and emerging trends in global ocean health. PloS one, 10(3), e0117863.
 
-__Papers based on AquaMaps:__
+Klein CJ et al. (2015). Shortfalls in the global protected area network at representing marine biodiversity. Scientific Reports 5: 17539. _doi:10.1038/srep17539._
 
-Jones, M.C., S.R. Dyeb, J.K. Pinnegar and W.W.L. Cheung (2012). Modelling commercial fish distributions: Prediction and assessment using different approaches. Ecological Modelling 225(2012): 133-145. PDF _comparison of species distribution models including AquaMaps, Maxent and the Sea Around Us Project_
+Selig ER et al. (2013). Assessing global marine biodiversity status within a coupled socio-ecological perspective. PloS one, 8(4), e60284. _doi:10.1371/journal.pone.0060284._
 
-Coll, M., C. Piroddi, J. Steenbeek, K. Kaschner, F. Ben Rais Lasram et al. (2010). The biodiversity of the Mediterranean Sea: estimates, patterns, and threats. PLoS ONE 5(8): e11842. PDF _used AquaMaps to predict Med biodiversity.  Also: Threshold = 0._
+Coll M et al. (2010). The biodiversity of the Mediterranean Sea: estimates, patterns, and threats. PLoS ONE 5(8): e11842. _used AquaMaps to predict Med biodiversity.  Also: Threshold = 0._
 
-Martin C.S., Fletcher R., Jones M.C., Kaschner K., Sullivan E., Tittensor D.P., Mcowen C., Geffert J.L., van Bochove J.W., Thomas H., Blyth S., Ravillious C., Tolley M., Stanwell-Smith D. (2014). Manual of marine and coastal datasets of biodiversity importance. May 2014 release. Cambridge (UK): UNEP World Conservation Monitoring Centre. 28 pp. (+ 4 annexes totalling 174 pp. and one e-supplement). PDF _review of marine data sets and data gaps etc, incl both IUCN and AM as well as many others_
+*Martin CS et al. (2014). Manual of marine and coastal datasets of biodiversity importance. May 2014 release. Cambridge (UK): UNEP World Conservation Monitoring Centre. 28 pp. (+ 4 annexes totalling 174 pp. and one e-supplement). _review of marine data sets and data gaps etc, incl both IUCN and AM as well as many others_
 
------
+Pimm SL et al. (2014). The biodiversity of species and their rates of extinction, distribution, and protection. Science, 344(6187), 1246752. _uses range maps to show biodiversity areas; may use IUCN range maps.  Also discusses gaps and possible things that can be done about them._
 
-Hurlbert 2007 Species richness, hotspots, and the scale dependence of range maps in ecology and conservation. _mostly rasters of range maps?  "The scale dependence of range-map accuracy poses clear limitations on braod-scale ecological analyses and conservation assessments.  ... we provide guidance about the approriate scale of their use_
+Kaschner K, Tittensor DP, Ready J, Gerrodette T, Worm B (2011). Current and Future Patterns of Global Marine Mammal Biodiversity. PLoS ONE 6(5): e19653. _just what the title says - AM development, presence threshold 60%, also analyzes richness as a function of threshold_
 
-Jetz 2008 Ecological Correlates and Conservation Implications of Overestimating Species Geographic Ranges _EOO maps are usually highly interpolated and overestimate small-scale occurrence, which may bias research outcomes_
+Molinos JG et al. (2015). Climate velocity and the future global redistribution of marine biodiversity. Nature Climate Change. _doi:10.1038/nclimate2769._
 
-Pimm 2014 The biodiversity of species and their rates of extinction, distribtuion, and protection. _uses range maps to show biodiversity areas; may use IUCN range maps.  Also discusses gaps and possible things that can be done about them._
+Rondinini C, Wilson KA, Boitani L, Grantham H, & Possingham HP (2006). Tradeoffs of different types of species occurrence data for use in systematic conservation planning. Ecology letters, 9(10), 1136-1145. _compares point locality, range maps, and distribution models in terms of omission and commission errors; also outlines Extent of Occurrence and Area of Occupancy distinctions._
 
-Rondinini 2006 Tradeoffs of different types of species occurrence data for use in systematic conservation planning _compares point locality, range maps, and distribution models in terms of omission and commission errors; also outlines Extent of Occurrence and Area of Occupancy distinctions._
+Jetz W, Sekercioglu CH, and Watson JE (2008). Ecological correlates and conservation implications of overestimating species geographic ranges. Conservation Biology, 22(1), 110-119. _EOO maps are usually highly interpolated and overestimate small-scale occurrence, which may bias research outcomes_
 
-García Molinos, Jorge, Benjamin S. Halpern, David S. Schoeman, Christopher J. Brown, Wolfgang Kiessling, Pippa J. Moore, John M. Pandolfi, Elvira S. Poloczanska, Anthony J. Richardson, and Michael T. Burrows. “Climate Velocity and the Future Global Redistribution of Marine Biodiversity.” Nature Climate Change advance online publication (August 31, 2015). doi:10.1038/nclimate2769.
+Kaschner K, Watson R, Trites AW, Pauly D (2006). Mapping world-wide distributions of marine mammal species using a relative environmental suitability (RES) model.  Marine Ecology Progress Series 316: 285–310. _check this citation journal name..._ _This outlines the basic RES methodology - AM development_
 
-Halpern, Benjamin S., Catherine Longo, Darren Hardy, Karen L. McLeod, Jameal F. Samhouri, Steven K. Katona, Kristin Kleisner, et al. “An Index to Assess the Health and Benefits of the Global Ocean.” Nature 488, no. 7413 (August 30, 2012): 615–20. doi:10.1038/nature11397.
+Ready J et al. (2010). Predicting the distributions of marine organisms at the global scale. Ecological Modelling 221(3): 467-478. _Presents AM; assessing AquaMaps against other presence-only species models_
 
-Klein, Carissa J., Christopher J. Brown, Benjamin S. Halpern, Daniel B. Segan, Jennifer McGowan, Maria Beger, and James E.M. Watson. “Shortfalls in the Global Protected Area Network at Representing Marine Biodiversity.” Scientific Reports 5 (December 3, 2015): 17539. doi:10.1038/srep17539.
-
-Selig, Elizabeth R., Catherine Longo, Benjamin S. Halpern, Benjamin D. Best, Darren Hardy, Cristiane T. Elfes, Courtney Scarborough, Kristin M. Kleisner, and Steven K. Katona. “Assessing Global Marine Biodiversity Status within a Coupled Socio-Ecological Perspective.” PLoS ONE 8, no. 4 (April 11, 2013): e60284. doi:10.1371/journal.pone.0060284.
-
-* IUCN reference:
-    * https://www.conservationtraining.org/course/view.php?id=217&lang=en
-    * http://www.iucnredlist.org/technical-documents/red-list-training/iucnspatialresources
-    * IUCN Red List - accessed 12/21/2015
-
-* AquaMaps reference, and accessed date?
+Spalding MD et al. (2007). Marine ecoregions of the world: a bioregionalization of coastal and shelf areas. BioScience, 57(7), 573-583.
 
 
-Predicting the distributions of marine organisms at the global scale
-Ready, J., Kaschner, K., South, A. B., Eastwood, P. D., Rees, T., Rius, J., ... & Froese, R. (2010). Predicting the distributions of marine organisms at the global scale. Ecological Modelling, 221(3), 467-478.
-Cited by 75 
 
-[PDF] Mapping world-wide distributions of marine mammal species using a relative environmental suitability (RES) model
-K Kaschner, R Watson, AW Trites, D Pauly - Marine Ecology Progress …, 2006 - vliz.be
-ABSTRACT: The lack of comprehensive sighting data sets precludes the application of 
-standard habitat suitability modeling approaches to predict distributions of the majority of 
-marine mammal species on very large scales. As an alternative, we developed an ...
-Cited by 167 Related articles All 12 versions Web of Science: 86 Cite Save
 
-[DOC] from aquamaps.org
-[DOC] AquaMaps
-K Kaschner, J Rius-Barile, K Kesner-Reyes… - Predicted range maps …, 2013 - aquamaps.org
-AquaMaps is an approach to generating model-based, large-scale predictions of currently 
-known natural occurrence of marine species. Models are constructed from estimates of the 
-environmental tolerance of a given species with respect to depth, salinity, temperature, ...
-Cited by 64 Related articles All 3 versions Cite Save More
 
-[HTML] Current and future patterns of global marine mammal biodiversity
-K Kaschner, DP Tittensor, J Ready, T Gerrodette… - PLoS …, 2011 - journals.plos.org
-Abstract Quantifying the spatial distribution of taxa is an important prerequisite for the 
-preservation of biodiversity, and can provide a baseline against which to measure the 
-impacts of climate change. Here we analyse patterns of marine mammal species richness ...
-Cited by 73 Related articles All 20 versions Web of Science: 34 Cite Save More
+
+
+### NOT CURRENTLY USED:
+
+Jones MC, Dyeb SR, Pinnegar JK, Cheung WWL (2012). Modelling commercial fish distributions: Prediction and assessment using different approaches. Ecological Modelling 225(2012): 133-145. PDF _comparison of species distribution models including AquaMaps, Maxent and the Sea Around Us Project_
+
+
+Hurlbert AH, and Jetz W (2007). Species richness, hotspots, and the scale dependence of range maps in ecology and conservation. Proceedings of the National Academy of Sciences, 104(33), 13384-13389. _mostly rasters of range maps?  "The scale dependence of range-map accuracy poses clear limitations on braod-scale ecological analyses and conservation assessments.  ... we provide guidance about the approriate scale of their use_
+
+
+
+
+
