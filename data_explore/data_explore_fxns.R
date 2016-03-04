@@ -1,5 +1,7 @@
 ### data_explore_fxns.R
 
+library(ggplot2)
+
 ### generic theme for all plots
 ggtheme_basic <- theme(axis.ticks = element_blank(),
         text = element_text(family = 'Helvetica', color = 'gray30', size = 8),

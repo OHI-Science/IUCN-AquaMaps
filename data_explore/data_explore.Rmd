@@ -37,7 +37,8 @@ source('data_explore_fxns.R')
 # Data files
 #iucn spp cells WITHOUT extinct locations of IUCN subpopulations
 iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'), 
-                           progress = TRUE)
+                           progress = TRUE,
+                           col_types = 'cddddc')
 
 am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'), 
                            progress = TRUE)
@@ -52,8 +53,7 @@ names(loiczid_raster) <- 'loiczid'
 
 ```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 ### this file created in data_prep
-spp_list <- read.csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'), 
-                     stringsAsFactors = FALSE)
+spp_list <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 
 ```
 

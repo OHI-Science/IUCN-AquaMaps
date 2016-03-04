@@ -7,6 +7,7 @@ output: html_document
 
 # Libraries and Paths
 
+library(raster)
 library(readr)
 library(data.table)
 library(tidyr)
@@ -26,7 +27,7 @@ dir_data_remote <- file.path(dir_N, 'git-annex/globalprep/_raw_data')
 scenario <- 'v2016'
 
 if(basename(getwd()) != 'data_explore') setwd('~/github/IUCN-AquaMaps/data_explore')
-# source('data_explore_fxns.R')
+source('data_explore_fxns.R')
 ### When knitting this, it automatically sets WD to be this directory...
 ### the 'setwd()' is there for running by chunk
 ```
@@ -205,29 +206,26 @@ write_csv(spp_am_v_iucn1, file.path(dir_data, 'spp_am_v_iucn.csv'))
 spp_am_v_iucn <- read_csv(file.path(dir_data, 'spp_am_v_iucn.csv'))
 
 # Data files
-#iucn spp cells WITHOUT extinct locations of IUCN subpopulations
-message('Building IUCN species to cell table.  This might take a few minutes.')
-iucn_map_files <- file.path(dir_anx, 'iucn_intersections', list.files(file.path(dir_anx, 'iucn_intersections')))
-iucn_spp_cells <- lapply(iucn_map_files, data.table::fread) %>%
-  bind_rows()
-iucn_spp_cells <- iucn_spp_cells %>%
-  rename(iucn_sid = id_no, loiczid = LOICZID) %>%
-  mutate(iucn_sid = as.integer(iucn_sid),
-         presence = as.integer(presence),
-         loiczid  = as.integer(loiczid)) %>%
+
+### This file is generated in globalprep/SPP_ICO:
+iucn_spp_cells_all <- read_csv(file.path(dir_data_remote, 'iucn_spp/iucn_cells_v2016.csv'),
+                            col_types = 'cddddc')
+
+iucn_spp_cells <- iucn_spp_cells_all %>%
+  rename(iucn_sid = id_no) %>%
   filter(iucn_sid %in% spp_am_v_iucn$iucn_sid) %>%
   filter(presence != 5)
-### length(unique(iucn_spp_cells$iucn_sid)) results in 2013 species found...
-### some species with no cells reported.  2249 listed in the am v iucn file.
+### length(unique(iucn_spp_cells$iucn_sid)) results in 2279 species found...
+### some species with no cells reported.  2279 listed in the am v iucn file.
 write_csv(iucn_spp_cells, file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'))
 
 message('Loading AquaMaps species to cell table.  This might take a few minutes.')
-am_spp_cells <- fread(file.path(dir_data_remote, 'aquamaps/v2015/csv/hcaf_sp_native_trunc.csv'), 
+am_spp_cells_all <- fread(file.path(dir_data_remote, 'aquamaps/v2015/csv/hcaf_sp_native_trunc.csv'), 
                          showProgress = TRUE)
-am_spp_cells <- am_spp_cells %>%
+am_spp_cells <- am_spp_cells_all %>%
   rename(am_sid = speciesid, prob = probability) %>%
   filter(am_sid %in% spp_am_v_iucn$am_sid)
-### length(unique(am_spp_cells$am_sid)) results in 2283 species found - great!
+### length(unique(am_spp_cells$am_sid)) results in 2314 species found - great!
 write_csv(am_spp_cells, file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'))
 
 ```
@@ -242,6 +240,12 @@ names(loiczid_raster) <- 'loiczid'
 data_file <- file.path(dir_data, 'spp_list_w_area_all.csv')
 reload <- FALSE
 if (!file.exists(data_file) | reload) {
+
+  if(!exists('am_spp_cells'))
+    am_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'))
+  if(!exists('iucn_spp_cells'))
+    iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'),
+                               col_types = 'cddddc')
   ### species info list - scinames, IUCN species ID, AM species ID, category etc
   spp_list_base <- read_csv(file.path(dir_data, 'spp_am_v_iucn.csv'))
   
@@ -254,8 +258,8 @@ spp_list <- read_csv(data_file)
 spp_list <- spp_list %>%
   mutate(sm_perc = ifelse(is.na(sm_perc), 0, sm_perc)) %>%
   filter(!area_iucn == 0)
-  ### will ditch the ones where no IUCN polygon exists - or are these species
-  ### whose ranges only occur in cells beyond the LOICZID grid?
+  ### will ditch the ones with no IUCN area - formerly caused by DD species
+  ### being filtered out.  Now, none suffer this consequence.
 
 ### attach group name text field, and occurcells field
 spp_list <- spp_list %>%

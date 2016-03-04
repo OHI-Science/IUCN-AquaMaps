@@ -2,19 +2,7 @@
 output: html_document
 ---
 
-``` {r calc species numbers, echo = FALSE}
-n_spp_all    <- nrow(spp_all)
-n_spp_am     <- nrow(spp_am)
-n_spp_am_rev <- nrow(spp_am %>% filter(reviewed == 1))
-n_spp_iucn   <- length(spp_iucn_maps$iucn_sid %>% unique())
-n_spp_both   <- length(spp_map_pairs$iucn_sid %>% unique())
 
-p_spp_am     <- round(nrow(spp_am)/n_spp_all * 100, 1)
-p_spp_am_rev <- round(n_spp_am_rev/n_spp_am * 100, 1)
-p_both_am    <- round(n_spp_both/n_spp_am   * 100, 1)
-p_both_iucn  <- round(n_spp_both/n_spp_iucn * 100, 1)
-p_both_all   <- round(n_spp_both/n_spp_all  * 100, 1)
-```
 
 | Section                   |   Word #   | Char # (w/spc) |
 | :------                   |    ------: |    ------: |
@@ -38,7 +26,7 @@ Knowing where individuals of a species live is fundamental to the sciences of ec
  and managing and protecting species effectively.
 A rich literature tackles the many dimensions of these questions.
 
-One major outcome of this body of science is the various compiled databases of species distribution maps. Two global-scale repositories predict marine species ranges throughout the world's oceans – AquaMaps (Kaschner et al. 2013) and International Union for Conservation of Nature (IUCN) (REF).  These two spatial datasets have been used for a wide range of purposes, including assessing marine species status (Halpern et al. 2012, 2015 _both_; Selig et al. 2013 _both_), evaluating global biodiversity patterns (Coll et al. 2010 _AM_; Martin et al. 2014 _both and others_, Pimm 2014 _IUCN, mostly focusing on terrestrial but some marine_), predicting range shifts (Molinos et al. 2015 _AquaMaps_, and setting conservation priorities (Klein et al. 2015 _AquaMaps_). <!-- BSH: Any of these use IUCN?  Would be good to make sure at least 2-3 examples were based on IUCN. ___none of these exclusively use IUCN - other suggestions?___-->
+One major outcome of this body of science is the various compiled databases of species distribution maps. Two global-scale repositories predict marine species ranges throughout the world's oceans – AquaMaps (Kaschner et al. 2013) and International Union for Conservation of Nature (IUCN) (IUCN 2015).  These two spatial datasets have been used for a wide range of purposes, including assessing marine species status (Halpern et al. 2012, 2015 _both_; Selig et al. 2013 _both_), evaluating global biodiversity patterns (Coll et al. 2010 _AM_; Martin et al. 2014 _both and others_, Pimm 2014 _IUCN, mostly focusing on terrestrial but some marine_), predicting range shifts (Molinos et al. 2015 _AquaMaps_, and setting conservation priorities (Klein et al. 2015 _AquaMaps_). <!-- BSH: Any of these use IUCN?  Would be good to make sure at least 2-3 examples were based on IUCN. ___none of these exclusively use IUCN - other suggestions?___-->
 
 ___BSH:___ _I think Julie makes this comment below, but we may need to be able to substantiate this somehow.  Is there a way to quickly figure out how many studies have used AM vs. IUCN?_  
 
