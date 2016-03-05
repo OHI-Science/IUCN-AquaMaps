@@ -1,10 +1,11 @@
+# Achnowledgments
+<!-- Acknowledgments. List acknowledgments and funding sources. PNAS collaborates with FundRef to use a standard taxonomy of funder names. Dedications are rarely allowed. -->
+
 # References
 
-___still need to check citations, format properly, put into order___
+___double check formats; also - include DOIs for references? which if any?___
 
 <!--
-Acknowledgments. List acknowledgments and funding sources. PNAS collaborates with FundRef to use a standard taxonomy of funder names. Dedications are rarely allowed.
-
 References. References must be in PNAS style. Only published or in-press papers and books may be cited in the reference list. For references to in-press articles, please confirm with the cited journal that the article is in press and include a DOI number and online publication date. Unpublished abstracts of papers presented at meetings or references to "data not shown" are not permitted. References should be cited in numerical order as they appear in text, and all references, including for the SI, should be included in the main manuscript file. Because tables and figures will be inserted in the text where first cited, references in these sections should be numbered accordingly. Include the full title for each cited article. All authors (unless there are more than five) should be named in the citation. If there are more than five, list the first author's name followed by et al. Provide inclusive page ranges for journal articles and book chapters. Cite databases in the text or as footnotes.
 
 Journal articles are cited as follows:
@@ -12,13 +13,13 @@ Journal articles are cited as follows:
 10. Neuhaus J-M, Sitcher L, Meins F, Jr, Boller T (1991) A short C-terminal sequence is necessary and sufficient for the targeting of chitinases to the plant vacuole. Proc Natl Acad Sci USA 88(22):10362–10366.
 -->
 
-Kaschner K et al. (2015) AquaMaps: Predicted range maps for aquatic species. World wide web electronic publication, www.aquamaps.org, Version 08/2015.
+Kaschner K et al. (2015) AquaMaps: Predicted range maps for aquatic species. World wide web electronic publication, www.aquamaps.org, Version 08/2015. ___since this is not a peer-reviewed publication, can we include this for PNAS reference list?___
 
-IUCN (2015). The IUCN Red List of Threatened Species. Version 2015-4. <http://www.iucnredlist.org>. Downloaded on 21 December 2015.
+IUCN (2015). The IUCN Red List of Threatened Species. Version 2015-4. <http://www.iucnredlist.org>. Downloaded on 21 December 2015.  ___since this is not a peer-reviewed publication, can we include this for PNAS reference list?___
 
-Halpern BS et al. "An index to assess the health and benefits of the global ocean." Nature 488.7413 (2012): 615-620. _doi:10.1038/nature11397._
+Halpern BS et al. (2012). An index to assess the health and benefits of the global ocean. Nature, 488(7413), 615-620. _doi:10.1038/nature11397._
 
-Halpern BS et al. (2015). Patterns and emerging trends in global ocean health. PloS one, 10(3), e0117863.
+Halpern BS et al. (2015). Patterns and emerging trends in global ocean health. PloS one, 10(3), e0117863. ___doi?___
 
 Klein CJ et al. (2015). Shortfalls in the global protected area network at representing marine biodiversity. Scientific Reports 5: 17539. _doi:10.1038/srep17539._
 
