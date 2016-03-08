@@ -2,6 +2,24 @@
 
 By counting the number of unique species are found in each of the half degree cells we can then create a single global raster of number of species.
 
+```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+
+# Data files
+#iucn spp cells WITHOUT extinct locations of IUCN subpopulations
+iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'), 
+                           progress = TRUE,
+                           col_types = 'cddddc')
+
+am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'), 
+                           progress = TRUE)
+
+
+### LOICZID cell ID numbers - used in plotting rasters
+loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+loiczid_raster       <- raster(loiczid_raster_file)
+names(loiczid_raster) <- 'loiczid'
+```
+
 ```{r global map matched species, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 library(rasterVis)

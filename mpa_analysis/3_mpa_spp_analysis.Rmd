@@ -198,6 +198,8 @@ mpa_klein_am2015 <- mpa_klein_am2015 %>%
          cat2015 = ifelse(pct2015 > 0.05 & pct2015 <= 0.10, '5-10%', cat2015),
          cat2015 = ifelse(pct2015 > 0.10,                    '>10%', cat2015))
 
+write_csv(mpa_klein_am2015, 'mpa_analysis/celldata/mpa_by_spp_am2015.csv')
+
 mpa_klein_update <- mpa_klein_am2015 %>%
   group_by(cat2015) %>%
   summarize(n_tot   = nrow(mpa_klein_am2015), 
@@ -427,12 +429,12 @@ barchart_mpa_gap <- ggplot(mpa_all_runs1,
                            aes(x = trial, fill = cat, weight = p_cat)) +
   ggtheme_plot + 
   theme(panel.grid.major.y = element_blank()) +
-  geom_bar(stat = 'count', alpha = .5) +
-  scale_fill_manual(values = c('>10%'  = 'green4', 
-                               '5-10%' = 'greenyellow', 
-                               '2-5%'  = 'orange', 
-                               '0-2%'  = 'orangered2',
-                               'gap'   = 'red')) +
+  geom_bar(stat = 'count', alpha = .8) +
+  scale_fill_manual(values = c('>10%'  = '#4dac26', 
+                               '5-10%' = '#b8e186', 
+                               '2-5%'  = '#f7f7f7', 
+                               '0-2%'  = '#f1b6da',
+                               'gap'   = '#d01c8b')) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 115), breaks = c(seq(0, 100, 10))) +
   geom_text(aes(label = sprintf('n = %s', n_trial), y = 101), hjust = 0, 
             size = 2, 
