@@ -46,7 +46,13 @@ Ready J et al. (2010). Predicting the distributions of marine organisms at the g
 Spalding MD et al. (2007). Marine ecoregions of the world: a bioregionalization of coastal and shelf areas. BioScience, 57(7), 573-583.
 
 
+### TO INCLUDE:
 
+Datasets and tools: 
+
+* WDPA
+* R?
+* QGIS?
 
 
 

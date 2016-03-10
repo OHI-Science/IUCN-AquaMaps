@@ -2,20 +2,20 @@
 # Methods
 
 **Comparison of taxonomic and regional distribution:** 
-To examine the overall taxonomic distribution across the spatial datasets (Fig. 1A), we grouped species by taxonomic class and data source (IUCN, AquaMaps, or both), and examined the proportion of each class represented in each data source category.
+To examine the overall taxonomic distribution across the spatial datasets (Fig. 1), we grouped species by taxonomic class and data source (IUCN, AquaMaps, or both), and examined the proportion of each class represented in each data source category.
 
-To compare the spatial representation of the two datasets directly, we rasterized the IUCN species polygons to the same 0.5° grid as the AquaMaps species maps; species presence within a grid cell was determined by any non-zero overlap of a species polygon with the cell, and species richness per cell was simply the count of the species present.  For the AquaMaps dataset, we determined per-cell species richness by counting all species with non-zero probability of occurrence, to best approximate the "extent of occurrence" generally indicated by IUCN maps.  We represented relative distribution of species richness for each dataset by plotting average species count against latitude and longitude (Fig. 1B, 1C).
+To compare the spatial representation of the two datasets directly, we rasterized the IUCN species polygons to the same 0.5° grid as the AquaMaps species maps; species presence within a grid cell was determined by any non-zero overlap of a species polygon with the cell, and number of species per cell was simply the count of the species present.  For the AquaMaps dataset, we determined per-cell species count by including all species with non-zero probability of occurrence, to best approximate the "extent of occurrence" generally indicated by IUCN maps.  We represented relative distribution of species count for each dataset by plotting average species count against latitude and longitude (Fig. A, 2B).
 
 **Comparison of paired maps:** 
 Using genus and species binomials as a matching key, we selected the subset of marine species that have range maps in both IUCN and AquaMaps current native distribution.  To avoid double-counting, we removed subpopulations and species aliases.  We determined species presence within each spatial cell using the same criteria as outlined above.
 
-Overlaying paired distribution maps for a given species, we defined and calculated _distribution alignment_ and _extent alignment_ and plotted these in Fig. 2:
+Overlaying paired distribution maps for a given species, we defined and calculated _distribution alignment_ and _extent alignment_ and plotted these in Fig. 3A:
 
 $$\alpha_{dist} = \frac{A_{small \cap large}}{A_{large}} * 100\%$$
 
 $$\alpha_{area} = \frac{A_{small}}{A_{large}} * 100\%$$
 
-We visually inspected a random selection of paired distribution maps from each quadrant to identify possible mechanistic causes of misalignment.  To verify that IUCN predicted unsuitable habitat for depth limited species, we used QGIS (REF) to overlay a selection of IUCN and AquaMaps maps with a 200 meter bathymetry contour.
+For each species with ranges described in both IUCN and AquaMaps, $A_{small}$ and $A_{large}$ indicate the smaller and larger range representation (regardless of which dataset).  $A_{small \cap large}$ represents the amount of overlapping area between the two datasets. We visually inspected a random selection of paired distribution maps from each quadrant to identify possible mechanistic causes of misalignment.  To verify that IUCN predicted unsuitable habitat for depth limited species, we used QGIS (REF) to overlay a selection of IUCN and AquaMaps maps with a 200 meter bathymetry contour.
 
 **Methods for OHI case study: **
 Using methods and supplemental materials from OHI (Halpern et al. 2012, 2015), we modified the original code for OHI 2015 Species status (SPP) (REF), allowing for flexibility in prioritized data source and AquaMaps presence threshold.  We ran the SPP code three times, prioritizing IUCN over AquaMaps for a 0% threshold, and prioritizing AquaMaps over IUCN for both a 40% and 0% threshold.  We compared each of these to the output of the published OHI 2015 SPP model (prioritizing IUCN over AquaMaps at a 40% threshold).

@@ -236,7 +236,7 @@ No.  Save that for time-series analysis.
 ### 
 
 ### compare results using only IUCN species maps
-dir_iucn_data <- '/var/data/ohi/git-annex/globalprep/_raw_data/iucn_spp'
+dir_iucn_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data/iucn_spp')
 iucn_cells_file <- file.path(dir_iucn_data, 'iucn_cells_v2016.csv')
 iucn_spp_cells <- read_csv(iucn_cells_file, col_types = 'cddddc') %>%
   as.data.frame(stringsAsFactors = FALSE)

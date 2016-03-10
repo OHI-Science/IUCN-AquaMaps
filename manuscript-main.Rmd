@@ -1,6 +1,6 @@
 ---
 title: "Aligning marine species range data to better serve science and conservation"
-author: "Casey O'Hara^1^, Jamie Afflerbach^1^, Benjamin S. Halpern<sup>1, 2, 3</sup>"
+author: "Casey O'Hara^1^, Jamie Afflerbach^1^, Benjamin S. Halpern<sup>1, 2, 3</sup>, Courtney Scarborough^1^"
 output:
   html_document:
     highlight: haddock
