@@ -272,6 +272,8 @@ iucn_spp_sum2 <- iucn_spp_sum %>%
 
 knitr::kable(iucn_spp_sum2)
 
+write_csv(iucn_spp_sum, file.path(dir_data, 'iucn_spp_summary.csv'))
+
 # |cat2015 | n_tot| n_cat| pct_cat|
 # |:-------|-----:|-----:|-------:|
 # |gap     |  4024|   257|     6.4|
