@@ -2,13 +2,13 @@
 title: "Aligning marine species range data to better serve science and conservation"
 author: "Casey O'Hara^1^, Jamie Afflerbach^1^, Benjamin S. Halpern<sup>1, 2, 3</sup>"
 output:
-  pdf_document:
-    number_sections: yes
-    toc: no
   html_document:
     highlight: haddock
     number_sections: yes
     theme: spacelab
+    toc: no
+  pdf_document:
+    number_sections: yes
     toc: no
   word_document: default
 ---
@@ -100,17 +100,22 @@ spp_am <- read_csv(spp_am_file)
 -----
 
 ``` {r calc species numbers, echo = FALSE}
-n_spp_all    <- nrow(spp_am) + nrow(spp_iucn_maps) - nrow(spp_map_pairs)
 n_spp_am     <- nrow(spp_am)
 n_spp_am_rev <- nrow(spp_am %>% filter(reviewed == 1))
-n_spp_iucn   <- nrow(spp_iucn_maps)
-n_spp_both   <- nrow(spp_map_pairs)
+n_spp_iucn   <- length(unique(spp_iucn_maps$iucn_sid))
+n_spp_both   <- length(unique(spp_map_pairs$iucn_sid))
+n_spp_all    <- n_spp_am + n_spp_iucn - n_spp_both
 
 p_spp_am     <- round(n_spp_am/n_spp_all * 100, 1)
-p_spp_am_rev <- round(n_spp_am_rev/n_spp_am * 100, 1)
+p_spp_iucn   <- round(n_spp_iucn/n_spp_all * 100, 1)
 p_both_am    <- round(n_spp_both/n_spp_am   * 100, 1)
 p_both_iucn  <- round(n_spp_both/n_spp_iucn * 100, 1)
 p_both_all   <- round(n_spp_both/n_spp_all  * 100, 1)
+
+spp_list <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
+area_align_mean <- round(mean(spp_list$area_ratio, na.rm = TRUE), 1)
+dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
+
 ```
 -----
 

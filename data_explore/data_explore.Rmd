@@ -56,8 +56,8 @@ Quadrant map and quad breakdown by taxa and risk
 ``` {r pct_overlap_vs_ratio_of_area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
 ### define 25%, 50%, and 75% quartiles for both x and y axes
-area_align_med <- median(spp_list$area_ratio, na.rm = TRUE)
-dist_align_med <- median(spp_list$sm_perc, na.rm = TRUE)
+area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
+dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
 
 ### define representative species from each quadrant, for over-plotting
 # spp_quads <- c('q1' = 'Kajikia albida', 
@@ -82,23 +82,23 @@ scatter_arearatio_vs_overlap <- ggplot(spp_list %>%
                                            size = lg_area_pct)) + 
   ggtheme_plot + 
   ### color the quadrant backgrounds:
-    annotate("rect", xmin = area_align_med, xmax = 100, 
-                     ymin = dist_align_med, ymax = 100, 
+    annotate("rect", xmin = area_align_mean, xmax = 100, 
+                     ymin = dist_align_mean, ymax = 100, 
              alpha = .3, 
 #             fill= "green4")  + 
              fill= "#4dac26")  + 
-    annotate("rect", xmax = area_align_med, xmin =   0, 
-                     ymin = dist_align_med, ymax = 100, 
+    annotate("rect", xmax = area_align_mean, xmin =   0, 
+                     ymin = dist_align_mean, ymax = 100, 
              alpha = .3, 
 #             fill= "greenyellow") + 
              fill= "#b8e186") + 
-    annotate("rect", xmin = area_align_med, xmax = 100, 
-                     ymax = dist_align_med, ymin =   0, 
+    annotate("rect", xmin = area_align_mean, xmax = 100, 
+                     ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
 #             fill= "orange") + 
              fill= "#f1b6da") + 
-    annotate("rect", xmax = area_align_med, xmin =   0, 
-                     ymax = dist_align_med, ymin =   0, 
+    annotate("rect", xmax = area_align_mean, xmin =   0, 
+                     ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
 #             fill= "orangered2") + 
              fill= "#d01c8b") + 
@@ -117,37 +117,39 @@ scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
                         labels = c('0%', '25%', '50%', '75%', '100%')) + 
   scale_x_continuous(expand = c(0, 0), 
                      limits = c(0, 102),
-                     breaks = c(seq(0, 100, 25))) +
+                     breaks = c(seq(0, 100, 25)),
+                     labels = c('0%', '25%', '50%', '75%', '100%')) +
   scale_y_continuous(expand = c(0, 0),
                      limits = c(0, 102),
-                     breaks = c(seq(0, 100, 25)))
+                     breaks = c(seq(0, 100, 25)),
+                     labels = c('0%', '25%', '50%', '75%', '100%'))
 
   
-### here are median labels:
+### here are mean labels:
 scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
   annotate(geom = 'text',
-           x = area_align_med, y = 5,
+           x = area_align_mean, y = 5,
            hjust = 0, vjust = 0,
            color = 'grey30', 
            size = 2,
            fontface = 'bold.italic', angle = 90,
-           label = sprintf('Median = %s%%', round(area_align_med, 1))) +
+           label = sprintf('Mean = %s%%', round(area_align_mean, 1))) +
   annotate(geom = 'text',
-           x = 5, y = dist_align_med,
+           x = 5, y = dist_align_mean,
            hjust = 0, vjust = 0,
            color = 'grey30', 
            size = 2,
            fontface = 'bold.italic', angle = 0,
-           label = sprintf('Median = %s%%', round(dist_align_med, 1)))
+           label = sprintf('Mean = %s%%', round(dist_align_mean, 1)))
   
-### here are median lines:
+### here are mean lines:
 # scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
-#   geom_vline(x = area_align_med,
+#   geom_vline(x = area_align_mean,
 #              color = 'grey50', linetype = 'dashed') +
-#   geom_hline(y = dist_align_med,
+#   geom_hline(y = dist_align_mean,
 #              color = 'grey50', linetype = 'dashed')
 
-### here are individual species, identified and named on the plot:
+### here are individual species, identified and namean on the plot:
 # scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
 #   geom_point(data = spp_list_label, shape = 4, color = 'grey30', size = 4) + 
 #   geom_text(data = spp_list_label, 
@@ -159,7 +161,7 @@ scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
 #             vjust = 1.5)
 
 scatter_arearatio_vs_overlap <- scatter_arearatio_vs_overlap +
-  labs(x = bquote('Extent alignment '*alpha['ext']*' (%)'), 
+  labs(x = bquote('Area alignment '*alpha['ext']*' (%)'), 
        y = bquote('Distribution alignment '*alpha['dist']*' (%)'), 
 #       title = 'Distribution alignment vs Extent alignment',
        color = 'Risk', size = '% ocean range') 
@@ -171,6 +173,7 @@ ggsave(file.path(dir_fig, 'AreaRatiovsPercOverlap.png'), width = 17.8, height = 
 ```
 
 
+
 ``` {r examine_spp_gp_quartiles, echo = FALSE, eval = TRUE}
 
 spp_list1 <- spp_list %>%
@@ -180,13 +183,13 @@ spp_list1 <- spp_list %>%
 
 ### Create species lists by quadrant
 spp_list_q1 <- spp_list1 %>%
-  filter(area_ratio >= median(area_ratio) & sm_perc >= median(sm_perc))
+  filter(area_ratio >= mean(area_ratio) & sm_perc >= mean(sm_perc))
 spp_list_q2 <- spp_list1 %>%
-  filter(area_ratio < median(area_ratio) & sm_perc >= median(sm_perc))
+  filter(area_ratio < mean(area_ratio) & sm_perc >= mean(sm_perc))
 spp_list_q3 <- spp_list1 %>%
-  filter(area_ratio >= median(area_ratio) & sm_perc < median(sm_perc))
+  filter(area_ratio >= mean(area_ratio) & sm_perc < mean(sm_perc))
 spp_list_q4 <- spp_list1 %>%
-  filter(area_ratio < median(area_ratio) & sm_perc < median(sm_perc))
+  filter(area_ratio < mean(area_ratio) & sm_perc < mean(sm_perc))
 
 spp_list_quads <- spp_list1 %>%
   mutate(quad = NA,
@@ -247,13 +250,16 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
 #                                'q2 dist-matched'   = 'greenyellow', 
 #                                'q3 area-matched'   = 'orange', 
 #                                'q4 poorly matched' = 'orangered2')) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1.1)) +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 1.1),
+                     breaks = c(0, .25, .5, .75, 1.0),
+                     labels = c('0%', '25%', '50%', '75%', '100%')) +
   geom_text(aes(label = sprintf('n = %s', n_spp), y = 1.01), hjust = 0, 
             size = 2, 
             color = 'grey30') +
   coord_flip() +
   labs(x = 'Taxonomic Group', 
-       y = 'Relative proportion of species per quadrant', 
+       y = 'Percent of species by quadrant', 
 #       title = 'Taxonomic group by quadrant',
        fill = 'Alignment')
 
@@ -266,8 +272,31 @@ write_csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads.csv'))
 
 ```
 
+``` {r count_occurrences_by_quad, echo = FALSE, warning = FALSE}
 
-``` {r examine_risk_quartiles, echo = FALSE, eval = FALSE}
+gbif_occur <- read_csv(file.path(dir_data, 'gbif_occurrence.csv'))
+obis_occur <- read_csv(file.path(dir_data, 'obis_occurrence.csv'))
+
+totes_occur <- obis_occur %>%
+  left_join(gbif_occur) %>%
+  rowwise() %>%
+  mutate(mean_occ = mean(c(gbif_occ, obis_occ), na.rm = TRUE)) %>%
+  group_by(iucn_sid) %>%
+  summarize(mean_occ = mean(mean_occ, na.rm = TRUE),
+            tots_occ = sum(mean_occ, na.rm = TRUE))
+
+spp_quads_occ <- spp_list_quads %>%
+  left_join(totes_occur %>%
+              dplyr::select(iucn_sid, mean_occ),
+            by = 'iucn_sid')
+
+write_csv(spp_quads_occ, file.path(dir_data, 'spp_quads_occ.csv'))
+
+
+```
+  
+
+``` {r examine_risk_quartiles, echo = FALSE, eval = TRUE}
 
 ### Summarize quadrant species list by species group (e.g. CORALS1)
 spp_risk_q1 <- spp_list_q1 %>%
@@ -323,13 +352,16 @@ barchart_spp_risk_quads <- ggplot(spp_risk_quadrants1 %>%
                                'q2 dist-matched'   = '#b8e186', 
                                'q3 area-matched'   = '#f1b6da', 
                                'q4 poorly matched' = '#d01c8b')) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1.1)) +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 1.1),
+                     breaks = c(0, .25, .5, .75, 1.0),
+                     labels = c('0%', '25%', '50%', '75%', '100%')) +
   geom_text(aes(label = sprintf('n = %s', n_tot_cat), y = 1.01), hjust = 0, 
             size = 2, 
             color = 'grey30') +
   coord_flip() +
   labs(x = 'Risk category', 
-       y = 'Relative proportion of species per quadrant', 
+       y = 'Percent of species by quadrant', 
 #       title = 'Risk category by quadrant',
        fill = 'Alignment')
 
@@ -472,7 +504,7 @@ knitr::kable(taxa_df %>%
                              Both = n_class_both))
 ```
 
-``` {r plot bar charts by taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE}
+``` {r plot bar charts by taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
 ### bar charts comparing number of species in each class for each data set
 
 # taxa_df_long1 <- taxa_df %>%
@@ -505,7 +537,8 @@ bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) 
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 130),
-                     breaks = c(0, 25, 50, 75, 100)) + 
+                     breaks = c(0, 25, 50, 75, 100),
+                     labels = c('0%', '25%', '50%', '75%', '100%')) + 
   labs(# title = 'Species maps by taxonomic class',
        x = 'Class', 
        y = 'Percent of mapped species',
@@ -544,7 +577,7 @@ ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'),
 
 # Years for IUCN maps?
 
-``` {r get_iucn_citation_info, echo = FALSE}
+``` {r get_iucn_citation_info, echo = FALSE, warning = FALSE, eval = FALSE}
 
   ### Queries shapefiles and extracts column headers.  Use to help identify which
   ### species groups have no id_no field, and possibly other fields to help 
