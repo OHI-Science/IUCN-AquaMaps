@@ -272,8 +272,6 @@ iucn_spp_sum2 <- iucn_spp_sum %>%
 
 knitr::kable(iucn_spp_sum2)
 
-write_csv(iucn_spp_sum, file.path(dir_data, 'iucn_spp_summary.csv'))
-
 # |cat2015 | n_tot| n_cat| pct_cat|
 # |:-------|-----:|-----:|-------:|
 # |gap     |  4024|   257|     6.4|
@@ -405,6 +403,8 @@ mpa_all_runs <- mpa_klein_am2014 %>%
 #   arrange(mpa_cat)
 
 write_csv(mpa_all_runs, file.path(dir_data, 'mpa_all_runs.csv'))
+
+# mpa_runs <- read_csv(file.path(dir_data, 'mpa_all_runs.csv'))
 ```
 
 
@@ -470,3 +470,5 @@ write_csv(mpa_all_runs_wide, file.path(dir_data, 'mpa_all_runs_summary.csv'))
 |am2015 (0%)            | 22889|1.2% |46.5%        |44.5%        |6.4%          |1.5%         |
 |am2015 (0%) + iucn2015 | 24634|2%   |48%          |42.2%        |6.2%          |1.6%         |
 |iucn2015               |  4024|6.4% |66.8%        |20.1%        |3.8%          |2.9%         |
+
+``` {r check_iucn_spp}

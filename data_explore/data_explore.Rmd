@@ -377,7 +377,27 @@ ggsave(plot = barchart_spp_risk_quads,
 ``` {r child = 'data_explore_pt3.Rmd', eval = FALSE}
 ```
 
+``` {r plot_spp_iucn_gaps_tenplus, eval = TRUE, echo = FALSE}
 
+iucn_gap10     <- read_csv(file.path(dir_data, 'iucn_gaps_tenplus.csv'))
+iucn_gap10_spp <- unique(iucn_gap10[iucn_gap10$sciname %in% spp_list$sciname, ])
+
+iucn_gapmaps <- sample_n(iucn_gap10_spp %>% filter(cat == 'gap'), 10)
+iucn_10maps  <- sample_n(iucn_gap10_spp %>% filter(cat != 'gap'), 10)
+
+if(!exists('iucn_spp_cells')) 
+  iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'))
+
+for (spp in iucn_gapmaps$sciname) { # i = 1
+  spp_plot <- plot_rangemap(spp)
+  spp_solo <- spp_list %>% filter(sciname == spp)
+  spp_plot <- spp_plot +
+    labs(title = sprintf('%s: %s', spp, spp_solo$spp_group_text))
+
+  print(spp_plot)
+}
+
+```
 ***
 
 Breakdown maps by taxa
