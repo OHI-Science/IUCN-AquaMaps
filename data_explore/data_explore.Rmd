@@ -380,19 +380,37 @@ ggsave(plot = barchart_spp_risk_quads,
 ``` {r plot_spp_iucn_gaps_tenplus, eval = TRUE, echo = FALSE}
 
 iucn_gap10     <- read_csv(file.path(dir_data, 'iucn_gaps_tenplus.csv'))
-iucn_gap10_spp <- unique(iucn_gap10[iucn_gap10$sciname %in% spp_list$sciname, ])
+iucn_gap10_spp <- unique(iucn_gap10[iucn_gap10$iucn_sid %in% spp_list$iucn_sid, ])
 
 iucn_gapmaps <- sample_n(iucn_gap10_spp %>% filter(cat == 'gap'), 10)
 iucn_10maps  <- sample_n(iucn_gap10_spp %>% filter(cat != 'gap'), 10)
 
-if(!exists('iucn_spp_cells')) 
-  iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'))
+if(!exists('iucn_spp_cells')) {
+  iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'),
+                             col_types = 'cddddc')
+  am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'))
+}
 
-for (spp in iucn_gapmaps$sciname) { # i = 1
+am_thresh = 0
+
+message('Printing gap maps')
+for (i in 1:nrow(iucn_gapmaps)) { ### i <- 1
+  spp <- iucn_gapmaps[i, ]
+  
   spp_plot <- plot_rangemap(spp)
-  spp_solo <- spp_list %>% filter(sciname == spp)
   spp_plot <- spp_plot +
-    labs(title = sprintf('%s: %s', spp, spp_solo$spp_group_text))
+    labs(title = sprintf('%s: %s', spp$sciname, spp$spp_group_text))
+
+  print(spp_plot)
+}
+
+message('Printing >10% maps')
+
+for (i in 1:nrow(iucn_10maps)) { ### i <- 1
+  spp <- iucn_10maps[i, ]
+  spp_plot <- plot_rangemap(spp)
+  spp_plot <- spp_plot +
+    labs(title = sprintf('%s: %s', spp$sciname, spp$spp_group_text))
 
   print(spp_plot)
 }

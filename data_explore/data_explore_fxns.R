@@ -181,12 +181,12 @@ get_spp_map <- function(sid, spp_cells) {
 ### Plot Species Map function
 ### uses ggplot to create a formatted map of species ranges, including
 ### Aquamaps, IUCN, and overlapped ranges; returns the plot object.
-plot_rangemap <- function(sid) {
-  map_iucn <- get_spp_map(sid, iucn_spp_cells) %>%
+plot_rangemap <- function(spp) {
+  map_iucn <- get_spp_map(spp$iucn_sid, iucn_spp_cells) %>%
     mutate(iucn_pres = ifelse(area_iucn > 0, 1, 0)) %>%
     select(-area_iucn, -iucn_sid) %>%
     unique()
-  map_am   <- get_spp_map(sids$am_sid, am_spp_cells) %>%
+  map_am   <- get_spp_map(spp$am_sid, am_spp_cells) %>%
     mutate(am_pres = ifelse(am_prob >= am_thresh, 1, 0)) %>%
     select(-am_sid, -am_prob) %>%
     unique()
@@ -218,7 +218,7 @@ plot_rangemap <- function(sid) {
     borders('world', color='gray40', fill='gray45', size = .1) +  # create a layer of borders
     scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
     scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2)) +
-    labs(title = sprintf('IUCN species ID: %s', sid), x = NULL, y = NULL) 
+    labs(title = sprintf('IUCN species ID: %s', spp$iucn_sid), x = NULL, y = NULL) 
 }
 
 #################################################################=

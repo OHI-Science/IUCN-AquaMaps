@@ -23,11 +23,13 @@ A rich literature tackles the many dimensions of these questions.
 
 One major outcome of this body of science is the various compiled databases of species distribution maps. Two global-scale repositories predict marine species ranges throughout the world's oceans – AquaMaps (Kaschner et al. ___2013???___) and International Union for Conservation of Nature (IUCN) (IUCN 2015).  These two spatial datasets have been used for a wide range of purposes, including assessing marine species status (Halpern et al. 2012, 2015 _both_; Selig et al. 2013 _both_), evaluating global biodiversity patterns (Coll et al. 2010 _AM_; Martin et al. 2014 _both and others_, Pimm et al. 2014 _IUCN, mostly focusing on terrestrial but some marine_, Kaschner et al. 2011), predicting range shifts (Molinos et al. 2015 _AquaMaps_), and setting conservation priorities (Klein et al. 2015 _AquaMaps_).
 
-___BSH:___ _I think Julie makes this comment below, but we may need to be able to substantiate this somehow.  Is there a way to quickly figure out how many studies have used AM vs. IUCN?_  
+___BSH comment:___ _I think Julie makes this comment below, but we may need to be able to substantiate this somehow.  Is there a way to quickly figure out how many studies have used AM vs. IUCN?_  ___CCO: I can give # of citations for AquaMaps foundational papers (~315); IUCN is tougher since IUCN citations aren't necessarily spatial or marine.  How important is this - i.e. can I get away without making a big deal here? or making a sweeping statement of some sort??___
 
+<!--
 ___CCO:___ _What about age - AquaMaps is pretty recent (2006 at earliest); before that, would IUCN have been the dominant dataset for marine?  Maybe we can track citations of AquaMaps, but citations of IUCN are generic - just cite the Red List - not referencing spatial information specifically, much less marine.  Going by citation year field on the maps themselves, the oldest marine record I can find is 2004._
 
 _Three foundational papers relating to AquaMaps (Kaschner et al. 2006, 2011; Ready et al. 2010) have been cited a total of 315 times._
+-->
 
 The two datasets ostensibly describe the same information, but significant differences in methodology and intent could lead to dramatically different understandings of our marine ecosystems, with significant implications for policy and conservation recommendations.  Importantly, biases in taxonomic or spatial coverage within a dataset could shift management and conservation actions away from places or species that are most in need.  Inaccurate indications of presence or absence could lead to ineffective marine reserve systems and management plans (Rondinini et al. 2006, Jetz et al. 2008).
 
@@ -120,13 +122,17 @@ Given that only `r format(p_both_all, big.mark = ',')` percent of species overla
 
 Klein et al. (2015) compare the global distribution of species to the global distribution of marine protected areas to assess how well the MPAs protect key species and identify which species fall through gaps in protection.  The study relied on the AquaMaps database, using a probability of occurrence threshold of 50% or greater, to determine species presence, and the World Database of Protected Areas to define zones of marine protection.  The study determined that the global MPA network is woefully inadequate in protecting marine biodiversity: 90.5% of species have less than 5% of their overall range represented within MPAs and 1.4% of species have no protection at all ("gap" species).
 
- (<a href = '#fig5'>Figure 5</a>) displays the results of applying this methodology under new scenarios.  When comparing the conclusions based upon an IUCN-only scenario to an AquaMaps-only scenario (using 2015 AquaMaps data and a 0% threshold sets the most meaningful comparison) we found a five-fold increase in the proportion of gap species (6.4% of species vs. 1.2%) and dramatically larger proportion of species with less than 2% of their range protected (73.2% of species vs. 47.7%).  However, this comparison also indicates a larger proportion of well-protected species with greater than 10% of range protected (2.9% of species vs. 1.5%).  Conclusions drawn from each of these datasets would paint dramatically different pictures of the protection afforded by our current global MPA network. 
+ (<a href = '#fig5'>Figure 5</a>) displays the results of applying this methodology under new scenarios.  When comparing the conclusions based upon an IUCN-only scenario to an AquaMaps-only scenario (using 2015 AquaMaps data and a 0% threshold sets the most meaningful comparison to IUCN's "limits of distribution") we found a five-fold increase in the proportion of gap species (6.4% of species vs. 1.2%) and dramatically larger proportion of species with less than 2% of their range protected (73.2% of species vs. 47.7%).  However, this comparison also indicates a larger proportion of well-protected species with greater than 10% of range protected (2.9% of species vs. 1.5%).  Conclusions drawn from each of these datasets would paint dramatically different pictures of the protection afforded by our current global MPA network. 
  
-___If you have room, I think you could add a bit more interpretation of these results here. Could discuss the commission and omission stuff here too to describe these somewhat non-intuitive results??? CS___
+___working on checking why so many gaps and 10+ species show up with IUCN.  I will write up a paragraph once I've had a little more time to examine maps___
 
-- check which species are gap species and look at some maps
-- check which species are 10%+ species and look at some maps
-- where do these species fall georegionally? is there anything odd about their ranges?
+- check which species are gap species; check maps
+- check which species are 10%+ species and check maps
+- where do these species fall georegionally? is there anything odd about their ranges? any reason why IUCN would be 
+- hypothesis to explain more gap species: Aquamaps more diffuse than IUCN, catching individual cells that could be suitable; a single cell (even low probability) moves a species from "gap" to non-gap status.  IUCN more clustered by polygon boundaries; so no scattered cells to accidentally fall into an MPA. 
+    - introducing errors: AM = likely commission (overestimates species with tiny bits of range in MPAs) vs IUCN = possible omission (misses possible real habitat that falls within MPAs)
+- hypothesis to explain more 10%+ species - ten random samples most have IUCN polygons just east of Australia where a large MPA is indicated - Great Barrier Reef I assume - a single large poly falling in GBR gets a high score, while for the same species, many of the AM ranges (also in same area) scatter suitable area over larger extent, so lower percent of species range is protected
+    - introducing errors: IUCN = likely omission (skipping possible real habitat outside of MPAs) and likely commission (possibly overcounting real habitat in MPAs e.g. GBR); AquaMaps = probably a little commission (possibly underestimating, if it overpredicts lots of range outside MPAs, thus reducing the proportion of protected range)
 
 -----
 
@@ -140,6 +146,5 @@ The AquaMaps methodology is a powerful means of quickly estimating species distr
 
 When using AquaMaps data alone, changing the probability of occurrence threshold to determine presence becomes a tradeoff between errors of commission (low threshold) and omission (high threshold).  Using AquaMaps in conjunction with IUCN can increase the taxonomic and spatial breadth of coverage, as long as the differences between the datasets can be reasonably minimized. In this case, we recommend a presence threshold of 0% as it most closely approximates the "limits of distribution" criterion defined by IUCN data providers.
 
-<!-- * Additional filters on AquaMaps distribution criteria, such as expert review status or the number of occurrence cells used to generate the species model, can help avoid overextrapolation for data poor species. _using other attributes and variables to filter? this seems outside the scope of this paper_ -->
-    
-_(do we need a wrap-it-up paragraph here?  I put that more at the top of the conclusions section... could shift it down here, but probably not needed in both places)_
+AquaMaps and IUCN are two of the most important databases providing species distribution information across a wide range of marine species, taxa, and regions.  The different methodologies behind the creation of each database is likely to introduce different rates of commission and omission errors, which can have a profound impact on our understanding of species ranges.  By comparing overlapping species maps from these two databases, we have identified likely sources of error, allowing data users to address or account for them.  For users of AquaMaps, IUCN, and other datasets of species distribution, reducing the likelihood of these errors is critical to effective biodiversity research and conservation action.
+

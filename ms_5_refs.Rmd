@@ -1,5 +1,6 @@
-# Achnowledgments
+# Acknowledgments
 <!-- Acknowledgments. List acknowledgments and funding sources. PNAS collaborates with FundRef to use a standard taxonomy of funder names. Dedications are rarely allowed. -->
+
 
 # References
 
@@ -46,14 +47,16 @@ Ready J et al. (2010). Predicting the distributions of marine organisms at the g
 Spalding MD et al. (2007). Marine ecoregions of the world: a bioregionalization of coastal and shelf areas. BioScience, 57(7), 573-583.
 
 
-### TO INCLUDE:
-
-Datasets and tools: 
+### Datasets and tools: cite these?
 
 * WDPA
-* R?
-* QGIS?
+IUCN and UNEP-WCMC (2014). The World Database on Protected Areas (WDPA) [On-line]. Cambridge, UK: UNEP- WCMC. Available at: www.protectedplanet.net [Accessed December 1, 2014].
 
+* R
+R Core Team (2015). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
+
+* QGIS
+QGIS Development Team (2015). QGIS Geographic Information System. Open Source Geospatial Foundation Project. http://qgis.osgeo.org
 
 
 
