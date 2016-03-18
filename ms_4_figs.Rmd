@@ -67,7 +67,7 @@ n_bonyfish <- nrow(spp_map_pairs %>%
 ```
 
 
->  __Fig. 1.__ (A) Number and proportion of species by taxa included in each dataset.  Overlapping species are dominated by bony fishes (`r n_bonyfish` species, primarily tropical taxa) and corals (`r n_corals` species).  
+>  __Fig. 1.__ Number and proportion of species by taxa included in each dataset.  Overlapping species are dominated by bony fishes (`r n_bonyfish` species, primarily tropical taxa) and corals (`r n_corals` species).  
 
 ### Fig. 2
 <a id = 'fig2'></a>
