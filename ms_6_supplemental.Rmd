@@ -157,3 +157,15 @@ AquaMaps distribution maps indicate "probability of occurrence" within each 0.5Â
 
 At a presence threshold of 40%, as used in the Ocean Health Index Species subgoal, the bulk of AquaMaps species suffer a significant decrease in represented range, and some species lose nearly their entire range.  Incrementing the presence threshold from 0.00 to 1.00 for the entire AquaMaps dataset, the shallow downward trend indicates a low but consistent sensitivity to threshold choice, with no surprising tradeoffs that could suggest an "optimal" threshold.  This pattern may not hold true for all subsets of AquaMaps species, however, whether subsetting by taxa or by georegion.
 
+
+### MPA gap analysis - explanation
+ 
+___why so many gaps and 10+ species show up with IUCN.  I will write up a paragraph once I've had a little more time to examine maps___
+
+- check which species are gap species; check maps
+- check which species are 10%+ species and check maps
+- where do these species fall georegionally? is there anything odd about their ranges? any reason why IUCN would be 
+- hypothesis to explain more gap species: Aquamaps more diffuse than IUCN, catching individual cells that could be suitable; a single cell (even low probability) moves a species from "gap" to non-gap status.  IUCN more clustered by polygon boundaries; so no scattered cells to accidentally fall into an MPA. 
+    - introducing errors: AM = likely commission (overestimates species with tiny bits of range in MPAs) vs IUCN = possible omission (misses possible real habitat that falls within MPAs)
+- hypothesis to explain more 10%+ species - ten random samples most have IUCN polygons just east of Australia where a large MPA is indicated - Great Barrier Reef I assume - a single large poly falling in GBR gets a high score, while for the same species, many of the AM ranges (also in same area) scatter suitable area over larger extent, so lower percent of species range is protected
+    - introducing errors: IUCN = likely omission (skipping possible real habitat outside of MPAs) and likely commission (possibly overcounting real habitat in MPAs e.g. GBR); AquaMaps = probably a little commission (possibly underestimating, if it overpredicts lots of range outside MPAs, thus reducing the proportion of protected range)

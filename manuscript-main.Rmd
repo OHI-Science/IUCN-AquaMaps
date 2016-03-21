@@ -1,6 +1,6 @@
 ---
 title: "Aligning marine species range data to better serve science and conservation"
-author: Casey O'Hara^1^, Jamie Afflerbach^1^, Benjamin S. Halpern<sup>1, 2, 3</sup>,
+author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Benjamin S. Halpern<sup>1, 2, 3</sup>,
   Courtney Scarborough^1^
 output:
   word_document: default
@@ -26,7 +26,7 @@ _Author affiliation:_ <!--Include department, institution, and complete address,
 _Corresponding author:_ <!--Corresponding author: The name, complete address, telephone number, and email address of the author to whom correspondence and proofs should be sent. Email addresses will appear in the article footnotes.-->
 Casey O'Hara, National Center for Ecological Analysis and Synthesis, 735 State Street, Suite 300, Santa Barbara CA 93101; (805) 892-2500; ohara@nceas.ucsb.edu
 
-_Classification:_ BIOLOGICAL SCIENCES: Ecology? Environmental Sciences? Sustainability Science?
+_Classification:_ BIOLOGICAL SCIENCES: Sustainability Science
 
 _Keywords:_ <!--Keywords are listed below the abstract of the published article. At least three keywords are required at submission.  maybe species distribution maps, AquaMaps, IUCN, marine protected area planning, biodiversity status--> TBD
 
