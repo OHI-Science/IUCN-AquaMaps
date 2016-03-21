@@ -2,7 +2,7 @@
 
 This looks at the full 2014 Aquamaps dataset... should it be limited to species with valid categories?
 
-```{r aquamaps_load_data, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
+```{r aquamaps_load_data, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE, eval = TRUE}
 
 # get spp_cells raw data for aquamaps
 dir_aquamaps <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO/raw/aquamaps_2014')
@@ -23,7 +23,7 @@ spp <- as.data.frame(spp)
 
 ```
 
-```{r hist_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE}
+```{r hist_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE, eval = TRUE}
 
 spp_df3 <- spp_cells %>%
   group_by(species_id) %>%
@@ -47,15 +47,15 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
   ggtheme_plot + 
   geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
   geom_vline(xintercept = spp_df3_mean, color = 'darkred', linetype = 'dashed') + 
-  annotate('text', x = spp_df3_mean, y = .16, hjust = 0, vjust = -.5,
+  annotate('text', x = spp_df3_mean, y = .13, hjust = 0, vjust = -.5,
            angle = 90, 
-           #size = 2, 
+           size = 3, 
            color = 'grey20',
            label = 'mean') + 
   geom_vline(xintercept = spp_df3_med, color = 'grey30', linetype = 'dashed') + 
-  annotate('text', x = spp_df3_med, y = .16, hjust = 0, vjust = -.5,
+  annotate('text', x = spp_df3_med, y = .13, hjust = 0, vjust = -.5,
            angle = 90, 
-           #size = 2, 
+           size = 3, 
            color = 'grey20',
            label = 'median') + 
   scale_fill_manual(values = c('LC' = 'green4', 
@@ -67,16 +67,19 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
                                'NE' = 'grey70')) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  labs(x = 'Proportion of extent included when selecting a threshold of 0.4', 
-       y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3)))
+  labs(x = 'Proportion of range included when selecting a threshold of 0.4', 
+       y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3)),
+       fill = 'IUCN code')
 
-print(hist_area_vs_threshold)
+# print(hist_area_vs_threshold)
 
-ggsave(file.path(dir_fig, 'AMThreshold.png'), 
+ggsave(file.path(dir_fig, 'am_threshold.png'), 
        width = 17.8, height = 9, units = 'cm')
 ```
 
-```{r hist_lost_area_w_threshold_ne_dd_removed, warning = FALSE, message = FALSE, echo = FALSE}
+![](../figures/am_threshold.png)
+
+```{r hist_lost_area_w_threshold_ne_dd_removed, warning = FALSE, message = FALSE, echo = FALSE, eval = TRUE}
 
 spp_df3a <- spp_df3 %>% 
   filter(!iucn_code %in% c('DD', 'NE'))
@@ -90,13 +93,13 @@ hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) +
   geom_vline(xintercept = spp_df3a_mean, color = 'darkred', linetype = 'dashed') + 
   annotate('text', x = spp_df3a_mean, y = .16, hjust = 0, vjust = -.5,
            angle = 90, 
-           #size = 2, 
+           size = 3, 
            color = 'grey20',
            label = 'mean') + 
   geom_vline(xintercept = spp_df3a_med, color = 'grey30', linetype = 'dashed') + 
   annotate('text', x = spp_df3a_med, y = .16, hjust = 0, vjust = -.5,
            angle = 90, 
-           #size = 2, 
+           size = 3, 
            color = 'grey20',
            label = 'median') + 
   scale_fill_manual(values = c('LC' = 'green4', 
@@ -108,18 +111,19 @@ hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) +
                                'NE' = 'grey70')) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  labs(x = 'Proportion of extent included when selecting a threshold of 0.4', 
-       y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3a)))
+  labs(x = 'Proportion of range included when selecting a threshold of 0.4', 
+       y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3a)),
+       fill = 'IUCN code')
 
-ggsave(file.path(dir_fig, 'AMThreshold2.png'), 
+ggsave(file.path(dir_fig, 'am_threshold2.png'), 
        width = 17.8, height = 9, units = 'cm')
-
-print(hist_area_vs_threshold2)
 
 ```
 
-```{r scatter_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE}
+![](../figures/am_threshold2.png)
 
+
+```{r df_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE, eval = TRUE}
 ### create dataframe that gives me all species, their total number of cells, 
 ### total number of cells >= 0.4 prob, difference between the two and threat
 
@@ -145,81 +149,64 @@ thresh_df_summary <- threshold_df %>%
   group_by(thresh) %>%
   summarize(mean_prop   = mean(proportion, na.rm = TRUE),
             median_prop = median(proportion, na.rm = TRUE),
-            quant09 = quantile(proportion, .05),
+            quant05 = quantile(proportion, .05),
             quant25 = quantile(proportion, .25),
             quant75 = quantile(proportion, .75),
-            quant91 = quantile(proportion, .95))
-
-scatter_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = mean_prop)) + 
-  ggtheme_plot + 
-  geom_point(aes(y = median_prop), color = 'grey60') +
-  geom_point() + 
-  geom_abline(slope = -1, intercept = 1, color = 'red') + 
-  geom_vline(xintercept = 0.40, color = 'blue', linetype = 'dashed') +
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)) +
-  labs(# title = 'Mean (median) species range after presence threshold cutoff',
-       x = 'Presence threshold cutoff', 
-       y = 'Mean (median) relative species range')
-
-ggsave(file.path(dir_fig, 'scatter_AMThreshold.png'), 
-       width = 17.8, height = 9, units = 'cm')
-
-print(scatter_area_vs_threshold)
-
-
+            quant95 = quantile(proportion, .95))
+            
 ```
 
-```{r ribbon_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE}
 
-area_mean_model <- lm(mean_prop ~ thresh, data = thresh_df_summary)
-area_median_model  <- lm(median_prop ~ thresh,  data = thresh_df_summary)
-  
+```{r ribbon_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE, eval = TRUE}
 
 ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median_prop)) + 
   ggtheme_plot + 
 #  geom_point(position = position_jitter(w = .1), aes(color = scenario), alpha = .5) +
 
-  geom_ribbon(aes(ymax = quant91, ymin = quant09), alpha = .5, color = NA, fill = 'grey80') +
+  geom_ribbon(aes(ymax = quant95, ymin = quant05), alpha = .5, color = NA, fill = 'grey80') +
   geom_ribbon(aes(ymax = quant75, ymin = quant25), alpha = .5, color = NA, fill = 'grey70') +
-  geom_point(color = 'grey30') + 
-  geom_point(aes(y = mean_prop), color = 'darkred') + 
-  geom_abline(intercept = area_mean_model[['coefficients']][1],
-              slope     = area_mean_model[['coefficients']][2],
-              color = 'red') + 
+  geom_line(color = 'grey30') + 
+  # geom_line(aes(y = mean_prop), color = 'darkgreen') + 
+  # geom_abline(intercept = area_mean_model[['coefficients']][1],
+  #             slope     = area_mean_model[['coefficients']][2],
+  #             color = 'red') + 
   geom_vline(xintercept = 0.40, color = 'blue', linetype = 'dashed') +
   geom_vline(xintercept = 0.50, color = 'blue', linetype = 'dashed') +
   geom_vline(xintercept = 0.60, color = 'blue', linetype = 'dashed') +
   annotate('text', x = .40, y = .05, hjust = 0, vjust = -.5,
            angle = 90, 
-           #size = 2, 
+           size = 3, 
            color = 'grey20',
-           label = 'Ocean Health Index: 40%') + 
+           label = 'Halpern et al. 2012') + 
   annotate('text', x = .50, y = .05, hjust = 0, vjust = -.5,
            angle = 90, 
-           #size = 2, 
+           size = 3, 
            color = 'grey20',
-           label = 'MPA Gap Analysis: 50%') + 
+           label = 'Klein et al. 2015') + 
   annotate('text', x = .60, y = .05, hjust = 0, vjust = -.5,
            angle = 90, 
-           #size = 2, 
+           size = 3, 
            color = 'grey20',
-           label = 'Marine mammals: 60%') + 
-  annotate('text', x = .75, y = .85,
-           #size = 2, 
-           color = 'grey20',
-           label = 'R^2^ = .995') + 
-  scale_x_continuous(expand = c(0, 0)) +
+           label = 'Kaschner et al. 2006') + 
+  # annotate('text', x = .75, y = .85,
+  #          #size = 3, 
+  #          color = 'grey20',
+  #          label = 'R^2^ = .995') + 
+  scale_x_continuous(expand = c(0, 0), 
+                     breaks = c(  .2,    .4,    .5,    .6,    .8,   1.0),
+                     labels = c('20%', '40%', '50%', '60%', '80%', '100%')
+                     limits = c(0, 1.02)) +
   scale_y_continuous(expand = c(0, 0)) +
   labs(# title = 'Relative species range after presence threshold',
-       x = 'Presence threshold cutoff', 
-       y = 'Mean (median) relative species range')
+       x = 'AquaMaps presence threshold cutoff', 
+       y = 'Relative species range')
 
 print(ribbon_area_vs_threshold)
 
-ggsave(file.path(dir_fig, 'ribbon_AMThreshold.png'), 
+ggsave(file.path(dir_fig, 'ribbon_am_threshold.png'), 
        width = 17.8, height = 6, units = 'cm')
 
-
-
 ```
+
+![](../figures/ribbon_am_threshold.png)
+

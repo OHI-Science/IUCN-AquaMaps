@@ -14,3 +14,9 @@ Species distribution data provide the foundation for a wide range of ecological 
 ## Significance
 
 _Significance Statement. Authors must submit a 120-word-maximum statement about the significance of their research paper written at a level understandable to an undergraduate-educated scientist outside their field of specialty. The primary goal of the Significance Statement is to explain the relevance of the work in broad context to a broad readership. The Significance Statement appears in the paper itself and is required for all research papers._
+
+- ocean ecosystems provide broad benefits to humans, but are under pressure from human activity and climate change; ensuring sustainability of benefits depends on effective management and protection of resources.
+- Effective management and protection of our ocean ecosystems depends on understanding how species are distributed globally.  
+- Two key datasets of marine species ranges communicate an understanding of the global distribution of marine species - and are commonly used to inform management and protection research and policy.
+- substantial differences highlight important gaps in understanding (or communicating) species ranges, leading to ineffective management and protection.
+- identifying these differences points to solutions to address them and improve understanding.

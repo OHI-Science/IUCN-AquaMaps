@@ -1,6 +1,6 @@
 ###Global representation of species
 
-```{r setup, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+```{r setup_from_data_explore, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 # Libraries and Paths
 
@@ -31,37 +31,21 @@ source('data_explore_fxns.R')
 
 By counting the number of unique species are found in each of the half degree cells we can then create a single global raster of number of species.
 
-```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+### All AquaMaps species count by cell
 
-# Data files
-#iucn spp cells WITHOUT extinct locations of IUCN subpopulations
-iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'), 
-                           progress = TRUE,
-                           col_types = 'cddddc')
-
-am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'), 
-                           progress = TRUE)
-
-
-### LOICZID cell ID numbers - used in plotting rasters
-loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
-loiczid_raster       <- raster(loiczid_raster_file)
-names(loiczid_raster) <- 'loiczid'
-```
-
-```{r global_maps, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+```{r all_am_map, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
 library(rasterVis)
-
 myTheme <- rasterTheme(region = brewer.pal('Blues', n = 9))
 
-message('Full AM dataset, species count\n')
-
 all_am_rast_file   <- file.path(dir_data, 'rasters/am_all_rast.tif')
-
 dir_am_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data/aquamaps/v2015/csv')
 
 if(!file.exists(all_am_rast_file)) {
+  loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+  loiczid_raster       <- raster(loiczid_raster_file)
+  names(loiczid_raster) <- 'loiczid'
+
   am_spp_cells_big <- fread(file.path(dir_am_data, 'hcaf_sp_native_trunc.csv')) %>%
     as.data.frame(stringsAsFactors = FALSE)
   
@@ -100,23 +84,27 @@ am_levelplot1 <- levelplot(all_am_map,
                            par.settings = myTheme) + 
   layer(sp.polygons(bPols, fill = 'grey90', col = 'grey30', lwd = .25))
 
-png(file.path(dir_fig, 'all_aquamaps_map1.png'),
+png(file.path(dir_fig, 'all_aquamaps_map.png'),
     width = 8.7, height = 6, units = 'in', res = 300)
 print(am_levelplot1)
 dev.off()
 
 ```
 
-Now look at full IUCN species
+![](../figures/all_aquamaps_map.png)
 
-```{r all_iucn, eval = FALSE, echo = FALSE}
+### All IUCN species count by cell
 
-message('Full IUCN dataset, species count\n')
+```{r all_iucn, eval = TRUE, echo = FALSE}
 
 all_iucn_rast_file   <- file.path(dir_data, 'rasters/iucn_all_rast.tif')
 dir_data_iucn <- file.path(dir_N, 'git-annex/globalprep/_raw_data/iucn_spp')
 
 if(!file.exists(all_iucn_rast_file)) {
+  loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+  loiczid_raster       <- raster(loiczid_raster_file)
+  names(loiczid_raster) <- 'loiczid'
+
   iucn_cells_file    <- file.path(dir_data_iucn, 'iucn_cells_2015.csv')
   iucn_spp_cells_all <- fread(iucn_cells_file) %>%
         as.data.frame(stringsAsFactors = FALSE)
@@ -135,7 +123,6 @@ if(!file.exists(all_iucn_rast_file)) {
 
 } else {
   all_iucn_map   <- raster(all_iucn_rast_file)
-  values(all_iucn_map)[is.na(values(all_am_map))] <- NA
 }
 
 iucn_levelplot1 <- levelplot(all_iucn_map, 
@@ -144,59 +131,12 @@ iucn_levelplot1 <- levelplot(all_iucn_map,
                              par.settings = myTheme) + 
   layer(sp.polygons(bPols, fill = 'grey90', col = 'grey30', lwd = .25))
 
-png(file.path(dir_fig, 'all_iucn_map1.png'),
+png(file.path(dir_fig, 'all_iucn_map.png'),
     width = 8.7, height = 6, units = 'in', res = 300)
 print(iucn_levelplot1)
 dev.off()
 
 ```
 
-``` {r variations_on_gl_dist_maps, echo = FALSE, eval = FALSE}
-### rescale values relative to maximum cell value
+![](../figures/all_iucn_map.png)
 
-am_map_max <- maxValue(all_am_map)
-all_am_pct_map <- all_am_map/am_map_max
-
-iucn_map_max <- maxValue(all_iucn_map)
-all_iucn_pct_map <- all_iucn_map/iucn_map_max
-
-diff_pct_map    <- all_am_pct_map - all_iucn_pct_map
-
-### plot maps with distributions as percentages.  Should it be 0 - 1, or 
-### 0 - max value?
-levelplot(all_am_pct_map, par.settings = myTheme, 
-          main = 'Aquamaps Dataset percent of max')
-levelplot(all_iucn_pct_map, par.settings = myTheme, 
-          main = 'IUCN Dataset percent of max')
-### this is the difference one. Should it be min value to max value?
-levelplot(diff_pct_map, par.settings = myTheme, 
-          main = 'Difference: AquaMaps - IUCN by percent')
-
-diff_ln_map <- all_am_ln_map - all_iucn_ln_map
-levelplot(diff_ln_map, 
-          par.settings = myTheme, 
-          pretty = TRUE,
-          margin = list(axis = TRUE),
-#          main = 'Difference in relative species richness (log-transformed): AquaMaps - IUCN', 
-          colorkey = list(at = seq(-1, 1, length = 15)))
-maxValue(all_am_ln_map)
-minValue(all_am_ln_map)
-maxValue(all_iucn_ln_map)
-minValue(all_iucn_ln_map)
-maxValue(diff_ln_map)
-minValue(diff_ln_map)
-diff_ln_pts <- as.data.frame(rasterToPoints(diff_ln_map))
-
-spp_richness_diff_plot <- ggplot(diff_ln_pts, aes(x = x, y = y)) +
-  ggtheme_map + 
-  geom_raster(aes(fill = layer)) +
-  scale_fill_gradient2(low = 'red', mid = 'white', high = 'blue', midpoint = 0) +
-  borders('world', color='gray40', fill='gray45', size = .1) +  # create a layer of borders
-  scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
-  scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2)) +
-  labs(title = 'Difference in relative species richness (log-transformed): AquaMaps - IUCN', x = NULL, y = NULL) 
-
-spp_richness_diff_plot
-
-
-```
