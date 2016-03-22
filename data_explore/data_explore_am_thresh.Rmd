@@ -65,9 +65,9 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
                                'CR' = 'red4',
                                'DD' = 'grey60',
                                'NE' = 'grey70')) +
-  scale_x_continuous(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 1.02)) +
   scale_y_continuous(expand = c(0, 0)) +
-  labs(x = 'Proportion of range included when selecting a threshold of 0.4', 
+  labs(x = 'Proportion of range included when selecting a threshold of 40%', 
        y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3)),
        fill = 'IUCN code')
 
@@ -109,9 +109,9 @@ hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) +
                                'CR' = 'red4',
                                'DD' = 'grey60',
                                'NE' = 'grey70')) +
-  scale_x_continuous(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 1.02)) +
   scale_y_continuous(expand = c(0, 0)) +
-  labs(x = 'Proportion of range included when selecting a threshold of 0.4', 
+  labs(x = 'Proportion of range included when selecting a threshold of 40%', 
        y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3a)),
        fill = 'IUCN code')
 
@@ -173,17 +173,17 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
   geom_vline(xintercept = 0.40, color = 'blue', linetype = 'dashed') +
   geom_vline(xintercept = 0.50, color = 'blue', linetype = 'dashed') +
   geom_vline(xintercept = 0.60, color = 'blue', linetype = 'dashed') +
-  annotate('text', x = .40, y = .05, hjust = 0, vjust = -.5,
+  annotate('text', x = .39, y = .03, hjust = 0, vjust = 0,
            angle = 90, 
            size = 3, 
            color = 'grey20',
            label = 'Halpern et al. 2012') + 
-  annotate('text', x = .50, y = .05, hjust = 0, vjust = -.5,
+  annotate('text', x = .49, y = .03, hjust = 0, vjust = 0,
            angle = 90, 
            size = 3, 
            color = 'grey20',
            label = 'Klein et al. 2015') + 
-  annotate('text', x = .60, y = .05, hjust = 0, vjust = -.5,
+  annotate('text', x = .59, y = .03, hjust = 0, vjust = 0,
            angle = 90, 
            size = 3, 
            color = 'grey20',
@@ -194,9 +194,10 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
   #          label = 'R^2^ = .995') + 
   scale_x_continuous(expand = c(0, 0), 
                      breaks = c(  .2,    .4,    .5,    .6,    .8,   1.0),
-                     labels = c('20%', '40%', '50%', '60%', '80%', '100%')
+                     labels = c('20%', '40%', '50%', '60%', '80%', '100%'),
                      limits = c(0, 1.02)) +
-  scale_y_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(0, 1.01)) +
   labs(# title = 'Relative species range after presence threshold',
        x = 'AquaMaps presence threshold cutoff', 
        y = 'Relative species range')
@@ -204,7 +205,7 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
 print(ribbon_area_vs_threshold)
 
 ggsave(file.path(dir_fig, 'ribbon_am_threshold.png'), 
-       width = 17.8, height = 6, units = 'cm')
+       width = 17.8, height = 7, units = 'cm')
 
 ```
 

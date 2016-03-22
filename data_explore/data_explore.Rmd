@@ -159,12 +159,11 @@ taxa_df <- taxa_am_all %>%
   full_join(taxa_both,      by = 'class') %>%
   filter(!(is.na(n_iucn_class_all) & p_am_class_all < 0.5))
 
-
-knitr::kable(taxa_df %>%
-               dplyr::select(class, 
-                             AquaMaps = n_am_class_all, 
-                             IUCN = n_iucn_class_all, 
-                             Both = n_class_both))
+# knitr::kable(taxa_df %>%
+#                dplyr::select(class, 
+#                              AquaMaps = n_am_class_all, 
+#                              IUCN = n_iucn_class_all, 
+#                              Both = n_class_both))
 ```
 
 ``` {r plot bar charts by taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
@@ -206,7 +205,8 @@ bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) 
        x = 'Class', 
        y = 'Percent of mapped species',
        fill = 'Dataset')
-print(bar_taxa2)
+
+# print(bar_taxa2)
 ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
        width = 17.8, height = 7, units = 'cm')
 
@@ -235,6 +235,7 @@ ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'),
 
 ```
 
+![](../figures/bar_by_taxa_all.png)
 
 # Figure 3
 
@@ -307,7 +308,7 @@ scatter_quadplot <- scatter_quadplot +
                      breaks = c(seq(0, 100, 25)),
                      labels = c('0%', '25%', '50%', '75%', '100%')) +
   scale_y_continuous(expand = c(0, 0),
-                     limits = c(0, 102),
+                     limits = c(0, 103),
                      breaks = c(seq(0, 100, 25)),
                      labels = c('0%', '25%', '50%', '75%', '100%'))
 
@@ -539,9 +540,10 @@ barchart_spp_risk_quads <- ggplot(spp_risk_quadrants1 %>%
 # print(barchart_spp_risk_quads)
 ggsave(plot = barchart_spp_risk_quads,
        filename = file.path(dir_fig, 'si_barchart_spp_risk_quads.png'),
-       width = 17.8, height = 5, units = 'cm')
+       width = 17.8, height = 4.5, units = 'cm')
 
 ```
+
 ![](../figures/si_barchart_spp_risk_quads.png)
 
 -----
