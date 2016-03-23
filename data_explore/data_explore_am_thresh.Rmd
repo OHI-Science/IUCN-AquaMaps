@@ -73,11 +73,14 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
 
 # print(hist_area_vs_threshold)
 
-ggsave(file.path(dir_fig, 'am_threshold.png'), 
+ggsave(file.path(dir_fig, 'si_am_threshold.tif'), device = 'tiff', 
        width = 17.8, height = 9, units = 'cm')
+ggsave(file.path(dir_fig, 'si_am_threshold.png'), 
+       width = 17.8, height = 9, units = 'cm')
+
 ```
 
-![](../figures/am_threshold.png)
+![](../figures/si_am_threshold.png)
 
 ```{r hist_lost_area_w_threshold_ne_dd_removed, warning = FALSE, message = FALSE, echo = FALSE, eval = TRUE}
 
@@ -115,12 +118,14 @@ hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) +
        y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3a)),
        fill = 'IUCN code')
 
-ggsave(file.path(dir_fig, 'am_threshold2.png'), 
+ggsave(file.path(dir_fig, 'si_am_threshold2.tif'), device = 'tiff', 
+       width = 17.8, height = 9, units = 'cm')
+ggsave(file.path(dir_fig, 'si_am_threshold2.png'), 
        width = 17.8, height = 9, units = 'cm')
 
 ```
 
-![](../figures/am_threshold2.png)
+![](../figures/si_am_threshold2.png)
 
 
 ```{r df_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE, eval = TRUE}
@@ -163,8 +168,8 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
   ggtheme_plot + 
 #  geom_point(position = position_jitter(w = .1), aes(color = scenario), alpha = .5) +
 
-  geom_ribbon(aes(ymax = quant95, ymin = quant05), alpha = .5, color = NA, fill = 'grey80') +
-  geom_ribbon(aes(ymax = quant75, ymin = quant25), alpha = .5, color = NA, fill = 'grey70') +
+  geom_ribbon(aes(ymax = quant95, ymin = quant05), alpha = .5, color = NA, fill = '#b8e186') +
+  geom_ribbon(aes(ymax = quant75, ymin = quant25), alpha = .5, color = NA, fill = '#4dac26') +
   geom_line(color = 'grey30') + 
   # geom_line(aes(y = mean_prop), color = 'darkgreen') + 
   # geom_abline(intercept = area_mean_model[['coefficients']][1],
@@ -202,12 +207,12 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
        x = 'AquaMaps presence threshold cutoff', 
        y = 'Relative species range')
 
-print(ribbon_area_vs_threshold)
-
-ggsave(file.path(dir_fig, 'ribbon_am_threshold.png'), 
+ggsave(file.path(dir_fig, 'si_ribbon_am_threshold.tif'), device = 'tiff', 
+       width = 17.8, height = 7, units = 'cm')
+ggsave(file.path(dir_fig, 'si_ribbon_am_threshold.png'), 
        width = 17.8, height = 7, units = 'cm')
 
 ```
 
-![](../figures/ribbon_am_threshold.png)
+![](../figures/si_ribbon_am_threshold.png)
 

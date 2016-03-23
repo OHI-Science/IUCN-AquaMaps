@@ -2,8 +2,7 @@
 output: html_document
 ---
 
-
-
+<!--
 | Section                   |   Word #   | Char # (w/spc) |
 | :------                   |    ------: |    ------: |
 | Introduction              |  512 words |  3411 char |
@@ -12,6 +11,7 @@ output: html_document
 | Conclusions               |  390 words |  2813 char |
 | Methods (incomplete)      |  612 words |  3889 char |
 | total body                | 2848 words | 18857 char |
+-->
 
 # Introduction
 
@@ -21,7 +21,7 @@ Knowing where species exist and thrive is fundamental to the sciences of ecology
  and managing and protecting species effectively.
 A rich literature tackles the many dimensions of these questions.
 
-One major outcome of this body of science is the various compiled databases of species distribution maps. Two global-scale repositories predict marine species ranges throughout the world's oceans – AquaMaps (Kaschner et al. ___2013???___) and International Union for Conservation of Nature (IUCN) (IUCN 2015).  These two spatial datasets have been used in hundreds of studies and applications for a wide range of purposes, including assessing marine species status (Halpern et al. 2012, 2015; Selig et al. 2013), evaluating global biodiversity patterns (Coll et al. 2010; Martin et al. 2014, Pimm et al. 2014, Kaschner et al. 2011), predicting range shifts (Molinos et al. 2015), and setting conservation priorities (Klein et al. 2015).
+One major outcome of this body of science is the various compiled databases of species distribution maps. Two global-scale repositories predict marine species ranges throughout the world's oceans – AquaMaps (Kaschner et al. 2013) and International Union for Conservation of Nature (IUCN) (IUCN 2015).  These two spatial datasets have been used in hundreds of studies and applications for a wide range of purposes, including assessing marine species status (Halpern et al. 2012, 2015; Selig et al. 2013), evaluating global biodiversity patterns (Coll et al. 2010; Martin et al. 2014, Pimm et al. 2014, Kaschner et al. 2011), predicting range shifts (Molinos et al. 2015), and setting conservation priorities (Klein et al. 2015).
 
 
 <!--
@@ -33,8 +33,6 @@ The two datasets ostensibly describe the same information, but significant diffe
 To understand the implications of differences between the AquaMaps and IUCN datasets, we compare how each data source represents the global spatial and taxonomic distribution of species.  Most notably, AquaMaps includes range maps for many more species (currently `r format(n_spp_am, big.mark = ',')` species; `r p_spp_am`% of total), such that most global analyses related to biodiversity to date have used AquaMaps (IUCN range map data exist for only `r format(n_spp_iucn, big.mark = ',')` unique marine species).  For the `r format(n_spp_both, big.mark = ',')` species (`r p_both_all`% of total) mapped in both datasets, we examine how well the maps align, determine several issues that lead to misalignment between predicted species distributions, and outline possible improvements. 
 
 We then reexamine two recent marine biodiversity studies - an assessment of the status of global biodiversity within the Ocean Health Index (Halpern et al. 2012, 2015) and a global analysis of gaps in protection afforded by marine protected areas (MPAs) (Klein et al. 2015) - as case studies to explore the implications of prioritizing one data set over the other.  The results highlight possible consequences of different data use decisions on our understanding of marine biodiversity status and protection.
-
------
 
 # Results and Discussion
 
@@ -95,9 +93,6 @@ Species found in the lower right quadrant (n = `r n_q3`) often represent cases o
 The most vexing cases are in the lower left quadrant (n = `r n_q4`), where neither distribution nor area match well. Data-poor species are more common in this quadrant; indeed, the median number of species occurrence records (averaging OBIS and GBIF occurrences) for this quadrant is `r med_occ_q4` records, compared to a median of `r med_occ_q123` records for species across the other three quadrants.  When extrapolating from limited observations, the AquaMaps model often predicts species presence well beyond known occurrences, introducing commission errors; at the same time, IUCN range maps generally target known occurrences, possibly introducing omission errors for data-limited species.
 
 
-
------
-
 # Implications
 
 Method-driven differences in commission and omission errors drive clear and significant differences in species range descriptions between AquaMaps and IUCN datasets.   To examine the implications of these differences, we replicated two recent studies, varying only the prioritization of one data set over the other.
@@ -110,15 +105,11 @@ We recalculated the OHI species status score under several scenarios to observe 
  
 Given that only `r format(p_both_all, big.mark = ',')`% of species overlap, it is surprising that changing the priority for overlapping species from IUCN maps to AquaMaps would result in such large country-level score shifts as seen in scenarios 2 and 3.  While many country scores showed only small variation across all three scenarios, select countries gained up to 5 points while others dropped as many as 12 points.  Significantly, the global score decreased by two full points in scenario 3, indicating that an arbitrary change in how the two datasets are combined can result in a more dire assessment of species conservation status. 
 
------  
-
 **Case Study: MPA Gap Analysis**
 
 Klein et al. (2015) compare the global distribution of species to the global distribution of marine protected areas to assess how well the MPAs protect key species and identify which species fall through gaps in protection.  The study relied on the AquaMaps database, using a probability of occurrence threshold of 50% or greater, to determine species presence, and the World Database of Protected Areas to define zones of marine protection.  They found that the global MPA network leaves 90.5% of marine species with less than 5% of their overall range represented within MPAs, and 1.4% of species have no protection at all ("gap" species).
 
 We recalculated the amount of under-protected and gap species using either IUCN or AquaMaps data (using 2015 AquaMaps data and a 0% threshold to allow the most meaningful comparison to IUCN's "limits of distribution", <a href = '#fig5'>Fig. 5</a>).  We found a five-fold increase in the proportion of gap species (6.4% of species vs. 1.2%) and dramatically larger proportion of species with less than 2% of their range protected (73.2% of species vs. 47.7%).  However, this comparison also indicates a larger proportion of well-protected species with greater than 10% of range protected (2.9% of species vs. 1.5%).  Conclusions drawn from each of these datasets would paint dramatically different pictures of the protection afforded by our current global MPA network. 
-
------
 
 # Conclusions
 
@@ -128,13 +119,4 @@ For IUCN range data, clipping ranges to known depth limits improves output for m
 
 Many studies using AquaMaps data test the sensitivity of results by varying the probability of occurrence threshold to determine presence.  This decision ultimately represents a tradeoff between errors of commission (low threshold) and omission (high threshold).  Using AquaMaps in conjunction with IUCN can mitigate potential errors, while also increasing the taxonomic and spatial breadth of coverage, as long as the differences between the datasets can be reasonably minimized. In this case, we recommend a presence threshold of 0% as it most closely approximates the "limits of distribution" criterion defined by IUCN data providers.
 
-<!-- summarize back to big picture: CBD, MPAs, climate velocity, etc... understanding species distributions, and therefore minimizing errors, is important to all these things -->
-_AquaMaps and IUCN are two of the most important databases providing species distribution information across a wide range of marine species, taxa, and regions.  The different methodologies behind the creation of each database is likely to introduce different rates of commission and omission errors, which can have a profound impact on our understanding of species ranges.  By comparing overlapping species maps from these two databases, we have identified likely sources of error, allowing data users to address or account for them.  For users of AquaMaps, IUCN, and other datasets of species distribution, reducing the likelihood of these errors is critical to effective biodiversity research and conservation action._
-
-Human impacts on oceans (pollution, ocean acidification, overfishing, extractive use, climate change) are increasingly pressuring the marine species and ecosystems we depend on for food, economic opportunity, cultural value, and life support.  Managing and protecting marine species improves the resilience of critical ocean ecosystems oceans to deliver these benefits sustainably, but effective management depends critically on accurate and robust understanding of the distribution of species we want to protect.  Highlighting the differences between the two currently most important datasets of marine species distributions can help us 
-
-- ocean ecosystems provide broad benefits to humans, but are under pressure from human activity and climate change; ensuring sustainability of benefits depends on effective management and protection of resources.
-- Effective management and protection of our ocean ecosystems depends on understanding how species are distributed globally.  
-- Two key datasets of marine species ranges communicate an understanding of the global distribution of marine species - and are commonly used to inform management and protection research and policy.
-- substantial differences highlight important gaps in understanding (or communicating) species ranges, leading to ineffective management and protection.
-- identifying these differences points to solutions to address them and improve understanding.
+Effective management and protection of marine species depends on a robust understanding of where species exist and where they do not; without this knowledge we risk wasting resources protecting low-value regions while missing opportunities to protect critical ones. By identifying the differences between these two fundamental marine species range datasets and understanding the likely mechanisms causing these discrepancies, we improve our ability to develop strategic and effective conservation policy that supports a resilient ocean ecosystem.

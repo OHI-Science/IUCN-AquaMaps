@@ -434,7 +434,7 @@ barchart_mpa_gap <- ggplot(mpa_all_runs1,
   geom_bar(stat = 'count', alpha = .8) +
   scale_fill_manual(values = c('>10%'  = '#4dac26', 
                                '5-10%' = '#b8e186', 
-                               '2-5%'  = '#f7f7f7', 
+                               '2-5%'  = '#fbe5c5', 
                                '0-2%'  = '#f1b6da',
                                'gap'   = '#d01c8b')) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 115), breaks = c(seq(0, 100, 10))) +
@@ -449,6 +449,9 @@ barchart_mpa_gap <- ggplot(mpa_all_runs1,
 print(barchart_mpa_gap)
 ggsave(plot = barchart_mpa_gap,
        filename = file.path(dir_fig, 'barchart_mpa_gap.png'),
+       width = 17.8, height = 5, units = 'cm')
+ggsave(plot = barchart_mpa_gap,
+       filename = file.path(dir_fig, 'barchart_mpa_gap.tif'), device = 'tiff',
        width = 17.8, height = 5, units = 'cm')
 
 mpa_all_runs_wide <- mpa_all_runs1 %>%
@@ -471,4 +474,3 @@ write_csv(mpa_all_runs_wide, file.path(dir_data, 'mpa_all_runs_summary.csv'))
 |am2015 (0%) + iucn2015 | 24634|2%   |48%          |42.2%        |6.2%          |1.6%         |
 |iucn2015               |  4024|6.4% |66.8%        |20.1%        |3.8%          |2.9%         |
 
-``` {r check_iucn_spp}

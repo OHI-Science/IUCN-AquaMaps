@@ -1,7 +1,7 @@
 ---
 title: "Aligning marine species range data to better serve science and conservation"
-author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Benjamin S. Halpern<sup>1, 2, 3</sup>,
-  Courtney Scarborough^1^
+author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjamin S. Halpern<sup>1, 2, 3</sup>
+
 output:
   word_document: default
   pdf_document:
