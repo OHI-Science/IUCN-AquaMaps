@@ -48,7 +48,7 @@ Arguments
 ### Fig. 1
 <a id = 'fig1'></a>
 
-![](figures/fig1abc_am_iucn_maps.tif)
+![](figures/fig1abc_am_iucn_maps.png)
 
 ``` {r barchart_by_taxa, echo = FALSE}
 n_spp <- spp_map_pairs %>%
@@ -73,8 +73,7 @@ n_bonyfish <- nrow(spp_map_pairs %>%
 ### Fig. 2
 <a id = 'fig2'></a>
 
-![](figures/AreaRatiovsPercOverlap.png)
-![](figures/barchart_spp_gp_quads.png)
+![](figures/fig2ab_quadmap_sppbars.png)
 
 
 ``` {r tally_quad_counts, echo = FALSE}
@@ -101,7 +100,7 @@ q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio 
 
 <a id = 'fig4'></a>
 
-![Absolute change in SPP score](figures/boxplot_abs_diff.png)
+![Absolute change in SPP score](figures/fig3_boxplot_abs_diff.png)
 
 > __Fig. 3.__ Change in status score for the Species Subgoal within the global Ocean Health Index under three different scenarios.
 > Scenario 1 shows the effect of reducing the probability threshold to 0% for AquaMaps presence to more accurately track the definition of IUCN “limits of distribution."  
@@ -115,9 +114,9 @@ ___NOTE: This figure still needs to be recreated using the latest and greatest d
 
 <a id = 'fig4'></a>
 
-![Change in MPA coverage](figures/barchart_mpa_gap.png)
+![Change in MPA coverage](figures/fig4_barchart_mpa_gap.png)
 
-> __Fig. 4.__  Percent of species range covered by MPAs based upon methods in Klein et al. (2015).  Scenario 1 replicates the original results, measuring protected range of species in AquaMaps 2014 dataset, with a 50% presence threshold, against the 2014 World Database of Protected Areas, filtered for IUCN categories I-IV that overlap marine areas.  Scenario 2 updates the results using AquaMaps 2015, showing very small changes despite the inclusion of an additional 5545 species.  Scenario 3, using 2015 AquaMaps data, drops the presence threshold to zero, showing an expected decrease in gap species, but also a decrease in species with 5% or greater protected range.  Scenario 4 adds an additional 1745 species unique to IUCN, resulting in increases in gap species and species with less than 2% coverage.  Scenario 5 examines species MPA coverage using only the IUCN dataset.
+> __Fig. 4.__  Percent of species range covered by MPAs based upon methods in Klein et al. (2015).  Scenario 1 replicates the original results, measuring protected range of species in AquaMaps 2014 dataset, with a 50% presence threshold, against the 2014 World Database of Protected Areas, filtered for IUCN categories I-IV that overlap marine areas.  Scenario 2 updates the results using AquaMaps 2015, showing very small changes despite the inclusion of an additional 5,545 species.  Scenario 3, using 2015 AquaMaps data, drops the presence threshold to zero, showing an expected decrease in gap species, but also a decrease in species with 5% or greater protected range.  Scenario 4 adds an additional 1745 species unique to IUCN, resulting in increases in gap species and species with less than 2% coverage.  Scenario 5 examines species MPA coverage using only the IUCN dataset.
 
 
 <!-- `r knitr::kable(read_csv(file.path(dir_data, 'mpa_all_runs_summary.csv')))` -->

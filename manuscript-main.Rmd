@@ -1,17 +1,17 @@
 ---
 title: "Aligning marine species range data to better serve science and conservation"
-author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjamin S. Halpern<sup>1, 2, 3</sup>
-
+author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjamin
+  S. Halpern<sup>1, 2, 3</sup>
 output:
-  word_document: default
-  pdf_document:
-    number_sections: yes
-    toc: no
   html_document:
     highlight: haddock
     number_sections: yes
     theme: spacelab
     toc: no
+  pdf_document:
+    number_sections: yes
+    toc: no
+  word_document: default
 ---
 
 <!--Title: Titles should be no more than three typeset lines (generally 135 characters including spaces) and should be comprehensible to a broad scientific audience. Please provide a short title of fewer than 50 characters for mobile devices and RSS feeds.-->
@@ -145,5 +145,5 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 
 -----
 
-``` {r SOM, child = 'ms_6_supplemental.Rmd'}
+``` {r SOM, child = 'ms_6_supplemental.Rmd', eval = FALSE}
 ```

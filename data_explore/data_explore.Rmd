@@ -40,10 +40,8 @@ spp_list <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 ```
 
 
-# Figures 1, 2
+# Figures 1 a b c
 
-``` {r, child = 'data_explore_global_maps.Rmd', echo = FALSE, message = FALSE, eval = TRUE}
-```
 
 ``` {r load data, echo = FALSE, warning = FALSE, message = FALSE}
 ### use data_prep.Rmd to create this file, if it does not yet exist.
@@ -185,14 +183,15 @@ taxa_df_long2 <- taxa_df %>%
   group_by(class) %>%
   mutate(n_total = sum(n_spp, na.rm = TRUE),
          percent = n_spp/n_total * 100,
-         dataset = factor(dataset, levels = c('AquaMaps', 'Both', 'IUCN')))
+         dataset = factor(dataset, levels = c('Both', 'IUCN', 'AquaMaps')))
 
 bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) +
   ggtheme_plot + 
   theme(panel.grid.major.x = element_blank()) +
   geom_bar(stat = 'identity', alpha = .8) +
 #  scale_fill_manual(values = c('AquaMaps' = 'red', 'Both' = 'mediumorchid', 'IUCN' = 'blue')) +
-  scale_fill_manual(values = c('AquaMaps' = '#1b9e77', 'Both' = '#d95f02', 'IUCN' = '#6f6ba0')) +
+ scale_fill_manual(values = c('AquaMaps' = '#1b9e77', 'Both' = '#565080', 'IUCN' = '#d95f02')) +
+#  scale_fill_manual(values = c('AquaMaps' = '#4dac26', 'Both' = '#fbe5c5', 'IUCN' = '#d01c8b')) +
   geom_text(aes(label = sprintf('n = %s', n_total), y = 102), 
             size = 2, 
             angle = 90, hjust = 0, color = 'grey30') +
@@ -206,7 +205,7 @@ bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) 
        y = 'Percent of mapped species',
        fill = 'Dataset')
 
-# print(bar_taxa2)
+print(bar_taxa2)
 ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
        width = 17.8, height = 7, units = 'cm')
 
@@ -237,7 +236,10 @@ ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'),
 
 ![](../figures/bar_by_taxa_all.png)
 
-# Figure 3
+``` {r, child = 'data_explore_global_maps.Rmd', echo = FALSE, message = FALSE, eval = TRUE}
+```
+
+# Figure 2a b
 
 ## Quadrant map
 
