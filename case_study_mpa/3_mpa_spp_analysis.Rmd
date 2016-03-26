@@ -437,7 +437,7 @@ barchart_mpa_gap <- ggplot(mpa_all_runs1,
                                '2-5%'  = '#fbe5c5', 
                                '0-2%'  = '#f1b6da',
                                'gap'   = '#d01c8b')) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 115), breaks = c(seq(0, 100, 10))) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 125), breaks = c(seq(0, 100, 20))) +
   geom_text(aes(label = sprintf('n = %s', n_trial), y = 101), hjust = 0, 
             size = 2, 
             color = 'grey30') +
@@ -448,11 +448,11 @@ barchart_mpa_gap <- ggplot(mpa_all_runs1,
 
 print(barchart_mpa_gap)
 ggsave(plot = barchart_mpa_gap,
-       filename = file.path(dir_fig, 'barchart_mpa_gap.png'),
-       width = 17.8, height = 5, units = 'cm')
+       filename = file.path(dir_fig, 'fig4_barchart_mpa_gap.png'),
+       width = 11.4, height = 5, units = 'cm')
 ggsave(plot = barchart_mpa_gap,
-       filename = file.path(dir_fig, 'barchart_mpa_gap.tif'), device = 'tiff',
-       width = 17.8, height = 5, units = 'cm')
+       filename = file.path(dir_fig, 'fig4_barchart_mpa_gap.tif'), device = 'tiff',
+       width = 11.4, height = 5, units = 'cm')
 
 mpa_all_runs_wide <- mpa_all_runs1 %>%
   mutate(p_cat = paste(round(p_cat, 1), '%', sep = '')) %>%

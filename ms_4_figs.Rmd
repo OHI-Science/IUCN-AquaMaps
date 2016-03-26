@@ -1,8 +1,6 @@
 
 # Figures and captions
 
-___still need work on captions; then separate captions from images___
-
 <!--
 
 Figures: Calculated at 180 characters per cm in height for one column and 360 characters per cm in height for two columns; a figure wider than 8.7 cm is two columns wide.
@@ -68,7 +66,7 @@ n_bonyfish <- nrow(spp_map_pairs %>%
 ```
 
 
->  __Fig. 1.__ (A) Number and proportion of species by taxa included in each dataset.  Overlapping species are dominated by bony fishes (`r n_bonyfish` species, primarily tropical taxa) and corals (`r n_corals` species).  (B, C) Number of global marine species according to (A) AquaMaps and (B) IUCN.  The margin frequency plots show relative species count per cell at each latitude and longitude. 
+>  __Fig. 1.__ (A) Number and proportion of species by taxa included in each dataset.  Overlapping species are dominated by bony fishes (`r format(n_bonyfish, big.mark = ',')` species, primarily tropical taxa) and corals (`r format(n_corals, big.mark = ',')` species).  (B, C) Number of global marine species according to (A) AquaMaps and (B) IUCN.  The margin frequency plots show relative species count per cell at each latitude and longitude. 
 
 ### Fig. 2
 <a id = 'fig2'></a>
@@ -85,7 +83,7 @@ q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio 
 q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
 ```
 
-> __Fig. 2.__ (A) Distribution alignment (overlap of smaller range within larger) versus extent ratio (the ratio of smaller range area to the larger range area) for `r n_spp_both` species included in both IUCN and AquaMaps datasets.  The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges
+> __Fig. 2.__ (A) Distribution alignment (overlap of smaller range within larger) versus extent ratio (the ratio of smaller range area to the larger range area) for `r format(n_spp_both, big.mark = ',')` species included in both IUCN and AquaMaps datasets.  The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges
 (n = `r q1_count`; `r round(q1_count/nrow(spp_map_pairs) * 100, 1)` %).
 > The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in extent
 (n = `r q2_count`; `r round(q2_count/nrow(spp_map_pairs) * 100, 1)` %).
@@ -106,8 +104,6 @@ q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio 
 > Scenario 1 shows the effect of reducing the probability threshold to 0% for AquaMaps presence to more accurately track the definition of IUCN “limits of distribution."  
 > Scenario 2 shows the effect of prioritizing AquaMaps data over IUCN, while maintaining the 40% presence threshold.  In general, AquaMaps ranges are smaller than IUCN ranges, so most overlapping species will see a decrease in represented range.  
 > Scenario 3 shows the effect of prioritizing AquaMaps data over IUCN, and simultaneously eliminating the presence threshold.  The zero threshold in scenario 3 drives a decrease in scores relative to scenario 2.  
-
-___NOTE: This figure still needs to be recreated using the latest and greatest data!___ _currently they use data generated in November or so, in ohiprep._
 
 
 ### Figure 4

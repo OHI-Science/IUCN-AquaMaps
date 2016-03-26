@@ -12,6 +12,7 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 library(ggplot2)
+library(readr)
 
 dir_data  <- '~/github/ohiprep/globalprep/SPP_ICO/vAM_IUCN'
 dir_fig <- '~/github/IUCN-AquaMaps/figures'
@@ -51,6 +52,21 @@ st_all <- st_all %>% mutate(absdiff1 = (st_1 - st_b)*100,
                             reldiff2 = absdiff2/st_b,
                             reldiff3 = absdiff3/st_b) %>%
   gather(scenario, difference, absdiff1:reldiff3)
+
+# georgns <- read_csv('~/github/ohi-global/eez2013/layers/rgn_georegions.csv') %>%
+#      spread(level, georgn_id) 
+# 
+# georgn_lbls <- read.csv('~/github/ohi-global/eez2013/layers/rgn_georegion_labels.csv') %>%
+#   mutate(level_label = sprintf('%s_label', level)) %>%
+#   select(-level) %>%
+#   spread(level_label, label) %>%
+#   arrange(r0_label, r1_label, r2_label, rgn_id)
+
+
+# st_all <- st_all %>%
+#   left_join(georgns, by = 'rgn_id') %>%
+#   left_join(georgn_lbls, by = 'rgn_id') %>%
+#   mutate(r1 = factor(r1, levels = unique(r1)))
   
 bplot_abs <- ggplot(data = st_all %>% filter(str_detect(scenario, 'abs')),
                     aes(x = scenario, y = difference)) +
@@ -58,19 +74,38 @@ bplot_abs <- ggplot(data = st_all %>% filter(str_detect(scenario, 'abs')),
 #   theme(text = element_text(family = 'Helvetica', color = 'gray30', size = 12),
 #         plot.title = element_text(size = rel(1.5), hjust = 0, face = 'bold'),
 #         legend.position = 'none') +
-  geom_violin(fill = 'grey90', draw_quantiles = c(.25, .5, .75)) +
-  geom_point(position = position_jitter(w = .3), color = '#4dac26', alpha = .5) +
+  geom_hline(yintercept = 0, color = 'gray50', size = .5) +
+  geom_violin(fill = 'grey80', draw_quantiles = c(.25, .5, .75), 
+              alpha = .5) +
+  geom_point(position = position_jitter(w = .3), 
+             aes(color = scenario), 
+             alpha = .5,
+             show.legend = TRUE) +
+#  stat_summary(fun.y=mean, geom="point", color = 'red', size = 3) +
+  scale_color_manual(values = c('absdiff1' = '#1b9e77', 
+                                'absdiff2' = '#565080', 
+                                'absdiff3' = '#d95f02')) +
+  
   geom_violin(fill = NA, draw_quantiles = c(.25, .5, .75)) +
   #  geom_boxplot(size = .75, fill = NA) +
   labs(# title = 'SPP status difference by scenario',
        x = 'Scenario',
        y = 'Change in SPP status') +
-  scale_x_discrete(labels = c('IUCN over AquaMaps, no threshold', 
-                              'AquaMaps over IUCN, 40% threshold', 
-                              'AquaMaps over IUCN, no threshold'))
+  scale_x_discrete(labels = c('IUCN/AquaMaps\nno threshold', 
+                              'AquaMaps/IUCN\n40% threshold', 
+                              'AquaMaps/IUCN\nno threshold'))
+
+x <- st_all %>% filter(str_detect(scenario, 'abs'))
+y <- x %>% 
+  group_by(scenario, r1) %>% 
+  summarize(mean_diff = mean(difference, na.rm = TRUE),
+            n_rgn = n())
 
 bplot_abs
-ggsave(file.path(dir_fig, 'boxplot_abs_diff.png'), height = 4.5, width = 17.8, units = 'cm')
+ggsave(file.path(dir_fig, 'fig3_boxplot_abs_diff.png'), 
+       height = 4.5, width = 8.7, units = 'cm')
+ggsave(file.path(dir_fig, 'fig3_boxplot_abs_diff.tif'), device = 'tiff',
+       height = 4.5, width = 8.7, units = 'cm')
 
 # bplot_rel <- ggplot(data = st_all %>% filter(str_detect(scenario, 'rel')),
 #                     aes(x = scenario, y = difference)) +

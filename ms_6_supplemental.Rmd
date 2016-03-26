@@ -31,45 +31,40 @@ All code is publicly available and freely downloadable [here on GitHub](link to 
 
 AquaMaps data was provided by AquaMaps directly via ftp. Three SQL files were sent that contained (1) list of all `r nrow(spp_am)` species and their taxonomic information, (2) information for all (292,000?) half degree cells used for range mapping and (3) the probability of occurrence per cell for all `r nrow(spp_am)` species. These were extracted into .csv form using R Statistical Software. 
 
-
-___Probably just cut, but maybe include in Suppl Materials. - BH___: The release of AquaMaps distribution maps is not limited to comprehensively-assessed taxa, and maps are available across a much larger range of taxonomic classes; however, there is no guarantee that the list of species included within each class is a representative cross section of the entire class.
-
-#### Possible figures
-- Map of all cells
-- Map of # of species per cell
-- Example aquamaps (one species range)
-
 ### IUCN
-
-IUCN: While the polygons roughly define regions of presence/absence, additional attributes provide information on extant/extinct ranges, native/introduced ranges, and seasonality.
 
 As of December 2015, IUCN had published species distribution maps for `r nrow(spp_iucn_maps)` marine species across 24 taxonomic groups.  For this analysis, we did not consider IUCN range maps for bird species, as those data are hosted separately by BirdLife International.
 
+Each shapefile contains polygon limits of distribution indicating regions of presence/absence, additional attributes provide information on extant/extinct ranges, native/introduced ranges, and seasonality.
 
 * which data sets are included?
 * raster::extract() to convert polys to csvs
 * which columns are included?
 
-JA: I think here we only need a few sentences describing how we downloaded the data and on what date. Link to the IUCN spatial data website.
-
-IUCN data is provided as polygon shapefiles. These vectors were rasterized to the same cell resolution as AquaMaps data (0.5 degrees).
-
 #### Possible figures
 
+S1: sample maps from each quadrant
+
+S2: risk by quadrant
+
+S3: coral depth map
 
 
+<!--
 #### Caveats
 For example, as of this writing, IUCN has released no spatial data for class Elasmobranchii (cartilaginous fishes including sharks and rays); and while IUCN offers a large number of maps within class Actinopterygii (ray-finned bony fishes), the available maps include only a few primarily tropical taxonomic sub-groups, such as wrasses, damselfish, butterflyfish, tunas, and billfishes, but are missing economically important subgroups including salmon, rockfish, and clupeids.  However, IUCN's criterion of comprehensive assessment greatly reduces the risk of sample bias within the bounds of the assessed taxonomic groups.
+-->
 
 ___Red List inclusion:___
 
-![](figures/bar_by_taxa_assessed.png)
+<!--![](figures/bar_by_taxa_assessed.png)-->
 
 
 ![](figures/barchart_spp_risk_quads.png)
 
-* Breaking down the quadrants by IUCN extinction risk categories (FIG 3c), we found that species with higher extinction risk tend to be better aligned between the two datasets, perhaps correlated to increased expert scrutiny.  Does higher perceived risk lead to increased attention, and thus better understanding of species distribution? Or conversely, does increased attention to species distribution reveal more species at risk?  Likely both mechanisms are at play on a case-by-case basis, depending on the species' taxon and region. _does this argument bear up to closer scrutiny? CR isn't dominated by Q1 any more_
+* Breaking down the quadrants by IUCN extinction risk categories (FIG 3c), we found little  with higher extinction risk tend to be better aligned between the two datasets, perhaps correlated to increased expert scrutiny.  Does higher perceived risk lead to increased attention, and thus better understanding of species distribution? Or conversely, does increased attention to species distribution reveal more species at risk?  Likely both mechanisms are at play on a case-by-case basis, depending on the species' taxon and region. _does this argument bear up to closer scrutiny? CR isn't dominated by Q1 any more_
 
+<!--
 ___table to show data poor status and reviewed status for AquaMaps maps represented in the quadrant plot___ _- perhaps update the quadrant plot to reveal data-poor species (and reviewed species? little overlap of reviewed & data-poor) instead of, say, red-list category which doesn't get discussed in the body of the paper?  then this table can go in SOM if we like it_
 
 | quadrant | n species | n data poor species | mean (median) data points | n reviewed species |
@@ -80,6 +75,8 @@ ___table to show data poor status and reviewed status for AquaMaps maps represen
 |   q2     |     682   |         151 (22.1%) |          77.4 (39)        |        100 (14.7%) |
 |   q3     |     682   |         114 (16.5%) |          52.4 (29)        |         65  (9.5%) |
 |   q4     |     410   |         159 (39.7%) |          32.1 (13)        |         25  (6.2%) |
+
+-->
 
 ## illustrative maps for different quadrants and different mechanistic problems
 
@@ -140,18 +137,17 @@ Q4
 
 ## AquaMaps: Effect of changing "presence" threshold on apparent distribution
 
-### AquaMaps presence threshold analysis - move to SOM
+### AquaMaps presence threshold analysis
 
-For our comparisons of global distribution of represented biodiversity and spatial alignment between datasets, we considered "present" to be any cell with a non-zero probability of occurrence, to best approximate the "extent of occurrence" as generally indicated by IUCN maps.  To examine the effect of different presence threshold selections on the represented range of a species, we varied the threshold from 0.05 to 1.00 and calculated the average species range relative to a zero threshold.
+For our comparisons of global distribution of represented biodiversity and spatial alignment between datasets, we considered "present" to be any cell with a non-zero probability of occurrence, to best approximate the "limits of distribution" as indicated by IUCN maps.  To examine the effect of different presence threshold selections on the represented range of a species, we varied the threshold from 0% to 100% and calculated the average species range relative to a zero threshold.
 
 ### Figure 5 (a, b):
 
-![](figures/AMThreshold.png) 
+![](figures/si_am_threshold.png) 
 
-![](figures/ribbon_AMThreshold.png)
+![](figures/si_ribbon_am_threshold.png)
 
->AquaMaps distribution map extent remaining after applying a presence threshold.  (a) A 40% threshold applied to all species in the AquaMaps dataset shows a mean loss of XXX, with a wide distribution in which some species lose nearly all of their apparent range.  (b) Mean (median) remaining extent at increments of presence threshold. Dark grey ribbon includes 25% to 75% quantiles, while light grey ribbon includes 9% to 91% quantiles.
-
+>AquaMaps distribution map extent remaining after applying a presence threshold.  (a) A 40% threshold applied to all species in the AquaMaps dataset shows a mean loss of XXX, with a wide distribution in which some species lose nearly all of their apparent range.  (b) Mean (median) remaining extent at increments of presence threshold. Dark grey ribbon includes 25% to 75% quantiles, while light grey ribbon includes 5% to 95% quantiles.
 
 AquaMaps distribution maps indicate "probability of occurrence" within each 0.5° cell, with values ranging from zero to one, rather than a simple present/absent value as indicated by IUCN maps.  Many studies convert this AquaMaps probability to a simple presence value by assigning a threshold value (REF references here).  A higher threshold constrains an analysis to cells with near certainty of occurrence, while a low threshold captures larger areas of increasingly marginal suitability.
 
