@@ -44,7 +44,9 @@ Each shapefile contains polygon limits of distribution indicating regions of pre
 
 ## S1: sample maps from each quadrant
 
+<!--
 ![](figures/si_four_maps.png)
+-->
 
 a) quad 1: Kajikia albida
 b) quad 2: Conus episcopatus
@@ -60,11 +62,15 @@ d) quad 4: Acanthurus nigroris
 
 ## S3: coral depth map
 
+<!--
 Oculina varicosa - Ivory tree coral ![oculina_pic.jpg](figures/oculina/oculina_pic.jpg)
+-->
 
 * from IUCN: Colonies are found to depths of 152 m depth on limestone rubble, low-relief limestone outcrops, high-relief, steeply sloping prominences, and soft-bottom sloping habitats. Colonies are semi-isolated, patchy and low-growing in shallow water, or they form larger, massive coalescing aggregates (thickets or coppices) with substantial topographic relief in 50-100 m depth. In shallow waters (2-30m) the form is zooxanthellate, inhabiting limestone ledges. In deeper waters, an azooxanthellate form is known from the shelf edge off eastern Florida, USA from Ft. Pierce to Daytona (Reed 1980, 1983, 2002; Brooke and Young 2003).
 
-plotted against a 200 m bathymetry line: ![oculina_map.png](figures/oculina/oculina_map.png)
+plotted against a 200 m bathymetry line: 
+
+![oculina varicosa](figures/si_coralmap.png)
 
 ## S4: AquaMaps threshold examination
 
