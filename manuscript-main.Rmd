@@ -145,5 +145,5 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 
 -----
 
-``` {r SOM, child = 'ms_6_supplemental.Rmd', eval = FALSE}
+``` {r SOM, child = 'ms_6_supplemental.Rmd', eval = TRUE}
 ```

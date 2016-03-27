@@ -44,6 +44,14 @@ Each shapefile contains polygon limits of distribution indicating regions of pre
 
 ## S1: sample maps from each quadrant
 
+![](figures/si_four_maps.png)
+
+a) quad 1: Kajikia albida
+b) quad 2: Conus episcopatus
+c) quad 3: Conus magnificus
+d) quad 4: Acanthurus nigroris
+
+
 ## S2: risk by quadrant
 
 ![](figures/si_barchart_spp_risk_quads.png)
