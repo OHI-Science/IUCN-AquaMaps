@@ -207,14 +207,14 @@ plot_rangemap <- function(spp) {
   spp_pts <- as.data.frame(rasterToPoints(r_iucn_spp)) %>%
     full_join(as.data.frame(rasterToPoints(r_am_spp)),
               by = c('x', 'y')) %>%
-    mutate(presence = ifelse(am_pres & is.na(iucn_pres), 'am',
-                             ifelse(iucn_pres & is.na(am_pres), 'iucn',
-                                    ifelse(iucn_pres & am_pres, 'both', NA))))
+    mutate(presence = ifelse(am_pres & is.na(iucn_pres), 'AquaMaps',
+                             ifelse(iucn_pres & is.na(am_pres), 'IUCN',
+                                    ifelse(iucn_pres & am_pres, 'Both', NA))))
   
   spp_plot <- ggplot(spp_pts, aes(x = x, y = y)) +
     ggtheme_map + 
-    geom_raster(aes(fill = presence), alpha = .5) +
-    scale_fill_manual(values = c('iucn' = 'blue', 'am' = 'red', 'both' = 'mediumorchid')) +
+    geom_raster(aes(fill = presence), alpha = .8) +
+    scale_fill_manual(values = c('AquaMaps' = '#1b9e77', 'Both' = '#cc50dc', 'IUCN' = '#d95f02')) +
     borders('world', color='gray40', fill='gray45', size = .1) +  # create a layer of borders
     scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
     scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2)) +

@@ -1,6 +1,6 @@
 ---
 title: 'Data Exploration quad maps: IUCN and AquaMaps'
-output: pdf_document
+output: html_document
 ---
 
 ```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
@@ -37,7 +37,7 @@ source('data_explore_fxns.R')
 # Data files
 #iucn spp cells WITHOUT extinct locations of IUCN subpopulations
 iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'), 
-                           col_types = 'cdddd', progress = TRUE) %>%
+                           col_types = 'cddddc', progress = TRUE) %>%
   as.data.frame() %>%
   filter(presence != 5) ### removes extinct subpopulations
 
@@ -176,22 +176,28 @@ spp_quads <- c('q1' = 'Kajikia albida',
                'q2' = 'Conus episcopatus',
                'q3' = 'Conus magnificus', 
                'q4' = 'Acanthurus nigroris')
+am_thresh <- 0
 
 for (i in 1:length(spp_quads)) { # i = 1
-  spp <- spp_quads[i]
+  spp <- spp_list %>% filter(sciname == spp_quads[i])
   spp_quad <- names(spp_quads)[i]
   
   spp_plot <- plot_rangemap(spp)
   spp_plot <- spp_plot + 
-    labs(title = sprintf('%s: %s', spp_quad, spp))
+    labs(title = element_blank())
 
   print(spp_plot)
+  plotfile <- file.path(dir_fig, 'spp_maps', 
+                        sprintf('%s_%s.png', 
+                                spp_quad, 
+                                tolower(str_replace(spp_quads[i], ' ', '_'))))
+  ggsave(plotfile, height = 4.5, width = 8.7, units = 'cm')
   }
 
 ```
 
 
-``` {r examine_spp_gp_quartiles, echo = FALSE, eval = TRUE}
+``` {r examine_spp_gp_quartiles, echo = FALSE, eval = FALSE}
 
 spp_list1 <- spp_list %>%
   group_by(spp_group_text) %>%
@@ -256,7 +262,7 @@ spp_gp_quadrants <- spp_gp_quadrants %>%
 
 
 <!-- # Multiple species maps per quadrant -->
-``` {r child = 'data_explore_pt3.Rmd', eval = TRUE}
+``` {r child = 'data_explore_pt3.Rmd', eval = FALSE}
 ```
 
 
