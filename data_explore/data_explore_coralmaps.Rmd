@@ -1,0 +1,208 @@
+---
+title: 'Data Exploration coral maps: IUCN and AquaMaps'
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Libraries and Paths
+
+library(ggplot2)
+library(maps)
+library(readr)
+library(data.table)
+library(raster)
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
+           'Darwin'  = '/Volumes/data_edit',
+           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
+
+if(basename(getwd()) != 'data_explore') setwd('data_explore')
+source('data_explore_fxns.R')
+### When knitting this, it automatically sets WD to be this directory...
+### the 'setwd()' is there for running by chunk
+```
+
+``` {r define_fxns, echo = FALSE}
+#################################################################=
+### Species Map Function ###
+# This function takes a dataframe of loiczid per species ID, and a target species ID 
+### (as single or vector).  Return a df of cells ready to be rasterized.  
+### If AquaMaps, returned df includes aquamaps probability; if IUCN, returned
+### df includes proportional area.
+get_iucn_spp_map <- function(sid, spp_cells) { 
+
+  spp_map <- spp_cells %>%
+    filter(iucn_sid %in% sid)
+  if(nrow(spp_map) == 0) {
+    message('no IUCN cells found')
+    spp_map <- spp_map %>%
+      as.data.frame() %>%
+      select(iucn_sid, loiczid) %>%
+      mutate(area_iucn = NA)
+  } else {
+    spp_map <- spp_map %>%
+      group_by(iucn_sid, loiczid) %>%        
+      summarize(area_iucn = max(prop_area))
+    ### The group_by() and summarize() are to collapse cells with 
+    ### overlapped polygons, fixing the duplicate 'by' issue.
+    ### Note: this drops presence, sciname, and subpop columns
+  }
+  
+  return(spp_map %>% unique() %>% as.data.frame())
+}
+
+#################################################################=
+### Map vs Depth function
+### uses ggplot to create a formatted map of species ranges, including
+### Aquamaps, IUCN, and overlapped ranges; returns the plot object.
+plot_depthmap <- function(spp) {
+  map_iucn <- get_spp_map(spp$iucn_sid, iucn_spp_cells) %>%
+    mutate(iucn_pres = ifelse(area_iucn > 0, 1, 0)) %>%
+    select(-area_iucn, -iucn_sid) %>%
+    unique()
+
+  r_iucn_spp <- subs(loiczid_raster, 
+                     map_iucn[ , c('loiczid', 'iucn_pres')], 
+                     by = 'loiczid', 
+                     which = 'iucn_pres', 
+                     subsWithNA = TRUE)
+  
+  spp_pts <- as.data.frame(rasterToPoints(r_iucn_spp)) %>%
+    mutate(presence = 'IUCN')
+  
+  depth_poly_df <- rgdal::readOGR(dsn = 'coralmaps', layer = 'bath_200m') %>%
+    fortify() %>%
+    mutate(x = long, y = lat)
+  
+  spp_plot <- ggplot(spp_pts, aes(x = x, y = y)) +
+    ggtheme_map + 
+    geom_raster(aes(fill = presence), alpha = .8) +
+    scale_fill_manual(values = c('IUCN' = '#d95f02')) +
+    geom_polygon(data = depth_poly_df, color = 'black', fill = 'yellow', alpha = .8) +
+    borders('world', color='gray40', fill='gray45', size = .1) +  # create a layer of borders
+    scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
+    scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2))
+}
+
+```
+
+```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE, results = 'hide'}
+
+spp_corals <- 'Oculina varicosa'
+
+# Data files
+#iucn spp cells WITHOUT extinct locations of IUCN subpopulations
+iucn_coral_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'), 
+                           col_types = 'cddddc', progress = TRUE) %>%
+  as.data.frame() %>%
+  filter(presence != 5) %>% ### removes extinct subpopulations
+  filter(sciname %in% spp_corals)
+
+### LOICZID cell ID numbers - used in plotting rasters
+loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+loiczid_raster       <- raster(loiczid_raster_file)
+names(loiczid_raster) <- 'loiczid'
+
+### this file created in data_prep
+spp_list_corals <- read.csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'), stringsAsFactors = FALSE) %>%
+  filter(sciname %in% spp_corals)
+
+```
+
+``` {r plot_coral_spp_at_depth, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+### define representative species from each quadrant, for over-plotting
+
+  spp <- spp_list_corals
+
+  spp_plot <- plot_depthmap(spp)
+
+  print(spp_plot)
+  plotfile <- file.path(dir_fig, 'spp_maps', 
+                        sprintf('%s_%s.png', 
+                                spp_quad, 
+                                tolower(str_replace(spp_quads[i], ' ', '_'))))
+  ggsave(plotfile, height = 4.5, width = 8.7, units = 'cm')
+  }
+
+```
+
+
+``` {r examine_spp_gp_quartiles, echo = FALSE, eval = FALSE}
+
+spp_list1 <- spp_list %>%
+  group_by(spp_group_text) %>%
+  mutate(n_spp = n()) %>%
+  ungroup()
+
+### Create species lists by quadrant
+spp_list_q1 <- spp_list1 %>%
+  filter(area_ratio >= median(area_ratio) & sm_perc >= median(sm_perc))
+spp_list_q2 <- spp_list1 %>%
+  filter(area_ratio < median(area_ratio) & sm_perc >= median(sm_perc))
+spp_list_q3 <- spp_list1 %>%
+  filter(area_ratio >= median(area_ratio) & sm_perc < median(sm_perc))
+spp_list_q4 <- spp_list1 %>%
+  filter(area_ratio < median(area_ratio) & sm_perc < median(sm_perc))
+
+spp_list_quads <- spp_list1 %>%
+  mutate(quad = NA,
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q1$sciname, 'q1', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q2$sciname, 'q2', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q3$sciname, 'q3', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q4$sciname, 'q4', quad))
+write.csv(spp_list_quads, file.path(dir_data, 'spp_list_quads.csv'), row.names = FALSE)
+
+### Summarize quadrant species list by species group (e.g. CORALS1)
+spp_gp_q1 <- spp_list_q1 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q1 = n())
+spp_gp_q2 <- spp_list_q2 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q2 = n())
+spp_gp_q3 <- spp_list_q3 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q3 = n())
+spp_gp_q4 <- spp_list_q4 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q4 = n())
+
+### Join species group by quadrant into a single dataframe
+spp_gp_quadrants <- spp_gp_q1 %>%
+  full_join(spp_gp_q2, by = c('spp_group_text', 'n_spp')) %>%
+  full_join(spp_gp_q3, by = c('spp_group_text', 'n_spp')) %>%
+  full_join(spp_gp_q4, by = c('spp_group_text', 'n_spp')) %>%
+  gather(quad, n_quad, n_spp_q1, n_spp_q2, n_spp_q3, n_spp_q4) %>% 
+  mutate(quad = str_replace(quad, 'n_spp_', ''),
+         pct_quad = n_quad/n_spp,
+         n_quad   = ifelse(is.na(n_quad),   0, n_quad),
+         pct_quad = ifelse(is.na(pct_quad), 0, pct_quad))
+
+
+spp_gp_quadrants <- spp_gp_quadrants %>%
+  left_join(spp_gp_quadrants %>% 
+              filter(quad == 'q1') %>%
+              dplyr::select(spp_group_text, pct_q1 = pct_quad),
+            by = 'spp_group_text') %>%
+  mutate(quad = str_replace(quad, 'q1', 'q1 well-matched'),
+         quad = str_replace(quad, 'q2', 'q2 dist-matched'),
+         quad = str_replace(quad, 'q3', 'q3 area-matched'),
+         quad = str_replace(quad, 'q4', 'q4 poorly matched'))
+
+```
+
+
+<!-- # Multiple species maps per quadrant -->
+``` {r child = 'data_explore_pt3.Rmd', eval = FALSE}
+```
+
+
