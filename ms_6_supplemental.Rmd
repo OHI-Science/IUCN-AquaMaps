@@ -23,13 +23,13 @@ Appendices: PNAS prefers that authors submit individual source files to ensure r
 
 #Outline
 
-## Data processing
+## Data processing - should this go in methods???
 
 All code is publicly available and freely downloadable [here on GitHub](link to github).
 
 ### AquaMaps
 
-AquaMaps data was provided by AquaMaps directly via ftp. Three SQL files were sent that contained (1) list of all `r nrow(spp_am)` species and their taxonomic information, (2) information for all (292,000?) half degree cells used for range mapping and (3) the probability of occurrence per cell for all `r nrow(spp_am)` species. These were extracted into .csv form using R Statistical Software. 
+AquaMaps data was provided by AquaMaps directly via ftp. Three SQL files were sent that contained (1) list of all `r nrow(spp_am)` species and their taxonomic information, (2) information for all (259,200?) half degree cells used for range mapping and (3) the probability of occurrence per cell for all `r nrow(spp_am)` species. These were extracted into .csv form using R Statistical Software. 
 
 ### IUCN
 
@@ -41,50 +41,64 @@ Each shapefile contains polygon limits of distribution indicating regions of pre
 * raster::extract() to convert polys to csvs
 * which columns are included?
 
-#### Possible figures
 
-S1: sample maps from each quadrant
+## S1: sample maps from each quadrant
 
-S2: risk by quadrant
+## S2: risk by quadrant
 
-S3: coral depth map
+![](figures/si_barchart_spp_risk_quads.png)
 
+* Breaking down the quadrants by IUCN extinction risk categories (Fig. S2), we found little support for our hypothesis that maps for species with higher extinction risk tend to be better aligned between the two datasets, perhaps correlated to increased expert scrutiny.  Does higher perceived risk lead to increased attention, and thus better understanding of species distribution? Or conversely, does increased attention to species distribution reveal more species at risk?  Likely both mechanisms are at play on a case-by-case basis, depending on the species' taxon and region. _does this argument bear up to closer scrutiny? CR isn't dominated by Q1 any more_
 
-<!--
-#### Caveats
-For example, as of this writing, IUCN has released no spatial data for class Elasmobranchii (cartilaginous fishes including sharks and rays); and while IUCN offers a large number of maps within class Actinopterygii (ray-finned bony fishes), the available maps include only a few primarily tropical taxonomic sub-groups, such as wrasses, damselfish, butterflyfish, tunas, and billfishes, but are missing economically important subgroups including salmon, rockfish, and clupeids.  However, IUCN's criterion of comprehensive assessment greatly reduces the risk of sample bias within the bounds of the assessed taxonomic groups.
--->
-
-___Red List inclusion:___
-
-<!--![](figures/bar_by_taxa_assessed.png)-->
-
-
-![](figures/barchart_spp_risk_quads.png)
-
-* Breaking down the quadrants by IUCN extinction risk categories (FIG 3c), we found little  with higher extinction risk tend to be better aligned between the two datasets, perhaps correlated to increased expert scrutiny.  Does higher perceived risk lead to increased attention, and thus better understanding of species distribution? Or conversely, does increased attention to species distribution reveal more species at risk?  Likely both mechanisms are at play on a case-by-case basis, depending on the species' taxon and region. _does this argument bear up to closer scrutiny? CR isn't dominated by Q1 any more_
-
-<!--
-___table to show data poor status and reviewed status for AquaMaps maps represented in the quadrant plot___ _- perhaps update the quadrant plot to reveal data-poor species (and reviewed species? little overlap of reviewed & data-poor) instead of, say, red-list category which doesn't get discussed in the body of the paper?  then this table can go in SOM if we like it_
-
-| quadrant | n species | n data poor species | mean (median) data points | n reviewed species |
-| :------: | :-------: | :-----------------: | :-----------------------: | :----------------: |
-| all AM   |   22889   |        8749 (38.2%) |          57.1 (16)        |       1296  (5.7%) |
-| AM&IUCN  |    2166   |         457 (21.1%) |          89.9 (33)        |        290 (13.4%) |
-|   q1     |     401   |          33  (8.2%) |         233.0 (78)        |        100 (24.9%) |
-|   q2     |     682   |         151 (22.1%) |          77.4 (39)        |        100 (14.7%) |
-|   q3     |     682   |         114 (16.5%) |          52.4 (29)        |         65  (9.5%) |
-|   q4     |     410   |         159 (39.7%) |          32.1 (13)        |         25  (6.2%) |
-
--->
-
-## illustrative maps for different quadrants and different mechanistic problems
+## S3: coral depth map
 
 Oculina varicosa - Ivory tree coral ![oculina_pic.jpg](figures/oculina/oculina_pic.jpg)
 
 * from IUCN: Colonies are found to depths of 152 m depth on limestone rubble, low-relief limestone outcrops, high-relief, steeply sloping prominences, and soft-bottom sloping habitats. Colonies are semi-isolated, patchy and low-growing in shallow water, or they form larger, massive coalescing aggregates (thickets or coppices) with substantial topographic relief in 50-100 m depth. In shallow waters (2-30m) the form is zooxanthellate, inhabiting limestone ledges. In deeper waters, an azooxanthellate form is known from the shelf edge off eastern Florida, USA from Ft. Pierce to Daytona (Reed 1980, 1983, 2002; Brooke and Young 2003).
 
 plotted against a 200 m bathymetry line: ![oculina_map.png](figures/oculina/oculina_map.png)
+
+## S4: AquaMaps threshold examination
+
+For our comparisons of global distribution of represented biodiversity and spatial alignment between datasets, we considered "present" to be any cell with a non-zero probability of occurrence, to best approximate the "limits of distribution" as indicated by IUCN maps.  To examine the effect of different presence threshold selections on the represented range of a species, we varied the threshold from 0% to 100% and calculated the average species range relative to a zero threshold.
+
+S4a:
+
+![](figures/si_am_threshold.png) 
+
+S4b:
+
+![](figures/si_ribbon_am_threshold.png)
+
+>AquaMaps distribution map extent remaining after applying a presence threshold.  (a) A 40% threshold applied to all species in the AquaMaps dataset shows a mean loss of XXX, with a wide distribution in which some species lose nearly all of their apparent range.  (b) Mean (median) remaining extent at increments of presence threshold. Dark grey ribbon includes 25% to 75% quantiles, while light grey ribbon includes 5% to 95% quantiles.
+
+AquaMaps distribution maps indicate "probability of occurrence" within each 0.5° cell, with values ranging from zero to one, rather than a simple present/absent value as indicated by IUCN maps.  Many studies convert this AquaMaps probability to a simple presence value by assigning a threshold value (REF references here).  A higher threshold constrains an analysis to cells with near certainty of occurrence, while a low threshold captures larger areas of increasingly marginal suitability.
+
+At a presence threshold of 40%, as used in the Ocean Health Index Species subgoal, the bulk of AquaMaps species suffer a significant decrease in represented range, and some species lose nearly their entire range.  Incrementing the presence threshold from 0.00 to 1.00 for the entire AquaMaps dataset, the shallow downward trend indicates a low but consistent sensitivity to threshold choice, with no surprising tradeoffs that could suggest an "optimal" threshold.
+
+
+## MPA gap analysis - explanation
+ 
+___why so many gaps and 10+ species show up with IUCN.  I will write up a paragraph once I've had a little more time to examine maps___
+
+- check which species are gap species; check maps
+- check which species are 10%+ species and check maps
+- where do these species fall georegionally? is there anything odd about their ranges? any reason why IUCN would be 
+- hypothesis to explain more gap species: Aquamaps more diffuse than IUCN, catching individual cells that could be suitable; a single cell (even low probability) moves a species from "gap" to non-gap status.  IUCN more clustered by polygon boundaries; so no scattered cells to accidentally fall into an MPA. 
+    - introducing errors: AM = likely commission (overestimates species with tiny bits of range in MPAs) vs IUCN = possible omission (misses possible real habitat that falls within MPAs)
+- hypothesis to explain more 10%+ species - ten random samples most have IUCN polygons just east of Australia where a large MPA is indicated - Great Barrier Reef I assume - a single large poly falling in GBR gets a high score, while for the same species, many of the AM ranges (also in same area) scatter suitable area over larger extent, so lower percent of species range is protected
+    - introducing errors: IUCN = likely omission (skipping possible real habitat outside of MPAs) and likely commission (possibly overcounting real habitat in MPAs e.g. GBR); AquaMaps = probably a little commission (possibly underestimating, if it overpredicts lots of range outside MPAs, thus reducing the proportion of protected range)
+    
+    
+<!--
+#### Caveats
+For example, as of this writing, IUCN has released no spatial data for class Elasmobranchii (cartilaginous fishes including sharks and rays); and while IUCN offers a large number of maps within class Actinopterygii (ray-finned bony fishes), the available maps include only a few primarily tropical taxonomic sub-groups, such as wrasses, damselfish, butterflyfish, tunas, and billfishes, but are missing economically important subgroups including salmon, rockfish, and clupeids.  However, IUCN's criterion of comprehensive assessment greatly reduces the risk of sample bias within the bounds of the assessed taxonomic groups.
+-->
+
+<!--
+___Red List inclusion:___
+
+![](figures/bar_by_taxa_assessed.png)-->
 
 <!--
 
@@ -135,33 +149,17 @@ Q4
 
 -->
 
-## AquaMaps: Effect of changing "presence" threshold on apparent distribution
 
-### AquaMaps presence threshold analysis
+<!--
+___table to show data poor status and reviewed status for AquaMaps maps represented in the quadrant plot___ _- perhaps update the quadrant plot to reveal data-poor species (and reviewed species? little overlap of reviewed & data-poor) instead of, say, red-list category which doesn't get discussed in the body of the paper?  then this table can go in SOM if we like it_
 
-For our comparisons of global distribution of represented biodiversity and spatial alignment between datasets, we considered "present" to be any cell with a non-zero probability of occurrence, to best approximate the "limits of distribution" as indicated by IUCN maps.  To examine the effect of different presence threshold selections on the represented range of a species, we varied the threshold from 0% to 100% and calculated the average species range relative to a zero threshold.
+| quadrant | n species | n data poor species | mean (median) data points | n reviewed species |
+| :------: | :-------: | :-----------------: | :-----------------------: | :----------------: |
+| all AM   |   22889   |        8749 (38.2%) |          57.1 (16)        |       1296  (5.7%) |
+| AM&IUCN  |    2166   |         457 (21.1%) |          89.9 (33)        |        290 (13.4%) |
+|   q1     |     401   |          33  (8.2%) |         233.0 (78)        |        100 (24.9%) |
+|   q2     |     682   |         151 (22.1%) |          77.4 (39)        |        100 (14.7%) |
+|   q3     |     682   |         114 (16.5%) |          52.4 (29)        |         65  (9.5%) |
+|   q4     |     410   |         159 (39.7%) |          32.1 (13)        |         25  (6.2%) |
 
-### Figure 5 (a, b):
-
-![](figures/si_am_threshold.png) 
-
-![](figures/si_ribbon_am_threshold.png)
-
->AquaMaps distribution map extent remaining after applying a presence threshold.  (a) A 40% threshold applied to all species in the AquaMaps dataset shows a mean loss of XXX, with a wide distribution in which some species lose nearly all of their apparent range.  (b) Mean (median) remaining extent at increments of presence threshold. Dark grey ribbon includes 25% to 75% quantiles, while light grey ribbon includes 5% to 95% quantiles.
-
-AquaMaps distribution maps indicate "probability of occurrence" within each 0.5° cell, with values ranging from zero to one, rather than a simple present/absent value as indicated by IUCN maps.  Many studies convert this AquaMaps probability to a simple presence value by assigning a threshold value (REF references here).  A higher threshold constrains an analysis to cells with near certainty of occurrence, while a low threshold captures larger areas of increasingly marginal suitability.
-
-At a presence threshold of 40%, as used in the Ocean Health Index Species subgoal, the bulk of AquaMaps species suffer a significant decrease in represented range, and some species lose nearly their entire range.  Incrementing the presence threshold from 0.00 to 1.00 for the entire AquaMaps dataset, the shallow downward trend indicates a low but consistent sensitivity to threshold choice, with no surprising tradeoffs that could suggest an "optimal" threshold.  This pattern may not hold true for all subsets of AquaMaps species, however, whether subsetting by taxa or by georegion.
-
-
-### MPA gap analysis - explanation
- 
-___why so many gaps and 10+ species show up with IUCN.  I will write up a paragraph once I've had a little more time to examine maps___
-
-- check which species are gap species; check maps
-- check which species are 10%+ species and check maps
-- where do these species fall georegionally? is there anything odd about their ranges? any reason why IUCN would be 
-- hypothesis to explain more gap species: Aquamaps more diffuse than IUCN, catching individual cells that could be suitable; a single cell (even low probability) moves a species from "gap" to non-gap status.  IUCN more clustered by polygon boundaries; so no scattered cells to accidentally fall into an MPA. 
-    - introducing errors: AM = likely commission (overestimates species with tiny bits of range in MPAs) vs IUCN = possible omission (misses possible real habitat that falls within MPAs)
-- hypothesis to explain more 10%+ species - ten random samples most have IUCN polygons just east of Australia where a large MPA is indicated - Great Barrier Reef I assume - a single large poly falling in GBR gets a high score, while for the same species, many of the AM ranges (also in same area) scatter suitable area over larger extent, so lower percent of species range is protected
-    - introducing errors: IUCN = likely omission (skipping possible real habitat outside of MPAs) and likely commission (possibly overcounting real habitat in MPAs e.g. GBR); AquaMaps = probably a little commission (possibly underestimating, if it overpredicts lots of range outside MPAs, thus reducing the proportion of protected range)
+-->
