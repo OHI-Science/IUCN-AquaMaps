@@ -9,10 +9,10 @@
         <layer-tree-layer expanded="1" checked="Qt::Checked" id="oculina20160113171832890" name="oculina">
             <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="Oculina_varicosa20160113171709206" name="Oculina_varicosa">
+        <layer-tree-layer expanded="1" checked="Qt::Checked" id="rgns_land20160114083557153" name="rgns_land">
             <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" checked="Qt::Checked" id="rgns_land20160114083557153" name="rgns_land">
+        <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="oculina_varicosa20160327105209651" name="oculina_varicosa">
             <customproperties/>
         </layer-tree-layer>
         <layer-tree-layer expanded="1" checked="Qt::Checked" id="bath_200m20160114084917703" name="bath_200m">
@@ -46,11 +46,11 @@
     <visibility-presets/>
     <layer-tree-canvas>
         <custom-order enabled="0">
-            <item>Oculina_varicosa20160113171709206</item>
             <item>oculina20160113171832890</item>
             <item>rgns_land20160114083557153</item>
             <item>bath_200m20160114084917703</item>
             <item>bath_200m_copy20160119145034159</item>
+            <item>oculina_varicosa20160327105209651</item>
         </custom-order>
     </layer-tree-canvas>
     <legend updateDrawingOrder="true">
@@ -64,14 +64,14 @@
                 <legendlayerfile isInOverview="0" layerid="oculina20160113171832890" visible="1"/>
             </filegroup>
         </legendlayer>
-        <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="Oculina_varicosa" showFeatureCount="0">
-            <filegroup open="true" hidden="false">
-                <legendlayerfile isInOverview="0" layerid="Oculina_varicosa20160113171709206" visible="0"/>
-            </filegroup>
-        </legendlayer>
         <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="rgns_land" showFeatureCount="0">
             <filegroup open="true" hidden="false">
                 <legendlayerfile isInOverview="0" layerid="rgns_land20160114083557153" visible="1"/>
+            </filegroup>
+        </legendlayer>
+        <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="oculina_varicosa" showFeatureCount="0">
+            <filegroup open="true" hidden="false">
+                <legendlayerfile isInOverview="0" layerid="oculina_varicosa20160327105209651" visible="0"/>
             </filegroup>
         </legendlayer>
         <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="bath_200m" showFeatureCount="0">
@@ -81,53 +81,6 @@
         </legendlayer>
     </legend>
     <projectlayers layercount="5">
-        <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>Oculina_varicosa20160113171709206</id>
-            <datasource>./Oculina_varicosa.tif</datasource>
-            <title></title>
-            <abstract></abstract>
-            <keywordList>
-                <value></value>
-            </keywordList>
-            <layername>Oculina_varicosa</layername>
-            <srs>
-                <spatialrefsys>
-                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-                    <srsid>3452</srsid>
-                    <srid>4326</srid>
-                    <authid>EPSG:4326</authid>
-                    <description>WGS 84</description>
-                    <projectionacronym>longlat</projectionacronym>
-                    <ellipsoidacronym>WGS84</ellipsoidacronym>
-                    <geographicflag>true</geographicflag>
-                </spatialrefsys>
-            </srs>
-            <customproperties>
-                <property key="identify/format" value="Value"/>
-            </customproperties>
-            <provider>gdal</provider>
-            <noData>
-                <noDataList bandNo="1" useSrcNoData="1"/>
-            </noData>
-            <pipe>
-                <rasterrenderer opacity="1" alphaBand="-1" classificationMax="0.99901" classificationMinMaxOrigin="CumulativeCutFullExtentEstimated" band="1" classificationMin="0.09019" type="singlebandpseudocolor">
-                    <rasterTransparency/>
-                    <rastershader>
-                        <colorrampshader colorRampType="INTERPOLATED" clip="0">
-                            <item alpha="255" value="-0.81863" label="-0.818630" color="#abdda4"/>
-                            <item alpha="255" value="-0.81863" label="-0.818630" color="#2b83ba"/>
-                            <item alpha="255" value="-0.81863" label="-0.818630" color="#ffffbf"/>
-                            <item alpha="255" value="-0.81863" label="-0.818630" color="#d7191c"/>
-                            <item alpha="255" value="-0.81863" label="-0.818630" color="#fdae61"/>
-                        </colorrampshader>
-                    </rastershader>
-                </rasterrenderer>
-                <brightnesscontrast brightness="0" contrast="0"/>
-                <huesaturation colorizeGreen="128" colorizeOn="0" colorizeRed="255" colorizeBlue="128" grayscaleMode="0" saturation="0" colorizeStrength="100"/>
-                <rasterresampler maxOversampling="2"/>
-            </pipe>
-            <blendMode>0</blendMode>
-        </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>bath_200m20160114084917703</id>
             <datasource>./bath_200m.shp</datasource>
@@ -414,12 +367,12 @@
                     <symbol alpha="1" type="fill" name="0">
                         <layer pass="0" class="SimpleFill" locked="0">
                             <prop k="border_width_map_unit_scale" v="0,0"/>
-                            <prop k="color" v="0,0,0,0"/>
+                            <prop k="color" v="16,98,179,128"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
-                            <prop k="outline_color" v="31,120,180,255"/>
+                            <prop k="outline_color" v="0,0,0,0"/>
                             <prop k="outline_style" v="solid"/>
                             <prop k="outline_width" v="0.26"/>
                             <prop k="outline_width_unit" v="MM"/>
@@ -460,7 +413,7 @@
                 <property key="labeling/fieldName" value=""/>
                 <property key="labeling/fontBold" value="false"/>
                 <property key="labeling/fontCapitals" value="0"/>
-                <property key="labeling/fontFamily" value=".SF NS Text"/>
+                <property key="labeling/fontFamily" value=".Helvetica Neue DeskInterface"/>
                 <property key="labeling/fontItalic" value="false"/>
                 <property key="labeling/fontLetterSpacing" value="0"/>
                 <property key="labeling/fontLimitPixelSize" value="false"/>
@@ -618,7 +571,7 @@
                 </edittype>
             </edittypes>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>oculina20160113171832890</id>
             <datasource>./oculina.shp</datasource>
             <title></title>
@@ -725,7 +678,7 @@
                     <symbol alpha="1" type="fill" name="0">
                         <layer pass="0" class="SimpleFill" locked="0">
                             <prop k="border_width_map_unit_scale" v="0,0"/>
-                            <prop k="color" v="227,77,147,133"/>
+                            <prop k="color" v="217,98,0,255"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="offset_map_unit_scale" v="0,0"/>
@@ -771,7 +724,7 @@
                 <property key="labeling/fieldName" value=""/>
                 <property key="labeling/fontBold" value="false"/>
                 <property key="labeling/fontCapitals" value="0"/>
-                <property key="labeling/fontFamily" value=".SF NS Text"/>
+                <property key="labeling/fontFamily" value=".Helvetica Neue DeskInterface"/>
                 <property key="labeling/fontItalic" value="false"/>
                 <property key="labeling/fontLetterSpacing" value="0"/>
                 <property key="labeling/fontLimitPixelSize" value="false"/>
@@ -995,6 +948,49 @@
                 </edittype>
             </edittypes>
         </maplayer>
+        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
+            <id>oculina_varicosa20160327105209651</id>
+            <datasource>./oculina_varicosa.tif</datasource>
+            <title></title>
+            <abstract></abstract>
+            <keywordList>
+                <value></value>
+            </keywordList>
+            <layername>oculina_varicosa</layername>
+            <srs>
+                <spatialrefsys>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+                    <srsid>3452</srsid>
+                    <srid>4326</srid>
+                    <authid>EPSG:4326</authid>
+                    <description>WGS 84</description>
+                    <projectionacronym>longlat</projectionacronym>
+                    <ellipsoidacronym>WGS84</ellipsoidacronym>
+                    <geographicflag>true</geographicflag>
+                </spatialrefsys>
+            </srs>
+            <customproperties>
+                <property key="identify/format" value="Value"/>
+            </customproperties>
+            <provider>gdal</provider>
+            <noData>
+                <noDataList bandNo="1" useSrcNoData="1"/>
+            </noData>
+            <pipe>
+                <rasterrenderer opacity="1" alphaBand="0" classificationMax="1" classificationMinMaxOrigin="User" band="1" classificationMin="0" type="singlebandpseudocolor">
+                    <rasterTransparency/>
+                    <rastershader>
+                        <colorrampshader colorRampType="INTERPOLATED" clip="0">
+                            <item alpha="255" value="0" label="0.000000" color="#7f2704"/>
+                        </colorrampshader>
+                    </rastershader>
+                </rasterrenderer>
+                <brightnesscontrast brightness="0" contrast="0"/>
+                <huesaturation colorizeGreen="128" colorizeOn="0" colorizeRed="255" colorizeBlue="128" grayscaleMode="0" saturation="0" colorizeStrength="100"/>
+                <rasterresampler maxOversampling="2"/>
+            </pipe>
+            <blendMode>0</blendMode>
+        </maplayer>
         <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>rgns_land20160114083557153</id>
             <datasource>./rgns_land.shp</datasource>
@@ -1048,12 +1044,12 @@
                     <symbol alpha="1" type="fill" name="0">
                         <layer pass="0" class="SimpleFill" locked="0">
                             <prop k="border_width_map_unit_scale" v="0,0"/>
-                            <prop k="color" v="97,128,91,255"/>
+                            <prop k="color" v="102,102,102,255"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="offset_map_unit_scale" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
-                            <prop k="outline_color" v="44,77,38,255"/>
+                            <prop k="outline_color" v="153,153,153,255"/>
                             <prop k="outline_style" v="solid"/>
                             <prop k="outline_width" v="0.26"/>
                             <prop k="outline_width_unit" v="MM"/>
@@ -1094,7 +1090,7 @@
                 <property key="labeling/fieldName" value=""/>
                 <property key="labeling/fontBold" value="false"/>
                 <property key="labeling/fontCapitals" value="0"/>
-                <property key="labeling/fontFamily" value=".SF NS Text"/>
+                <property key="labeling/fontFamily" value=".Helvetica Neue DeskInterface"/>
                 <property key="labeling/fontItalic" value="false"/>
                 <property key="labeling/fontLetterSpacing" value="0"/>
                 <property key="labeling/fontLimitPixelSize" value="false"/>
@@ -1286,8 +1282,8 @@
             <DegreeFormat type="QString">D</DegreeFormat>
         </PositionPrecision>
         <WCSUrl type="QString"></WCSUrl>
-        <WMSServiceCapabilities type="bool">false</WMSServiceCapabilities>
         <WMSContactPhone type="QString"></WMSContactPhone>
+        <WMSServiceCapabilities type="bool">false</WMSServiceCapabilities>
         <WMSServiceAbstract type="QString"></WMSServiceAbstract>
         <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
         <Measure>
@@ -1311,9 +1307,9 @@
         <Digitizing>
             <LayerSnappingList type="QStringList">
                 <value>bath_200m20160114084917703</value>
+                <value>bath_200m_copy20160119145034159</value>
                 <value>oculina20160113171832890</value>
                 <value>rgns_land20160114083557153</value>
-                <value>bath_200m_copy20160119145034159</value>
             </LayerSnappingList>
             <LayerSnappingEnabledList type="QStringList">
                 <value>enabled</value>
