@@ -392,7 +392,8 @@ mpa_all_runs <- mpa_klein_am2014 %>%
   bind_rows(iucn_spp_sum %>%
     mutate(trial = 'IUCN 2015') %>%
     rename(cat = cat2015, pct = pct2015)) %>%
-  select(speciesid, cat, pct, trial)
+  select(speciesid, cat, pct, trial) %>%
+  unique()
 
 # names(mpa_all_runs)[3:7] <- paste('mpa', names(mpa_all_runs)[3:7], sep = '')
 

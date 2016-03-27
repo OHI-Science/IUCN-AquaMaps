@@ -49,7 +49,7 @@ spp_list <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 data_file <- file.path(dir_data, 'spp_list_w_area_trimmed.csv')
 spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE) %>%
   filter(!is.na(popn_category)) %>% ### filter out unassessed species
-  filter(!is.na(sm_perc))           ### filter out NA maps (usually IUCN maps with no polygons)
+  filter(!is.na(sm_perc))           ### filter out NA maps
 
 ### generate other lists
 
