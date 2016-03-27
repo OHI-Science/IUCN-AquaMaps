@@ -49,7 +49,7 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
            color = 'grey20',
            label = 'mean') + 
   geom_vline(xintercept = spp_df3_med, color = 'grey30', linetype = 'dashed') + 
-  annotate('text', x = spp_df3_med, y = .13, hjust = 0, vjust = -.5,
+  annotate('text', x = spp_df3_med + .02, y = .13, hjust = 0, vjust = 1,
            angle = 90, 
            size = 3, 
            color = 'grey20',
@@ -64,16 +64,16 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
                                'NE' = 'grey70')) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 1.02)) +
   scale_y_continuous(expand = c(0, 0)) +
-  labs(x = 'Proportion of range included when selecting a threshold of 40%', 
-       y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp)),
+  labs(x = 'Proportion of range included for presence threshold = 40%', 
+       y = sprintf('Proportion of all \nAquaMaps species (n = %s)', nrow(spp)),
        fill = 'IUCN code')
 
 # print(hist_area_vs_threshold)
 
 ggsave(file.path(dir_fig, 'si_am_threshold.tif'), device = 'tiff', 
-       width = 17.8, height = 9, units = 'cm')
+       width = 11.4, height = 6, units = 'cm')
 ggsave(file.path(dir_fig, 'si_am_threshold.png'), 
-       width = 17.8, height = 9, units = 'cm')
+       width = 11.4, height = 6, units = 'cm')
 
 ```
 
@@ -177,17 +177,17 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
   geom_vline(xintercept = 0.60, color = 'blue', linetype = 'dashed') +
   annotate('text', x = .39, y = .03, hjust = 0, vjust = 0,
            angle = 90, 
-           size = 3, 
+           size = 2, 
            color = 'grey20',
            label = 'Halpern et al. 2012') + 
   annotate('text', x = .49, y = .03, hjust = 0, vjust = 0,
            angle = 90, 
-           size = 3, 
+           size = 2, 
            color = 'grey20',
            label = 'Klein et al. 2015') + 
   annotate('text', x = .59, y = .03, hjust = 0, vjust = 0,
            angle = 90, 
-           size = 3, 
+           size = 2, 
            color = 'grey20',
            label = 'Kaschner et al. 2006') + 
   # annotate('text', x = .75, y = .85,
@@ -205,9 +205,9 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
        y = 'Relative species range')
 
 ggsave(file.path(dir_fig, 'si_ribbon_am_threshold.tif'), device = 'tiff', 
-       width = 17.8, height = 7, units = 'cm')
+       width = 11.4, height = 6, units = 'cm')
 ggsave(file.path(dir_fig, 'si_ribbon_am_threshold.png'), 
-       width = 17.8, height = 7, units = 'cm')
+       width = 11.4, height = 6, units = 'cm')
 
 ```
 
