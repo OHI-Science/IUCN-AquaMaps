@@ -4,8 +4,6 @@
 
 # References
 
-___double check formats; also - include DOIs for references? which if any?___
-
 <!--
 References. References must be in PNAS style. Only published or in-press papers and books may be cited in the reference list. For references to in-press articles, please confirm with the cited journal that the article is in press and include a DOI number and online publication date. Unpublished abstracts of papers presented at meetings or references to "data not shown" are not permitted. References should be cited in numerical order as they appear in text, and all references, including for the SI, should be included in the main manuscript file. Because tables and figures will be inserted in the text where first cited, references in these sections should be numbered accordingly. Include the full title for each cited article. All authors (unless there are more than five) should be named in the citation. If there are more than five, list the first author's name followed by et al. Provide inclusive page ranges for journal articles and book chapters. Cite databases in the text or as footnotes.
 
@@ -14,60 +12,41 @@ Journal articles are cited as follows:
 10. Neuhaus J-M, Sitcher L, Meins F, Jr, Boller T (1991) A short C-terminal sequence is necessary and sufficient for the targeting of chitinases to the plant vacuole. Proc Natl Acad Sci USA 88(22):10362–10366.
 -->
 
-Kaschner K et al. (2015) AquaMaps: Predicted range maps for aquatic species. World wide web electronic publication, www.aquamaps.org, Version 08/2015. ___since this is not a peer-reviewed publication, can we include this for PNAS reference list?___
+Kaschner K et al. (2015) AquaMaps: Predicted range maps for aquatic species. World wide web electronic publication, www.aquamaps.org, Version 08/2015. <!--___since this is not a peer-reviewed publication, can we include this for PNAS reference list?___-->
 
-IUCN (2015). The IUCN Red List of Threatened Species. Version 2015-4. <http://www.iucnredlist.org>. Downloaded on 21 December 2015.  ___since this is not a peer-reviewed publication, can we include this for PNAS reference list?___
+IUCN (2015). The IUCN Red List of Threatened Species. Version 2015-4. <http://www.iucnredlist.org>. Downloaded on 21 December 2015.  <!--___since this is not a peer-reviewed publication, can we include this for PNAS reference list?___-->
 
-Halpern BS et al. (2012). An index to assess the health and benefits of the global ocean. Nature, 488(7413), 615-620. _doi:10.1038/nature11397._
+Halpern BS et al. (2012). An index to assess the health and benefits of the global ocean. Nature, 488(7413), 615-620. <!--_doi:10.1038/nature11397._-->
 
-Halpern BS et al. (2015). Patterns and emerging trends in global ocean health. PloS one, 10(3), e0117863. ___doi?___
+Halpern BS et al. (2015). Patterns and emerging trends in global ocean health. PloS one, 10(3), e0117863. <!--___doi?___-->
 
-Klein CJ et al. (2015). Shortfalls in the global protected area network at representing marine biodiversity. Scientific Reports 5: 17539. _doi:10.1038/srep17539._
+Klein CJ et al. (2015). Shortfalls in the global protected area network at representing marine biodiversity. Scientific Reports 5: 17539. <!--_doi:10.1038/srep17539._-->
 
-Selig ER et al. (2013). Assessing global marine biodiversity status within a coupled socio-ecological perspective. PloS one, 8(4), e60284. _doi:10.1371/journal.pone.0060284._
+Selig ER et al. (2013). Assessing global marine biodiversity status within a coupled socio-ecological perspective. PloS one, 8(4), e60284. <!--_doi:10.1371/journal.pone.0060284._-->
 
-Coll M et al. (2010). The biodiversity of the Mediterranean Sea: estimates, patterns, and threats. PLoS ONE 5(8): e11842. _used AquaMaps to predict Med biodiversity.  Also: Threshold = 0._
+Coll M et al. (2010). The biodiversity of the Mediterranean Sea: estimates, patterns, and threats. PLoS ONE 5(8): e11842. <!--_used AquaMaps to predict Med biodiversity.  Also: Threshold = 0._-->
 
-*Martin CS et al. (2014). Manual of marine and coastal datasets of biodiversity importance. May 2014 release. Cambridge (UK): UNEP World Conservation Monitoring Centre. 28 pp. (+ 4 annexes totalling 174 pp. and one e-supplement). _review of marine data sets and data gaps etc, incl both IUCN and AM as well as many others_
+*Martin CS et al. (2014). Manual of marine and coastal datasets of biodiversity importance. May 2014 release. Cambridge (UK): UNEP World Conservation Monitoring Centre. 28 pp. <!--(+ 4 annexes totalling 174 pp. and one e-supplement). _review of marine data sets and data gaps etc, incl both IUCN and AM as well as many others_-->
 
-Pimm SL et al. (2014). The biodiversity of species and their rates of extinction, distribution, and protection. Science, 344(6187), 1246752. _uses range maps to show biodiversity areas; may use IUCN range maps.  Also discusses gaps and possible things that can be done about them._
+Pimm SL et al. (2014). The biodiversity of species and their rates of extinction, distribution, and protection. Science, 344(6187), 1246752. <!--_uses range maps to show biodiversity areas; may use IUCN range maps.  Also discusses gaps and possible things that can be done about them._-->
 
-Kaschner K, Tittensor DP, Ready J, Gerrodette T, Worm B (2011). Current and Future Patterns of Global Marine Mammal Biodiversity. PLoS ONE 6(5): e19653. _just what the title says - AM development, presence threshold 60%, also analyzes richness as a function of threshold_
+Kaschner K, Tittensor DP, Ready J, Gerrodette T, Worm B (2011). Current and Future Patterns of Global Marine Mammal Biodiversity. PLoS ONE 6(5): e19653. <!--_just what the title says - AM development, presence threshold 60%, also analyzes richness as a function of threshold_-->
 
-Molinos JG et al. (2015). Climate velocity and the future global redistribution of marine biodiversity. Nature Climate Change. _doi:10.1038/nclimate2769._
+Molinos JG et al. (2015). Climate velocity and the future global redistribution of marine biodiversity. Nature Climate Change. <!--_doi:10.1038/nclimate2769._-->
 
-Rondinini C, Wilson KA, Boitani L, Grantham H, & Possingham HP (2006). Tradeoffs of different types of species occurrence data for use in systematic conservation planning. Ecology letters, 9(10), 1136-1145. _compares point locality, range maps, and distribution models in terms of omission and commission errors; also outlines Extent of Occurrence and Area of Occupancy distinctions._
+Rondinini C, Wilson KA, Boitani L, Grantham H, & Possingham HP (2006). Tradeoffs of different types of species occurrence data for use in systematic conservation planning. Ecology letters, 9(10), 1136-1145. <!--_compares point locality, range maps, and distribution models in terms of omission and commission errors; also outlines Extent of Occurrence and Area of Occupancy distinctions._-->
 
-Jetz W, Sekercioglu CH, and Watson JE (2008). Ecological correlates and conservation implications of overestimating species geographic ranges. Conservation Biology, 22(1), 110-119. _EOO maps are usually highly interpolated and overestimate small-scale occurrence, which may bias research outcomes_
+Jetz W, Sekercioglu CH, and Watson JE (2008). Ecological correlates and conservation implications of overestimating species geographic ranges. Conservation Biology, 22(1), 110-119. <!--_EOO maps are usually highly interpolated and overestimate small-scale occurrence, which may bias research outcomes_-->
 
-Kaschner K, Watson R, Trites AW, Pauly D (2006). Mapping world-wide distributions of marine mammal species using a relative environmental suitability (RES) model.  Marine Ecology Progress Series 316: 285–310. _check this citation journal name..._ _This outlines the basic RES methodology - AM development_
+Kaschner K, Watson R, Trites AW, Pauly D (2006). Mapping world-wide distributions of marine mammal species using a relative environmental suitability (RES) model.  Marine Ecology Progress Series 316: 285–310. <!--_check this citation journal name..._ _This outlines the basic RES methodology - AM development_-->
 
-Ready J et al. (2010). Predicting the distributions of marine organisms at the global scale. Ecological Modelling 221(3): 467-478. _Presents AM; assessing AquaMaps against other presence-only species models_
+Ready J et al. (2010). Predicting the distributions of marine organisms at the global scale. Ecological Modelling 221(3): 467-478. <!--_Presents AM; assessing AquaMaps against other presence-only species models_-->
 
 Spalding MD et al. (2007). Marine ecoregions of the world: a bioregionalization of coastal and shelf areas. BioScience, 57(7), 573-583.
 
-
-### Datasets and tools: cite these?
-
-* WDPA
-IUCN and UNEP-WCMC (2014). The World Database on Protected Areas (WDPA) [On-line]. Cambridge, UK: UNEP- WCMC. Available at: www.protectedplanet.net [Accessed December 1, 2014].
-
-* R
-R Core Team (2015). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
-
-* QGIS
 QGIS Development Team (2015). QGIS Geographic Information System. Open Source Geospatial Foundation Project. http://qgis.osgeo.org
 
+IUCN and UNEP-WCMC (2014). The World Database on Protected Areas (WDPA) [On-line]. Cambridge, UK: UNEP- WCMC. Available at: www.protectedplanet.net [Accessed December 1, 2014].
 
-
-### NOT CURRENTLY USED:
-
-Jones MC, Dyeb SR, Pinnegar JK, Cheung WWL (2012). Modelling commercial fish distributions: Prediction and assessment using different approaches. Ecological Modelling 225(2012): 133-145. PDF _comparison of species distribution models including AquaMaps, Maxent and the Sea Around Us Project_
-
-
-Hurlbert AH, and Jetz W (2007). Species richness, hotspots, and the scale dependence of range maps in ecology and conservation. Proceedings of the National Academy of Sciences, 104(33), 13384-13389. _mostly rasters of range maps?  "The scale dependence of range-map accuracy poses clear limitations on braod-scale ecological analyses and conservation assessments.  ... we provide guidance about the approriate scale of their use_
-
-
-
-
+R Core Team (2015). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
 

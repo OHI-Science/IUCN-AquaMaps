@@ -5,11 +5,11 @@ author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjam
 output:
   word_document: default
   pdf_document:
-    number_sections: yes
+    number_sections: no
     toc: no
   html_document:
     highlight: haddock
-    number_sections: yes
+    number_sections: no
     theme: spacelab
     toc: no
 ---
@@ -97,8 +97,6 @@ spp_am_file <- 'data/spp_am.csv'
 spp_am <- read_csv(spp_am_file)
 
 ```
-
------
 
 ``` {r calc species numbers, echo = FALSE}
 n_spp_am     <- nrow(spp_am)

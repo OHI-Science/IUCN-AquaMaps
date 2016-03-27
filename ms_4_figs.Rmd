@@ -41,8 +41,6 @@ Arguments
 
 -->
 
------
-
 ### Fig. 1
 <a id = 'fig1'></a>
 
@@ -66,7 +64,7 @@ n_bonyfish <- nrow(spp_map_pairs %>%
 ```
 
 
->  __Fig. 1.__ (A) Number and proportion of species by taxa included in each dataset.  Overlapping species are dominated by bony fishes (`r format(n_bonyfish, big.mark = ',')` species, primarily tropical taxa) and corals (`r format(n_corals, big.mark = ',')` species).  (B, C) Number of global marine species according to (A) AquaMaps and (B) IUCN.  The margin frequency plots show relative species count per cell at each latitude and longitude. 
+>  __Fig. 1.__ (A) Number and proportion of species by taxa included in each dataset.  Overlapping species are dominated by bony fishes (`r format(n_bonyfish, big.mark = ',')` species, primarily tropical taxa) and corals (`r format(n_corals, big.mark = ',')` species).  (B, C) Number of global marine species according to (B) AquaMaps and (C) IUCN.  The margin frequency plots show relative species count per cell at each latitude and longitude. 
 
 ### Fig. 2
 <a id = 'fig2'></a>
