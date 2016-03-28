@@ -3,15 +3,15 @@ title: "Aligning marine species range data to better serve science and conservat
 author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjamin
   S. Halpern<sup>1, 2, 3</sup>
 output:
-  word_document: default
-  pdf_document:
-    number_sections: no
-    toc: no
   html_document:
     highlight: haddock
     number_sections: no
     theme: spacelab
     toc: no
+  pdf_document:
+    number_sections: no
+    toc: no
+  word_document: default
 ---
 
 <!--Title: Titles should be no more than three typeset lines (generally 135 characters including spaces) and should be comprehensible to a broad scientific audience. Please provide a short title of fewer than 50 characters for mobile devices and RSS feeds.-->
@@ -28,7 +28,7 @@ Casey O'Hara, National Center for Ecological Analysis and Synthesis, 735 State S
 
 _Classification:_ BIOLOGICAL SCIENCES: Sustainability Science
 
-_Keywords:_ <!--Keywords are listed below the abstract of the published article. At least three keywords are required at submission.  maybe species distribution maps, AquaMaps, IUCN, marine protected area planning, biodiversity status--> TBD
+_Keywords:_ <!--Keywords are listed below the abstract of the published article. At least three keywords are required at submission.  maybe species distribution maps, AquaMaps, IUCN, marine protected area planning, biodiversity status--> TBD: These should be words NOT in the title or abstract (BSH comment)
 
 <!--
 
