@@ -1,4 +1,16 @@
-# Supplemental Information
+---
+title: "Supplemental Information"
+output:
+  word_document: default
+  pdf_document:
+    number_sections: no
+    toc: no
+  html_document:
+    highlight: haddock
+    number_sections: no
+    theme: spacelab
+    toc: no
+---
 
 <!--
 
@@ -18,20 +30,16 @@ Datasets: Supply Excel (.xls), RTF, or PDF files. This file type will be publish
 Movies: Supply Audio Video Interleave (avi), Quicktime (mov), Windows Media (wmv), animated GIF (gif), or MPEG files and submit a brief legend for each movie in a Word or RTF file. All movies should be submitted at the desired reproduction size and length. Movies should be no more than 10 MB in size.
 Still images: Authors must provide a still image from each video file. Supply TIFF, EPS, high-resolution PDF, JPEG, or GIF files.
 Appendices: PNAS prefers that authors submit individual source files to ensure readability. If this is not possible, supply a single PDF file that contains all of the SI associated with the paper. This file type will be published in raw format and will not be edited or composed.
-
 -->
 
-<!--## Data processing - should this go in methods???
+<!--## Data processing - should this go in methods??? -->
 
+<!--
 All code is publicly available and freely downloadable [here on GitHub](link to github).
 
-### AquaMaps
+AquaMaps data was provided by AquaMaps directly via ftp. Three SQL files were sent that contained (1) list of all 22,889 modeled species and their taxonomic information, (2) information for all (259,200) half degree cells used for range mapping and (3) the probability of occurrence per cell for all 22,889 species. These were extracted into .csv form using R Statistical Software. 
 
-AquaMaps data was provided by AquaMaps directly via ftp. Three SQL files were sent that contained (1) list of all `r nrow(spp_am)` species and their taxonomic information, (2) information for all (259,200) half degree cells used for range mapping and (3) the probability of occurrence per cell for all `r nrow(spp_am)` species. These were extracted into .csv form using R Statistical Software. 
-
-### IUCN
-
-As of December 2015, IUCN had published species distribution maps for `r nrow(spp_iucn_maps)` marine species across 24 taxonomic groups.  For this analysis, we did not consider IUCN range maps for bird species, as those data are hosted separately by BirdLife International.
+As of December 2015, IUCN had published species distribution maps for XXX marine species across 24 taxonomic groups.  For this analysis, we did not consider IUCN range maps for bird species, as those data are hosted separately by BirdLife International.
 
 Each shapefile contains polygon limits of distribution indicating regions of presence/absence, additional attributes provide information on extant/extinct ranges, native/introduced ranges, and seasonality.-->
 

@@ -1,17 +1,17 @@
 ---
 title: "Aligning marine species range data to better serve science and conservation"
 author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjamin
-  S. Halpern<sup>1, 2, 3</sup>
+  S. Halpern^1,2,3^
 output:
+  word_document: default
+  pdf_document:
+    number_sections: no
+    toc: no
   html_document:
     highlight: haddock
     number_sections: no
     theme: spacelab
     toc: no
-  pdf_document:
-    number_sections: no
-    toc: no
-  word_document: default
 ---
 
 <!--Title: Titles should be no more than three typeset lines (generally 135 characters including spaces) and should be comprehensible to a broad scientific audience. Please provide a short title of fewer than 50 characters for mobile devices and RSS feeds.-->
@@ -121,10 +121,31 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 ``` {r abstract, child = 'ms_1_abst_sig.Rmd'}
 ```
 
+<!--
+| Section        |   Word #   | Char/spc # |
+| :------        |    ------: |    ------: |
+| Abstract       |  184 words |  1312 char |
+| Significance   |   73 words |   545 char |
+-->
+
 -----
+
+\\body
 
 ``` {r intro_results_discussion, child = 'ms_2_intro_res_disc.Rmd'}
 ```
+
+<!--
+| Section                   |   Word #   | Char/spc # |
+| :------                   |    ------: |    ------: |
+| Introduction              |  429 words |  2905 char |
+| Results/Discussion        |  999 words |  6697 char |
+| Implications (incomplete) |  597 words |  3794 char |
+| Conclusions               |  354 words |  2505 char |
+| Methods (incomplete)      |  601 words |  3919 char |
+| total body                | 2987 words | 19885 char |
+-->
+
 
 -----
 
@@ -133,15 +154,24 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 
 -----
 
-``` {r figures, child = 'ms_4_figs.Rmd'}
+``` {r references, child = 'ms_4_refs.Rmd'}
 ```
 
 -----
 
-``` {r references, child = 'ms_5_refs.Rmd'}
+``` {r figure_legends, child = 'ms_5_fig_legends.Rmd'}
 ```
 
------
-
-``` {r SOM, child = 'ms_6_supplemental.Rmd', eval = TRUE}
-```
+<!--
+| Figure  |  w x h (px) | w x h (cm)  | char # |
+| :------ |     ------: |     ------: |------: |
+| 1 A - C | 2102 x 1536 | 17.8 x 13.0 |   4680 |
+| caption |             |             |    367 | 
+| 2 A - B | 2102 x 1940 | 17.8 x 16.5 |   5940 |
+| caption |             |             |    934 | 
+|       3 | 1027 x  531 |  8.7 x  4.5 |    810 |
+| caption |             |             |    744 | 
+|       4 | 1346 x  590 | 11.4 x  5.0 |   1800 |
+| caption |             |             |    870 | 
+|  total  |             |             |  16145 |
+-->
