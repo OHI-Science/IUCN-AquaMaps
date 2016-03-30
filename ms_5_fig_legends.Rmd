@@ -29,14 +29,14 @@ q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio 
 q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
 ```
 
-__Fig. 2.__ (A) Distribution alignment (overlap of smaller range within larger) versus extent ratio (the ratio of smaller range area to the larger range area) for `r format(n_spp_both, big.mark = ',')` species included in both IUCN and AquaMaps datasets.  The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges (n = `r q1_count`; `r round(q1_count/nrow(spp_map_pairs) * 100, 1)` %).
-The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in extent
+__Fig. 2.__ (A) Distribution alignment (overlap of smaller range within larger) versus area ratio (the ratio of smaller range area to the larger range area) for `r format(n_spp_both, big.mark = ',')` species included in both IUCN and AquaMaps datasets.  The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges (n = `r q1_count`; `r round(q1_count/nrow(spp_map_pairs) * 100, 1)` %).
+The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in area
 (n = `r q2_count`; `r round(q2_count/nrow(spp_map_pairs) * 100, 1)` %).
-The lower right quadrant (quadrant 3) includes species for which the paired maps generally agree in range extent, but disagree on where those ranges occur
+The lower right quadrant (quadrant 3) includes species for which the paired maps generally agree in range area, but disagree on where those ranges occur
 (n = `r q3_count`; `r round(q3_count/nrow(spp_map_pairs) * 100, 1)` %).
 The lower left quadrant (quadrant 4) indicates species for which the map pairs agree poorly in both area and distribution
 (n = `r q4_count`; `r round(q4_count/nrow(spp_map_pairs) * 100, 1)` %).
-(B) Alignment quadrant breakdown of paired-map species by taxonomic group.
+(B) Alignment quadrant breakdown of species by taxonomic group.
 
 
 __Fig. 3.__ Change in status score for the Species Subgoal within the global Ocean Health Index under three different scenarios.

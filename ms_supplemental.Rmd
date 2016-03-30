@@ -60,7 +60,7 @@ Each shapefile contains polygon limits of distribution indicating regions of pre
 
 ![](figures/si_barchart_spp_risk_quads.png)
 
->  __Fig. S2.__ Breaking down the quadrants by IUCN extinction risk categories (Fig. S2), we found little support for our hypothesis that maps for species with higher extinction risk tend to be better aligned between the two datasets, perhaps correlated to increased expert scrutiny.  Does higher perceived risk lead to increased attention, and thus better understanding of species distribution? Or conversely, does increased attention to species distribution reveal more species at risk?  Likely both mechanisms are at play on a case-by-case basis, depending on the species' taxon and region. _does this argument bear up to closer scrutiny? CR isn't dominated by Q1 any more_
+>  __Fig. S2.__ Breaking down the quadrants by IUCN extinction risk categories (Fig. S2), we found little support for our hypothesis that maps for species with higher extinction risk tend to be better aligned between the two datasets, perhaps correlated to increased expert scrutiny.
 
 ### S3: Coral depth map
 
@@ -72,7 +72,7 @@ Each shapefile contains polygon limits of distribution indicating regions of pre
 Oculina varicosa - Ivory tree coral ![oculina_pic.jpg](figures/oculina/oculina_pic.jpg)
 -->
 
->  __Fig. S3.__ IUCN-defined range of _Oculina varicosa_, a typical photosynthetic coral, plotted against a 200 m bathymetry contour. According to IUCN, _O. varicosa_ can be found to depths of 152 m. In waters shallower than 30 m, _O. varicosa_ is zooxanthellate, while an azooxanthellate form can be found in deeper waters.
+>  __Fig. S3.__ IUCN-defined range of _Oculina varicosa_, a typical photosynthetic coral, plotted against a 200 m bathymetry contour. According to IUCN, _O. varicosa_ can be found to depths of 152 m.
 
 ### S4: AquaMaps threshold examination
 

@@ -91,9 +91,9 @@ bplot_abs <- ggplot(data = st_all %>% filter(str_detect(scenario, 'abs')),
   labs(# title = 'SPP status difference by scenario',
        x = 'Scenario',
        y = 'Change in SPP status') +
-  scale_x_discrete(labels = c('IUCN/AquaMaps\nno threshold', 
-                              'AquaMaps/IUCN\n40% threshold', 
-                              'AquaMaps/IUCN\nno threshold'))
+  scale_x_discrete(labels = c('1. IUCN/AquaMaps\nno threshold', 
+                              '2. AquaMaps/IUCN\n40% threshold', 
+                              '3. AquaMaps/IUCN\nno threshold'))
 
 x <- st_all %>% filter(str_detect(scenario, 'abs'))
 y <- x %>% 

@@ -6,19 +6,21 @@ library(ggplot2)
 ggtheme_basic <- theme(axis.ticks = element_blank(),
         text = element_text(family = 'Helvetica', color = 'gray30', size = 8),
         plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
+        panel.background = element_blank(),
         legend.position = 'right')
 
 ggtheme_plot <- ggtheme_basic + 
   theme(panel.border     = element_blank(),
         panel.grid.minor = element_blank(), 
         panel.grid.major = element_line(colour = 'grey90'),
-        panel.background = element_blank(),
         axis.line = element_line(colour = "grey30"))
 
   
 ### theme for species range maps - based on generic plot theme
 ggtheme_map <- ggtheme_basic +
-  theme(axis.text = element_blank())
+  theme(axis.text = element_blank(),
+        axis.title = element_blank())
+
 
 #################################################################=
 ### Function to create a species list from scratch... use when new data is available
@@ -205,14 +207,20 @@ plot_rangemap <- function(spp) {
                              ifelse(iucn_pres & is.na(am_pres), 'IUCN',
                                     ifelse(iucn_pres & am_pres, 'Both', NA))))
   
+  #library(colorspace)
+  #hclvec <- heat_hcl(3); colvec <- c('AquaMaps' = hclvec[1], 'Both' = hclvec[2], 'IUCN' = hclvec[3])
+  #colvec <- c('AquaMaps' = '#1b9e77', 'Both' = '#565080', 'IUCN' = '#d95f02')
+  colvec <- c('AquaMaps' = '#76A94C', 'Both' = '#e18258', 'IUCN' = '#9168a9')
+  
   spp_plot <- ggplot(spp_pts, aes(x = x, y = y)) +
     ggtheme_map + 
     geom_raster(aes(fill = presence), alpha = .8) +
-    scale_fill_manual(values = c('AquaMaps' = '#1b9e77', 'Both' = '#cc50dc', 'IUCN' = '#d95f02')) +
-    borders('world', color='gray40', fill='gray45', size = .1) +  # create a layer of borders
-    scale_x_continuous(breaks = seq(-180, 180, by = 30), expand = c(0, 2)) +
-    scale_y_continuous(breaks = seq( -90,  90, by = 30), expand = c(0, 2)) +
-    labs(title = sprintf('IUCN species ID: %s', spp$iucn_sid), x = NULL, y = NULL) 
+    scale_fill_manual(values = colvec) +
+    borders('world', color='gray30', fill='gray40', size = .1) +  # create a layer of borders
+    scale_x_continuous(breaks = seq(-180, 180, by = 30)) +
+    scale_y_continuous(breaks = seq( -90,  90, by = 30))
+    
+    # labs(title = sprintf('IUCN species ID: %s', spp$iucn_sid), x = NULL, y = NULL) 
 }
 
 #################################################################=
