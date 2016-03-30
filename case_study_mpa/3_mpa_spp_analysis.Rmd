@@ -442,8 +442,13 @@ barchart_mpa_gap <- ggplot(mpa_all_runs1,
   geom_text(aes(label = sprintf('n = %s', n_trial), y = 101), hjust = 0, 
             size = 2, 
             color = 'grey30') +
+  scale_x_discrete(labels = c('5. IUCN 2015',
+                              '4. AM 2015 (0%) +\nIUCN 2015', 
+                              '3. AM 2015 (0%)', 
+                              '2. AM 2015 (50%)', 
+                              '1. AM 2014 (50%)')) +
   coord_flip() +
-  labs(x = 'scenario', 
+  labs(x = 'Scenario', 
        y = 'Percent of species by MPA coverage', 
        fill = 'MPA coverage')
 

@@ -9,7 +9,7 @@ To compare the spatial representation of the two datasets directly, we rasterize
 __Comparison of paired maps__:
 Using genus and species binomials as a matching key, we selected the subset of marine species that have range maps in both IUCN and AquaMaps current native distribution.  To avoid double-counting, we removed subpopulations and species aliases.  We determined species presence within each spatial cell using the same criteria as outlined above.
 
-Overlaying paired distribution maps for a given species, we defined and calculated _distribution alignment_ and _area alignment_ and plotted these in Fig. 2A:
+Overlaying paired distribution maps for a given species, we defined and calculated _distribution alignment_ and _area ratio_ and plotted these in Fig. 2A:
 
 $$\alpha_{dist} = \frac{A_{small \cap large}}{A_{large}} * 100\%$$
 
