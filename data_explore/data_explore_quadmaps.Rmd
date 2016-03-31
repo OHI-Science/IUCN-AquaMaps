@@ -51,20 +51,23 @@ names(loiczid_raster) <- 'loiczid'
 ```
 
 
-```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
-### this file created in data_prep
-spp_list <- read.csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'), stringsAsFactors = FALSE)
-
-
-```
-
-
 
 Quadrant map and quad breakdown by taxa and risk
 
 
 ``` {r pct_overlap_vs_ratio_of_area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
+spp_list <- read.csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'), stringsAsFactors = FALSE)
+
+spp_list <- spp_list %>% 
+  mutate(popn_category = ifelse(popn_category == 'LC', 'Least concern', popn_category),
+         popn_category = ifelse(popn_category == 'NT', 'Near threatened', popn_category),
+         popn_category = ifelse(popn_category == 'VU', 'Vulnerable', popn_category),
+         popn_category = ifelse(popn_category == 'EN', 'Endangered', popn_category),
+         popn_category = ifelse(popn_category == 'CR', 'Critically endangered', popn_category),
+         popn_category = ifelse(popn_category == 'DD', 'Data deficient', popn_category)) %>%
+  transform(popn_category = reorder(popn_category, category_score))
+         
 ### define 25%, 50%, and 75% quartiles for both x and y axes
 area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
 dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
@@ -83,8 +86,7 @@ spp_list_label <- spp_list %>%
   dplyr::select(-g, -s)
 
 ### mongo plot time
-scatter_quadplot <- ggplot(spp_list %>% 
-                             transform(popn_category = reorder(popn_category, category_score)),
+scatter_quadplot <- ggplot(spp_list,
                            aes(x = area_ratio, 
                                y = sm_perc, 
                                color = popn_category)) + 
@@ -106,16 +108,16 @@ scatter_quadplot <- ggplot(spp_list %>%
                      ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
              fill= "#d01c8b") + 
-  geom_point(alpha = .6)
+  geom_point(alpha = .5)
 
 ### Manage scales for color and size 
 scatter_quadplot <- scatter_quadplot +
-  scale_colour_manual(values = c('LC' = 'green4', 
-                                 'NT' = 'greenyellow', 
-                                 'VU' = 'yellow', 
-                                 'EN' = 'orange', 
-                                 'CR' = 'orangered2',
-                                 'DD' = 'grey30')) + 
+  scale_colour_manual(values = c('Least concern' = 'green4', 
+                                 'Near threatened' = 'greenyellow', 
+                                 'Vulnerable' = 'yellow', 
+                                 'Endangered' = 'orange', 
+                                 'Critically endangered' = 'orangered2',
+                                 'Data deficient' = 'grey30')) + 
   scale_x_continuous(expand = c(0, 0), 
                      limits = c(0, 102),
                      breaks = c(seq(0, 100, 25)),
@@ -150,14 +152,14 @@ scatter_quadplot <- scatter_quadplot +
             aes(label = sciname_label), 
             color = 'grey30',
             fontface = 'bold.italic',
-            size = 3,
+            size = 2.5,
             hjust = .75,
             vjust = 1.5)
 
 scatter_quadplot <- scatter_quadplot +
   labs(x = bquote('Area ratio '*alpha['ext']*' (%)'), 
        y = bquote('Distribution alignment '*alpha['dist']*' (%)'), 
-       color = 'Extinction\nRisk') 
+       color = 'Extinction Risk') 
 
 # print(scatter_quadplot)
 

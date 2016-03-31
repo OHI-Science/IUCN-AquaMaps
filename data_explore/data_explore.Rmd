@@ -257,9 +257,9 @@ dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
 scatter_quadplot <- ggplot(spp_list %>% 
                              transform(popn_category = reorder(popn_category, category_score)),
                            aes(x = area_ratio, 
-                               y = sm_perc, 
+                               y = sm_perc)) + #, 
  #                               size = lg_area_pct,
-                               color = popn_category)) + 
+ #                              color = popn_category)) + 
   ggtheme_plot + 
   ### color the quadrant backgrounds:
     annotate("rect", xmin = area_align_mean, xmax = 100, 
@@ -278,16 +278,16 @@ scatter_quadplot <- ggplot(spp_list %>%
                      ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
              fill= "#d01c8b") + 
-  geom_point(alpha = .6)
+  geom_point(color = 'grey40', alpha = .6)
 
 ### Manage scales for color and size 
 scatter_quadplot <- scatter_quadplot +
-  scale_colour_manual(values = c('LC' = 'green4', 
-                                 'NT' = 'greenyellow', 
-                                 'VU' = 'yellow', 
-                                 'EN' = 'orange', 
-                                 'CR' = 'orangered2',
-                                 'DD' = 'grey30')) + 
+#   scale_colour_manual(values = c('LC' = 'green4', 
+#                                  'NT' = 'greenyellow', 
+#                                  'VU' = 'yellow', 
+#                                  'EN' = 'orange', 
+#                                  'CR' = 'orangered2',
+#                                  'DD' = 'grey30')) + 
 #   scale_size_continuous(limits = c(0, 100),
 #                         breaks = c( 0,    25,    50,    75,    100), 
 #                         labels = c('0%', '25%', '50%', '75%', '100%')) + 
@@ -321,14 +321,14 @@ scatter_quadplot <- scatter_quadplot +
 
 scatter_quadplot <- scatter_quadplot +
   labs(x = bquote('Area ratio '*alpha['ext']*' (%)'), 
-       y = bquote('Distribution alignment '*alpha['dist']*' (%)'), 
+       y = bquote('Distribution alignment '*alpha['dist']*' (%)')) #, 
 #       title = 'Distribution alignment vs Extent alignment',
 #       size = '% ocean range',
-       color = 'Extinction\nRisk') 
+ #      color = 'Extinction\nRisk') 
 
 # print(scatter_quadplot)
 
-ggsave(file.path(dir_fig, 'scatter_quadmap.png'),
+ggsave(file.path(dir_fig, 'scatter_quadmap_norisk.png'),
        width = 17.8, height = 9, units = 'cm')
 
 ```
@@ -521,6 +521,38 @@ ggsave(plot = barchart_spp_risk_quads,
 ```
 
 ![](../figures/si_barchart_spp_risk_quads.png)
+
+``` {r risk quads linear model}
+
+spp_risk_df <- spp_list_quads %>%
+  select(iucn_sid, spp_group = spp_group_text, popn_category, category_score, quad) %>%
+  mutate(quad_good = ifelse(quad == 'q1', 1, 0))
+
+risk_mdl1 <- glm(as.factor(quad_good) ~ category_score + spp_group, 
+                 family = binomial,
+                 data = spp_risk_df)
+
+risk_mdl2 <- glm(as.factor(quad_good) ~ category_score, 
+                 family = binomial,
+                 data = spp_risk_df)
+
+risk_mdl3 <- glm(as.factor(quad_good) ~ spp_group, 
+                 family = binomial,
+                 data = spp_risk_df)
+
+BIC(risk_mdl1, risk_mdl2, risk_mdl3)
+summary(risk_mdl1)
+summary(risk_mdl2)
+summary(risk_mdl1)
+
+binomial logistic regression model 
+
+# hist(spp_risk_df$category_score[spp_risk_df$quad == 'q1'])
+# hist(spp_risk_df$category_score[spp_risk_df$quad == 'q2'])
+# hist(spp_risk_df$category_score[spp_risk_df$quad == 'q3'])
+# hist(spp_risk_df$category_score[spp_risk_df$quad == 'q4'])
+
+```
 
 -----
 
