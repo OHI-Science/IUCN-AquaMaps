@@ -28,7 +28,7 @@ Casey O'Hara, National Center for Ecological Analysis and Synthesis, 735 State S
 
 _Classification:_ BIOLOGICAL SCIENCES: Sustainability Science
 
-_Keywords:_ <!--Keywords are listed below the abstract of the published article. At least three keywords are required at submission.  maybe species distribution maps, AquaMaps, IUCN, marine protected area planning, biodiversity status--> TBD: These should be words NOT in the title or abstract (BSH comment)
+_Keywords:_ <!--Keywords are listed below the abstract of the published article. At least three keywords are required at submission.  maybe species distribution maps, AquaMaps, IUCN, marine protected area planning, biodiversity status--> Marine spatial planning, species distribution model, extent of occurrence, spatial ecology
 
 <!--
 
