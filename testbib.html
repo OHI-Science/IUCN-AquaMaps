@@ -51,208 +51,28 @@ img {
 </div>
 
 
-<!--Title: Titles should be no more than three typeset lines (generally 135 characters including spaces) and should be comprehensible to a broad scientific audience. Please provide a short title of fewer than 50 characters for mobile devices and RSS feeds.-->
-<p><em>Author affiliation:</em> <!--Include department, institution, and complete address, with the ZIP/postal code, for each author. Use superscripts to match authors with institutions. Authors are encouraged to supply their ORCID ID at submission--></p>
-<ol style="list-style-type: decimal">
-<li>National Center for Ecological Analysis and Synthesis, 735 State Street Suite 300, Santa Barbara CA 93101</li>
-<li>Bren School of Environmental Science and Management, University of California, Santa Barbara CA 93106</li>
-<li>Department of Life Sciences, Imperial College London, Silwood Park Campus, Buckhurst Rd, Ascot, West Berkshire SL5 7PY, United Kingdom</li>
-</ol>
-<p><em>Corresponding author:</em> <!--Corresponding author: The name, complete address, telephone number, and email address of the author to whom correspondence and proofs should be sent. Email addresses will appear in the article footnotes.--> Casey O’Hara, National Center for Ecological Analysis and Synthesis, 735 State Street, Suite 300, Santa Barbara CA 93101; (805) 892-2500; <a href="mailto:ohara@nceas.ucsb.edu">ohara@nceas.ucsb.edu</a></p>
-<p><em>Classification:</em> BIOLOGICAL SCIENCES: Sustainability Science</p>
-<p><em>Keywords:</em> <!--Keywords are listed below the abstract of the published article. At least three keywords are required at submission.  maybe species distribution maps, AquaMaps, IUCN, marine protected area planning, biodiversity status--> Marine spatial planning, species distribution model, extent of occurrence, spatial ecology</p>
-<!--
-
-from PNAS (http://www.pnas.org/site/authors/preparation.xhtml):
-
-PNAS generally uses a two-column format averaging 67 characters, including spaces, per line. The maximum length of a regular research article is 6 pages (or 10 pages for PNAS Plus articles), including all text, spaces, and the number of characters displaced by figures, tables, and equations.
-
-An online submission tool provides authors with an estimation of whether their manuscript fits within the PNAS length requirements (see Length Estimate FAQ). Use the following guidelines to determine whether your manuscript exceeds the page-length requirements before submission:
-
-Text: When submitting tables, figures, and/or equations in addition to text, keep the text for your manuscript under 39,000 characters (including spaces).
-Figures: Calculated at 180 characters per cm in height for one column and 360 characters per cm in height for two columns; a figure wider than 8.7 cm is two columns wide.
-Tables and equations: Calculated at 60 characters per line for one column and 120 per line for two columns; a table with more than 60 characters per line is two columns wide.
-If the text in a figure or table is deemed illegible for production, the figure or table may be enlarged to improve legibility. Add the word count to the character count to obtain a character count that includes spaces.
-
-See also: http://www.pnascentral.org/html/pnas_length_estimate_instructions.html
-
--->
-<hr />
-<div id="abstract" class="section level2">
-<h2>Abstract</h2>
-<!--_Abstract. Provide an abstract of no more than 250 words on page 2 of the manuscript. Abstracts should explain to the general reader the major contributions of the article. References in the abstract must be cited in full within the abstract itself and cited in the text._-->
-<p>Species distribution data provide the foundation for a wide range of ecological research studies and conservation management decisions, yet most species ranges remain unknown, and existing range maps often suffer from data limitations and inconsistencies. AquaMaps and the International Union for Conservation of Nature (IUCN) are two distinct efforts to map marine species distributions at a global scale. Together these databases represent 24,637 species (92.9% within AquaMaps, 16.3% within IUCN), with only 2,279 shared species. Here we examine differences in predicted species ranges between the two datasets and find that these misalignments mainly result from divergent methodologies that introduce differing frequencies of commission and omission errors. We illustrate the scientific and management implications of these differences by repeating two recent applications - an assessment of global biodiversity within the Ocean Health Index and a global analysis of gaps in coverage of marine protected areas - and find significantly different results depending on how the two datasets are used. Until a single, highly accurate dataset of global marine species ranges becomes available, understanding the implications of dataset differences for conservation planning and decision-making remains essential.</p>
-</div>
-<div id="significance" class="section level2">
-<h2>Significance</h2>
-<!--_Significance Statement. Authors must submit a 120-word-maximum statement about the significance of their research paper written at a level understandable to an undergraduate-educated scientist outside their field of specialty. The primary goal of the Significance Statement is to explain the relevance of the work in broad context to a broad readership. The Significance Statement appears in the paper itself and is required for all research papers._-->
-<p>Successful conservation of marine species critically depends on detailed and accurate understanding of where species exist and where they do not. By systematically comparing two widely used global datasets of marine species range maps, we find substantial differences that highlight inconsistencies in our understanding and communication of species ranges. Knowing where and why these inconsistencies occur will substantially improve our ability to develop effective and efficient conservation strategies that support resilient ocean ecosystems.</p>
-<!--
-| Section        |   Word #   | Char/spc # |
-| :------        |    ------: |    ------: |
-| Abstract       |  184 words |  1312 char |
-| Significance   |   73 words |   545 char |
--->
-<hr />
-<p>\body</p>
-</div>
-<div id="introduction" class="section level1">
-<h1>Introduction</h1>
-<p>Knowing where species exist and thrive is fundamental to the sciences of ecology, biogeography, and conservation, among many others. This knowledge provides foundational information for understanding species ranges and diversity, predicting species responses to human impacts and climate change, and managing and protecting species effectively. A rich literature tackles the many dimensions of these questions.</p>
-<p>One major outcome of this body of science is the various compiled databases of species distribution maps. Two global-scale repositories predict marine species ranges throughout the world’s oceans – AquaMaps <span class="citation">(Kaschner <em>et al.</em> 2015)</span> and International Union for Conservation of Nature (IUCN) <span class="citation">(IUCN 2015)</span>. These two spatial datasets have been used in hundreds of studies and applications for a wide range of purposes, including assessing marine species status <span class="citation">(Halpern <em>et al.</em> 2012, 2015; Selig <em>et al.</em> 2013)</span>, evaluating global biodiversity patterns <span class="citation">(Coll <em>et al.</em> 2010; Kaschner <em>et al.</em> 2011; Martin <em>et al.</em> 2014; Pimm <em>et al.</em> 2014)</span>, predicting species range shifts <span class="citation">(García Molinos <em>et al.</em> 2015)</span>, and setting conservation priorities <span class="citation">(Klein <em>et al.</em> 2015)</span>.</p>
-<!--
-Three foundational papers relating to AquaMaps (Kaschner et al. 2006, 2011; Ready et al. 2010) have been cited a total of 315 times.
--->
-<p>The two datasets ostensibly describe the same information, but significant differences in methodology and intent could lead to dramatically different understandings of our marine ecosystems, with significant implications for policy and conservation recommendations. Importantly, biases in taxonomic or spatial coverage within a dataset could shift management and conservation actions away from places or species that are most in need. Inaccurate indications of presence or absence could lead to ineffective marine reserve systems and management plans <span class="citation">(Rondinini <em>et al.</em> 2006; Jetz <em>et al.</em> 2008)</span>.</p>
-<p>To understand the implications of differences between the AquaMaps and IUCN datasets, we compare how each data source represents the global spatial and taxonomic distribution of marine species. Most notably, AquaMaps includes range maps for many more species (currently 22,889 species; 92.9% of total), such that most global analyses related to marine biodiversity to date have used AquaMaps (IUCN range map data exist for only 4,027 unique marine species). For the 2,279 species (9.3% of total) mapped in both datasets, we examine how well the maps align, determine several issues that lead to misalignment between predicted species distributions, and outline possible improvements.</p>
-<p>We then reexamine two recent marine biodiversity studies - an assessment of the status of global biodiversity within the Ocean Health Index <span class="citation">(Halpern <em>et al.</em> 2012, 2015)</span> and a global analysis of gaps in protection afforded by marine protected areas (MPAs) <span class="citation">(Klein <em>et al.</em> 2015)</span> - as case studies to explore the implications of prioritizing one data set over the other. The results highlight possible consequences of different data use decisions on our understanding of marine biodiversity status and protection.</p>
-</div>
-<div id="results-and-discussion" class="section level1">
-<h1>Results and Discussion</h1>
-<p>The IUCN publishes species range maps based on expert input of spatial boundaries of a given species’ “limits of distribution” <span class="citation">(IUCN 2015)</span> - essentially a refined extent of occurrence, based on observation records and informed by expert understanding of species’ range and habitat preferences. In contrast, AquaMaps models species distribution based on environmental preferences (e.g., temperature, depth, salinity) deduced from occurrence records, published species databases such as FishBase, and expert knowledge. The AquaMaps model overlays these environmental preferences atop a map of environmental attributes on a 0.5 degree grid, creating a global map of “probability of occurrence” for each species <span class="citation">(Kaschner <em>et al.</em> 2006; Ready <em>et al.</em> 2010)</span>. Studies using AquaMaps data frequently define “presence” by applying a probability threshold, e.g., the Ocean Health Index defines presence as 40% or greater probability of occurrence <span class="citation">(Halpern <em>et al.</em> 2012, 2015)</span>.</p>
-<p>The methodologies behind the creation of these datasets imply differences in prediction of species distribution due to errors of commission (falsely indicating species presence) and omission (falsely indicating species absence). Geographic range data such as IUCN range maps frequently introduce commission errors, while species distribution models such as AquaMaps will likely introduce fewer commission errors but more omission errors. Each type of error bears different implications for conservation goals: commission errors can result in prioritizing areas not relevant to conservation goals, while omission errors may result in protected area networks that fail to include important habitat and range <span class="citation">(Rondinini <em>et al.</em> 2006)</span>. By comparing maps resulting from IUCN and AquaMaps methodologies, we can identify and possibly address mechanistic causes for each type of error.</p>
-<p>The two datasets have notably different taxonomic (Fig. 1A) and regional (Figs. 1B, 1C) coverage. AquaMaps encompasses a broader range of taxa than IUCN, as IUCN spatial data files are only available for select taxonomic groups that have been comprehensively assessed. While species numbers in both datasets peak in tropical latitudes near the equator, species counts for IUCN maps drop quickly beyond 30°N and 30°S, while species counts for AquaMaps remain robust well into temperate latitudes. The longitude frequency plots show a slight shift in the IUCN dataset away from the Atlantic and eastern Pacific compared to AquaMaps. To achieve more comprehensive global coverage of species ranges these two datasets can be used together, but the underlying methodological differences complicate such direct comparisons.</p>
-<p>To explore differences in species distribution and range between the two datasets, we plotted the distribution alignment (how much of the smaller range falls within the larger range, i.e., where on the map) against the area alignment (ratio of smaller range area to larger range area, i.e., how much of the map) for each shared species (Fig. 2A). This analysis revealed a general negative linear pattern, suggesting that increasing similarity in range area correlates with decreasing distribution alignment. AquaMaps tends to extrapolate species ranges into suitable areas beyond known occurrences, such that each additional unit of range predicted by AquaMaps will fall in different locations than an additional unit of range predicted using IUCN methodology. For species with dissimilar range areas, predicted distribution for the smaller range can more easily fall within the generous bounds of the larger range. For species with increasingly similar range areas, differences in methodology become more difficult to “hide,” and the distribution alignment generally becomes poorer.</p>
-<p>The mean distribution alignment for species included in both datasets was 63%; the mean area alignment was 54.5%. By dividing the map-paired species into quadrants based on these means, we highlight categories of relationships that help further explain this general pattern. Representative maps from each category are provided in the supplemental materials (Fig. S1).</p>
-<p>The upper right quadrant includes species (n = 527) whose described ranges are above average in alignment of both spatial distribution and area. These species tend to be well-studied and include wide-ranging pelagic organisms such as marine mammals, tunas, and billfishes (Fig. 2B). This result is not surprising, as species with very large ranges are likely to be more aligned regardless of methodology simply because their ranges span nearly the entire map.</p>
-<p>The area-mismatched ranges contained in the upper left quadrant (n = 709) include many species whose spatial distribution is similar, but where the IUCN range is notably larger, often extending into deeper water. For example, corals dominate this quadrant (n = 237; 33.4% of all species in this quadrant), and IUCN range maps tend to extend corals into waters beyond their preferred depths, likely introducing errors of commission (Fig. S3). Ocean depth preference is explicitly included in AquaMaps models, while depth is frequently overlooked as a factor in IUCN range maps. Simply clipping IUCN range maps to known depth preferences would resolve many of these mismatches.</p>
-<p>Species found in the lower right quadrant (n = 635) often represent cases of “two wrongs make a right.” For these species, IUCN ranges frequently overextend into unsuitable depths, as in the case of many upper left quadrant species, while at the same time AquaMaps ranges often aggressively extrapolate presence into locations where IUCN predicts absence, introducing additional commission errors. Consequently, area ratios are close to 100%, though similar areas are unhelpful when the distributions are poorly aligned.</p>
-<p>The most vexing cases are in the lower left quadrant (n = 443), where neither distribution nor area match well. Data-poor species are more common in this quadrant; indeed, the median number of species occurrence records (averaging occurrences from the Ocean Biogeographic Information System (OBIS) <span class="citation">(OBIS 2016)</span> and the Global Biodiversity Information Facility (GBIF) <span class="citation">(GBIF 2010)</span>) for this quadrant is 24 records, compared to a median of 97 records for species across the other three quadrants. When extrapolating from limited observations, the AquaMaps model often predicts species presence well beyond known occurrences, introducing commission errors; at the same time, IUCN range maps generally target known occurrences, possibly introducing omission errors for data-limited species.</p>
-</div>
-<div id="implications" class="section level1">
-<h1>Implications</h1>
-<p>Method-driven differences in commission and omission errors produce clear and significant disagreement in species range descriptions between AquaMaps and IUCN datasets. To examine the implications of these differences, we repeated two recent studies, varying only the prioritization of one data set over the other.</p>
-<p><strong>Case Study: The Ocean Health Index</strong></p>
-<p>The global Ocean Health Index (OHI) <span class="citation">(Halpern <em>et al.</em> 2012, 2015)</span>, a composite index comprising ten sustainable benefits provided by a healthy ocean, uses species spatial distribution data and IUCN Red List conservation status to calculate biodiversity status (scored from zero to 100) for each of the world’s 221 exclusive economic zones. To maximize the number of represented species, OHI gleans spatial distribution data from Red List-assessed species in both IUCN and AquaMaps datasets (n = 7,963), prioritizing IUCN data for the 2,026 species included in both sources. OHI currently uses a probability of occurrence threshold of 40% to determine species presence for AquaMaps data.</p>
-<p>We calculated the OHI species status score under several scenarios to observe the impact of toggling the prioritized data set from IUCN to AquaMaps, and toggling the AquaMaps presence threshold from 40% to 0% (<a href="#fig3">Fig. 3</a>). Reducing the threshold increases the apparent range of a species, so a decrease in a region’s score under scenario 1 would indicate increased spatial representation of threatened species for that region. Shifting priority from IUCN to AquaMaps may increase or decrease a species’ apparent range, so a decrease in region score for scenario 2 may indicate a decrease in spatial representation of low-risk species, an increase in spatial representation of high-risk species, or a combination of both. Scenario three combines effects of scenarios 1 and 2.</p>
-<p>Given that only 25.4% of species are included in both datasets, it is surprising that changing the priority for overlapping species from IUCN maps to AquaMaps would result in substantial country-level score shifts as seen in scenarios 2 and 3. While the mean global score did not vary significantly from scenario to scenario, select countries gained up to 7.5 points while others dropped as many as 5 points. This result indicates that especially on a national or regional scale, an arbitrary change in how the two datasets are combined can result in a different assessment of species conservation status.</p>
-<p><strong>Case Study: MPA Gap Analysis</strong></p>
-<p>Klein et al. <span class="citation">(2015)</span> compare the global distribution of species to the global distribution of marine protected areas to assess how well current MPAs overlap with species ranges and identify which species fall through gaps in protection. The study relied on the AquaMaps database, using a probability of occurrence threshold of 50% or greater, to determine species presence, and the World Database of Protected Areas to define zones of marine protection. They found that the global MPA network leaves 90.5% of marine species with less than 5% of their overall range represented within MPAs, and 1.4% of species have no protection at all (i.e., “gap” species).</p>
-<p>We recalculated the amount of under-protected and gap species using either IUCN or AquaMaps data (using the most recent AquaMaps data and a 0% threshold to allow the most meaningful comparison to IUCN’s “limits of distribution”, <a href="#fig4">Fig. 4</a>). We found a five-fold increase in the proportion of gap species (6.4% of species vs. 1.2%) and dramatically larger proportion of species with less than 2% of their range protected (73.2% of species vs. 47.7%). However, this comparison also indicates a larger proportion of well-protected species with greater than 10% of range protected (2.9% of species vs. 1.5%). Conclusions drawn from each of these datasets would paint dramatically different pictures of the protection afforded by our current global MPA network.</p>
-</div>
-<div id="conclusions" class="section level1">
-<h1>Conclusions</h1>
-<p>AquaMaps and IUCN range maps show reasonable agreement for many well-studied species, but substantial differences illustrate uncertainty in our understanding of spatial distribution for many others. Although many other approaches exist for species distribution modeling, these two are the only ones applied globally across different marine taxa. Identifying and addressing differences in these datasets will increase their utility for research and conservation actions. Several likely drivers of commission and omission errors between these datasets point to a few important ways to improve range alignment.</p>
-<p>For IUCN range data, clipping ranges to known depth limits improves output for many species, most notably corals and reef-associated fishes. If species’ depth limits are not known, simple rules of thumb will likely reduce commission errors without introducing substantial omission errors. For example, for most corals, researchers could clip range maps to the photosynthetic limit of 200 meters. For AquaMaps range data, dependent primarily on environmental and physical preferences and conditions, implementing area restrictions based on biogeographical criteria such as Marine Ecoregions of the World <span class="citation">(Spalding <em>et al.</em> 2007)</span> would likely decrease commission errors and improve predictive power, especially for data-poor species. For either data set, maps based on few occurrences are more likely to include errors of commission and omission. Occurrence counts from external sources such as OBIS or GBIF can help identify relatively data-poor species; additionally, the “occurcells” attribute in the AquaMaps data set, which counts the number of half-degree cells used to generate the environmental envelope for each species, can be used in a similar manner.</p>
-<p>Many studies using AquaMaps data test the sensitivity of results by varying the probability of occurrence threshold to determine presence. This decision ultimately represents a tradeoff between errors of commission (low threshold) and omission (high threshold). Using AquaMaps in conjunction with IUCN can mitigate potential errors, while also increasing the taxonomic and spatial breadth of coverage, as long as the differences between the datasets can be reasonably minimized. In this case, we recommend a presence threshold of 0% as it most closely approximates the “limits of distribution” criterion defined by IUCN data providers.</p>
-<p>Effective management and protection of marine species depends on a robust understanding of where species exist and where they do not; without this knowledge we risk wasting resources protecting low-value regions while missing opportunities to protect critical ones. By identifying the differences between these two fundamental marine species range datasets and understanding the likely mechanisms causing these discrepancies, we improve our ability to develop strategic and effective conservation policy that supports a resilient ocean ecosystem.</p>
-<!--
-| Section                   |   Word #   | Char/spc # |
-| :------                   |    ------: |    ------: |
-| Introduction              |  429 words |  2905 char |
-| Results/Discussion        |  999 words |  6697 char |
-| Implications (incomplete) |  597 words |  3794 char |
-| Conclusions               |  354 words |  2505 char |
-| Methods (incomplete)      |  601 words |  3919 char |
-| total body                | 2987 words | 19885 char |
--->
-<hr />
-</div>
-<div id="methods" class="section level1">
-<h1>Methods</h1>
-<p><strong>Comparison of taxonomic and regional distribution</strong>: To examine the overall taxonomic distribution across the spatial datasets (Fig. 1A), we grouped species by taxonomic class and data source (IUCN, AquaMaps, or both), and examined the proportion of each class represented in each data source category.</p>
-<p>To compare the spatial representation of the two datasets directly, we rasterized the IUCN species polygons to the same 0.5° grid as the AquaMaps species maps; species presence within a grid cell was determined by any non-zero overlap of a species polygon with the cell, and number of species per cell was simply the count of the species present. For the AquaMaps dataset, we determined per-cell species count by including all species with non-zero probability of occurrence, to best approximate the “extent of occurrence” generally indicated by IUCN maps. We represented relative distribution of species count for each dataset by plotting average species count against latitude and longitude (Fig. 1B, 1C).</p>
-<p><strong>Comparison of paired maps</strong>: Using genus and species binomials as a matching key, we selected the subset of marine species that have range maps in both IUCN and AquaMaps current native distribution. To avoid double-counting, we removed subpopulations and species aliases. We determined species presence within each spatial cell using the same criteria outlined above.</p>
-<p>Overlaying paired distribution maps for a given species, we defined and calculated <em>distribution alignment</em> and <em>area ratio</em> and plotted these in Fig. 2A:</p>
-<p><span class="math display">\[\alpha_{dist} = \frac{A_{small \cap large}}{A_{large}} * 100\%\]</span></p>
-<p><span class="math display">\[\alpha_{area} = \frac{A_{small}}{A_{large}} * 100\%\]</span></p>
-<p>For each species with ranges described in both IUCN and AquaMaps, <span class="math inline">\(A_{small}\)</span> and <span class="math inline">\(A_{large}\)</span> indicate the smaller and larger range representation (regardless of which dataset). <span class="math inline">\(A_{small \cap large}\)</span> represents the amount of overlapping area between the two datasets. We visually inspected a random selection of paired distribution maps from each quadrant to identify possible mechanistic causes of misalignment. To verify that IUCN predicted unsuitable habitat for depth limited species, we used QGIS <span class="citation">(QGIS Development Team 2015)</span> to overlay a selection of IUCN and AquaMaps maps with a 200-meter bathymetry contour.</p>
-<p><strong>Methods for OHI case study:</strong> Using methods and supplemental materials from OHI <span class="citation">(Halpern <em>et al.</em> 2012, 2015)</span>, we modified the original code for OHI 2015 Species status (SPP), allowing for flexibility in prioritized data source and AquaMaps presence threshold. We ran the SPP code three times, prioritizing IUCN over AquaMaps for a 0% threshold, and prioritizing AquaMaps over IUCN for both a 40% and 0% threshold. We compared each of these to the output of the published OHI 2015 SPP model (which prioritizes IUCN over AquaMaps at a 40% threshold).</p>
-<p><strong>Methods for MPA Gap Analysis case study:</strong> Based upon the methods described in Klein et al. <span class="citation">(2015)</span>, we reconstructed the analysis using the subset of protected areas from the World Database on Protected Areas (WDPA) <span class="citation">(IUCN &amp; UNEP-WCMC 2014)</span> spatially covering a marine area and classified as IUCN I-IV. The WDPA polygons and marine polygons were rasterized to 0.01° and then aggregated to AquaMaps native 0.5° cells, to calculate proportion of protected area and marine within each cell. After verifying our results using the 2014 AquaMaps dataset, we updated the analysis using the 2015 AquaMaps dataset at a presence threshold of 50% (to compare to Klein et al. directly) and 0% (to better compare with IUCN spatial data). To analyze MPA coverage against IUCN spatial data, we extracted IUCN polygon weights per 0.5° cell for each species and compared against the protected area raster. Finally, we combined AquaMaps data (at 0% threshold) and IUCN data, using AquaMaps for the 2,279 overlapping species and again compared against the protected area raster.</p>
 <p>All processing was completed using R statistical software <span class="citation">(R Core Team 2016)</span>, and all code and intermediate data are available on GitHub at <a href="https://github.com/OHI-Science/IUCN-AquaMaps" class="uri">https://github.com/OHI-Science/IUCN-AquaMaps</a>.</p>
-<hr />
-</div>
-<div id="acknowledgments" class="section level1">
-<h1>Acknowledgments</h1>
-<!-- Acknowledgments. List acknowledgments and funding sources. PNAS collaborates with FundRef to use a standard taxonomy of funder names. Dedications are rarely allowed. -->
-<p>We are thankful to Melanie Frazier and Julia Stewart Lowndes for their insightful comments on earlier versions of this manuscript, and to the National Center for Ecological Analysis and Synthesis for computation support. We acknowledge financial support from the Gordon and Betty Moore Foundation.</p>
-<hr />
-</div>
-<div id="references" class="section level1">
-<h1>References</h1>
-<!--
-References. References must be in PNAS style. Only published or in-press papers and books may be cited in the reference list. For references to in-press articles, please confirm with the cited journal that the article is in press and include a DOI number and online publication date. Unpublished abstracts of papers presented at meetings or references to "data not shown" are not permitted. References should be cited in numerical order as they appear in text, and all references, including for the SI, should be included in the main manuscript file. Because tables and figures will be inserted in the text where first cited, references in these sections should be numbered accordingly. Include the full title for each cited article. All authors (unless there are more than five) should be named in the citation. If there are more than five, list the first author's name followed by et al. Provide inclusive page ranges for journal articles and book chapters. Cite databases in the text or as footnotes.
-
-Journal articles are cited as follows:
-
-10. Neuhaus J-M, Sitcher L, Meins F, Jr, Boller T (1991) A short C-terminal sequence is necessary and sufficient for the targeting of chitinases to the plant vacuole. Proc Natl Acad Sci USA 88(22):10362–10366.
--->
-<!--
-| Figure  |  w x h (px) | w x h (cm)  | char # |
-| :------ |     ------: |     ------: |------: |
-| 1 A - C | 2102 x 1536 | 17.8 x 13.0 |   4680 |
-| caption |             |             |    367 | 
-| 2 A - B | 2102 x 1940 | 17.8 x 16.5 |   5940 |
-| caption |             |             |    934 | 
-|       3 | 1027 x  531 |  8.7 x  4.5 |    810 |
-| caption |             |             |    744 | 
-|       4 | 1346 x  590 | 11.4 x  5.0 |   1800 |
-| caption |             |             |    870 | 
-|  total  |             |             |  16145 |
--->
+<p>evaluating global biodiversity patterns <span class="citation">(Kaschner <em>et al.</em> 2011)</span>.</p>
+<p><span class="citation">(Halpern <em>et al.</em> 2012)</span></p>
+<p><span class="citation">(Jones <em>et al.</em> 2012)</span></p>
+<p><span class="citation">(Selig <em>et al.</em> 2013)</span></p>
+<div id="references" class="section level1 unnumbered">
+<h1>REFERENCES</h1>
 <div id="refs" class="references">
-<div id="ref-coll_biodiversity_2010">
-<p>1.Coll, M., Piroddi, C., Steenbeek, J., Kaschner, K., Ben Rais Lasram, F. &amp; Aguzzi, J. <em>et al.</em> (2010). The biodiversity of the mediterranean sea: Estimates, patterns, and threats. <em>PLoS ONE</em>, 5, e11842.</p>
-</div>
-<div id="ref-garciamolinos_climate_2015">
-<p>2.García Molinos, J., Halpern, B.S., Schoeman, D.S., Brown, C.J., Kiessling, W. &amp; Moore, P.J. <em>et al.</em> (2015). Climate velocity and the future global redistribution of marine biodiversity. <em>Nature Climate Change</em>, 6, 83–88.</p>
-</div>
-<div id="ref-gbif_global_2010">
-<p>3.GBIF. (2010). <em>Global biodiversity information facility (GBIF) memorandum of understanding. Global biodiversity information facility</em>. Available at: <a href="http://www.gbif.org/resource/80661" class="uri">http://www.gbif.org/resource/80661</a>. Last accessed 29 February 2016.</p>
-</div>
 <div id="ref-halpern_index_2012">
-<p>4.Halpern, B.S., Longo, C., Hardy, D., McLeod, K.L., Samhouri, J.F. &amp; Katona, S.K. <em>et al.</em> (2012). An index to assess the health and benefits of the global ocean. <em>Nature</em>, 488, 615–620.</p>
+<p>1.Halpern, B.S., Longo, C., Hardy, D., McLeod, K.L., Samhouri, J.F. &amp; Katona, S.K. <em>et al.</em> (2012). An index to assess the health and benefits of the global ocean. <em>Nature</em>, 488, 615–620.</p>
 </div>
-<div id="ref-halpern_patterns_2015">
-<p>5.Halpern, B.S., Longo, C., Lowndes, J.S.S., Best, B.D., Frazier, M. &amp; Katona, S.K. <em>et al.</em> (2015). Patterns and emerging trends in global ocean health. <em>PLOS ONE</em>, 10, e0117863.</p>
-</div>
-<div id="ref-iucn_iucn_2015">
-<p>6.IUCN. (2015). <em>The IUCN red list of threatened species. International union for the conservation of nature</em>. Available at: <a href="http://www.iucnredlist.org" class="uri">http://www.iucnredlist.org</a>. Last accessed 21 December 2015.</p>
-</div>
-<div id="ref-iucn_world_2014">
-<p>7.IUCN &amp; UNEP-WCMC. (2014). <em>The world database on protected areas (WDPA). Cambridge, UK: UNEP-WCMC</em>. Available at: <a href="www.protectedplanet.net" class="uri">www.protectedplanet.net</a>. Last accessed 1 December 2014.</p>
-</div>
-<div id="ref-jetz_ecological_2008">
-<p>8.Jetz, W., Sekercioglu, C.H. &amp; Watson, J.E.M. (2008). Ecological correlates and conservation implications of overestimating species geographic ranges: <em>Overestimation of species ranges</em>. <em>Conservation Biology</em>, 22, 110–119.</p>
-</div>
-<div id="ref-kaschner_aquamaps:_2015">
-<p>9.Kaschner, K., Rius-Barile, J., Kesner-Reyes, K., Garilao, C., Kullander, S. &amp; Rees, T. <em>et al.</em> (2015). <em>AquaMaps: Predicted range maps for aquatic species</em>. Available at: <a href="www.aquamaps.org" class="uri">www.aquamaps.org</a>. Last accessed 21 December 2015.</p>
+<div id="ref-jones_modelling_2012">
+<p>2.Jones, M.C., Dye, S.R., Pinnegar, J.K., Warren, R. &amp; Cheung, W.W. (2012). Modelling commercial fish distributions: Prediction and assessment using different approaches. <em>Ecological Modelling</em>, 225, 133–145.</p>
 </div>
 <div id="ref-kaschner_current_2011">
-<p>10.Kaschner, K., Tittensor, D.P., Ready, J., Gerrodette, T. &amp; Worm, B. (2011). Current and future patterns of global marine mammal biodiversity. <em>PLoS ONE</em>, 6, e19653.</p>
-</div>
-<div id="ref-kaschner_mapping_2006">
-<p>11.Kaschner, K., Watson, R., Trites, A.W., Pauly, D. &amp; others. (2006). Mapping world-wide distributions of marine mammal species using a relative environmental suitability (RES) model. <em>Marine Ecology Progress Series</em>, 316, 2–3.</p>
-</div>
-<div id="ref-klein_shortfalls_2015">
-<p>12.Klein, C.J., Brown, C.J., Halpern, B.S., Segan, D.B., McGowan, J. &amp; Beger, M. <em>et al.</em> (2015). Shortfalls in the global protected area network at representing marine biodiversity. <em>Scientific Reports</em>, 5, 17539.</p>
-</div>
-<div id="ref-martin_manual_2014">
-<p>13.Martin, C., Fletcher, R., Jones, M., Kaschner, K., Sullivan, E. &amp; Tittensor, D.P. <em>et al.</em> (2014). <em>Manual of marine and coastal datasets of biodiversity importance</em>. United Nations Environment Programme.</p>
-</div>
-<div id="ref-obis_data_2016">
-<p>14.OBIS. (2016). <em>Data from the ocean biogeographic information system. Intergovernmental oceanographic commission of UNESCO</em>. Available at: <a href="http://www.iobis.org" class="uri">http://www.iobis.org</a>. Last accessed 29 February 2016.</p>
-</div>
-<div id="ref-pimm_biodiversity_2014">
-<p>15.Pimm, S.L., Jenkins, C.N., Abell, R., Brooks, T.M., Gittleman, J.L. &amp; Joppa, L.N. <em>et al.</em> (2014). The biodiversity of species and their rates of extinction, distribution, and protection. <em>Science</em>, 344, 1246752–1–1246752–10.</p>
-</div>
-<div id="ref-qgis_development_team_qgis_2015">
-<p>16.QGIS Development Team. (2015). <em>QGIS geographic information system</em>. Open Source Geospatial Foundation Project.</p>
+<p>3.Kaschner, K., Tittensor, D.P., Ready, J., Gerrodette, T. &amp; Worm, B. (2011). Current and future patterns of global marine mammal biodiversity. <em>PLoS ONE</em>, 6, e19653.</p>
 </div>
 <div id="ref-r_core_team_r:_2016">
-<p>17.R Core Team. (2016). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing, Vienna, Austria.</p>
+<p>4.R Core Team. (2016). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing, Vienna, Austria.</p>
 </div>
-<div id="ref-ready_predicting_2010">
-<p>18.Ready, J., Kaschner, K., South, A.B., Eastwood, P.D., Rees, T. &amp; Rius, J. <em>et al.</em> (2010). Predicting the distributions of marine organisms at the global scale. <em>Ecological Modelling</em>, 221, 467–478.</p>
-</div>
-<div id="ref-rondinini_tradeoffs_2006">
-<p>19.Rondinini, C., Wilson, K.A., Boitani, L., Grantham, H. &amp; Possingham, H.P. (2006). Tradeoffs of different types of species occurrence data for use in systematic conservation planning: Species data for conservation planning. <em>Ecology Letters</em>, 9, 1136–1145.</p>
-</div>
-<div id="ref-selig_assessing_2013-1">
-<p>20.Selig, E.R., Longo, C., Halpern, B.S., Best, B.D., Hardy, D. &amp; Elfes, C.T. <em>et al.</em> (2013). Assessing global marine biodiversity status within a coupled socio-ecological perspective. <em>PLoS ONE</em>, 8, e60284.</p>
-</div>
-<div id="ref-spalding_marine_2007">
-<p>21.Spalding, M.D., Fox, H.E., Allen, G.R., Davidson, N., Ferdaña, Z.A. &amp; Finlayson, M.A.X. <em>et al.</em> (2007). Marine ecoregions of the world: A bioregionalization of coastal and shelf areas. <em>BioScience</em>, 57, 573–583.</p>
+<div id="ref-selig_assessing_2013">
+<p>5.Selig, E.R., Longo, C., Halpern, B.S., Best, B.D., Hardy, D. &amp; Elfes, C.T. <em>et al.</em> (2013). Assessing global marine biodiversity status within a coupled socio-ecological perspective. <em>PLoS ONE</em>, 8, e60284.</p>
 </div>
 </div>
 </div>

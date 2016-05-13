@@ -52,6 +52,9 @@ Arguments
 
 -->
 
+# Figures
+
+
 ### Fig. 1
 <a id = 'fig1'></a>
 
@@ -76,4 +79,9 @@ Arguments
 <a id = 'fig4'></a>
 
 ![Change in MPA coverage](figures/fig4_barchart_mpa_gap.png)
+
+-----
+
+``` {r figure_legends, child = 'ms_5_fig_legends.Rmd'}
+```
 
