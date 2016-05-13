@@ -77,7 +77,7 @@ _Model: glm(quadrant 1 membership ~ IUCN category, family = binomial) n = 2,059_
 | IUCN category  |  1.18672 |   0.33469  |   3.546 | 0.000391 *** |
 
 
-### Coral depth map
+### Coral range vs. depth
 
 <a id = 'S3'></a>
 
