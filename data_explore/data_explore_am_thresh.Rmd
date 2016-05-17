@@ -71,9 +71,9 @@ hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) +
 # print(hist_area_vs_threshold)
 
 ggsave(file.path(dir_fig, 'si_am_threshold.tif'), device = 'tiff', 
-       width = 11.4, height = 6, units = 'cm')
+       width = 11.4, height = 6, units = 'cm', dpi = 600)
 ggsave(file.path(dir_fig, 'si_am_threshold.png'), 
-       width = 11.4, height = 6, units = 'cm')
+       width = 11.4, height = 6, units = 'cm', dpi = 600)
 
 ```
 
@@ -116,9 +116,9 @@ hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) +
        fill = 'IUCN code')
 
 ggsave(file.path(dir_fig, 'si_am_threshold2.tif'), device = 'tiff', 
-       width = 17.8, height = 9, units = 'cm')
+       width = 17.8, height = 9, units = 'cm', dpi = 600)
 ggsave(file.path(dir_fig, 'si_am_threshold2.png'), 
-       width = 17.8, height = 9, units = 'cm')
+       width = 17.8, height = 9, units = 'cm', dpi = 600)
 
 ```
 
@@ -205,9 +205,9 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
        y = 'Relative species range')
 
 ggsave(file.path(dir_fig, 'si_ribbon_am_threshold.tif'), device = 'tiff', 
-       width = 11.4, height = 6, units = 'cm')
+       width = 11.4, height = 6, units = 'cm', dpi = 600)
 ggsave(file.path(dir_fig, 'si_ribbon_am_threshold.png'), 
-       width = 11.4, height = 6, units = 'cm')
+       width = 11.4, height = 6, units = 'cm', dpi = 600)
 
 ```
 

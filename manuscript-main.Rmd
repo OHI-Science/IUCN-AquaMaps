@@ -2,18 +2,18 @@
 title: "Aligning marine species range data to better serve science and conservation"
 author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjamin
   S. Halpern^1,2,3^
+csl: refs/ecology-letters.csl
 output:
+  word_document: default
+  pdf_document:
+    number_sections: no
+    toc: no
   html_document:
     highlight: haddock
     number_sections: no
     theme: spacelab
     toc: no
-  pdf_document:
-    number_sections: no
-    toc: no
-  word_document: default
 bibliography: refs/zotero_lib.bib
-csl: refs/ecology-letters.csl
 ---
 
 <!--Title: Titles should be no more than three typeset lines (generally 135 characters including spaces) and should be comprehensible to a broad scientific audience. Please provide a short title of fewer than 50 characters for mobile devices and RSS feeds.-->

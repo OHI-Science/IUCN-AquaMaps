@@ -12,6 +12,75 @@ output:
     toc: no
 ---
 
+``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+
+# library(ggplot2)
+# library(maps)
+
+
+# library(raster)
+# library(data.table)
+library(tidyr)
+library(dplyr)
+library(stringr)
+library(readr)
+
+# dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
+#            'Darwin'  = '/Volumes/data_edit',
+#            'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+
+# dir_anx  <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
+
+if(basename(getwd()) != 'IUCN-AquaMaps') setwd('~/github/IUCN-AquaMaps')
+
+dir_data <- 'data'
+dir_fig  <- 'figures'
+
+```
+
+``` {r load data, echo = FALSE, warning = FALSE, message = FALSE}
+### use data_explore.Rmd to create this file, if it does not yet exist.  This
+### filters out presence = Extinct from IUCN cells.
+
+data_file <- 'data/spp_list_w_area_trimmed.csv'
+spp_map_pairs <- read_csv(data_file)
+### NOTE: as of Jan 31, includes all map pairs, even ones where IUCN area == 0
+
+### generate other lists
+spp_all_file <- 'data/spp_all.csv'
+spp_all <- read_csv(spp_all_file) ### NOTE: contains duped scinames
+
+# iucn_marine_file <- 'data/spp_iucn_marine.csv'
+# spp_iucn_marine <- read_csv(iucn_marine_file) 
+
+iucn_maps_file <- 'data/spp_iucn_maps.csv'
+spp_iucn_maps <- read_csv(iucn_maps_file) %>%
+  filter(!duplicated(iucn_sid))
+
+spp_am_file <- 'data/spp_am.csv'
+spp_am <- read_csv(spp_am_file)
+
+```
+
+``` {r calc species numbers, echo = FALSE}
+n_spp_am     <- nrow(spp_am)
+n_spp_am_rev <- nrow(spp_am %>% filter(reviewed == 1))
+n_spp_iucn   <- length(unique(spp_iucn_maps$iucn_sid))
+n_spp_both   <- length(unique(spp_map_pairs$iucn_sid))
+n_spp_all    <- n_spp_am + n_spp_iucn - n_spp_both
+
+p_spp_am     <- round(n_spp_am/n_spp_all * 100, 1)
+p_spp_iucn   <- round(n_spp_iucn/n_spp_all * 100, 1)
+p_both_am    <- round(n_spp_both/n_spp_am   * 100, 1)
+p_both_iucn  <- round(n_spp_both/n_spp_iucn * 100, 1)
+p_both_all   <- round(n_spp_both/n_spp_all  * 100, 1)
+
+spp_list <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
+area_align_mean <- round(mean(spp_list$area_ratio, na.rm = TRUE), 1)
+dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
+
+```
+
 <!--
 
 Figures: Calculated at 180 characters per cm in height for one column and 360 characters per cm in height for two columns; a figure wider than 8.7 cm is two columns wide.
