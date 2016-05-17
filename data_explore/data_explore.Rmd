@@ -333,6 +333,108 @@ ggsave(file.path(dir_fig, 'scatter_quadmap_norisk.png'),
 
 ```
 
+
+``` {r pct_overlap_vs_ratio_of_area2, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+### define 25%, 50%, and 75% quartiles for both x and y axes
+area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
+dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
+
+spp_list_quads <- read_csv(file.path(dir_data, 'spp_list_quads.csv'))
+
+ggtheme_plot2 <- ggtheme_basic + 
+  theme(panel.border     = element_blank(),
+        panel.grid.minor = element_blank(), 
+#        panel.grid.major = element_line(colour = 'grey90'),
+        panel.grid.major = element_blank(),
+        axis.title.x = element_text(hjust = 0),
+        axis.title.y = element_text(hjust = 1),
+        axis.line = element_blank())
+
+### mongo plot time
+scatter_quadplot <- ggplot(spp_list_quads %>% 
+                             transform(popn_category = reorder(popn_category, category_score)) %>%
+                             mutate(quad = factor(quad, levels = c('q1', 'q2', 'q3', 'q4'))),
+                           aes(x = area_ratio, 
+                               y = sm_perc, 
+                               color = quad)) +
+  ggtheme_plot2
+
+### add mean lines (quadrant dividers) under the points
+scatter_quadplot <- scatter_quadplot +
+  geom_vline(xintercept = area_align_mean,
+             color      = 'grey80') +
+  geom_hline(yintercept = dist_align_mean,
+             color      = 'grey80')
+
+### add the points!
+scatter_quadplot <- scatter_quadplot +
+  geom_point(alpha = .8) +
+  scale_colour_manual(values = c('q1' = '#4dac26',
+                                 'q2' = '#b8e186',
+                                 'q3' = '#f1b6da',
+                                 'q4' = '#d01c8b')) +
+  scale_x_continuous(expand = c(0, 0), 
+                     limits = c(0, 102),
+                     breaks = c(seq(0, 100, 25)),
+                     labels = c('0%', '25%', '50%', '75%', '100%')) +
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(0, 103),
+                     breaks = c(seq(0, 100, 25)),
+                     labels = c('0%', '25%', '50%', '75%', '100%'))
+
+### add axis lines and mean labels:
+scatter_quadplot <- scatter_quadplot  +
+  geom_vline(xintercept = 0,
+             color      = 'grey80') +
+  geom_hline(yintercept = 0,
+             color      = 'grey80') +
+  annotate(geom = 'text',
+           x = (area_align_mean - .5), y = 5,
+           hjust = 0, vjust = 0,
+           color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 90,
+           label = sprintf('Mean = %s%%', round(area_align_mean, 1))) +
+  annotate(geom = 'text',
+           x = 5, y = (dist_align_mean + .5),
+           hjust = 0, vjust = 0,
+           color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 0,
+           label = sprintf('Mean = %s%%', round(dist_align_mean, 1)))
+  
+### quadrant labels
+scatter_quadplot <- scatter_quadplot +
+  annotate(geom = 'text', color = 'grey30', size = 3, fontface = 'bold.italic',
+           x = 2, y = 2,
+           hjust = 0, vjust = 0,
+           label = 'Poorly aligned') +
+  annotate(geom = 'text', color = 'grey30', size = 3, fontface = 'bold.italic',
+           x = 98, y = 98,
+           hjust = 1, vjust = 1,
+           label = 'Well aligned') +
+  annotate(geom = 'text', color = 'grey30', size = 3, fontface = 'bold.italic',
+           x = 2, y = 98,
+           hjust = 0, vjust = 1,
+           label = 'Distribution aligned') +
+  annotate(geom = 'text', color = 'grey30', size = 3, fontface = 'bold.italic',
+           x = 98, y = 2,
+           hjust = 1, vjust = 0,
+           label = 'Area aligned')
+
+
+scatter_quadplot <- scatter_quadplot +
+  labs(x = bquote('Area ratio '*alpha['ext']*''), 
+       y = bquote('Distribution alignment '*alpha['dist']*'')) +
+  theme(legend.position = 'none')
+
+# print(scatter_quadplot)
+
+ggsave(file.path(dir_fig, 'scatter_quadmap_colbyquad.png'),
+       width = 17.8, height = 9, units = 'cm')
+
+```
+
+
 ![](../figures/scatter_quadmap.png)
 
 ## Break down quads by species group
