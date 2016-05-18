@@ -20,7 +20,7 @@ dir_M             <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
 
 dir_git <- '~/github/IUCN-AquaMaps'
   
-dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
+dir_anx <- file.path(dir_M, 'git-annex/globalprep/SPP_ICO')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
 
@@ -40,7 +40,7 @@ library(rasterVis)
 myTheme <- rasterTheme(region = brewer.pal('Blues', n = 9))
 
 all_am_rast_file   <- file.path(dir_data, 'rasters/am_all_rast.tif')
-dir_am_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data/aquamaps/v2015/csv')
+dir_am_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2015/csv')
 
 if(!file.exists(all_am_rast_file)) {
   loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
@@ -86,7 +86,7 @@ am_levelplot1 <- levelplot(all_am_map,
   layer(sp.polygons(bPols, fill = 'grey90', col = 'grey30', lwd = .25))
 
 png(file.path(dir_fig, 'all_aquamaps_map.png'),
-    width = 8.7, height = 6, units = 'in', res = 300)
+    width = 8.7, height = 6, units = 'cm', res = 600)
 print(am_levelplot1)
 dev.off()
 
@@ -99,7 +99,7 @@ dev.off()
 ```{r all_iucn, eval = TRUE, echo = FALSE}
 
 all_iucn_rast_file   <- file.path(dir_data, 'rasters/iucn_all_rast.tif')
-dir_data_iucn <- file.path(dir_N, 'git-annex/globalprep/_raw_data/iucn_spp')
+dir_data_iucn <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp')
 
 if(!file.exists(all_iucn_rast_file)) {
   loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
@@ -133,7 +133,7 @@ iucn_levelplot1 <- levelplot(all_iucn_map,
   layer(sp.polygons(bPols, fill = 'grey90', col = 'grey30', lwd = .25))
 
 png(file.path(dir_fig, 'all_iucn_map.png'),
-    width = 8.7, height = 6, units = 'in', res = 300)
+    width = 8.7, height = 6, units = 'cm', res = 600)
 print(iucn_levelplot1)
 dev.off()
 

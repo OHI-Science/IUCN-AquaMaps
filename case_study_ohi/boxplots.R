@@ -14,7 +14,7 @@ library(stringr)
 library(ggplot2)
 library(readr)
 
-dir_data  <- '~/github/ohiprep/globalprep/SPP_ICO/vAM_IUCN'
+dir_data  <- '~/github/ohiprep/globalprep/spp_ico/vAM_IUCN'
 dir_fig <- '~/github/IUCN-AquaMaps/figures'
 
 ### generic theme for all plots
@@ -80,7 +80,7 @@ bplot_abs <- ggplot(data = st_all %>% filter(str_detect(scenario, 'abs')),
               alpha = .5) +
   geom_point(position = position_jitter(w = .3), 
              # aes(color = scenario), 
-             color = 'grey40',
+             color = '#4d4dac',
              alpha = .5,
              show.legend = TRUE) +
 #  stat_summary(fun.y=mean, geom="point", color = 'red', size = 3) +
@@ -97,11 +97,11 @@ bplot_abs <- ggplot(data = st_all %>% filter(str_detect(scenario, 'abs')),
                               '2. AquaMaps/IUCN\n40% threshold', 
                               '3. AquaMaps/IUCN\nno threshold'))
 
-x <- st_all %>% filter(str_detect(scenario, 'abs'))
-y <- x %>% 
-  group_by(scenario, r1) %>% 
-  summarize(mean_diff = mean(difference, na.rm = TRUE),
-            n_rgn = n())
+# x <- st_all %>% filter(str_detect(scenario, 'abs'))
+# y <- x %>% 
+#   group_by(scenario, r1) %>% 
+#   summarize(mean_diff = mean(difference, na.rm = TRUE),
+#             n_rgn = n())
 
 bplot_abs
 ggsave(file.path(dir_fig, 'fig3_boxplot_abs_diff.png'), 

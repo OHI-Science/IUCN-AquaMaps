@@ -5,7 +5,7 @@ This looks at the full 2014 Aquamaps dataset... should it be limited to species 
 ```{r aquamaps_load_data, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE, eval = TRUE}
 
 # get spp_cells raw data for aquamaps
-dir_aquamaps <- file.path(dir_N, 'git-annex/globalprep/_raw_data/aquamaps/v2015')
+dir_aquamaps <- file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2015')
 
 spp_cells <- read_csv(file.path(dir_aquamaps, 'csv/hcaf_sp_native_trunc.csv'), 
                       col_types = 'ccd', progress = TRUE)
@@ -126,11 +126,10 @@ ggsave(file.path(dir_fig, 'si_am_threshold2.png'),
 
 
 ```{r df_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE, eval = TRUE}
-### create dataframe that gives me all species, their total number of cells, 
-### total number of cells >= 0.4 prob, difference between the two and threat
 
 threshold_df <- data.frame()
 for (i in seq(0, 1, .05)) { # i = .05
+  message('Calculating species cell losses for threshold = ', i, '...')
   temp_df <- spp_cells %>%
     group_by(speciesid) %>%
     summarize(thresh       = i,
@@ -138,8 +137,8 @@ for (i in seq(0, 1, .05)) { # i = .05
               cells_total  = sum(probability >= 0),
               proportion   = cells_thresh/cells_total) %>%
     left_join(spp %>%
-#              filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')), 
-              filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX')), 
+             filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')),
+#              filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX')), 
             by = c('speciesid')) %>%
     select(sciname, speciesid, thresh, cells_thresh, cells_total, proportion, iucn_code)
   
@@ -147,6 +146,7 @@ for (i in seq(0, 1, .05)) { # i = .05
     bind_rows(temp_df)
 }
 
+message('Summarizing all down to quantiles, medians, and means...')
 thresh_df_summary <- threshold_df %>%
   group_by(thresh) %>%
   summarize(mean_prop   = mean(proportion, na.rm = TRUE),
@@ -165,8 +165,8 @@ ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median
   ggtheme_plot + 
 #  geom_point(position = position_jitter(w = .1), aes(color = scenario), alpha = .5) +
 
-  geom_ribbon(aes(ymax = quant95, ymin = quant05), alpha = .5, color = NA, fill = '#b8e186') +
-  geom_ribbon(aes(ymax = quant75, ymin = quant25), alpha = .5, color = NA, fill = '#4dac26') +
+  geom_ribbon(aes(ymax = quant95, ymin = quant05), alpha = .5, color = NA, fill = '#b8b8e1') +
+  geom_ribbon(aes(ymax = quant75, ymin = quant25), alpha = .5, color = NA, fill = '#4d4dac') +
   geom_line(color = 'grey30') + 
   # geom_line(aes(y = mean_prop), color = 'darkgreen') + 
   # geom_abline(intercept = area_mean_model[['coefficients']][1],

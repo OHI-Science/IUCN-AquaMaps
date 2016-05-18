@@ -23,7 +23,7 @@ dir_M             <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
 
 dir_git <- '~/github/IUCN-AquaMaps'
   
-dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
+dir_anx <- file.path(dir_M, 'git-annex/globalprep/SPP_ICO')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
 
@@ -76,7 +76,7 @@ spp_am <- read_csv(spp_am_file)
 sciname_lookup <- read.csv(file.path(dir_data, 'sciname_lookups/spp_iucn_scinames.csv'), stringsAsFactors = FALSE)
 
 spp_am <- spp_am %>%
-  left_join(read_csv(file.path(dir_N, 'git-annex/globalprep/_raw_data/aquamaps/v2015/csv/speciesoccursum.csv')) %>% 
+  left_join(read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2015/csv/speciesoccursum.csv')) %>% 
               dplyr::select(am_sid = speciesid, class) %>%
               unique(), 
             by = 'am_sid')
@@ -279,7 +279,7 @@ scatter_quadplot <- ggplot(spp_list %>%
                      ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
              fill= "#d01c8b") + 
-  geom_point(color = 'grey40', alpha = .6)
+  geom_point(color = '#4d4dac', alpha = .6)
 
 ### Manage scales for color and size 
 scatter_quadplot <- scatter_quadplot +
