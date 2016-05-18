@@ -13,16 +13,17 @@ library(tidyr)
 library(dplyr)
 library(stringr)
 
-dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
-           'Darwin'  = '/Volumes/data_edit',
-           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+dir_M             <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
+                       'Darwin'  = '/Volumes/ohi',    ### connect (cmd-K) to smb://mazu/ohi
+                       'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
+
 
 dir_git <- '~/github/IUCN-AquaMaps'
   
 dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
-dir_am_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data/aquamaps/v2015/csv')
+dir_am_data <- file.path(dir_N, 'git-annex/globalprep/_raw_data/aquamaps/d2015/csv')
 
 
 # if(basename(getwd()) != 'IUCN-AquaMaps') setwd(dir_git)
@@ -455,10 +456,10 @@ barchart_mpa_gap <- ggplot(mpa_all_runs1,
 print(barchart_mpa_gap)
 ggsave(plot = barchart_mpa_gap,
        filename = file.path(dir_fig, 'fig4_barchart_mpa_gap.png'),
-       width = 11.4, height = 5, units = 'cm')
+       width = 11.4, height = 5, units = 'cm', dpi = 600)
 ggsave(plot = barchart_mpa_gap,
        filename = file.path(dir_fig, 'fig4_barchart_mpa_gap.tif'), device = 'tiff',
-       width = 11.4, height = 5, units = 'cm')
+       width = 11.4, height = 5, units = 'cm', dpi = 600)
 
 mpa_all_runs_wide <- mpa_all_runs1 %>%
   mutate(p_cat = paste(round(p_cat, 1), '%', sep = '')) %>%

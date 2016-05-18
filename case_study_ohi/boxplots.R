@@ -75,16 +75,18 @@ bplot_abs <- ggplot(data = st_all %>% filter(str_detect(scenario, 'abs')),
 #         plot.title = element_text(size = rel(1.5), hjust = 0, face = 'bold'),
 #         legend.position = 'none') +
   geom_hline(yintercept = 0, color = 'gray50', size = .5) +
-  geom_violin(fill = 'grey80', draw_quantiles = c(.25, .5, .75), 
+  geom_violin(fill = 'grey80', 
+              draw_quantiles = c(.25, .5, .75), 
               alpha = .5) +
   geom_point(position = position_jitter(w = .3), 
-             aes(color = scenario), 
+             # aes(color = scenario), 
+             color = 'grey40',
              alpha = .5,
              show.legend = TRUE) +
 #  stat_summary(fun.y=mean, geom="point", color = 'red', size = 3) +
-  scale_color_manual(values = c('absdiff1' = '#1b9e77', 
-                                'absdiff2' = '#565080', 
-                                'absdiff3' = '#d95f02')) +
+  # scale_color_manual(values = c('absdiff1' = '#1b9e77', 
+  #                               'absdiff2' = '#565080', 
+  #                               'absdiff3' = '#d95f02')) +
   
   geom_violin(fill = NA, draw_quantiles = c(.25, .5, .75)) +
   #  geom_boxplot(size = .75, fill = NA) +
@@ -103,9 +105,9 @@ y <- x %>%
 
 bplot_abs
 ggsave(file.path(dir_fig, 'fig3_boxplot_abs_diff.png'), 
-       height = 4.5, width = 8.7, units = 'cm')
+       height = 4.5, width = 8.7, units = 'cm', dpi = 600)
 ggsave(file.path(dir_fig, 'fig3_boxplot_abs_diff.tif'), device = 'tiff',
-       height = 4.5, width = 8.7, units = 'cm')
+       height = 4.5, width = 8.7, units = 'cm', dpi = 600)
 
 # bplot_rel <- ggplot(data = st_all %>% filter(str_detect(scenario, 'rel')),
 #                     aes(x = scenario, y = difference)) +
