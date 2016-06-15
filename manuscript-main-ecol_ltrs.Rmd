@@ -120,7 +120,7 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 ```
 -----
 
-``` {r abstract, child = 'ms_1_abst_sig.Rmd'}
+``` {r abstract, child = 'ms_1_abst_150wd.Rmd'}
 ```
 
 <!--
@@ -137,6 +137,11 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 ``` {r intro, child = 'ms_2_intro.Rmd'}
 ```
 
+
+``` {r methods, child = 'ms_3_methods.Rmd'}
+```
+
+
 ``` {r results_discussion, child = 'ms_2a_res_disc.Rmd'}
 ```
 
@@ -152,10 +157,6 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 -->
 
 
------
-
-``` {r methods, child = 'ms_3_methods.Rmd'}
-```
 
 -----
 

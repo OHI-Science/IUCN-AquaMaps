@@ -2,7 +2,7 @@
 title: "Aligning marine species range data to better serve science and conservation"
 author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjamin
   S. Halpern^1,2,3^
-csl: refs/ecology-letters.csl
+csl: refs/journal-of-applied-ecology.csl
 output:
   word_document: default
   pdf_document:
@@ -120,7 +120,7 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 ```
 -----
 
-``` {r abstract, child = 'ms_1_abst_150wd.Rmd'}
+``` {r abstract, child = 'ms_1_abst_j_appl_ecol.Rmd'}
 ```
 
 <!--
