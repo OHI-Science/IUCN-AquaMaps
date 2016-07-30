@@ -1,0 +1,45 @@
+---
+title: 'Data Exploration: IUCN and AquaMaps'
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Libraries and Paths
+
+library(ggplot2)
+library(maps)
+library(readr)
+library(data.table)
+library(raster)
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+dir_M <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
+           'Darwin'  = '/Volumes/ohi',    ### connect (cmd-K) to smb://mazu/ohi
+           'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_M, 'git-annex/globalprep/SPP_ICO')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
+
+if(basename(getwd()) != 'data_explore') setwd('data_explore')
+source('data_explore_fxns.R')
+### When knitting this, it automatically sets WD to be this directory...
+### the 'setwd()' is there for running by chunk
+```
+
+
+```{r get_bathy_raster, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+### get shapefile
+### rasterize to half-degree grid; or raster::extract
+
+### 
+
+```
+
+
