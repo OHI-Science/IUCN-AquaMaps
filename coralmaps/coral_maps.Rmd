@@ -10,8 +10,8 @@ output: html_document
 library(ggplot2)
 library(maps)
 library(readr)
-library(data.table)
 library(raster)
+library(rgdal)
 library(tidyr)
 library(dplyr)
 library(stringr)
@@ -22,7 +22,7 @@ dir_M <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
 
 dir_git <- '~/github/IUCN-AquaMaps'
   
-dir_anx <- file.path(dir_M, 'git-annex/globalprep/SPP_ICO')
+dir_anx <- file.path(dir_M, 'git-annex/globalprep/spp_ico')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
 
@@ -38,7 +38,92 @@ source('data_explore_fxns.R')
 ### get shapefile
 ### rasterize to half-degree grid; or raster::extract
 
-### 
+if(!file.exists(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))) {
+    
+  poly_bath <- readOGR(dsn = file.path(path.expand(dir_git), 'coralmaps/ne_10m_bathymetry_K_200'), 
+                       layer = 'ne_10m_bathymetry_K_200', 
+                       stringsAsFactors = TRUE)
+  
+  ### LOICZID cell ID numbers - used in plotting rasters
+  loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+  loiczid_raster       <- raster(loiczid_raster_file)
+  names(loiczid_raster) <- 'loiczid'
+  
+  bath_list <- raster::extract(loiczid_raster, poly_bath, 
+                             weights = TRUE, normalizeWeights = FALSE,
+                             progress = 'text')
+  bath_df <- lapply(bath_list, function(x) {as.data.frame(x)}) %>%
+    bind_rows() %>%
+    rename(loiczid = value) %>%
+    group_by(loiczid) %>%
+    summarize(weight = sum(weight))
+  
+  ### generate raster?
+  bath_raster <- subs(loiczid_raster, bath_df, by = 'loiczid', which = 'weight')
+  values(bath_raster)[values(bath_raster) > 5] <- NA
+  
+  write_csv(bath_df, file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))
+  ### probably want to filter to just 100% 200m+
+}
+
+```
+
+
+``` {r}
+### find spp depth limits
+### focus just on corals?
+
+if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_depth_raw.csv'))) {
+  
+  library(jsonlite)
+  api_key <- 'fb71ae836f415f04f41176f6d30c4a9e4cea620d46b9e5021bf2fb142ea51bf5'
+  
+  get_from_api <- function(url, param) {
+      api_info <- fromJSON(sprintf(url, param, api_key)) %>%
+        data.frame(stringsAsFactors = FALSE)
+  }
+  
+  mc_get_from_api <- function(url, param_vec) {
+    numcores = ifelse(Sys.info()[['nodename']] == 'mazu', 12, 1)
+    out_df <- parallel::mclapply(param_vec, 
+                            function(x) get_from_api(url, x),
+                            mc.cores = numcores) %>% 
+      bind_rows() 
+    out_df <- out_df %>%
+      setNames(names(.) %>%
+                 str_replace('result.', ''))
+  }
+  
+  ### get species list
+  data_file <- file.path(dir_data, 'spp_list_w_area_trimmed.csv')
+  spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE) %>%
+    filter(!is.na(popn_category)) %>% ### filter out unassessed species
+    filter(!is.na(sm_perc))           ### filter out NA maps
+  
+  coral_spp_sid <- spp_map_pairs %>%
+    filter(str_detect(spp_group, 'CORAL')) %>%
+    .$iucn_sid
+  
+  spp_narr_url <- 'http://apiv3.iucnredlist.org/api/v3/species/narrative/id/%s?token=%s'
+  spp_narr     <- mc_get_from_api(spp_narr_url, coral_spp_sid) 
+  
+  write_csv(spp_narr, file.path(dir_git, 'coralmaps', 'coral_spp_narratives.csv'))
+  
+  spp_depth <- spp_narr %>%
+    select(iucn_sid = species_id, habitat)
+  write_csv(spp_depth, file.path(dir_git, 'coralmaps', 'coral_spp_depth_raw.csv'))
+  ### manually find max depths from this
+}
+
+```
+
+``` {r}
+
+### load iucn spp_cells
+coral_files <- list.files(file.path(dir_anx, 'v2016', 'iucn_intersections'), 
+                          pattern = 'CORAL*.*',
+                          full.names = TRUE)
+iucn_coral_cells <- lapply(coral_files, read_csv)
 
 ```
 
