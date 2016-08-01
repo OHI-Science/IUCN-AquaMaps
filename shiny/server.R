@@ -1,76 +1,62 @@
-#server.R
+### server.R
 
 source('server_fxns.R')
 
-
-
 am_prob_cols <- rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
 am_pres_cols <- colorRampPalette(brewer.pal(9, 'Oranges'))(255) # orange color scheme
-iucn_cols <- colorRampPalette(brewer.pal(9, 'Purples'))(255) # purple color scheme
+iucn_cols    <- colorRampPalette(brewer.pal(9, 'Purples'))(255) # purple color scheme
 
-
-
-
-shinyServer(function(input,output){
+server <- shinyServer(function(input, output, session) {
   
   ### Species Map Function ###
+  spp_map   <- reactiveValues()
+  coral_map <- reactiveValues()
+  ### This function takes a single species scientific name as input, then grabs 
+  ### all occurrence cells and associated probability per cell
   
-  # This function takes a single species scientific name as input, then grabs all occurrence cells and associated probability per cell
-  spp_map <- reactive({
-    spp <-input$species
-    
-    spp_map <- get_spp_map(spp)
+  observeEvent(input$spp_group, ### select a group, then update species list choices
+    {
+      spp_choices <- spp_list %>%
+        filter(spp_group_text == input$spp_group) %>%
+        distinct() %>%
+        .$sciname
+      updateSelectInput(session, inputId = "species",
+                        choices = spp_choices)
+    }
+  )
+  
+  observeEvent(
+    {input$species; input$am_cutoff}, ### change in species selector regenerates both maps
+    {
+      message('observed change in input$species or input$am_cutoff; getting spp_map dataframe')
+      spp_map$df <- get_spp_map_df(input$species, input$am_cutoff)
+    }
+  )
+  
+  create_map <- observeEvent(
+    {spp_map$df; input$show_maps}, 
+      ### triggered by change in spp_map$am_rast (which may also include 
+      ### change in iucn_rast) or a change in the selected maps to display
+    {
+      message('observed change in spp_map$df or input$show_maps; creating map')
+      map_rast <- get_rast(spp_map$df, type = input$show_maps)
+
+      map_obj <- assemble_map(map_rast, spp = input$species)
+      
+      spp_map$map <- map_obj
+    }
+  )
+  
+  output$compare_map <- renderPlot({
+    spp_map$map
+  }, width = 800, height = 600) 
+  
+  output$quad_plot <- renderPlotly({
+    create_quadplot()
   })
   
-  
-  map_compare <- reactive({
-    
-    am_map <- spp_map()%>%
-                mutate(am_pres = ifelse(am_prob >= input$am_cutoff,1,NA))
-    
-    
-    r_am_spp  <-  subs(loiczid_raster, 
-                       am_map[ , c('loiczid', 'am_pres')], 
-                       by = 'loiczid', 
-                       which = 'am_pres', 
-                       subsWithNA = TRUE)
-    
-    
-    iucn_map <- spp_map() %>%
-                  mutate(iucn_pres = iucn_area > 0)
-    
-    r_iucn_spp <- subs(loiczid_raster, 
-                       iucn_map[ , c('loiczid', 'iucn_pres')], 
-                       by = 'loiczid', 
-                       which = 'iucn_pres', 
-                       subsWithNA = TRUE)
-    
-    
-    if(input$checkGroup==1){
-      plot(r_am_spp,col=am_pres_cols[128],main=input$species,useRaster=FALSE,axes=FALSE,box=FALSE,legend=FALSE)
-      legend("topright",legend="AquaMaps",fill=am_pres_cols[128])
-      map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
-    }
-    
-    if(input$checkGroup==2){
-      plot(r_iucn_spp,col = iucn_cols, useRaster = FALSE,axes=FALSE,box=FALSE,legend=FALSE)
-      legend("topright",legend="IUCN",fill=iucn_cols[128])
-      map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
-    }
-    
-    if(input$checkGroup==3){
-      plot(r_iucn_spp,col=iucn_cols,useRaster=FALSE,axes=FALSE,box=FALSE,legend=FALSE)
-      plot(r_am_spp,col=am_pres_cols,main=input$species,useRaster=FALSE,alpha=0.8,add=T,axes=FALSE,box=FALSE,legend=FALSE)
-      legend("topright",legend=c("AquaMaps","IUCN"),fill=c(am_pres_cols[128],iucn_cols[128]))
-      map('world', col = 'gray95', fill = T, border = 'gray80', add = TRUE)
-    }
-    
-  }) 
-  
-  output$comparePlot <- renderPlot({
-    map_compare()
-  }, width = 1000, height = 600) 
-
-  
+  output$coral_plot <- renderPlotly({
+    create_coralplot()
+  })
   
 })
