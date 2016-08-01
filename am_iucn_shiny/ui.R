@@ -8,6 +8,9 @@ library(plotly)
 
 library(shinythemes)
 
+spp_list       <- read_csv('data/spp_list.csv')
+
+
 ### Tab 1: intro/explanation/link to published paper
 ### Tab 2: sample maps showing AM/IUCN/both; to select a species, can it be 
 ###   tied to the mouseovers on the quad plot? somehow link quad plot to maps

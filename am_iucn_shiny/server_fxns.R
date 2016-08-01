@@ -16,7 +16,6 @@ names(loiczid_raster) <- 'loiczid'
 ### read in spp cell files
 iucn_spp_cells <- read_csv('data/iucn_cells.csv', col_types = 'dd')
 am_spp_cells   <- read_csv('data/am_cells.csv')
-spp_list       <- read_csv('data/spp_list.csv')
 
 
 ### Species Map Function ###
