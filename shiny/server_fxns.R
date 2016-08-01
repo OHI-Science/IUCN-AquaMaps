@@ -1,14 +1,18 @@
 #server_fxns.R
 
-dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
-           'Darwin'  = '/Volumes/data_edit',
-           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+### if iucn/am cell file does not exist, it must be created from data on Mazu.
+### - set up Mazu dir
+### - pull data
+### - filter
+### - save locally for 
+dir_M <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
+           'Darwin'  = '/Volumes/ohi',
+           'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
 
-dir_anx      <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
+dir_anx      <- file.path(dir_M, 'git-annex/globalprep/spp_ico')
 
 
 cat('Reading in IUCN species info...\n')
-#iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_ltd.csv'), col_types = 'idiii', progress = TRUE)
 iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells.csv'), col_types = 'idiii', progress = TRUE)
 #iucn_spp_cells <- read_csv('data/iucn_spp_cells.csv')
 
