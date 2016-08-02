@@ -30,6 +30,7 @@ server <- shinyServer(function(input, output, session) {
     {
       message('observed change in input$species or input$am_cutoff; getting spp_map dataframe')
       spp_map$df <- get_spp_map_df(input$species, input$am_cutoff)
+      print(head(spp_map$df))
     }
   )
   

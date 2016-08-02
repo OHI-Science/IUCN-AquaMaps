@@ -52,7 +52,7 @@ get_spp_map_df <- function(species, am_cutoff = 0){ ### species <- spp_list$scin
   return(spp_map_df)
 }
 
-get_rast <- function(spp_map_df, type = 'both') {
+get_rast <- function(spp_map_df, type) {
   message('in get_rast()')
   rast_obj  <-  subs(loiczid_raster, spp_map_df, 
                      by    = 'loiczid', 
@@ -208,6 +208,18 @@ create_quadplot <- function() {
 
 create_coralplot <- function() {
   spp_coralmaps <- read_csv('data/coral_spp_areas.csv')
+  
+  ggtheme_basic <- theme(axis.ticks = element_blank(),
+                         text = element_text(family = 'Helvetica', color = 'gray30', size = 8),
+                         plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
+                         panel.background = element_blank(),
+                         legend.position = 'right')
+  
+  ggtheme_plot <- ggtheme_basic + 
+    theme(panel.border     = element_blank(),
+          panel.grid.minor = element_blank(), 
+          panel.grid.major = element_line(colour = 'grey90'),
+          axis.line = element_line(colour = "grey30"))
   
   iucn_coral_fixed <- spp_coralmaps %>%
     rename(dist_align_raw = sm_perc_raw, dist_align_clipped = sm_perc_clipped) %>%

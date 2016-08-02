@@ -350,8 +350,8 @@ clipped_quads <- ggplot(iucn_coral_fixed %>%
                                                filter(perc > 100) %>% 
                                                .$iucn_sid)),
                     aes(x = ratio, y = perc, group = iucn_sid)) +
-  geom_line(color = 'grey50', alpha = .5) +
-  geom_point(aes(color = method)) +
+  geom_line(color = 'grey50', size = .5, alpha = .3) +
+  geom_point(aes(color = method), size = 2) +
   labs(x = 'Area ratio (smaller/larger)',
        y = 'Distribtion (%smaller in larger)',
        title = 'Coral species alignment, IUCN full range vs depth-clipped')

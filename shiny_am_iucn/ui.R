@@ -1,15 +1,6 @@
 #ui.r
 
-library(readr)
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(plotly)
-
-library(shinythemes)
-
-spp_list       <- read_csv('data/spp_list.csv')
-
+source('ui_setup.R')
 
 ### Tab 1: intro/explanation/link to published paper
 ### Tab 2: sample maps showing AM/IUCN/both; to select a species, can it be 
