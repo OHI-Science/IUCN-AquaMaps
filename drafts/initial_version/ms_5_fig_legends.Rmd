@@ -1,0 +1,49 @@
+
+# Figure Legends
+
+``` {r barchart_by_taxa, echo = FALSE}
+n_spp <- spp_map_pairs %>%
+  mutate(spp_group = ifelse(str_detect(spp_group, 'CORAL'), 'CORAL', spp_group)) %>%
+  group_by(spp_group) %>%
+  summarize(n_spp = n()) %>%
+  arrange(desc(n_spp))
+
+n_corals   <- nrow(spp_map_pairs %>% 
+                     filter(str_detect(spp_group, 'CORAL')))
+n_bonyfish <- nrow(spp_map_pairs %>% 
+                     filter(spp_group %in% c('WRASSES', 'BUTTERFLYFISH', 'PARROTFISH',
+                                             'COMBTOOTHBLENNIES', 'SEABREAMS_PORGIES', 
+                                             'PUFFERFISH', 'GROUPERS', 'TUNAS_BILLFISHES', 
+                                             'SURGEONFISH_TANGS_UNICORNFISH', 'ANGELFISH', 
+                                             'DAMSELFISH', 'BONEFISH_TARPONS')))
+```
+
+__Fig. 1.__ (A) Number and proportion of species by taxa included in each dataset.  Overlapping species are dominated by bony fishes (`r format(n_bonyfish, big.mark = ',')` species, primarily tropical taxa) and corals (`r format(n_corals, big.mark = ',')` species).  (B, C) Global marine species count per 0.5° cell according to (B) AquaMaps and (C) IUCN.  The margin frequency plots show relative species count per cell at each latitude and longitude. 
+
+``` {r tally_quad_counts, echo = FALSE}
+dist_median <- round(median(spp_map_pairs$sm_perc,    na.rm = TRUE), 1)
+area_median <- round(median(spp_map_pairs$area_ratio, na.rm = TRUE), 1)
+q1_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio >= area_median)
+q2_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio >= area_median)
+q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio <  area_median)
+q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
+```
+
+__Fig. 2.__ (A) Distribution alignment (overlap of smaller range within larger) versus area ratio (the ratio of smaller range area to the larger range area) for `r format(n_spp_both, big.mark = ',')` species included in both IUCN and AquaMaps datasets.  The upper right quadrant (quadrant 1) comprises species whose maps largely agree (better than median value) in both spatial distribution and the extent of described ranges (n = `r q1_count`; `r round(q1_count/nrow(spp_map_pairs) * 100, 1)` %).
+The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in area
+(n = `r q2_count`; `r round(q2_count/nrow(spp_map_pairs) * 100, 1)` %).
+The lower right quadrant (quadrant 3) includes species for which the paired maps generally agree in range area, but disagree on where those ranges occur
+(n = `r q3_count`; `r round(q3_count/nrow(spp_map_pairs) * 100, 1)` %).
+The lower left quadrant (quadrant 4) indicates species for which the map pairs agree poorly in both area and distribution
+(n = `r q4_count`; `r round(q4_count/nrow(spp_map_pairs) * 100, 1)` %).
+(B) Alignment quadrant breakdown of species by taxonomic group.
+
+
+__Fig. 3.__ Change in status score for the Species Subgoal within the global Ocean Health Index under three different scenarios.
+Scenario 1 shows the effect of reducing the probability threshold to 0% for AquaMaps presence to more accurately track the definition of IUCN “limits of distribution."
+Scenario 2 shows the effect of prioritizing AquaMaps data over IUCN, while maintaining the 40% presence threshold.  In general, AquaMaps ranges are smaller than IUCN ranges, so most overlapping species will see a decrease in represented range.
+Scenario 3 shows the effect of prioritizing AquaMaps data over IUCN, and simultaneously eliminating the presence threshold.  The zero threshold in scenario 3 drives a decrease in scores relative to scenario 2.  
+
+
+__Fig. 4.__  Percent of species range covered by MPAs based upon methods in Klein et al. (2015).  Scenario 1 replicates the original results, measuring protected range of species in AquaMaps 2014 dataset, with a 50% presence threshold, against the 2014 World Database of Protected Areas, filtered for IUCN categories I-IV that overlap marine areas.  Scenario 2 updates the results using AquaMaps 2015, showing very small changes despite the inclusion of an additional 5,545 species.  Scenario 3, using 2015 AquaMaps data, drops the presence threshold to zero, showing an expected decrease in gap species, but also a decrease in species with 5% or greater protected range.  Scenario 4 adds an additional 1745 species unique to IUCN, resulting in increases in gap species and species with less than 2% coverage.  Scenario 5 examines species MPA coverage using only the IUCN dataset.
+

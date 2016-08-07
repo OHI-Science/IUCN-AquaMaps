@@ -1,0 +1,178 @@
+---
+title: "Aligning marine species range data to better serve science and conservation"
+author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjamin
+  S. Halpern^1,2,3^
+csl: refs/journal-of-applied-ecology.csl
+output:
+  word_document: default
+  pdf_document:
+    number_sections: no
+    toc: no
+  html_document:
+    highlight: haddock
+    number_sections: no
+    theme: spacelab
+    toc: no
+bibliography: refs/zotero_lib.bib
+---
+
+<!--Title: Titles should be no more than three typeset lines (generally 135 characters including spaces) and should be comprehensible to a broad scientific audience. Please provide a short title of fewer than 50 characters for mobile devices and RSS feeds.-->
+
+
+_Author affiliation:_ <!--Include department, institution, and complete address, with the ZIP/postal code, for each author. Use superscripts to match authors with institutions. Authors are encouraged to supply their ORCID ID at submission-->
+
+1. National Center for Ecological Analysis and Synthesis, 735 State Street Suite 300, Santa Barbara CA 93101
+2. Bren School of Environmental Science and Management, University of California, Santa Barbara CA 93106
+3. Department of Life Sciences, Imperial College London, Silwood Park Campus, Buckhurst Rd, Ascot, West Berkshire SL5 7PY, United Kingdom
+
+_Corresponding author:_ <!--Corresponding author: The name, complete address, telephone number, and email address of the author to whom correspondence and proofs should be sent. Email addresses will appear in the article footnotes.-->
+Casey O'Hara, National Center for Ecological Analysis and Synthesis, 735 State Street, Suite 300, Santa Barbara CA 93101; (805) 892-2500; ohara@nceas.ucsb.edu
+
+_Classification:_ BIOLOGICAL SCIENCES: Sustainability Science
+
+_Keywords:_ <!--Keywords are listed below the abstract of the published article. At least three keywords are required at submission.  maybe species distribution maps, AquaMaps, IUCN, marine protected area planning, biodiversity status--> Marine spatial planning, species distribution model, extent of occurrence, spatial ecology
+
+<!--
+
+from PNAS (http://www.pnas.org/site/authors/preparation.xhtml):
+
+PNAS generally uses a two-column format averaging 67 characters, including spaces, per line. The maximum length of a regular research article is 6 pages (or 10 pages for PNAS Plus articles), including all text, spaces, and the number of characters displaced by figures, tables, and equations.
+
+An online submission tool provides authors with an estimation of whether their manuscript fits within the PNAS length requirements (see Length Estimate FAQ). Use the following guidelines to determine whether your manuscript exceeds the page-length requirements before submission:
+
+Text: When submitting tables, figures, and/or equations in addition to text, keep the text for your manuscript under 39,000 characters (including spaces).
+Figures: Calculated at 180 characters per cm in height for one column and 360 characters per cm in height for two columns; a figure wider than 8.7 cm is two columns wide.
+Tables and equations: Calculated at 60 characters per line for one column and 120 per line for two columns; a table with more than 60 characters per line is two columns wide.
+If the text in a figure or table is deemed illegible for production, the figure or table may be enlarged to improve legibility. Add the word count to the character count to obtain a character count that includes spaces.
+
+See also: http://www.pnascentral.org/html/pnas_length_estimate_instructions.html
+
+-->
+
+
+``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+
+# library(ggplot2)
+# library(maps)
+
+
+# library(raster)
+# library(data.table)
+library(tidyr)
+library(dplyr)
+library(stringr)
+library(readr)
+
+# dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
+#            'Darwin'  = '/Volumes/data_edit',
+#            'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+
+# dir_anx  <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
+
+if(basename(getwd()) != 'IUCN-AquaMaps') setwd('~/github/IUCN-AquaMaps')
+
+dir_data <- 'data'
+dir_fig  <- 'figures'
+
+```
+
+``` {r load data, echo = FALSE, warning = FALSE, message = FALSE}
+### use data_explore.Rmd to create this file, if it does not yet exist.  This
+### filters out presence = Extinct from IUCN cells.
+
+data_file <- 'data/spp_list_w_area_trimmed.csv'
+spp_map_pairs <- read_csv(data_file)
+### NOTE: as of Jan 31, includes all map pairs, even ones where IUCN area == 0
+
+### generate other lists
+spp_all_file <- 'data/spp_all.csv'
+spp_all <- read_csv(spp_all_file) ### NOTE: contains duped scinames
+
+# iucn_marine_file <- 'data/spp_iucn_marine.csv'
+# spp_iucn_marine <- read_csv(iucn_marine_file) 
+
+iucn_maps_file <- 'data/spp_iucn_maps.csv'
+spp_iucn_maps <- read_csv(iucn_maps_file) %>%
+  filter(!duplicated(iucn_sid))
+
+spp_am_file <- 'data/spp_am.csv'
+spp_am <- read_csv(spp_am_file)
+
+```
+
+``` {r calc species numbers, echo = FALSE}
+n_spp_am     <- nrow(spp_am)
+n_spp_am_rev <- nrow(spp_am %>% filter(reviewed == 1))
+n_spp_iucn   <- length(unique(spp_iucn_maps$iucn_sid))
+n_spp_both   <- length(unique(spp_map_pairs$iucn_sid))
+n_spp_all    <- n_spp_am + n_spp_iucn - n_spp_both
+
+p_spp_am     <- round(n_spp_am/n_spp_all * 100, 1)
+p_spp_iucn   <- round(n_spp_iucn/n_spp_all * 100, 1)
+p_both_am    <- round(n_spp_both/n_spp_am   * 100, 1)
+p_both_iucn  <- round(n_spp_both/n_spp_iucn * 100, 1)
+p_both_all   <- round(n_spp_both/n_spp_all  * 100, 1)
+
+spp_list <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
+area_align_mean <- round(mean(spp_list$area_ratio, na.rm = TRUE), 1)
+dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
+
+```
+-----
+
+``` {r abstract, child = 'ms_1_abst_sig.Rmd'}
+```
+
+<!--
+| Section        |   Word #   | Char/spc # |
+| :------        |    ------: |    ------: |
+| Abstract       |  184 words |  1312 char |
+| Significance   |   73 words |   545 char |
+-->
+
+-----
+
+\\body
+
+``` {r intro, child = 'ms_2_intro.Rmd'}
+```
+
+``` {r results_discussion, child = 'ms_2a_res_disc.Rmd'}
+```
+
+<!--
+| Section                   |   Word #   | Char/spc # |
+| :------                   |    ------: |    ------: |
+| Introduction              |  429 words |  2905 char |
+| Results/Discussion        |  999 words |  6697 char |
+| Implications (incomplete) |  597 words |  3794 char |
+| Conclusions               |  354 words |  2505 char |
+| Methods (incomplete)      |  601 words |  3919 char |
+| total body                | 2987 words | 19885 char |
+-->
+
+
+-----
+
+``` {r methods, child = 'ms_3_methods.Rmd'}
+```
+
+-----
+
+``` {r references, child = 'ms_4_refs.Rmd'}
+```
+
+
+<!--
+| Figure  |  w x h (px) | w x h (cm)  | char # |
+| :------ |     ------: |     ------: |------: |
+| 1 A - C | 2102 x 1536 | 17.8 x 13.0 |   4680 |
+| caption |             |             |    367 | 
+| 2 A - B | 2102 x 1940 | 17.8 x 16.5 |   5940 |
+| caption |             |             |    934 | 
+|       3 | 1027 x  531 |  8.7 x  4.5 |    810 |
+| caption |             |             |    744 | 
+|       4 | 1346 x  590 | 11.4 x  5.0 |   1800 |
+| caption |             |             |    870 | 
+|  total  |             |             |  16145 |
+-->

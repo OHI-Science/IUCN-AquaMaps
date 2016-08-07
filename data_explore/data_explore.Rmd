@@ -58,22 +58,23 @@ spp_all_file <- file.path(dir_data, 'spp_all.csv')
 spp_all <- read_csv(spp_all_file) 
 
 iucn_file <- file.path(dir_data, 'spp_iucn.csv')
-spp_iucn <- read.csv(iucn_file, stringsAsFactors = FALSE) 
+spp_iucn <- read_csv(iucn_file) 
 
 message('Getting IUCN maps list')
 iucn_maps_file <- file.path(dir_data, 'spp_iucn_maps.csv')
-spp_iucn_maps <- read.csv(iucn_maps_file, stringsAsFactors = FALSE) %>%
+spp_iucn_maps <- read_csv(iucn_maps_file) %>%
   filter(spp_group != 'hagfishes') %>%           ### not from IUCN...
   filter(sciname %in% spp_iucn$sciname)   ### ditch freshwater spp
 
-spp_am_file <- file.path(dir_data, 'spp_am.csv')
-spp_am <- read_csv(spp_am_file)
 
 ```
 
 ``` {r breakdown by taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
 
-sciname_lookup <- read.csv(file.path(dir_data, 'sciname_lookups/spp_iucn_scinames.csv'), stringsAsFactors = FALSE)
+sciname_lookup <- read_csv(file.path(dir_data, 'sciname_lookups/spp_iucn_scinames.csv'))
+
+spp_am_file <- file.path(dir_data, 'spp_am.csv')
+spp_am <- read_csv(spp_am_file)
 
 spp_am <- spp_am %>%
   left_join(read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2015/csv/speciesoccursum.csv')) %>% 
@@ -96,10 +97,10 @@ taxa_iucn_all <- iucn_maps_class[!duplicated(iucn_maps_class$sciname), ] %>%
             p_iucn_class_all  = round((n_iucn_class_all/first(n_iucn_tot) * 100), 2))
 
 taxa_iucn_solo <- iucn_maps_class[!duplicated(iucn_maps_class$sciname), ] %>%
-  filter(!is.na(class)) %>% ### don't count the unknowns
+  filter(!is.na(class)) %>%                 ### don't count the unknowns
   filter(!sciname %in% spp_am$sciname) %>%  ### filter list to IUCN only
   mutate(class = str_to_title(class),
-         n_iucn_solo = n()) %>%       ### length of IUCN only list
+         n_iucn_solo = n()) %>%             ### length of IUCN only list
   group_by(class) %>%
   summarize(n_iucn_class_solo = n(),
             p_iucn_class_solo = round((n_iucn_class_solo/first(n_iucn_solo) * 100), 2))
@@ -130,29 +131,8 @@ taxa_both <- spp_am %>%
   summarize(n_class_both = n(),
             p_class_both = round(n_class_both/first(n_both_tot) * 100, 2))
 
-taxa_am_all_assessed <- spp_am %>%
-  filter(!class %in% c('Not assigned', 'null') & !is.na(class)) %>%
-  filter(sciname %in% spp_iucn$sciname) %>%
-  mutate(class = str_to_title(class),
-         n_am_tot = n()) %>%        ### length of whole AM maps list
-  group_by(class) %>%
-  summarize(n_am_class_ass  = n(),
-            p_am_class_ass  = round((n_am_class_ass/first(n_am_tot) * 100), 2))
-
-taxa_am_solo_assessed <- spp_am %>%
-  filter(!class %in% c('Not assigned', 'null') & !is.na(class)) %>%
-  filter(sciname %in% spp_iucn$sciname) %>%
-  filter(!sciname %in% iucn_maps_class$sciname) %>%  ### filter list to AM only
-  mutate(class = str_to_title(class),
-         n_am_solo = n()) %>%       ### length of AM only list
-  group_by(class) %>%
-  summarize(n_am_class_solo_ass = n(),
-            p_am_class_solo_ass = round((n_am_class_solo_ass/first(n_am_solo) * 100), 2))
-
 taxa_df <- taxa_am_all %>%
   full_join(taxa_am_solo,   by = 'class') %>%
-  full_join(taxa_am_all_assessed,  by = 'class') %>%
-  full_join(taxa_am_solo_assessed, by = 'class') %>%
   full_join(taxa_iucn_all,  by = 'class') %>%
   full_join(taxa_iucn_solo, by = 'class') %>%
   full_join(taxa_both,      by = 'class') %>%
@@ -168,22 +148,12 @@ taxa_df <- taxa_am_all %>%
 ``` {r plot bar charts by taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
 ### bar charts comparing number of species in each class for each data set
 
-# taxa_df_long1 <- taxa_df %>%
-#   dplyr::select(class, AquaMaps = n_am_class_all, IUCN = n_iucn_class_all, Both = n_class_both) %>%
-#   gather(dataset, n_spp, AquaMaps:Both)
-# bar_taxa1 <- ggplot(taxa_df_long1, aes(x = class, y = n_spp)) +
-#   ggtheme_plot + 
-#   geom_bar(stat = 'identity') +
-#   facet_grid(dataset ~ ., scales = 'free_y') +
-#   theme(axis.text.x = element_text(angle = 75, hjust = 1))
-# print(bar_taxa1)
-
 #library(colorspace)
 #hclvec <- heat_hcl(3); colvec <- c('AquaMaps' = hclvec[1], 'Both' = hclvec[2], 'IUCN' = hclvec[3])
 #colvec <- c('AquaMaps' = '#1b9e77', 'Both' = '#565080', 'IUCN' = '#d95f02')
 colvec <- c('AquaMaps' = '#76A94C', 'Both' = '#e18258', 'IUCN' = '#9168a9')
 
-taxa_df_long2 <- taxa_df %>%
+taxa_df_long <- taxa_df %>%
   dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
   gather(dataset, n_spp, AquaMaps:Both) %>%
   group_by(class) %>%
@@ -192,10 +162,10 @@ taxa_df_long2 <- taxa_df %>%
          dataset = factor(dataset, levels = c('AquaMaps', 'Both', 'IUCN'), ordered = TRUE)) %>%
   arrange(desc(dataset))
 
-bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) +
+bar_taxa <- ggplot(taxa_df_long, aes(x = class, y = percent, fill = dataset)) +
   ggtheme_plot + 
   theme(panel.grid.major.x = element_blank()) +
-  geom_bar(stat = 'identity', alpha = .8) +
+  geom_bar(stat = 'identity', alpha = .9) +
   scale_fill_manual(values = colvec) +
   geom_text(aes(label = sprintf('n = %s', n_total), y = 102), 
             size = 2, 
@@ -210,32 +180,9 @@ bar_taxa2 <- ggplot(taxa_df_long2, aes(x = class, y = percent, fill = dataset)) 
        y = 'Percent of mapped species',
        fill = 'Dataset')
 
-print(bar_taxa2)
+print(bar_taxa)
 ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
        width = 17.8, height = 7, units = 'cm', dpi = 600)
-
-# taxa_df_long3 <- taxa_df %>%
-#   dplyr::select(class, AquaMaps = n_am_class_solo_ass, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
-#   gather(dataset, n_spp, AquaMaps:Both) %>%
-#   group_by(class) %>%
-#   mutate(n_total = sum(n_spp, na.rm = TRUE),
-#          percent = n_spp/n_total * 100)
-#
-# bar_taxa3 <- ggplot(taxa_df_long3, aes(x = class, y = percent, fill = dataset)) +
-#   ggtheme_plot + 
-#   geom_bar(stat = 'identity', alpha = .5) +
-#   scale_fill_manual(values = c('AquaMaps' = 'red', 'Both' = 'mediumorchid', 'IUCN' = 'blue')) +
-#   geom_text(aes(label = sprintf('n = %s', n_total), y = 3), 
-#             #size = 3, 
-#             angle = 90, hjust = 0, color = 'grey30') +
-#   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
-#   scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
-#   labs(# title = 'Species maps by taxonomic class, Red List-assessed only',
-#        x = 'Class', 
-#        y = 'Percent of assessed mapped species')
-# print(bar_taxa3)
-# ggsave(filename = file.path(dir_fig, 'si_bar_by_taxa_assessed.tif'), device = 'tiff', 
-#        width = 17.8, height = 6, units = 'cm', dpi = 600)
 
 ```
 
@@ -259,77 +206,68 @@ scatter_quadplot <- ggplot(spp_list %>%
                              transform(popn_category = reorder(popn_category, category_score)),
                            aes(x = area_ratio, 
                                y = sm_perc)) + #, 
- #                               size = lg_area_pct,
- #                              color = popn_category)) + 
   ggtheme_plot + 
   ### color the quadrant backgrounds:
-    annotate("rect", xmin = area_align_mean, xmax = 100, 
-                     ymin = dist_align_mean, ymax = 100, 
-             alpha = .3, 
-             fill= "#4dac26")  + 
-    annotate("rect", xmax = area_align_mean, xmin =   0, 
-                     ymin = dist_align_mean, ymax = 100, 
-             alpha = .3, 
-             fill= "#b8e186") + 
-    annotate("rect", xmin = area_align_mean, xmax = 100, 
-                     ymax = dist_align_mean, ymin =   0, 
-             alpha = .3, 
-             fill= "#f1b6da") + 
-    annotate("rect", xmax = area_align_mean, xmin =   0, 
-                     ymax = dist_align_mean, ymin =   0, 
-             alpha = .3, 
-             fill= "#d01c8b") + 
+  annotate("rect", xmin = area_align_mean, xmax = 100, ymin = dist_align_mean, ymax = 100, 
+           alpha = .3, fill= "#4dac26")  + 
+  annotate("rect", xmax = area_align_mean, xmin =   0, ymin = dist_align_mean, ymax = 100, 
+           alpha = .3, fill= "#b8e186") + 
+  annotate("rect", xmin = area_align_mean, xmax = 100, ymax = dist_align_mean, ymin =   0, 
+           alpha = .3, fill= "#f1b6da") + 
+  annotate("rect", xmax = area_align_mean, xmin =   0, ymax = dist_align_mean, ymin =   0, 
+           alpha = .3, fill= "#d01c8b")
+
+  ### plot the data points!
+scatter_quadplot <- scatter_quadplot +
   geom_point(color = '#4d4dac', alpha = .6)
 
-### Manage scales for color and size 
+  ### label the quadrants:
 scatter_quadplot <- scatter_quadplot +
-#   scale_colour_manual(values = c('LC' = 'green4', 
-#                                  'NT' = 'greenyellow', 
-#                                  'VU' = 'yellow', 
-#                                  'EN' = 'orange', 
-#                                  'CR' = 'orangered2',
-#                                  'DD' = 'grey30')) + 
-#   scale_size_continuous(limits = c(0, 100),
-#                         breaks = c( 0,    25,    50,    75,    100), 
-#                         labels = c('0%', '25%', '50%', '75%', '100%')) + 
-  scale_x_continuous(expand = c(0, 0), 
-                     limits = c(0, 102),
+  annotate("rect", xmin = 82, xmax = 98, ymin = 85, ymax = 91, 
+           alpha = .7, fill= 'white')  + 
+  annotate("rect", xmax = 24, xmin =  2, ymin = 85, ymax = 91, 
+           alpha = .7, fill= "white") + 
+  annotate("rect", xmin = 82, xmax = 98, ymax =  9, ymin = 15, 
+           alpha = .7, fill= "white") + 
+  annotate("rect", xmax = 20, xmin =  2, ymax =  9, ymin = 15, 
+           alpha = .7, fill= "white") +
+  annotate("text", x = 96, y = 88, hjust = 1, vjust = .5, size = 3, color = 'grey20', 
+           fontface = 'bold.italic', label = "Well-aligned") + 
+  annotate("text", x =  4, y = 88, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Distribution-aligned") + 
+  annotate("text", x = 96, y = 12, hjust = 1, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Area-aligned") + 
+  annotate("text", x =  4, y = 12, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Poorly aligned")
+
+### Manage axis scales 
+scatter_quadplot <- scatter_quadplot +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 102),
                      breaks = c(seq(0, 100, 25)),
                      labels = c('0%', '25%', '50%', '75%', '100%')) +
-  scale_y_continuous(expand = c(0, 0),
-                     limits = c(0, 103),
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 103),
                      breaks = c(seq(0, 100, 25)),
                      labels = c('0%', '25%', '50%', '75%', '100%'))
 
   
 ### here are mean labels:
 scatter_quadplot <- scatter_quadplot +
-  annotate(geom = 'text',
-           x = area_align_mean, y = 5,
-           hjust = 0, vjust = 0,
-           color = 'grey30', 
-           size = 2,
+  annotate(geom = 'text', x = area_align_mean, y = 5,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
            fontface = 'bold.italic', angle = 90,
            label = sprintf('Mean = %s%%', round(area_align_mean, 1))) +
-  annotate(geom = 'text',
-           x = 5, y = dist_align_mean,
-           hjust = 0, vjust = 0,
-           color = 'grey30', 
-           size = 2,
+  annotate(geom = 'text', x = 5, y = dist_align_mean,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
            fontface = 'bold.italic', angle = 0,
            label = sprintf('Mean = %s%%', round(dist_align_mean, 1)))
   
-
 scatter_quadplot <- scatter_quadplot +
   labs(x = bquote('Area ratio '*alpha['ext']*' (%)'), 
-       y = bquote('Distribution alignment '*alpha['dist']*' (%)')) #, 
-#       title = 'Distribution alignment vs Extent alignment',
-#       size = '% ocean range',
- #      color = 'Extinction\nRisk') 
+       y = bquote('Distribution alignment '*alpha['dist']*' (%)'))
 
 # print(scatter_quadplot)
 
-ggsave(file.path(dir_fig, 'scatter_quadmap_norisk.png'),
+ggsave(file.path(dir_fig, 'scatter_quadmap.png'),
        width = 17.8, height = 9, units = 'cm', dpi = 600)
 
 ```
@@ -389,15 +327,17 @@ spp_gp_quadrants <- spp_gp_q1 %>%
          pct_quad = ifelse(is.na(pct_quad), 0, pct_quad))
 
 
+quad_names <- data.frame('quad' = c('q1', 'q2', 'q3', 'q4'),
+                         'quad_name' = factor(c('well-matched', 'dist-matched', 
+                                               'area-matched', 'poorly matched'),
+                                             ordered = TRUE))
+
 spp_gp_quadrants <- spp_gp_quadrants %>%
   left_join(spp_gp_quadrants %>% 
               filter(quad == 'q1') %>%
               dplyr::select(spp_group_text, pct_q1 = pct_quad),
             by = 'spp_group_text') %>%
-  mutate(quad = str_replace(quad, 'q1', 'q1 well-matched'),
-         quad = str_replace(quad, 'q2', 'q2 dist-matched'),
-         quad = str_replace(quad, 'q3', 'q3 area-matched'),
-         quad = str_replace(quad, 'q4', 'q4 poorly matched'))
+  left_join(quad_names, by = 'quad')
 
 ### Plot the bar chart
 barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>% 
@@ -406,14 +346,11 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
   ggtheme_plot + 
   theme(panel.grid.major.y = element_blank()) +
   geom_bar(stat = 'count', alpha = .8) +
-  scale_fill_manual(values = c('q1 well-matched'   = '#4dac26', 
-                               'q2 dist-matched'   = '#b8e186', 
-                               'q3 area-matched'   = '#f1b6da', 
-                               'q4 poorly matched' = '#d01c8b')) +
-#   scale_fill_manual(values = c('q1 well-matched'   = 'green4', 
-#                                'q2 dist-matched'   = 'greenyellow', 
-#                                'q3 area-matched'   = 'orange', 
-#                                'q4 poorly matched' = 'orangered2')) +
+  scale_fill_manual(values = c('q1'   = '#4dac26', 
+                               'q2'   = '#b8e186', 
+                               'q3'   = '#f1b6da', 
+                               'q4' = '#d01c8b'),
+                    labels = levels(quad_names)) +
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 1.1),
                      breaks = c(0, .25, .5, .75, 1.0),
@@ -424,7 +361,6 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
   coord_flip() +
   labs(x = 'Taxonomic Group', 
        y = 'Percent of species by quadrant', 
-#       title = 'Taxonomic group by quadrant',
        fill = 'Alignment')
 
 # print(barchart_spp_gp_quads)
@@ -589,30 +525,5 @@ write_csv(spp_quads_occ, file.path(dir_data, 'spp_quads_occ.csv'))
 
 ```
   
------
-
-# Obsolete plots; not evaluated
-
-* bar chart: number of spp per group
-* scatter plot: area compare IUCN vs AM, including log plot and plot by species group
-* rangemap: Chromis alpha
-
-``` {r child = 'data_explore_pt1.Rmd', eval = FALSE}
-```
-
------
-
-* percent overlap vs total area exploration
-
-``` {r, child = 'data_explore_pt2.Rmd', eval = FALSE}
-```
-
------
-
-* Multiple species maps per quadrant
-
-``` {r child = 'data_explore_pt3.Rmd', eval = FALSE}
-```
-
 -----
 
