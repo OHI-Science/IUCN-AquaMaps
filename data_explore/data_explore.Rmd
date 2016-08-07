@@ -201,11 +201,22 @@ ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'),
 area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
 dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
 
+### define windows for labels
+q1 <- c('x1' = 84, 'x2' = 98, 'y1' = 92.5, 'y2' = 97.5)
+q2 <- c('x1' =  2, 'x2' = 22, 'y1' = 92.5, 'y2' = 97.5)
+q3 <- c('x1' = 84, 'x2' = 98, 'y1' =  2.5, 'y2' = 7.5)
+q4 <- c('x1' =  2, 'x2' = 18, 'y1' =  2.5, 'y2' = 7.5)
+
+spp_list_labs <- spp_list %>%
+  rename(x = area_ratio, y = sm_perc) %>%
+  mutate(fade = FALSE,
+         fade = ifelse((x > q1[1] & x < q1[2] & y > q1[3] & y < q1[4]), TRUE, fade),
+         fade = ifelse((x > q2[1] & x < q2[2] & y > q2[3] & y < q2[4]), TRUE, fade),
+         fade = ifelse((x > q3[1] & x < q3[2] & y > q3[3] & y < q3[4]), TRUE, fade),
+         fade = ifelse((x > q4[1] & x < q4[2] & y > q4[3] & y < q4[4]), TRUE, fade))
+
 ### mongo plot time
-scatter_quadplot <- ggplot(spp_list %>% 
-                             transform(popn_category = reorder(popn_category, category_score)),
-                           aes(x = area_ratio, 
-                               y = sm_perc)) + #, 
+scatter_quadplot <- ggplot(spp_list_labs, aes(x = x, y = y)) +
   ggtheme_plot + 
   ### color the quadrant backgrounds:
   annotate("rect", xmin = area_align_mean, xmax = 100, ymin = dist_align_mean, ymax = 100, 
@@ -219,25 +230,19 @@ scatter_quadplot <- ggplot(spp_list %>%
 
   ### plot the data points!
 scatter_quadplot <- scatter_quadplot +
-  geom_point(color = '#4d4dac', alpha = .6)
+  # geom_point(color = 'white',   alpha = 1) + ### blank behind the points
+  geom_point(color = '#4d4dac', aes(alpha = fade), show.legend = FALSE) +
+  scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = .7))
 
   ### label the quadrants:
 scatter_quadplot <- scatter_quadplot +
-  annotate("rect", xmin = 82, xmax = 98, ymin = 85, ymax = 91, 
-           alpha = .7, fill= 'white')  + 
-  annotate("rect", xmax = 24, xmin =  2, ymin = 85, ymax = 91, 
-           alpha = .7, fill= "white") + 
-  annotate("rect", xmin = 82, xmax = 98, ymax =  9, ymin = 15, 
-           alpha = .7, fill= "white") + 
-  annotate("rect", xmax = 20, xmin =  2, ymax =  9, ymin = 15, 
-           alpha = .7, fill= "white") +
-  annotate("text", x = 96, y = 88, hjust = 1, vjust = .5, size = 3, color = 'grey20', 
+  annotate("text", x = 97, y = 95, hjust = 1, vjust = .5, size = 3, color = 'grey20', 
            fontface = 'bold.italic', label = "Well-aligned") + 
-  annotate("text", x =  4, y = 88, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+  annotate("text", x =  3, y = 95, hjust = 0, vjust = .5, size = 3, color = 'grey20',
            fontface = 'bold.italic', label = "Distribution-aligned") + 
-  annotate("text", x = 96, y = 12, hjust = 1, vjust = .5, size = 3, color = 'grey20',
+  annotate("text", x = 97, y =  5, hjust = 1, vjust = .5, size = 3, color = 'grey20',
            fontface = 'bold.italic', label = "Area-aligned") + 
-  annotate("text", x =  4, y = 12, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+  annotate("text", x =  3, y =  5, hjust = 0, vjust = .5, size = 3, color = 'grey20',
            fontface = 'bold.italic', label = "Poorly aligned")
 
 ### Manage axis scales 

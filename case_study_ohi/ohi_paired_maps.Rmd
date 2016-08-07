@@ -8,7 +8,6 @@ output: html_document
 # Libraries and Paths
 
 library(ggplot2)
-library(maps)
 library(readr)
 library(raster)
 library(rgdal)
@@ -33,38 +32,23 @@ source('data_explore_fxns.R')
 ```
 
 
-```{r get_bathy_raster, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+```{r get_spp_cells, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
-### get shapefile
-### rasterize to half-degree grid; or raster::extract
 
-if(!file.exists(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))) {
-    
-  poly_bath <- readOGR(dsn = file.path(path.expand(dir_git), 'coralmaps/ne_10m_bathymetry_K_200'), 
-                       layer = 'ne_10m_bathymetry_K_200', 
-                       stringsAsFactors = TRUE)
-  
-  ### LOICZID cell ID numbers - used in plotting rasters
-  loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
-  loiczid_raster       <- raster(loiczid_raster_file)
-  names(loiczid_raster) <- 'loiczid'
-  
-  bath_list <- raster::extract(loiczid_raster, poly_bath, 
-                             weights = TRUE, normalizeWeights = FALSE,
-                             progress = 'text')
-  bath_df <- lapply(bath_list, function(x) {as.data.frame(x)}) %>%
-    bind_rows() %>%
-    rename(loiczid = value) %>%
-    group_by(loiczid) %>%
-    summarize(weight = sum(weight))
-  
-  ### generate raster?
-  bath_raster <- subs(loiczid_raster, bath_df, by = 'loiczid', which = 'weight')
-  values(bath_raster)[values(bath_raster) > 5] <- NA
-  
-  write_csv(bath_df, file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))
-  ### probably want to filter to just 100% 200m+
-}
+loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+loiczid_raster       <- raster(loiczid_raster_file)
+names(loiczid_raster) <- 'loiczid'
+
+paired_maps_file <- file.path(dir_data, 'spp_list_w_area_trimmed.csv')
+spp_map_pairs <- read_csv(paired_maps_file) %>%
+  filter(!is.na(popn_category)) %>% ### filter out unassessed species
+  filter(!is.na(sm_perc))           ### filter out NA maps
+
+# load IUCN cells, filter to just paired maps
+spp_cells_iucn
+
+# load AM cells, filter to just paired maps; include column of prob of occur
+
 
 ```
 
