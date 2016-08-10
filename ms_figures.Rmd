@@ -138,9 +138,10 @@ Arguments
 
 ### Figure 3
 
-<a id = 'fig4'></a>
+<a id = 'fig3'></a>
 
 ![Absolute change in SPP score](figures/fig3_boxplot_abs_diff.png)
+![Absolute change in SPP score](figures/fig3_boxplot2_abs_diff.png)
 
 
 ### Figure 4

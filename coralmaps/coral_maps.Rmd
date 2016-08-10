@@ -73,7 +73,7 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))) {
 ### find spp depth limits
 ### focus just on corals?
 
-if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_depth_raw.csv'))) {
+if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_depth.csv'))) {
   
   library(jsonlite)
   api_key <- 'fb71ae836f415f04f41176f6d30c4a9e4cea620d46b9e5021bf2fb142ea51bf5'
@@ -118,18 +118,21 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_depth_raw.csv'))) {
     select(iucn_sid = species_id, habitat) %>%
     mutate(paired_map = (iucn_sid %in% spp_map_pairs$iucn_sid))
 
-spp_depth1 <- spp_depth %>%
-  mutate(depth = str_extract_all(habitat, '\\d++(?:\\.\\d++)?(?=\\s*+(?:m))')) %>%
-  unnest(depth) %>%
-  group_by(iucn_sid) %>%
-  summarize(max_depth = max(as.integer(depth)))
-
-spp_depth <- spp_depth %>%
-  left_join(spp_depth1, by = 'iucn_sid') %>%
-  mutate(shallow_str = str_detect(tolower(habitat), 'shallow'),
-         shallow = max_depth <= 200 | shallow_str)
-
-write_csv(spp_depth, file.path(dir_git, 'coralmaps', 'coral_spp_depth.csv'))
+  spp_depth1 <- spp_depth %>%
+    mutate(depth = str_extract_all(habitat, '\\d++(?:\\.\\d++)?(?=\\s*+(?:m))')) %>%
+    unnest(depth) %>%
+    group_by(iucn_sid) %>%
+    summarize(max_depth = max(as.integer(depth)))
+  
+  spp_depth <- spp_depth %>%
+    left_join(spp_depth1, by = 'iucn_sid') %>%
+    mutate(shallow_str = str_detect(tolower(habitat), 'shallow'),
+           shallow = max_depth <= 200 | shallow_str)
+  
+  write_csv(spp_depth, file.path(dir_git, 'coralmaps', 'coral_spp_depth.csv'))
+  
+} else 
+  spp_depth <- read_csv(file.path(dir_git, 'coralmaps', 'coral_spp_depth.csv'))
 
 summary(spp_depth)
  #    iucn_sid        habitat          paired_map        max_depth      shallow_str     shallow       
@@ -357,18 +360,41 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))) {
 
 ``` {r}
 
-spp_coralmaps <- read_csv(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))
+spp_coralmaps <- read_csv(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv')) %>% 
+                      mutate(loss_ratio = 100 * area_iucn_clipped/area_iucn_raw)
 
+spp_small_effect <- spp_coralmaps %>%
+  filter(loss_ratio > 80) 
+### only five with such small effects; one of those did not change at all.
+
+summary(spp_coralmaps$loss_ratio)
+  #  Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  # 23.80   52.89   55.48   56.33   60.59  100.00 
+
+hist(spp_coralmaps$loss_ratio)
 ### check raw iucn_area vs clipped - looks proportional; scaling factor due to difference in area calcs?
+
 scatterplot1 <- ggplot(spp_coralmaps, aes(x = area_iucn_raw, y = area_iucn_clipped)) +
   geom_point() +
   geom_abline(color = 'red')
 scatterplot1
 
-### rough recalcs
-### assume that by removing the deep cells, we will not remove cells that are
-### included in AquaMaps, since AquaMaps already filters by depth.  This means
-### the overlap area will not be affected.
+violplot1 <- ggplot(spp_coralmaps, aes(x = 'sm_range_raw', y = loss_ratio)) +
+  ggtheme_plot +
+  geom_violin(fill = 'grey80', alpha = .5,
+              draw_quantiles = c(.25, .5, .75)) +
+  geom_point(position = position_jitter(w = .3), 
+             color = '#4d4dac', alpha = .5) +
+  geom_violin(fill = NA, draw_quantiles = c(.25, .5, .75)) +
+  geom_hline(color = 'grey30', yintercept = 100) +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_x_discrete(labels = element_blank()) +
+  theme(axis.title.x = element_blank()) +
+  labs(y = 'IUCN coral range: (<= 200 m) / (total)')
+print(scatterplot1)
+
+
+### recalc areas and overlaps
 iucn_coral_fixed <- spp_coralmaps %>%
   gather(dist, perc, c(sm_perc_raw, sm_perc_clipped)) %>%
   gather(area, ratio, c(area_ratio_raw, area_ratio_clipped)) %>%
@@ -377,6 +403,9 @@ iucn_coral_fixed <- spp_coralmaps %>%
   mutate(method = ifelse(str_detect(dist, 'clip'), '200 m clip', 'original'))
 
 source(file.path(dir_git, 'data_explore/data_explore_fxns.R'))
+
+break_nums <- seq(0, 100, 20)
+
 clipped_quads <- ggplot(iucn_coral_fixed %>%
                       filter(!iucn_sid %in% (iucn_coral_fixed %>% 
                                                filter(perc > 100) %>% 
@@ -392,19 +421,23 @@ clipped_quads <- ggplot(iucn_coral_fixed %>%
            alpha = .3, fill= "#f1b6da") +
   annotate("rect", xmax = 54.5, xmin =   0, ymax = 63, ymin =   0,
            alpha = .3, fill= "#d01c8b") +
-  scale_x_continuous(expand = c(0, 0), limits = c(0, 102),
-                     breaks = c(seq(0, 100, 25)),
-                     labels = c('0%', '25%', '50%', '75%', '100%')) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 103),
-                     breaks = c(seq(0, 100, 25)),
-                     labels = c('0%', '25%', '50%', '75%', '100%')) +
+  ### add grid lines
+  geom_vline(xintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
+  geom_hline(yintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
+  
+  scale_x_continuous(expand = c(0, 0), limits = c(-1, 101),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(-1, 101),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums)) +
 
   geom_line(color = 'grey50', size = .25, alpha = .3) +
-  # geom_point(color = 'grey80', size = 2, alpha = 1) + ### blank behind points
-  geom_point(aes(color = method), size = 2, alpha = .7) +
-  scale_color_manual(values = c('original' = '#4d4dac', '200 m clip' = '#00cc00')) +
-  labs(x = 'Area ratio (smaller/larger)',
-       y = 'Distribtion (%smaller in larger)')
+  geom_point(aes(color = method, size = method), alpha = 1) +
+  scale_color_manual(values = c('original' = 'grey60', '200 m clip' = 'black')) +
+  scale_size_manual(values = c('original' = .25, '200 m clip' = .25)) +
+    labs(x = bquote('Area ratio '*alpha['ext']*' (%)'), 
+         y = bquote('Distribution alignment '*alpha['dist']*' (%)'))
 
 print(clipped_quads)
 

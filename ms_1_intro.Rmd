@@ -26,5 +26,8 @@ To understand the implications of differences between the AquaMaps and IUCN data
 
 It seems fair to assume that range predictions from each dataset would be more closely aligned for well-understood species.  For the `r format(n_spp_both, big.mark = ',')` species (`r p_both_all`% of total) mapped in both datasets, we examine how well the maps align, determine several issues that lead to misalignment between predicted species distributions, and suggest methods to improve confidence in species range predictions. 
 
-We then reexamine two recent marine biodiversity studies - an assessment of the status of global biodiversity within the Ocean Health Index [@halpern_index_2012; @halpern_patterns_2015] and a global analysis of gaps in protection afforded by marine protected areas (MPAs) [@klein_shortfalls_2015] - as case studies to explore the implications of prioritizing one data set over the other.  The results highlight possible consequences of different data use decisions on our understanding of marine biodiversity status and protection.
+We then reexamine two recent marine biodiversity studies - an assessment of the status of global biodiversity within the Ocean Health Index (OHI) [@halpern_index_2012; @halpern_patterns_2015] and a global analysis of gaps in protection afforded by marine protected areas (MPAs) [@klein_shortfalls_2015] - as case studies to explore the implications of prioritizing one data set over the other.  The results highlight possible consequences of different data use decisions on our understanding of marine biodiversity status and protection.
 
+___we are not recommending one data set as better than the other!___
+
+___acknowledge or debunk other global data sets - e.g. SAUP?___

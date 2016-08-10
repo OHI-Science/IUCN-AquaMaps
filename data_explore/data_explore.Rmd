@@ -162,10 +162,13 @@ taxa_df_long <- taxa_df %>%
          dataset = factor(dataset, levels = c('AquaMaps', 'Both', 'IUCN'), ordered = TRUE)) %>%
   arrange(desc(dataset))
 
+break_nums <- seq(0, 100, 20)
+
 bar_taxa <- ggplot(taxa_df_long, aes(x = class, y = percent, fill = dataset)) +
   ggtheme_plot + 
   theme(panel.grid.major.x = element_blank()) +
-  geom_bar(stat = 'identity', alpha = .9) +
+  geom_bar(stat = 'identity', alpha = 1) +
+  geom_hline(yintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
   scale_fill_manual(values = colvec) +
   geom_text(aes(label = sprintf('n = %s', n_total), y = 102), 
             size = 2, 
@@ -173,8 +176,8 @@ bar_taxa <- ggplot(taxa_df_long, aes(x = class, y = percent, fill = dataset)) +
   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 130),
-                     breaks = c(0, 25, 50, 75, 100),
-                     labels = c('0%', '25%', '50%', '75%', '100%')) + 
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums)) + 
   labs(# title = 'Species maps by taxonomic class',
        x = 'Class', 
        y = 'Percent of mapped species',
@@ -187,6 +190,96 @@ ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'),
 ```
 
 ![](../figures/bar_by_taxa_all.png)
+
+``` {r plot bar-line charts by taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
+### bar charts comparing number of species in each class for each data set
+
+#library(colorspace)
+#hclvec <- heat_hcl(3); colvec <- c('AquaMaps' = hclvec[1], 'Both' = hclvec[2], 'IUCN' = hclvec[3])
+#colvec <- c('AquaMaps' = '#1b9e77', 'Both' = '#565080', 'IUCN' = '#d95f02')
+colvec <- c('AquaMaps' = '#76A94C', 'Both' = '#e18258', 'IUCN' = '#9168a9')
+
+taxa_df1 <- taxa_df %>%
+  dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
+  mutate(AquaMaps = ifelse(is.na(AquaMaps), 0, AquaMaps),
+         IUCN     = ifelse(is.na(IUCN),     0, IUCN),
+         Both     = ifelse(is.na(Both),     0, Both),
+         n_total  = AquaMaps + IUCN + Both,
+         IUCN_end = 100 * (IUCN + Both)/n_total,
+         IUCN_start = 0,
+         AquaMaps_end   = 100,
+         AquaMaps_start = 100 * (n_total - AquaMaps - Both)/n_total,
+         Both_end = AquaMaps_start,
+         Both_start = IUCN_end) %>%
+  gather(key = dataset,  value = start, ends_with('start')) %>%
+  gather(key = dataset2, value = end, ends_with('end')) %>%
+  mutate(dataset = str_replace(dataset, '_start', ''),
+         dataset2 = str_replace(dataset2, '_end', '')) %>%
+  filter(dataset == dataset2) %>%
+  select(-dataset2)
+
+taxa_all_df <- taxa_df1 %>%
+  group_by(dataset) %>%
+  summarize(class = 'Total',
+            AquaMaps_total = sum(AquaMaps) + sum(Both),
+            IUCN_total = sum(IUCN) + sum(Both),
+            n_total  = sum(n_total),
+            IUCN_end = 100 * IUCN_total/n_total,
+            IUCN_start = 0,
+            AquaMaps_end   = 100,
+            AquaMaps_start = 100 * (n_total - AquaMaps_total)/n_total,
+            Both_end = AquaMaps_start,
+            Both_start = IUCN_end) %>%
+  select(-dataset) %>% distinct() %>%
+  gather(key = dataset,  value = start, ends_with('start')) %>%
+  gather(key = dataset2, value = end, ends_with('end')) %>%
+  mutate(dataset = str_replace(dataset, '_start', ''),
+         dataset2 = str_replace(dataset2, '_end', '')) %>%
+  filter(dataset == dataset2) %>%
+  select(-dataset2, -AquaMaps_total, -IUCN_total)
+
+taxa_df2 <- taxa_all_df %>%
+  bind_rows(taxa_all_df %>%
+              mutate(class = ' ',
+                     start = 0,
+                     end   = 0,
+                     n_total = NA)) %>%
+  bind_rows(taxa_df1 %>%
+              select(-IUCN, -AquaMaps, -Both)) %>%
+  mutate(class = factor(class, levels = unique(.$class), ordered = TRUE),
+         n_label = ifelse(!is.na(n_total), paste0('n = ', n_total), ''))
+
+break_nums <- seq(0, 100, 20)
+
+dodge <- position_dodge(width = 0.1)
+
+bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
+  ggtheme_plot + 
+  theme(panel.grid.major.x = element_blank()) +
+  geom_linerange(aes(ymin = start, ymax = end, size = dataset),
+                 position = position_dodge(width = 0.5)) +
+  scale_size_manual(values = c('IUCN' = .25, 'AquaMaps' = .25, 'Both' = 2.5)) +
+  scale_color_manual(values = c('IUCN' = 'black', 'AquaMaps' = 'grey60', 'Both' = 'black')) +
+  geom_text(aes(label = n_label, y = 102),
+            size = 2,
+            angle = 90, hjust = 0, color = 'grey30') +
+  theme(axis.text.x = element_text(angle = 75, hjust = 1)) +
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(0, 130),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums)) +
+  labs(# title = 'Species maps by taxonomic class',
+       x = 'Class',
+       y = 'Percent of mapped species',
+       fill = 'Dataset')
+
+print(bar_taxa)
+ggsave(filename = file.path(dir_fig, 'bar2_by_taxa_all.png'), 
+       width = 17.8, height = 7, units = 'cm', dpi = 600)
+
+```
+
+![](../figures/bar2_by_taxa_all.png)
 
 ``` {r, child = 'data_explore_global_maps.Rmd', echo = FALSE, message = FALSE, eval = TRUE}
 ```
@@ -215,6 +308,8 @@ spp_list_labs <- spp_list %>%
          fade = ifelse((x > q3[1] & x < q3[2] & y > q3[3] & y < q3[4]), TRUE, fade),
          fade = ifelse((x > q4[1] & x < q4[2] & y > q4[3] & y < q4[4]), TRUE, fade))
 
+break_nums <- seq(0, 100, 20)
+
 ### mongo plot time
 scatter_quadplot <- ggplot(spp_list_labs, aes(x = x, y = y)) +
   ggtheme_plot + 
@@ -226,15 +321,25 @@ scatter_quadplot <- ggplot(spp_list_labs, aes(x = x, y = y)) +
   annotate("rect", xmin = area_align_mean, xmax = 100, ymax = dist_align_mean, ymin =   0, 
            alpha = .3, fill= "#f1b6da") + 
   annotate("rect", xmax = area_align_mean, xmin =   0, ymax = dist_align_mean, ymin =   0, 
-           alpha = .3, fill= "#d01c8b")
+           alpha = .3, fill= "#d01c8b") +
+  ### add grid lines
+  geom_vline(xintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
+  geom_hline(yintercept = break_nums, size = 0.25, color = 'white', alpha = .5)
 
-  ### plot the data points!
+
+### plot the data points!
 scatter_quadplot <- scatter_quadplot +
-  # geom_point(color = 'white',   alpha = 1) + ### blank behind the points
-  geom_point(color = '#4d4dac', aes(alpha = fade), show.legend = FALSE) +
-  scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = .7))
+  # geom_point(color = '#4d4dac', aes(alpha = fade), show.legend = FALSE) +
+  # geom_point(data = spp_list_labs %>%
+  #              filter(str_detect(spp_group_text, 'Corals')),
+  #            color = 'red', aes(alpha = fade), 
+  #            shape = 4, stroke = .5, 
+  #            size = 1, show.legend = FALSE) +
+  # scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = 1)) +
+  geom_point(color = 'black', aes(alpha = fade), size = .1, show.legend = FALSE) +
+  scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = 1))
 
-  ### label the quadrants:
+### label the quadrants:
 scatter_quadplot <- scatter_quadplot +
   annotate("text", x = 97, y = 95, hjust = 1, vjust = .5, size = 3, color = 'grey20', 
            fontface = 'bold.italic', label = "Well-aligned") + 
@@ -247,14 +352,13 @@ scatter_quadplot <- scatter_quadplot +
 
 ### Manage axis scales 
 scatter_quadplot <- scatter_quadplot +
-  scale_x_continuous(expand = c(0, 0), limits = c(0, 102),
-                     breaks = c(seq(0, 100, 25)),
-                     labels = c('0%', '25%', '50%', '75%', '100%')) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 103),
-                     breaks = c(seq(0, 100, 25)),
-                     labels = c('0%', '25%', '50%', '75%', '100%'))
+  scale_x_continuous(expand = c(0, 0), limits = c(-1, 101),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(-1, 101),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums))
 
-  
 ### here are mean labels:
 scatter_quadplot <- scatter_quadplot +
   annotate(geom = 'text', x = area_align_mean, y = 5,
@@ -334,7 +438,7 @@ spp_gp_quadrants <- spp_gp_q1 %>%
 
 quad_names <- data.frame('quad' = c('q1', 'q2', 'q3', 'q4'),
                          'quad_name' = factor(c('well-matched', 'dist-matched', 
-                                               'area-matched', 'poorly matched'),
+                                                'area-matched', 'poorly matched'),
                                              ordered = TRUE))
 
 spp_gp_quadrants <- spp_gp_quadrants %>%
@@ -350,17 +454,23 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
                                 aes(x = spp_group_text, fill = quad, weight = pct_quad)) +
   ggtheme_plot + 
   theme(panel.grid.major.y = element_blank()) +
-  geom_bar(stat = 'count', alpha = .8) +
-  scale_fill_manual(values = c('q1'   = '#4dac26', 
-                               'q2'   = '#b8e186', 
-                               'q3'   = '#f1b6da', 
-                               'q4' = '#d01c8b'),
-                    labels = levels(quad_names)) +
+  geom_bar(stat = 'count', alpha = 1) +
+  scale_fill_manual(values = c('q4' = '#d01c8b', 
+                               'q3' = '#f1b6da', 
+                               'q2' = '#b8e186',
+                               'q1' = '#4dac26'),
+                    labels = quad_names$quad_name) +
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 1.1),
-                     breaks = c(0, .25, .5, .75, 1.0),
-                     labels = c('0%', '25%', '50%', '75%', '100%')) +
-  geom_text(aes(label = sprintf('n = %s', n_spp), y = 1.01), hjust = 0, 
+                     breaks = break_nums/100,
+                     labels = sprintf('%s%%', break_nums)) + 
+  ### add grid lines; horizontal but then get flipped
+  geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
+  ### add text
+  geom_text(# data = spp_gp_quadrants %>%
+              # select(spp_group_text, n_spp) %>%
+              # distinct(),
+            aes(label = sprintf('n = %s', n_spp), y = 1.01), hjust = 0, 
             size = 2, 
             color = 'grey30') +
   coord_flip() +
@@ -434,15 +544,18 @@ barchart_spp_risk_quads <- ggplot(spp_risk_quadrants1 %>%
                                 aes(x = popn_category, fill = quad, weight = pct_quad)) +
   ggtheme_plot + 
   theme(panel.grid.major.y = element_blank()) +
-  geom_bar(stat = 'count', alpha = .8) +
+  geom_bar(stat = 'count', alpha = 1) +
   scale_fill_manual(values = c('q1 well-matched'   = '#4dac26', 
                                'q2 dist-matched'   = '#b8e186', 
                                'q3 area-matched'   = '#f1b6da', 
                                'q4 poorly matched' = '#d01c8b')) +
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 1.1),
-                     breaks = c(0, .25, .5, .75, 1.0),
-                     labels = c('0%', '25%', '50%', '75%', '100%')) +
+                     breaks = break_nums/100,
+                     labels = sprintf('%s%%', break_nums)) + 
+  ### add grid lines
+  geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
+  ### add text
   geom_text(aes(label = sprintf('n = %s', n_tot_cat), y = 1.01), hjust = 0, 
             size = 2, 
             color = 'grey30') +

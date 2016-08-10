@@ -86,7 +86,7 @@ Several steps to this:
 
 ``` {r load_rasters}
 
-dir_rast <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters')
+dir_rast <- file.path(dir_anx, 'vAM_IUCN/mpa_rasters')
 rast_mpa_mar_file <- file.path(dir_rast, 'rast_mpa_mar_i-iv.tif')
 # rast_mpa_mar_file <- file.path(dir_rast, 'wdpa_all_mar_klein_i-iv.tif')
 rast_mar_file <- file.path(dir_rast, 'rast_marine.tif')
