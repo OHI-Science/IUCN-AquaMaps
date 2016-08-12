@@ -25,8 +25,7 @@ dir_anx <- file.path(dir_M, 'git-annex/globalprep/spp_ico')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
 
-if(basename(getwd()) != 'data_explore') setwd('data_explore')
-source('data_explore_fxns.R')
+source(file.path(dir_git, 'data_explore/data_explore_fxns.R'))
 ### When knitting this, it automatically sets WD to be this directory...
 ### the 'setwd()' is there for running by chunk
 ```
@@ -148,18 +147,19 @@ summary(spp_depth)
 
 nrow(spp_depth %>% filter(max_depth > 100))
 # [1] 5
-### of 562 species, only 5 are listed as occurring below 100 m; none are below 200 m
+### of 562 species, only 5 are listed as occurring below 100 m; none are below 200 m.
+### NOTE: Many of these 562 species have no maps in IUCN; they are mapped in AquaMaps though.
 
 spp_depth_na <- spp_depth %>%
   filter(is.na(shallow))
 
-### 17 species (of 396) have no depth information; one is listed as being dredged from 13 fathoms (~ 25 m)
+### 18 species (of 562) have no depth information; one is listed as being dredged from 13 fathoms (~ 25 m)
 ```
 
 ``` {r extract_IUCN_cells_for_coral_pairs}
 
 bath_df <-  read_csv(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'), col_types = 'dd') %>%
-  filter(weight >= 1) %>%
+  filter(weight >= 1) %>% ### cell must be 100% within the deep polygon to count as deep
   mutate(deep = 1) %>%
   select(-weight)
 
@@ -177,7 +177,8 @@ coral_cells_iucn <- lapply(coral_files, read_csv) %>%
   mutate(deep = ifelse(is.na(deep), 0, deep))
 
 write_csv(coral_cells_iucn, file.path(dir_git, 'coralmaps', 'coral_cells_iucn.csv'))
-
+length(unique(coral_cells_iucn$iucn_sid))
+### NOTE: only 473 coral species with IUCN maps
 ```
 
 ``` {r calc_areas_for_iucn_corals}
@@ -185,7 +186,8 @@ write_csv(coral_cells_iucn, file.path(dir_git, 'coralmaps', 'coral_cells_iucn.cs
 ### read hcaf to get areas; left join to coral_cells_iucn
 ### group_by iucn_sid and depth, summarize area (deep and shallow)
 ### group_by iucn_sid, summarize total area
-coral_cells_iucn <- read_csv(file.path(dir_git, 'coralmaps', 'coral_cells_iucn.csv'))
+coral_cells_iucn <- read_csv(file.path(dir_git, 'coralmaps', 'coral_cells_iucn.csv')) %>%
+  mutate(deep = ifelse(deep == 1, 'deep', 'shallow'))
 
 hcaf <- read_csv(file.path(dir_anx, '../_raw_data/aquamaps/d2015/csv/hcaf_truncated.csv')) %>%
   select(loiczid, cellarea, oceanarea)
@@ -193,12 +195,13 @@ hcaf <- read_csv(file.path(dir_anx, '../_raw_data/aquamaps/d2015/csv/hcaf_trunca
 iucn_coral_areas <- coral_cells_iucn %>%
   left_join(hcaf, by = 'loiczid') %>%
   group_by(iucn_sid, deep) %>%
-  summarize(deeparea = sum(oceanarea)) %>%
+  summarize(area = sum(oceanarea)) %>%
   group_by(iucn_sid) %>%
-  mutate(totarea = sum(deeparea),
-         shallow_pct = (totarea - deeparea)/totarea) %>%
-  arrange(desc(deep)) %>%
-  .[!duplicated(.$iucn_sid), ]
+  mutate(totarea = sum(area),
+         pct_area = area/totarea) %>%
+  filter(deep == 'shallow') %>%
+  rename(shallow_pct = pct_area) %>%
+  mutate(deep_pct = 1 - shallow_pct)
 
 ### get species list
 data_file <- file.path(dir_data, 'spp_list_w_area_trimmed.csv')
@@ -221,8 +224,7 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))) {
   
   ### get species list
   coral_cells_iucn_shallow <- read_csv(file.path(dir_git, 'coralmaps', 'coral_cells_iucn.csv')) %>%
-    filter(deep == 0) %>%
-    mutate(prop_area = 1)
+    filter(deep == 0)
   
   spp_coralmaps <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv')) %>%
     filter(iucn_sid %in% coral_cells_iucn_shallow$iucn_sid) %>%
@@ -360,23 +362,25 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))) {
   
   write_csv(spp_coralmaps, file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))
 }
+
 ```
 
 ``` {r generate_area_plots}
 
 spp_coral_clip <- read_csv(file.path(dir_git, 'coralmaps', 'iucn_coral_areas.csv')) %>%
-  select(iucn_sid, shallow_pct, totarea, deeparea) %>%
-  mutate(shallow_pct = 100 * shallow_pct)
+  select(iucn_sid, shallow_pct, deep_pct, totarea, shallow_area = area) %>%
+  mutate(shallow_pct = 100 * shallow_pct,
+         deep_pct    = 100 * deep_pct)
 
 spp_small_effect <- spp_coral_clip %>%
   filter(shallow_pct > 80) 
-### only five with such small effects; one of those did not change at all.
+### only four out of 481 with such small effects; one of those did not change at all.
 
 summary(spp_coral_clip$shallow_pct)
-  #  Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  # 23.80   52.89   55.48   56.33   60.59  100.00 
+  # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  # 22.40   48.20   51.71   52.37   56.68  100.00 
 
-scatterplot1 <- ggplot(spp_coral_clip, aes(x = totalarea, y = deeparea)) +
+scatterplot1 <- ggplot(spp_coral_clip, aes(x = totarea, y = shallow_area)) +
   geom_point(size = 0.25, color = 'black') +
   geom_abline(color = 'red')
 scatterplot1
@@ -401,17 +405,15 @@ violplot1 <- ggplot(spp_coral_clip, aes(x = 'sm_range_raw', y = shallow_pct)) +
   labs(y = 'IUCN coral range: (<= 200 m) / (total)')
 print(violplot1)
 
+### for area plot, arrange from highest shallow pct to lowest (best to worst)
+spp_coral_clip <- spp_coral_clip %>%
+  arrange(desc(shallow_pct))
+
+spp_coral_clip$l_to_h <- c(1:nrow(spp_coral_clip))
 
 spp_coral_clip2 <- spp_coral_clip %>%
-  select(iucn_sid, shallow = shallow_pct) %>%
-  arrange(desc(shallow))
-
-spp_coral_clip2$l_to_h <- c(1:nrow(spp_coral_clip))
-
-spp_coral_clip2 <- spp_coral_clip2 %>%
-  mutate(deep = 100 - shallow) %>%
-  gather(depth, pct_value, c(shallow, deep)) %>%
-  mutate(depth = ifelse(depth == 'shallow', '0 - 200 m', '200 m +'))
+  gather(depth, pct_value, c(shallow_pct, deep_pct)) %>%
+  mutate(depth = ifelse(depth == 'shallow_pct', '0 - 200 m', '200 m +'))
 
 break_nums <- seq(0, 100, 20)
 coral_area_plot <- ggplot(spp_coral_clip2, aes(x = l_to_h, y = pct_value, fill = depth)) +
@@ -421,7 +423,8 @@ coral_area_plot <- ggplot(spp_coral_clip2, aes(x = l_to_h, y = pct_value, fill =
   geom_area() +
   scale_fill_manual(values = c('0 - 200 m' = 'grey90', '200 m +' = 'grey10')) +
   geom_hline(yintercept = break_nums, color = 'white', size = .25) +
-  scale_y_continuous(limits = c(0, 100), breaks = break_nums,
+  scale_y_continuous(# limits = c(0, 100), ### why is this causing a vertical line?
+                     breaks = break_nums,
                      labels = paste0(break_nums, '%')) +
   # scale_x_discrete(labels = element_blank()) +
   # theme(axis.title.x = element_blank()) +
@@ -446,10 +449,9 @@ iucn_coral_fixed <- spp_coralmaps %>%
   gather(dist, perc, c(sm_perc_raw, sm_perc_shallow)) %>%
   gather(area, ratio, c(area_ratio_raw, area_ratio_shallow)) %>%
   filter(!(str_detect(dist, 'raw') & !(str_detect(area, 'raw')))) %>%
-  filter(!(str_detect(dist, 'clip') & !(str_detect(area, 'clip')))) %>%
-  mutate(method = ifelse(str_detect(dist, 'clip'), '200 m clip', 'original'))
+  filter(!(str_detect(dist, 'shallow') & !(str_detect(area, 'shallow')))) %>%
+  mutate(method = ifelse(str_detect(dist, 'shallow'), '200 m clip', 'original'))
 
-source(file.path(dir_git, 'data_explore/data_explore_fxns.R'))
 
 break_nums <- seq(0, 100, 20)
 
