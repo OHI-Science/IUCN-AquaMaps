@@ -8,7 +8,6 @@ output: html_document
 # Libraries and Paths
 
 library(ggplot2)
-library(maps)
 library(readr)
 library(raster)
 library(rgdal)
@@ -45,7 +44,7 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))) {
                        stringsAsFactors = TRUE)
   
   ### LOICZID cell ID numbers - used in plotting rasters
-  loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+  loiczid_raster_file  <- file.path(dir_git, 'shiny_am_iucn/data/loiczid_raster.tif')
   loiczid_raster       <- raster(loiczid_raster_file)
   names(loiczid_raster) <- 'loiczid'
   
@@ -62,7 +61,10 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))) {
   bath_raster <- subs(loiczid_raster, bath_df, by = 'loiczid', which = 'weight')
   values(bath_raster)[values(bath_raster) > 5] <- NA
   
+  writeRaster(bath_raster, file.path(dir_git, 'coralmaps', 'bathy_cells.tif'))
+  
   write_csv(bath_df, file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))
+  # bath_df <- read_csv(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'), col_types = 'dd')
   ### probably want to filter to just 100% 200m+
 }
 
@@ -161,6 +163,8 @@ bath_df <-  read_csv(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'), col_typ
   mutate(deep = 1) %>%
   select(-weight)
 
+spp_depth <- read_csv(file.path(dir_git, 'coralmaps', 'coral_spp_depth.csv'))
+
 ### load iucn spp_cells
 coral_files <- list.files(file.path(dir_anx, 'v2016', 'iucn_intersections'), 
                           pattern = 'CORAL*.*',
@@ -168,7 +172,7 @@ coral_files <- list.files(file.path(dir_anx, 'v2016', 'iucn_intersections'),
 coral_cells_iucn <- lapply(coral_files, read_csv) %>%
   bind_rows() %>%
   select(iucn_sid, loiczid = LOICZID) %>%
-  filter(iucn_sid %in% spp_depth$iucn_sid[spp_depth$paired_map]) %>%
+  # filter(iucn_sid %in% spp_depth$iucn_sid[spp_depth$paired_map]) %>%
   left_join(bath_df, by = 'loiczid') %>%
   mutate(deep = ifelse(is.na(deep), 0, deep))
 
@@ -198,7 +202,7 @@ iucn_coral_areas <- coral_cells_iucn %>%
 
 ### get species list
 data_file <- file.path(dir_data, 'spp_list_w_area_trimmed.csv')
-spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE) %>%
+spp_map_pairs <- read_csv(data_file) %>%
   filter(!is.na(popn_category)) %>%   ### filter out unassessed species
   filter(!is.na(sm_perc))             ### filter out NA maps
 
@@ -216,12 +220,12 @@ write_csv(iucn_coral_areas, file.path(dir_git, 'coralmaps', 'iucn_coral_areas.cs
 if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))) {
   
   ### get species list
-  coral_cells_iucn_clipped <- read_csv(file.path(dir_git, 'coralmaps', 'coral_cells_iucn.csv')) %>%
+  coral_cells_iucn_shallow <- read_csv(file.path(dir_git, 'coralmaps', 'coral_cells_iucn.csv')) %>%
     filter(deep == 0) %>%
     mutate(prop_area = 1)
   
   spp_coralmaps <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv')) %>%
-    filter(iucn_sid %in% coral_cells_iucn_clipped$iucn_sid) %>%
+    filter(iucn_sid %in% coral_cells_iucn_shallow$iucn_sid) %>%
     select(am_sid, sciname, iucn_sid)
   
   ### copy aquamaps cells to local file, keeping only corals in the paired maps
@@ -234,7 +238,7 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))) {
   
   coral_cells_am <- read_csv(file.path(dir_git, 'coralmaps', 'coral_cells_am.csv'))
   
-  loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+  loiczid_raster_file  <- file.path(dir_git, 'shiny_am_iucn/data/loiczid_raster.tif')
   loiczid_raster       <- raster(loiczid_raster_file)
   names(loiczid_raster) <- 'loiczid'
   
@@ -260,7 +264,7 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))) {
     
     message(sprintf('%s. Processing species iucn_sid: %s \n   am_sid(s):  %s \n   sciname(s): %s', 
                     i, sid, paste(sids$am_sid, collapse = ', '), paste(sids$sciname, collapse = ' ')))
-    map_iucn <- get_spp_map(sid, coral_cells_iucn_clipped) %>%
+    map_iucn <- get_spp_map(sid, coral_cells_iucn_shallow) %>%
       mutate(iucn_pres = ifelse(area_iucn > 0, 1, 0))
     map_am   <- get_spp_map(sids$am_sid, coral_cells_am) %>%
       mutate(am_pres = ifelse(am_prob >= am_thresh, 1, 0))
@@ -346,8 +350,8 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))) {
   ### combine old and new area dataframes
   spp_coralmaps <- spp_coralmaps %>%
     select(iucn_sid, am_sid, sciname, area_am, 
-           area_iucn_clipped = area_iucn, area_overlap_clipped = area_overlap, 
-           sm_perc_clipped = sm_perc, sm_range_clipped = sm_range, area_ratio_clipped = area_ratio) %>%
+           area_iucn_shallow = area_iucn, area_overlap_shallow = area_overlap, 
+           sm_perc_shallow = sm_perc, sm_range_shallow = sm_range, area_ratio_shallow = area_ratio) %>%
     left_join(read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv')) %>%
                 select(am_sid, iucn_sid, 
                        area_iucn_raw = area_iucn, area_overlap_raw = area_overlap, 
@@ -358,46 +362,89 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))) {
 }
 ```
 
-``` {r}
+``` {r generate_area_plots}
 
-spp_coralmaps <- read_csv(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv')) %>% 
-                      mutate(loss_ratio = 100 * area_iucn_clipped/area_iucn_raw)
+spp_coral_clip <- read_csv(file.path(dir_git, 'coralmaps', 'iucn_coral_areas.csv')) %>%
+  select(iucn_sid, shallow_pct, totarea, deeparea) %>%
+  mutate(shallow_pct = 100 * shallow_pct)
 
-spp_small_effect <- spp_coralmaps %>%
-  filter(loss_ratio > 80) 
+spp_small_effect <- spp_coral_clip %>%
+  filter(shallow_pct > 80) 
 ### only five with such small effects; one of those did not change at all.
 
-summary(spp_coralmaps$loss_ratio)
+summary(spp_coral_clip$shallow_pct)
   #  Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
   # 23.80   52.89   55.48   56.33   60.59  100.00 
 
-hist(spp_coralmaps$loss_ratio)
-### check raw iucn_area vs clipped - looks proportional; scaling factor due to difference in area calcs?
-
-scatterplot1 <- ggplot(spp_coralmaps, aes(x = area_iucn_raw, y = area_iucn_clipped)) +
-  geom_point() +
+scatterplot1 <- ggplot(spp_coral_clip, aes(x = totalarea, y = deeparea)) +
+  geom_point(size = 0.25, color = 'black') +
   geom_abline(color = 'red')
 scatterplot1
 
-violplot1 <- ggplot(spp_coralmaps, aes(x = 'sm_range_raw', y = loss_ratio)) +
+violplot1 <- ggplot(spp_coral_clip, aes(x = 'sm_range_raw', y = shallow_pct)) +
   ggtheme_plot +
-  geom_violin(fill = 'grey80', alpha = .5,
-              draw_quantiles = c(.25, .5, .75)) +
-  geom_point(position = position_jitter(w = .3), 
-             color = '#4d4dac', alpha = .5) +
-  geom_violin(fill = NA, draw_quantiles = c(.25, .5, .75)) +
+  # geom_violin(fill = 'grey80', alpha = .5,
+  #             draw_quantiles = c(.25, .5, .75)) +
+  # geom_point(position = position_jitter(w = .3), 
+  #            size = 0.25,
+  #            color = 'black', alpha = 1) +
+  geom_violin(fill = NA, size = 0.1, weight = 0.5,
+              draw_quantiles = c(seq(.005, .05, .005), seq(.05, .95, .02), seq(.95, 1.0, .005)),
+              color = 'black') +
+  geom_violin(fill = NA, size = 1,
+              draw_quantiles = NULL,
+              color = 'white') +
   geom_hline(color = 'grey30', yintercept = 100) +
   scale_y_continuous(limits = c(0, 100)) +
   scale_x_discrete(labels = element_blank()) +
   theme(axis.title.x = element_blank()) +
   labs(y = 'IUCN coral range: (<= 200 m) / (total)')
-print(scatterplot1)
+print(violplot1)
 
+
+spp_coral_clip2 <- spp_coral_clip %>%
+  select(iucn_sid, shallow = shallow_pct) %>%
+  arrange(desc(shallow))
+
+spp_coral_clip2$l_to_h <- c(1:nrow(spp_coral_clip))
+
+spp_coral_clip2 <- spp_coral_clip2 %>%
+  mutate(deep = 100 - shallow) %>%
+  gather(depth, pct_value, c(shallow, deep)) %>%
+  mutate(depth = ifelse(depth == 'shallow', '0 - 200 m', '200 m +'))
+
+break_nums <- seq(0, 100, 20)
+coral_area_plot <- ggplot(spp_coral_clip2, aes(x = l_to_h, y = pct_value, fill = depth)) +
+  ggtheme_plot +
+  # geom_linerange(aes(ymin = kept_ratio, ymax = 100),
+  #                position = position_dodge(width = 0.5)) +
+  geom_area() +
+  scale_fill_manual(values = c('0 - 200 m' = 'grey90', '200 m +' = 'grey10')) +
+  geom_hline(yintercept = break_nums, color = 'white', size = .25) +
+  scale_y_continuous(limits = c(0, 100), breaks = break_nums,
+                     labels = paste0(break_nums, '%')) +
+  # scale_x_discrete(labels = element_blank()) +
+  # theme(axis.title.x = element_blank()) +
+  labs(y = 'IUCN % of coral range',
+       x = 'Count of coral species')
+print(coral_area_plot)
+
+ggsave(plot = coral_area_plot,
+       filename = file.path(dir_fig, 'coral_area_plot.png'), device = 'png',
+       width = 9, height = 5, units = 'cm', dpi = 600)
+
+
+```
+
+
+``` {r generate_coral_quadmap}
+
+spp_coralmaps <- read_csv(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))
 
 ### recalc areas and overlaps
 iucn_coral_fixed <- spp_coralmaps %>%
-  gather(dist, perc, c(sm_perc_raw, sm_perc_clipped)) %>%
-  gather(area, ratio, c(area_ratio_raw, area_ratio_clipped)) %>%
+  gather(dist, perc, c(sm_perc_raw, sm_perc_shallow)) %>%
+  gather(area, ratio, c(area_ratio_raw, area_ratio_shallow)) %>%
   filter(!(str_detect(dist, 'raw') & !(str_detect(area, 'raw')))) %>%
   filter(!(str_detect(dist, 'clip') & !(str_detect(area, 'clip')))) %>%
   mutate(method = ifelse(str_detect(dist, 'clip'), '200 m clip', 'original'))

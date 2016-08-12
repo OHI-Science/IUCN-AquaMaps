@@ -39,9 +39,9 @@ med_occ_q123 <- round(median(spp_quads_occ$mean_occ[spp_quads_occ$quad %in% c('q
 
 ```
 
-___Distribution alignment - overlap as proxy for common understanding; use Bayesian argument to show that these areas are high-confidence areas; area ratio as proxy for errors of commission/omission.  While we cannot know which dataset is closer to the "truth" we can make inferences based on expectations of EOO and AOO maps - is AquaMaps AOO?___
+___Distribution alignment - overlap as proxy for common understanding; these areas are high-confidence areas.  Area ratio as proxy for errors of commission/omission.  While we cannot know which dataset is closer to the "truth" we can make inferences based on expectations of EOO and AOO maps - is AquaMaps AOO?___
 
-_Distribution alignment - Bayesian description of higher confidence_
+_Distribution alignment - higher confidence when both datasets predict presence (or absence) in the same area_
 _Area ratio is defined as the ratio of the smaller range area to the larger range area.  This can provide insights into commission and omission errors: a large difference in areas implies a greater number of errors in one or both datasets.  While we cannot know which dataset is closer to representing the "truth" of each species' range, we can expect that IUCN (representing EOO) will introduce more commission errors, while AquaMaps (representing AOO) is likely to reduce these at the expense of introducing more omission errors._
 
 ___is this sufficiently described in methods? or revisit here?___ To explore differences in species distribution and range between the two datasets, we plotted the distribution alignment (how much of the smaller range falls within the larger range, i.e., where on the map) against the area alignment (ratio of smaller range area to larger range area, i.e., how much of the map) for each shared species (Fig. 2A). 

@@ -1,4 +1,4 @@
-iucn_sid,am_sid,sciname,area_am,area_iucn_clipped,area_overlap_clipped,sm_perc_clipped,sm_range_clipped,area_ratio_clipped,area_iucn_raw,area_overlap_raw,sm_perc_raw,sm_range_raw,area_ratio_raw
+iucn_sid,am_sid,sciname,area_am,area_iucn_shallow,area_overlap_shallow,sm_perc_shallow,sm_range_shallow,area_ratio_shallow,area_iucn_raw,area_overlap_raw,sm_perc_raw,sm_range_raw,area_ratio_raw
 132859,URM-Cn-5604,Oulastrea crispata,6143414.3,9610987.2,4591052.54933775,74.731,AM,63.921,14064717.7,4709103.03885052,76.653,AM,43.68
 132860,SLB-62998,Psammocora stellata,2432985.2,1961441.9,1213962.63921776,61.891,IUCN,80.619,4553046.9,1276849.5439565,52.481,AM,53.436
 132864,SLB-117548,Cycloseris costulata,5485177.6,11131017.3,4034441.85518605,73.552,AM,49.278,18474797.6,4170692.08300752,76.036,AM,29.69
