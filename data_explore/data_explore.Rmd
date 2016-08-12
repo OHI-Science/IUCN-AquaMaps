@@ -145,59 +145,52 @@ taxa_df <- taxa_am_all %>%
 #                              Both = n_class_both))
 ```
 
-``` {r plot bar charts by taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
-### bar charts comparing number of species in each class for each data set
-
-#library(colorspace)
-#hclvec <- heat_hcl(3); colvec <- c('AquaMaps' = hclvec[1], 'Both' = hclvec[2], 'IUCN' = hclvec[3])
-#colvec <- c('AquaMaps' = '#1b9e77', 'Both' = '#565080', 'IUCN' = '#d95f02')
-colvec <- c('AquaMaps' = '#76A94C', 'Both' = '#e18258', 'IUCN' = '#9168a9')
-
-taxa_df_long <- taxa_df %>%
-  dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
-  gather(dataset, n_spp, AquaMaps:Both) %>%
-  group_by(class) %>%
-  mutate(n_total = sum(n_spp, na.rm = TRUE),
-         percent = n_spp/n_total * 100,
-         dataset = factor(dataset, levels = c('AquaMaps', 'Both', 'IUCN'), ordered = TRUE)) %>%
-  arrange(desc(dataset))
-
-break_nums <- seq(0, 100, 20)
-
-bar_taxa <- ggplot(taxa_df_long, aes(x = class, y = percent, fill = dataset)) +
-  ggtheme_plot + 
-  theme(panel.grid.major.x = element_blank()) +
-  geom_bar(stat = 'identity', alpha = 1) +
-  geom_hline(yintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
-  scale_fill_manual(values = colvec) +
-  geom_text(aes(label = sprintf('n = %s', n_total), y = 102), 
-            size = 2, 
-            angle = 90, hjust = 0, color = 'grey30') +
-  theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
-  scale_y_continuous(expand = c(0, 0), 
-                     limits = c(0, 130),
-                     breaks = break_nums,
-                     labels = sprintf('%s%%', break_nums)) + 
-  labs(# title = 'Species maps by taxonomic class',
-       x = 'Class', 
-       y = 'Percent of mapped species',
-       fill = 'Dataset')
-
-print(bar_taxa)
-ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
-       width = 17.8, height = 7, units = 'cm', dpi = 600)
+``` {r plot_bar_charts_by_taxa_old, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE}
+# ### bar charts comparing number of species in each class for each data set
+# 
+# #library(colorspace)
+# #hclvec <- heat_hcl(3); colvec <- c('AquaMaps' = hclvec[1], 'Both' = hclvec[2], 'IUCN' = hclvec[3])
+# #colvec <- c('AquaMaps' = '#1b9e77', 'Both' = '#565080', 'IUCN' = '#d95f02')
+# colvec <- c('AquaMaps' = '#76A94C', 'Both' = '#e18258', 'IUCN' = '#9168a9')
+# 
+# taxa_df_long <- taxa_df %>%
+#   dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
+#   gather(dataset, n_spp, AquaMaps:Both) %>%
+#   group_by(class) %>%
+#   mutate(n_total = sum(n_spp, na.rm = TRUE),
+#          percent = n_spp/n_total * 100,
+#          dataset = factor(dataset, levels = c('AquaMaps', 'Both', 'IUCN'), ordered = TRUE)) %>%
+#   arrange(desc(dataset))
+# 
+# break_nums <- seq(0, 100, 20)
+# 
+# bar_taxa <- ggplot(taxa_df_long, aes(x = class, y = percent, fill = dataset)) +
+#   ggtheme_plot + 
+#   theme(panel.grid.major.x = element_blank()) +
+#   geom_bar(stat = 'identity', alpha = 1) +
+#   geom_hline(yintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
+#   scale_fill_manual(values = colvec) +
+#   geom_text(aes(label = sprintf('n = %s', n_total), y = 102), 
+#             size = 2, 
+#             angle = 90, hjust = 0, color = 'grey30') +
+#   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
+#   scale_y_continuous(expand = c(0, 0), 
+#                      limits = c(0, 130),
+#                      breaks = break_nums,
+#                      labels = sprintf('%s%%', break_nums)) + 
+#   labs(# title = 'Species maps by taxonomic class',
+#        x = 'Class', 
+#        y = 'Percent of mapped species',
+#        fill = 'Dataset')
+# 
+# print(bar_taxa)
+# ggsave(filename = file.path(dir_fig, 'fig1a_bar_by_taxa_all.png'), 
+#        width = 17.8, height = 7, units = 'cm', dpi = 600)
 
 ```
 
-![](../figures/bar_by_taxa_all.png)
-
-``` {r plot bar-line charts by taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
+``` {r plot_barline_charts_by_taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
 ### bar charts comparing number of species in each class for each data set
-
-#library(colorspace)
-#hclvec <- heat_hcl(3); colvec <- c('AquaMaps' = hclvec[1], 'Both' = hclvec[2], 'IUCN' = hclvec[3])
-#colvec <- c('AquaMaps' = '#1b9e77', 'Both' = '#565080', 'IUCN' = '#d95f02')
-colvec <- c('AquaMaps' = '#76A94C', 'Both' = '#e18258', 'IUCN' = '#9168a9')
 
 taxa_df1 <- taxa_df %>%
   dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
@@ -268,13 +261,12 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
                      limits = c(0, 130),
                      breaks = break_nums,
                      labels = sprintf('%s%%', break_nums)) +
-  labs(# title = 'Species maps by taxonomic class',
-       x = 'Class',
+  labs(x = 'Class',
        y = 'Percent of mapped species',
        fill = 'Dataset')
 
 print(bar_taxa)
-ggsave(filename = file.path(dir_fig, 'bar2_by_taxa_all.png'), 
+ggsave(filename = file.path(dir_fig, 'fig1a_bar_by_taxa_all.png'), 
        width = 17.8, height = 7, units = 'cm', dpi = 600)
 
 ```
@@ -376,7 +368,7 @@ scatter_quadplot <- scatter_quadplot +
 
 # print(scatter_quadplot)
 
-ggsave(file.path(dir_fig, 'scatter_quadmap.png'),
+ggsave(file.path(dir_fig, 'fig2a_scatter_quadmap.png'),
        width = 17.8, height = 9, units = 'cm', dpi = 600)
 
 ```
@@ -448,6 +440,8 @@ spp_gp_quadrants <- spp_gp_quadrants %>%
             by = 'spp_group_text') %>%
   left_join(quad_names, by = 'quad')
 
+break_nums <- seq(0, 100, 20)
+
 ### Plot the bar chart
 barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>% 
                                   transform(spp_group_text = reorder(spp_group_text, pct_q1)), 
@@ -478,9 +472,10 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
        y = 'Percent of species by quadrant', 
        fill = 'Alignment')
 
-# print(barchart_spp_gp_quads)
+print(barchart_spp_gp_quads)
+
 ggsave(plot = barchart_spp_gp_quads,
-       filename = file.path(dir_fig, 'barchart_spp_gp_quads.png'),
+       filename = file.path(dir_fig, 'fig2b_barchart_spp_gp_quads.png'),
        width = 17.8, height = 7, units = 'cm', dpi = 600)
 
 write_csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads.csv'))

@@ -1,15 +1,15 @@
 ---
 title: "Figures"
 output:
-  word_document: default
-  pdf_document:
-    number_sections: no
-    toc: no
   html_document:
     highlight: haddock
     number_sections: no
     theme: spacelab
     toc: no
+  pdf_document:
+    number_sections: no
+    toc: no
+  word_document: default
 ---
 
 ``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
@@ -129,6 +129,8 @@ Arguments
 
 ![](figures/fig1abc_am_iucn_maps.png)
 
+![Change in MPA coverage](figures/bar2_by_taxa_all.png)
+
 
 ### Fig. 2
 <a id = 'fig2'></a>
@@ -149,6 +151,12 @@ Arguments
 <a id = 'fig4'></a>
 
 ![Change in MPA coverage](figures/fig4_barchart_mpa_gap.png)
+
+### New figures - corals
+
+![Change in MPA coverage](figures/coral_area_plot.png)
+
+![Change in MPA coverage](figures/scatter_quadmap_corals.png)
 
 -----
 

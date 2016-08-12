@@ -416,20 +416,23 @@ spp_coral_clip2 <- spp_coral_clip %>%
   mutate(depth = ifelse(depth == 'shallow_pct', '0 - 200 m', '200 m +'))
 
 break_nums <- seq(0, 100, 20)
+num_spp <- max(spp_coral_clip2$l_to_h)
 coral_area_plot <- ggplot(spp_coral_clip2, aes(x = l_to_h, y = pct_value, fill = depth)) +
   ggtheme_plot +
-  # geom_linerange(aes(ymin = kept_ratio, ymax = 100),
-  #                position = position_dodge(width = 0.5)) +
-  geom_area() +
+  geom_area(show.legend = FALSE) +
   scale_fill_manual(values = c('0 - 200 m' = 'grey90', '200 m +' = 'grey10')) +
   geom_hline(yintercept = break_nums, color = 'white', size = .25) +
+  annotate("text", x = (num_spp - 10), y = 95, hjust = 1, vjust = .5, size = 3, color = 'white', 
+           fontface = 'bold.italic', label = "200 m and deeper") + 
+  annotate("text", x = 10, y = 5, hjust = 0, vjust = .5, size = 3, color = 'grey10', 
+           fontface = 'bold.italic', label = "0 - 200 m") + 
   scale_y_continuous(# limits = c(0, 100), ### why is this causing a vertical line?
                      breaks = break_nums,
                      labels = paste0(break_nums, '%')) +
-  # scale_x_discrete(labels = element_blank()) +
-  # theme(axis.title.x = element_blank()) +
+  scale_x_continuous(limits = c(0, num_spp), ### why is this causing a vertical line?
+                     breaks = c(seq(0, 400, 100), num_spp)) +
   labs(y = 'IUCN % of coral range',
-       x = 'Count of coral species')
+       x = 'Count of IUCN coral species maps')
 print(coral_area_plot)
 
 ggsave(plot = coral_area_plot,

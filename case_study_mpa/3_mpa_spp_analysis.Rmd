@@ -433,18 +433,23 @@ mpa_all_runs1 <- mpa_all_runs %>%
   mutate(p_cat = p_cat * 100) %>%
   arrange(cat)
 
+break_nums <- seq(0, 100, 20)
+
 ### Plot the bar chart
 barchart_mpa_gap <- ggplot(mpa_all_runs1, 
                            aes(x = trial, fill = cat, weight = p_cat)) +
   ggtheme_plot + 
   theme(panel.grid.major.y = element_blank()) +
-  geom_bar(stat = 'count', alpha = .8) +
+  geom_bar(stat = 'count', alpha = 1) +
   scale_fill_manual(values = c('>10%'  = '#4dac26', 
                                '5-10%' = '#b8e186', 
                                '2-5%'  = '#fbe5c5', 
                                '0-2%'  = '#f1b6da',
                                'gap'   = '#d01c8b')) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 125), breaks = c(seq(0, 100, 20))) +
+  ### add grid lines; horizontal but then get flipped
+  geom_hline(yintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 125), breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums)) + 
   geom_text(aes(label = sprintf('n = %s', n_trial), y = 101), hjust = 0, 
             size = 2, 
             color = 'grey30') +

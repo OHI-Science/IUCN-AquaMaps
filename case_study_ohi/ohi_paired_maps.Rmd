@@ -25,10 +25,8 @@ dir_anx <- file.path(dir_M, 'git-annex/globalprep/spp_ico')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
 
-if(basename(getwd()) != 'data_explore') setwd('data_explore')
-source('data_explore_fxns.R')
-### When knitting this, it automatically sets WD to be this directory...
-### the 'setwd()' is there for running by chunk
+source('~/github/IUCN-AquaMaps/data_explore/data_explore_fxns.R')
+
 ```
 
 
@@ -198,15 +196,15 @@ bplot_abs <- ggplot(data = status_df, aes(x = scenario, y = diff)) +
   theme(panel.grid.major = element_line(colour = 'grey90', size = .25),
         panel.grid.major.x = element_blank()) +
 
-#   theme(text = element_text(family = 'Helvetica', color = 'gray30', size = 12),
-#         plot.title = element_text(size = rel(1.5), hjust = 0, face = 'bold'),
-#         legend.position = 'none') +
   geom_hline(yintercept = 0, color = 'gray50', size = .5) +
   geom_violin(fill = 'grey80', alpha = .5,
+              scale = 'width',
               draw_quantiles = c(.25, .5, .75)) +
   geom_point(position = position_jitter(w = .3), 
-             color = '#4d4dac', alpha = .5) +
-  geom_violin(fill = NA, draw_quantiles = c(.25, .5, .75)) +
+             color = 'black', alpha = 1, size = 0.25) +
+  geom_violin(fill = NA, 
+              draw_quantiles = c(.25, .5, .75),
+              scale = 'width') +
   labs(x = 'Scenario',
        y = 'Change in SPP status') +
   scale_x_discrete(labels = c('1. AquaMaps \n(40% threshold)', 
@@ -214,9 +212,9 @@ bplot_abs <- ggplot(data = status_df, aes(x = scenario, y = diff)) +
                               '3. AquaMaps \n(40% -> no threshold)'))
 
 print(bplot_abs)
-ggsave(file.path(dir_fig, 'fig3_boxplot2_abs_diff.png'),
+ggsave(file.path(dir_fig, 'fig3a_boxplot_paired_maps.png'),
        height = 4.5, width = 8.7, units = 'cm', dpi = 600)
-ggsave(file.path(dir_fig, 'fig3_boxplot2_abs_diff.tif'), device = 'tiff',
+ggsave(file.path(dir_fig, 'fig3a_boxplot_paired_maps.tif'), device = 'tiff',
        height = 4.5, width = 8.7, units = 'cm', dpi = 600)
 
 ```
