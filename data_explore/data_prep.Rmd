@@ -217,7 +217,7 @@ iucn_spp_cells <- iucn_spp_cells_all %>%
   filter(presence != 5)
 ### length(unique(iucn_spp_cells$iucn_sid)) results in 2279 species found...
 ### some species with no cells reported.  2279 listed in the am v iucn file.
-write_csv(iucn_spp_cells, file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'))
+write_csv(iucn_spp_cells, file.path(dir_anx, 'vAM_IUCN/iucn_spp_cells_2015.csv'))
 
 message('Loading AquaMaps species to cell table.  This might take a few minutes.')
 am_spp_cells_all <- fread(file.path(dir_data_remote, 'aquamaps/v2015/csv/hcaf_sp_native_trunc.csv'), 
@@ -226,7 +226,7 @@ am_spp_cells <- am_spp_cells_all %>%
   rename(am_sid = speciesid, prob = probability) %>%
   filter(am_sid %in% spp_am_v_iucn$am_sid)
 ### length(unique(am_spp_cells$am_sid)) results in 2314 species found - great!
-write_csv(am_spp_cells, file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'))
+write_csv(am_spp_cells, file.path(dir_anx, 'vAM_IUCN/am_spp_cells_2015.csv'))
 
 ```
 
@@ -242,9 +242,9 @@ reload <- FALSE
 if (!file.exists(data_file) | reload) {
 
   if(!exists('am_spp_cells'))
-    am_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'))
+    am_spp_cells <- read_csv(file.path(dir_anx, 'vAM_IUCN/am_spp_cells_2015.csv'))
   if(!exists('iucn_spp_cells'))
-    iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'),
+    iucn_spp_cells <- read_csv(file.path(dir_anx, 'vAM_IUCN/iucn_spp_cells_2015.csv'),
                                col_types = 'cddddc')
   ### species info list - scinames, IUCN species ID, AM species ID, category etc
   spp_list_base <- read_csv(file.path(dir_data, 'spp_am_v_iucn.csv'))

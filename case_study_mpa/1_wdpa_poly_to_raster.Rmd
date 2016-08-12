@@ -152,7 +152,7 @@ hist(poly_mpa@data$STATUS_YR[poly_mpa@data$STATUS_YR > 0])
 summary(poly_mpa@data$STATUS_YR[poly_mpa@data$STATUS_YR > 0])
 
 ``` {r rasterize_that_shit}
-dir_rast <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters')
+dir_rast <- file.path(dir_anx, 'vAM_IUCN/mpa_rasters')
 
 ### Get source from WDPA_MPA data location
 src <- path.expand(file.path(dir_wdpa, paste(lyr_mpa, '.shp', sep = '')))
@@ -198,7 +198,7 @@ unlink(tmp_dst)
 ``` {r set_up_wdpa_mpa_polys_klein}
 
 ### import WDPA database polygons from saved .shp
-dir_rast <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters')
+dir_rast <- file.path(dir_anx, 'vAM_IUCN/mpa_rasters')
 dir_wdpa   <- file.path(dir_rast, 'WDPA2014_mar_klein')
 lyr_wdpa    <- 'wdpa_all_mar_klein'
 lyr_mpa     <- 'wdpa_all_mar_klein_i-iv'

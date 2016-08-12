@@ -12,8 +12,9 @@ ggtheme_basic <- theme(axis.ticks = element_blank(),
 ggtheme_plot <- ggtheme_basic + 
   theme(panel.border     = element_blank(),
         panel.grid.minor = element_blank(), 
-        panel.grid.major = element_line(colour = 'grey90'),
-        axis.line = element_line(colour = "grey30"))
+        # panel.grid.major = element_line(colour = 'grey90', size = .25),
+        panel.grid.major = element_blank(),
+        axis.line = element_line(colour = "grey30", size = .5))
 
   
 ### theme for species range maps - based on generic plot theme

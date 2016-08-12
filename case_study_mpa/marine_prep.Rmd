@@ -46,7 +46,7 @@ rast_marine_file <- file.path(dir_git, 'mpa_analysis/rast_marine.tif')
 reload <- FALSE
 if(reload == TRUE) {
 ### import OHI regions polygons, to determine spatially-marine areas
-  poly_marine_file <- file.path(dir_anx, 'explore_am_v_iucn/mpa_rasters/poly_marine1.shp')
+  poly_marine_file <- file.path(dir_anx, 'vAM_IUCN/mpa_rasters/poly_marine1.shp')
   if(!file.exists(poly_marine_file)) {
     dir_rgn   <- file.path(dir_N, 'git-annex/globalprep/spatial/v2015/data')
     lyr_rgn <- 'regions_gcs'
