@@ -1,0 +1,223 @@
+---
+title: 'Data Exploration: IUCN and AquaMaps'
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Libraries and Paths
+
+library(ggplot2)
+library(readr)
+library(raster)
+library(rgdal)
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+dir_M <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
+           'Darwin'  = '/Volumes/ohi',    ### connect (cmd-K) to smb://mazu/ohi
+           'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_M, 'git-annex/globalprep/spp_ico')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
+
+source('~/github/IUCN-AquaMaps/data_explore/data_explore_fxns.R')
+
+```
+
+
+```{r get_spp_cells, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+### get rgn_cells - local copy
+ohi_rgn_cells <- read_csv(file.path(dir_git, 'case_study_ohi/rgn_cells.csv'), 
+                          col_types = 'icdd_d')
+
+### get spp_info - git-annex original
+ohi_spp_info <- read_csv(file.path(dir_anx, 'v2016/int/spp_all_cleaned.csv')) %>%
+  filter(!is.na(cat_score))  %>% ### filter out unassessed and DD species
+  filter(!is.na(spatial_source)) ### filter out unmapped species
+
+### Load species cells; filter to species IDs in assessed species list and cell IDs in OHI regions
+am_spp_cells <- read_csv(file.path(dir_anx, 'v2016/int/am_cells_spp_prob0.csv')) %>%
+  filter(am_sid %in% ohi_spp_info$am_sid) %>%
+  filter(loiczid %in% ohi_rgn_cells$loiczid)
+
+iucn_spp_cells <- read_csv(file.path(dir_anx, 'v2016/int/iucn_cells_spp.csv'),
+                           col_types = 'cddddc') %>%
+  filter(presence != 5) %>%
+  filter(iucn_sid %in% ohi_spp_info$iucn_sid) %>%
+  filter(loiczid %in% ohi_rgn_cells$loiczid)
+
+### NOTE: by using the 2016 cell files we're also getting the BOTW species...
+### either mention in methods, or filter out!!!
+
+```
+
+``` {r calc_ohi_iucn_spp}
+
+### bind IUCN loiczid dataframe to species risk category dataframe
+iucn_spp_cells <- iucn_spp_cells %>%
+  left_join(ohi_spp_info %>% select(iucn_sid, cat_score),
+            by = 'iucn_sid')
+
+### group by loiczid, then summarize to find means (and counts)
+iucn_cell_sums <- iucn_spp_cells %>%
+  filter(!is.na(cat_score)) %>%
+  group_by(loiczid) %>%
+  summarize(mean_cat = mean(cat_score),
+            n_spp    = n())
+
+write_csv(iucn_cell_sums, file.path(dir_git, 'case_study_ohi/iucn_spp_cell_sums.csv'))
+
+### bind cells to regions dataframe and summarize
+iucn_rgn_sums <- iucn_cell_sums %>%
+  inner_join(ohi_rgn_cells,
+             by = 'loiczid') %>%
+  # mutate(rgn_area = cell_area * proportionArea,
+  #        area_weighted_mean_cat   = weighted_mean_cat   * rgn_area,
+  #        area_weighted_mean_trend = weighted_mean_trend * rgn_area) %>%
+  mutate(cell_area_weight = cell_area * n_spp * proportionArea,
+         area_weighted_mean_cat = mean_cat * cell_area_weight) %>%
+  arrange(loiczid)
+
+iucn_rgn_sums <- iucn_rgn_sums %>%
+  group_by(rgn_id) %>%
+  summarize(rgn_mean_cat = sum(area_weighted_mean_cat)/sum(cell_area_weight))
+
+iucn_rgn_sums <- iucn_rgn_sums %>%
+  mutate(status = 100 * ((1 - rgn_mean_cat) - 0.25) / 0.75)
+
+write_csv(iucn_rgn_sums, file.path(dir_git, 'case_study_ohi/iucn_spp_region_sums.csv'))
+
+```
+
+``` {r calc_ohi_am_spp}
+
+### bind IUCN loiczid dataframe to species risk category dataframe
+am_spp_cells <- am_spp_cells %>%
+  left_join(ohi_spp_info %>% select(am_sid, cat_score),
+            by = 'am_sid')
+
+### group by loiczid, then summarize to find means (and counts)
+am_cell_sums <- am_spp_cells %>%
+  filter(!is.na(cat_score)) %>%
+  group_by(loiczid) %>%
+  summarize(mean_cat = mean(cat_score),
+            n_spp    = n())
+
+write_csv(am_cell_sums, file.path(dir_git, 'case_study_ohi/am_spp_cell_sums.csv'))
+
+### bind cells to regions dataframe and summarize
+am_rgn_sums <- am_cell_sums %>%
+  inner_join(ohi_rgn_cells,
+             by = 'loiczid') %>%
+  # mutate(rgn_area = cell_area * proportionArea,
+  #        area_weighted_mean_cat   = weighted_mean_cat   * rgn_area,
+  #        area_weighted_mean_trend = weighted_mean_trend * rgn_area) %>%
+  mutate(cell_area_weight = cell_area * n_spp * proportionArea,
+         area_weighted_mean_cat = mean_cat   * cell_area_weight) %>%
+  arrange(loiczid)
+
+am_rgn_sums <- am_rgn_sums %>%
+  group_by(rgn_id) %>%
+  summarize(rgn_mean_cat = sum(area_weighted_mean_cat)/sum(cell_area_weight))
+
+am_rgn_sums <- am_rgn_sums %>%
+  mutate(status = 100 * ((1 - rgn_mean_cat) - 0.25) / 0.75)
+
+write_csv(am_rgn_sums, file.path(dir_git, 'case_study_ohi/am_spp_region_sums.csv'))
+
+```
+
+``` {r calc_ohi_both_spp}
+
+### DO THIS TO SANITY CHECK/SIMPLIFY IN SAME MANNER AS OTHERS???  REMOVE BOTW SPECIES???
+
+### bind IUCN loiczid dataframe to species risk category dataframe
+### Already done in above code chunk!
+# am_spp_cells <- am_spp_cells %>%
+#   left_join(ohi_spp_info %>% select(am_sid, cat_score = category_score),
+#             by = 'am_sid')
+
+ohi_am_maps <- ohi_spp_info %>%
+  filter(str_detect(spatial_source, 'am'))
+
+### group by loiczid, then summarize to find means (and counts)
+am_cell_sum <- am_spp_cells %>%
+  filter(!is.na(cat_score)) %>%
+  group_by(loiczid) %>%
+  summarize(mean_cat = mean(cat_score),
+            n_spp    = n())
+
+write_csv(am_cell_sum, file.path(dir_git, 'case_study_ohi/am_spp_cell_sum.csv'))
+
+### bind cells to regions dataframe and summarize
+am_rgn_sums <- am_cell_sum %>%
+  inner_join(ohi_rgn_cells,
+             by = 'loiczid') %>%
+  # mutate(rgn_area = cell_area * proportionArea,
+  #        area_weighted_mean_cat   = weighted_mean_cat   * rgn_area,
+  #        area_weighted_mean_trend = weighted_mean_trend * rgn_area) %>%
+  mutate(cell_area_weight = cell_area * n_spp * proportionArea,
+         area_weighted_mean_cat = mean_cat   * cell_area_weight) %>%
+  arrange(loiczid)
+
+am_rgn_sums <- am_rgn_sums %>%
+  group_by(rgn_id) %>%
+  summarize(rgn_mean_cat = sum(area_weighted_mean_cat)/sum(cell_area_weight))
+
+am_rgn_sums <- am_rgn_sums %>%
+  mutate(status = 100 * ((1 - rgn_mean_cat) - 0.25) / 0.75)
+
+write_csv(am_rgn_sums, file.path(dir_git, 'case_study_ohi/am_spp_region_sums.csv'))
+
+```
+
+``` {r create_violin_plots}
+dir_fig <- '~/github/IUCN-AquaMaps/figures'
+
+iucn_rgn_sums  <- read_csv(file.path(dir_git, 'case_study_ohi/iucn_spp_region_sums.csv'))
+am_rgn_sums    <- read_csv(file.path(dir_git, 'case_study_ohi/am_spp_region_sums.csv'))
+ohi_rgn_sums   <- read_csv(file.path('~/github/ohiprep/globalprep', 
+                                     'spp_ico/v2016/output/spp_status_global.csv'))
+
+status_df <- ohi_rgn_sums %>%
+  select(rgn_id, ohi_st = score) %>%
+  mutate(ohi_st = 100 * ohi_st) %>%
+  full_join(am_rgn_sums %>% select(rgn_id, am_st = status), by = 'rgn_id') %>%
+  full_join(iucn_rgn_sums %>% select(rgn_id, iucn_st = status), by = 'rgn_id') %>%
+  mutate(diff_am   = am_st - ohi_st ,
+         diff_iucn = iucn_st - ohi_st) %>%
+  gather(scenario, diff, diff_am:diff_iucn)
+  
+viol_plot <- ggplot(data = status_df, aes(x = scenario, y = diff)) +
+  ggtheme_plot + 
+  theme(panel.grid.major = element_line(colour = 'grey90', size = .25),
+        panel.grid.major.x = element_blank()) +
+
+  geom_hline(yintercept = 0, color = 'gray50', size = .5) +
+  geom_violin(fill = 'grey80', alpha = .5,
+              scale = 'width',
+              draw_quantiles = c(.25, .5, .75)) +
+  geom_point(position = position_jitter(w = .3), 
+             color = 'black', alpha = 1, size = 0.25) +
+  geom_violin(fill = NA, 
+              draw_quantiles = c(.25, .5, .75),
+              scale = 'width') +
+  labs(x = 'Scenario',
+       y = 'Change in SPP status') +
+  scale_x_discrete(labels = c('1. AquaMaps only', 
+                              '2. IUCN only'))
+
+print(viol_plot)
+
+ggsave(file.path(dir_fig, 'fig3a_violinplot_ohi_maps.png'),
+       height = 4.5, width = 8.7, units = 'cm', dpi = 600)
+# ggsave(file.path(dir_fig, 'fig3a_violinplot_ohi_maps.png'), device = 'tiff',
+#        height = 4.5, width = 8.7, units = 'cm', dpi = 600)
+
+```

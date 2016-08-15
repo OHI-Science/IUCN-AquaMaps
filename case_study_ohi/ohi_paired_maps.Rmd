@@ -173,7 +173,7 @@ write_csv(am_rgn_sums40, file.path(dir_git, 'case_study_ohi/am_paired_region_sum
 
 ```
 
-``` {r create_box_plots}
+``` {r create_violin_plots}
 dir_fig <- '~/github/IUCN-AquaMaps/figures'
 source(file.path(dir_git, 'data_explore/data_explore_fxns.R'))
 
@@ -212,9 +212,9 @@ bplot_abs <- ggplot(data = status_df, aes(x = scenario, y = diff)) +
                               '3. AquaMaps \n(40% -> no threshold)'))
 
 print(bplot_abs)
-ggsave(file.path(dir_fig, 'fig3a_boxplot_paired_maps.png'),
+ggsave(file.path(dir_fig, 'fig3a_violinplot_paired_maps.png'),
        height = 4.5, width = 8.7, units = 'cm', dpi = 600)
-ggsave(file.path(dir_fig, 'fig3a_boxplot_paired_maps.tif'), device = 'tiff',
+ggsave(file.path(dir_fig, 'fig3a_violinplot_paired_maps.tif'), device = 'tiff',
        height = 4.5, width = 8.7, units = 'cm', dpi = 600)
 
 ```
