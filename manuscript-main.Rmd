@@ -51,6 +51,8 @@ See also: http://www.pnascentral.org/html/pnas_length_estimate_instructions.html
 
 
 ``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = FALSE, message = FALSE, warning = FALSE)
 
 # library(ggplot2)
 # library(maps)
@@ -76,7 +78,7 @@ dir_fig  <- 'figures'
 
 ```
 
-``` {r load data, echo = FALSE, warning = FALSE, message = FALSE}
+``` {r load data}
 ### use data_explore.Rmd to create this file, if it does not yet exist.  This
 ### filters out presence = Extinct from IUCN cells.
 
@@ -100,7 +102,7 @@ spp_am <- read_csv(spp_am_file)
 
 ```
 
-``` {r calc species numbers, echo = FALSE}
+``` {r calc species numbers}
 n_spp_am     <- nrow(spp_am)
 n_spp_am_rev <- nrow(spp_am %>% filter(reviewed == 1))
 n_spp_iucn   <- length(unique(spp_iucn_maps$iucn_sid))
@@ -120,7 +122,7 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 ```
 -----
 
-``` {r abstract, child = 'ms_1_abst_sig.Rmd'}
+``` {r abstract, child = 'ms_0_abst_j_appl_ecol.Rmd'}
 ```
 
 <!--
@@ -132,12 +134,15 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 
 -----
 
-\\body
-
-``` {r intro, child = 'ms_2_intro.Rmd'}
+``` {r intro, child = 'ms_1_intro.Rmd'}
 ```
 
-``` {r results_discussion, child = 'ms_2a_res_disc.Rmd'}
+
+``` {r methods, child = 'ms_2_methods.Rmd'}
+```
+
+
+``` {r results_discussion, child = 'ms_3_res_disc.Rmd'}
 ```
 
 <!--
@@ -152,10 +157,6 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 -->
 
 
------
-
-``` {r methods, child = 'ms_3_methods.Rmd'}
-```
 
 -----
 
