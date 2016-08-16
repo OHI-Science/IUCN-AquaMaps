@@ -45,7 +45,7 @@ iucn_coral_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cell
   filter(sciname %in% spp_corals)
 
 ### LOICZID cell ID numbers - used in plotting rasters
-loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+loiczid_raster_file  <- file.path(dir_git, 'shiny_am_iucn/data/loiczid_raster.tif')
 loiczid_raster       <- raster(loiczid_raster_file)
 names(loiczid_raster) <- 'loiczid'
 

@@ -154,6 +154,15 @@ spp_depth_na <- spp_depth %>%
   filter(is.na(shallow))
 
 ### 18 species (of 562) have no depth information; one is listed as being dredged from 13 fathoms (~ 25 m)
+quantile(spp_depth$max_depth, seq(.9, 1, .01), na.rm = TRUE)
+ #   90%    91%    92%    93%    94%    95%    96%    97%    98%    99%   100% 
+ # 40.00  44.65  50.00  50.00  50.00  61.25  70.80  78.20  84.10 100.00 200.00 
+
+spp_d1 <- spp_depth %>% filter(iucn_sid %in% coral_cells_iucn$iucn_sid) ### mapped spp only
+quantile(spp_d1$max_depth, seq(.9, 1, .01), na.rm = TRUE)
+ #   90%    91%    92%    93%    94%    95%    96%    97%    98%    99%   100% 
+ # 40.00  45.00  50.00  50.00  50.00  54.60  70.00  75.56  82.12 100.00 152.00 
+
 ```
 
 ``` {r extract_IUCN_cells_for_coral_pairs}
@@ -436,7 +445,7 @@ coral_area_plot <- ggplot(spp_coral_clip2, aes(x = l_to_h, y = pct_value, fill =
 print(coral_area_plot)
 
 ggsave(plot = coral_area_plot,
-       filename = file.path(dir_fig, 'coral_area_plot.png'), device = 'png',
+       filename = file.path(dir_fig, 'fig3a_coral_area_plot.png'), device = 'png',
        width = 9, height = 5, units = 'cm', dpi = 600)
 
 
@@ -449,20 +458,22 @@ spp_coralmaps <- read_csv(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv')
 
 ### recalc areas and overlaps
 iucn_coral_fixed <- spp_coralmaps %>%
-  gather(dist, perc, c(sm_perc_raw, sm_perc_shallow)) %>%
-  gather(area, ratio, c(area_ratio_raw, area_ratio_shallow)) %>%
+  gather(dist, d_perc, c(sm_perc_raw, sm_perc_shallow)) %>%
+  gather(area, a_ratio, c(area_ratio_raw, area_ratio_shallow)) %>%
   filter(!(str_detect(dist, 'raw') & !(str_detect(area, 'raw')))) %>%
   filter(!(str_detect(dist, 'shallow') & !(str_detect(area, 'shallow')))) %>%
   mutate(method = ifelse(str_detect(dist, 'shallow'), '200 m clip', 'original'))
 
+write_csv(iucn_coral_fixed, file.path(dir_git, 'coralmaps', 'iucn_coral_fixed.csv'))
 
 break_nums <- seq(0, 100, 20)
 
+### Plot the new quad graph
 clipped_quads <- ggplot(iucn_coral_fixed %>%
                       filter(!iucn_sid %in% (iucn_coral_fixed %>% 
                                                filter(perc > 100) %>% 
                                                .$iucn_sid)),
-                    aes(x = ratio, y = perc, group = iucn_sid)) +
+                    aes(x = a_ratio, y = d_perc, group = iucn_sid)) +
   ggtheme_plot + 
   ### color the quadrant backgrounds:
   annotate("rect", xmin = 54.5, xmax = 100, ymin = 63, ymax = 100,
@@ -494,10 +505,82 @@ clipped_quads <- ggplot(iucn_coral_fixed %>%
 print(clipped_quads)
 
 ggsave(plot = clipped_quads,
-       filename = file.path(dir_fig, 'scatter_quadmap_corals.png'), device = 'png',
+       filename = file.path(dir_fig, 'fig3b_scatter_quadmap_corals.png'), device = 'png',
        width = 17.8, height = 9, units = 'cm', dpi = 600)
 
 
 ```
 
 
+``` {r examine_coral_quartiles, echo = FALSE, eval = TRUE}
+
+iucn_coral_fixed <- read_csv(file.path(dir_git, 'coralmaps', 'iucn_coral_fixed.csv'))
+
+### identify quads based on original breaks from data_explore.Rmd
+
+area_align_mean <- 54.53334
+dist_align_mean <- 62.98212
+
+# iucn_sid  am_sid  sciname  area_am  area_iucn_shallow  area_overlap_shallow  sm_range_shallow  area_iucn_raw
+# area_overlap_raw  sm_range_raw  dist  perc  area  ratio  method
+
+iucn_coral_quads <- iucn_coral_fixed %>%
+  select(iucn_sid, sciname, d_perc, a_ratio, method) %>% ### ditch am_sid, b/c duplicates
+  distinct() %>%
+  mutate(quad = 'q1',
+         quad = ifelse(a_ratio < area_align_mean  & d_perc >= dist_align_mean, 'q2', quad),
+         quad = ifelse(a_ratio >= area_align_mean & d_perc < dist_align_mean,  'q3', quad),
+         quad = ifelse(a_ratio < area_align_mean  & d_perc < dist_align_mean,  'q4', quad)) %>%
+  group_by(method) %>%
+  mutate(n_total = n()) %>%
+  group_by(method, quad) %>%
+  mutate(n_quad = n(),
+         pct_quad = n_quad/n_total) %>%
+  ungroup()
+
+quad_names <- data.frame('quad' = c('q1', 'q2', 'q3', 'q4'),
+                         'quad_name' = factor(c('well-matched', 'dist-matched', 
+                                                'area-matched', 'poorly matched'),
+                                             ordered = TRUE))
+
+iucn_coral_quads <- iucn_coral_quads %>%
+  left_join(quad_names, by = 'quad')
+
+write_csv(iucn_coral_quads, file.path(dir_git, 'coralmaps', 'iucn_coral_quads.csv'))
+
+break_nums <- seq(0, 100, 20)
+
+iucn_coral_quad_sum <- read_csv(file.path(dir_git, 'coralmaps', 'iucn_coral_quads.csv')) %>%
+  select(method, quad, quad_name, pct_quad) %>%
+  distinct()
+### Plot the bar chart
+barchart_coral_quads <- ggplot(iucn_coral_quad_sum, 
+                                aes(x = method, fill = quad, weight = pct_quad)) +
+  ggtheme_plot + 
+  theme(panel.grid.major.y = element_blank()) +
+  geom_bar(stat = 'count', alpha = 1) +
+  scale_fill_manual(values = c('q4' = '#d01c8b', 
+                               'q3' = '#f1b6da', 
+                               'q2' = '#b8e186',
+                               'q1' = '#4dac26'),
+                    labels = quad_names$quad_name) +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 1.1),
+                     breaks = break_nums/100,
+                     labels = sprintf('%s%%', break_nums)) + 
+  ### add grid lines; horizontal but then get flipped
+  geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
+  coord_flip() +
+  labs(x = 'Taxonomic Group', 
+       y = 'Percent of corals by quadrant', 
+       fill = 'Alignment')
+
+print(barchart_coral_quads)
+
+ggsave(plot = barchart_coral_quads,
+       filename = file.path(dir_fig, 'fig3c_barchart_coral_quads.png'),
+       width = 17.8, height = 4, units = 'cm', dpi = 600)
+
+write_csv(iucn_coral_quad_sum, file.path(dir_git, 'coralmaps', 'iucn_coral_quad_sum.csv'))
+
+```

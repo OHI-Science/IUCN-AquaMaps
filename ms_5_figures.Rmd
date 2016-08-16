@@ -143,14 +143,14 @@ Arguments
 
 -----
 
-### Figure 3
-
+### Fig. 3
 <a id = 'fig3'></a>
 
-![paired map comparison](figures/fig3a_violinplot_paired_maps.png)
+![coral area change due to depth clipping](figures/fig3a_coral_area_plot.png)
 
-why is the global one not showing up?:
-![global full species list comparison](figures/fig3a_violinplot_ohi_global.png)
+![coral quadmap change due to depth clipping](figures/fig3b_scatter_quadmap_corals.png)
+
+![coral quadmap breakdown](figures/fig3c_barchart_coral_quads.png)
 
 -----
 
@@ -158,13 +158,19 @@ why is the global one not showing up?:
 
 <a id = 'fig4'></a>
 
-![Change in MPA coverage](figures/fig4_barchart_mpa_gap.png)
+![paired map comparison](figures/fig4a_violinplot_paired_maps.png)
 
-### New figures - corals
+why is the global one not showing up?:
+![global full species list comparison](figures/fig4a_violinplot_ohi_global.png)
 
-![coral area change due to depth clipping](figures/fig5a_coral_area_plot.png)
+-----
 
-![coral quadmap change due to depth clipping](figures/fig5b_scatter_quadmap_corals.png)
+### Figure 5
+
+<a id = 'fig5'></a>
+
+![Change in MPA coverage](figures/fig5_barchart_mpa_gap.png)
+
 
 -----
 
