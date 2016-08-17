@@ -158,10 +158,7 @@ Arguments
 
 <a id = 'fig4'></a>
 
-![paired map comparison](figures/fig4a_violinplot_paired_maps.png)
-
-why is the global one not showing up?:
-![global full species list comparison](figures/fig4a_violinplot_ohi_global.png)
+![global full species list comparison](figures/fig4a_violinplot_ohi_maps.png)
 
 -----
 

@@ -232,7 +232,7 @@ viol_plot <- ggplot(data = status_df, aes(x = scenario, y = diff)) +
               scale = 'width',
               draw_quantiles = c(.25, .5, .75)) +
   geom_point(position = position_jitter(w = .3), 
-             aes(color = mean_n_spp), alpha = 1, size = 0.25) +
+             color = 'black', alpha = 1, size = 0.25) +
   geom_violin(fill = NA, 
               draw_quantiles = c(.25, .5, .75),
               scale = 'width') +
@@ -243,9 +243,9 @@ viol_plot <- ggplot(data = status_df, aes(x = scenario, y = diff)) +
 
 print(viol_plot)
 
-ggsave(file.path(dir_fig, 'fig3a_violinplot_ohi_maps.png'),
+ggsave(file.path(dir_fig, 'fig4a_violinplot_ohi_maps.png'),
        height = 4.5, width = 8.7, units = 'cm', dpi = 600)
-# ggsave(file.path(dir_fig, 'fig3a_violinplot_ohi_maps.png'), device = 'tiff',
+# ggsave(file.path(dir_fig, 'fig4a_violinplot_ohi_maps.png'), device = 'tiff',
 #        height = 4.5, width = 8.7, units = 'cm', dpi = 600)
 
 ```
