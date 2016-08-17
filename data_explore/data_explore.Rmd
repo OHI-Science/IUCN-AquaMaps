@@ -194,7 +194,8 @@ taxa_df2 <- taxa_all_df %>%
                      end   = 0,
                      n_total = NA)) %>%
   bind_rows(taxa_df1 %>%
-              select(-IUCN, -AquaMaps, -Paired)) %>%
+              select(-IUCN, -AquaMaps, -Paired) %>%
+              arrange(desc(n_total))) %>%
   mutate(class = factor(class, levels = unique(.$class), ordered = TRUE),
          n_label = ifelse(!is.na(n_total), paste0('n = ', n_total), ''),
          dataset = factor(dataset, levels = c('AquaMaps', 'Paired', 'IUCN'), ordered = TRUE))
@@ -218,7 +219,7 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
                      limits = c(0, 130),
                      breaks = break_nums,
                      labels = sprintf('%s%%', break_nums)) +
-  labs(x = 'Class',
+  labs(x = 'Class (in order of decreasing number of included species)',
        y = 'Percent of mapped species',
        fill = 'Dataset')
 
