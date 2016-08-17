@@ -142,7 +142,7 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 ```
 
 
-``` {r results_discussion, child = 'ms_3_res_disc.Rmd'}
+``` {r results_discussion, child = 'ms_3_res_disc_concl.Rmd'}
 ```
 
 <!--
