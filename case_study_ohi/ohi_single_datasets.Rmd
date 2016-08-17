@@ -47,35 +47,39 @@ ohi_spp_info <- read_csv(file.path(dir_anx, 'v2016/int/spp_all_cleaned.csv')) %>
 ### Load species cells; filter to species IDs in assessed species list and cell IDs in OHI regions
 am_spp_cells <- read_csv(file.path(dir_anx, 'v2016/int/am_cells_spp_prob0.csv')) %>%
   filter(am_sid %in% ohi_spp_info$am_sid) %>% 
-  filter(loiczid %in% ohi_rgn_cells$loiczid)
+  filter(loiczid %in% ohi_rgn_cells$loiczid) %>%
+  distinct()
 
-### bind IUCN loiczid dataframe to species risk category dataframe
+### bind AM loiczid dataframe to species risk category dataframe
 am_spp_cells <- am_spp_cells %>%
   left_join(ohi_spp_info %>% select(am_sid, cat_score),
             by = 'am_sid')
 
-
+### force exclusion of bird IUCN SIDs for IUCN analysis only
+iucn_nonbirds <- ohi_spp_info %>%
+  select(iucn_sid, spp_group) %>%
+  filter(spp_group != 'BOTW')
 
 iucn_spp_cells <- read_csv(file.path(dir_anx, 'v2016/int/iucn_cells_spp.csv'),
                            col_types = 'cddddc') %>%
   filter(presence != 5) %>%
   filter(iucn_sid %in% ohi_spp_info$iucn_sid) %>%
-  filter(loiczid %in% ohi_rgn_cells$loiczid)
+  filter(iucn_sid %in% iucn_nonbirds$iucn_sid) %>% ### exclude BOTW
+  filter(loiczid %in% ohi_rgn_cells$loiczid) %>%
+  distinct()
 ### bind IUCN loiczid dataframe to species risk category dataframe
 iucn_spp_cells <- iucn_spp_cells %>%
   left_join(ohi_spp_info %>% select(iucn_sid, cat_score),
             by = 'iucn_sid')
 
-
-
 ```
 
 ``` {r calc_ohi_iucn_spp}
 
-
 ### group by loiczid, then summarize to find means (and counts)
 iucn_cell_sum <- iucn_spp_cells %>%
   filter(!is.na(cat_score)) %>%
+  distinct() %>%
   group_by(loiczid) %>%
   summarize(mean_cat = mean(cat_score),
             n_spp    = n())
@@ -86,15 +90,12 @@ write_csv(iucn_cell_sum, file.path(dir_git, 'case_study_ohi/iucn_spp_cell_sum.cs
 iucn_rgn_sum <- iucn_cell_sum %>%
   inner_join(ohi_rgn_cells,
              by = 'loiczid') %>%
-  # mutate(rgn_area = cell_area * proportionArea,
-  #        area_weighted_mean_cat   = weighted_mean_cat   * rgn_area,
-  #        area_weighted_mean_trend = weighted_mean_trend * rgn_area) %>%
   mutate(cell_area_weight = cell_area * n_spp * proportionArea,
          area_weighted_mean_cat = mean_cat * cell_area_weight) %>%
   arrange(loiczid)
 
 iucn_rgn_sum <- iucn_rgn_sum %>%
-  group_by(rgn_id) %>%
+  group_by(rgn_id, rgn_name) %>%
   summarize(rgn_mean_cat = sum(area_weighted_mean_cat)/sum(cell_area_weight),
             mean_n_spp = mean(n_spp))
 
@@ -110,6 +111,7 @@ write_csv(iucn_rgn_sum, file.path(dir_git, 'case_study_ohi/iucn_spp_region_sum.c
 ### group by loiczid, then summarize to find means (and counts)
 am_cell_sum <- am_spp_cells %>%
   filter(!is.na(cat_score)) %>%
+  distinct() %>%
   group_by(loiczid) %>%
   summarize(mean_cat = mean(cat_score),
             n_spp    = n())
@@ -120,15 +122,12 @@ write_csv(am_cell_sum, file.path(dir_git, 'case_study_ohi/am_spp_cell_sum.csv'))
 am_rgn_sum <- am_cell_sum %>%
   inner_join(ohi_rgn_cells,
              by = 'loiczid') %>%
-  # mutate(rgn_area = cell_area * proportionArea,
-  #        area_weighted_mean_cat   = weighted_mean_cat   * rgn_area,
-  #        area_weighted_mean_trend = weighted_mean_trend * rgn_area) %>%
   mutate(cell_area_weight = cell_area * n_spp * proportionArea,
          area_weighted_mean_cat = mean_cat   * cell_area_weight) %>%
   arrange(loiczid)
 
 am_rgn_sum <- am_rgn_sum %>%
-  group_by(rgn_id) %>%
+  group_by(rgn_id, rgn_name) %>%
   summarize(rgn_mean_cat = sum(area_weighted_mean_cat)/sum(cell_area_weight),
             mean_n_spp = mean(n_spp))
 
@@ -148,6 +147,7 @@ spp_ohi_am <- ohi_spp_info %>%
 am_cell_sum_both <- am_spp_cells %>%
   filter(am_sid %in% spp_ohi_am$am_sid) %>%
   filter(!is.na(cat_score)) %>%
+  distinct() %>%
   group_by(loiczid) %>%
   summarize(mean_cat = mean(cat_score),
             n_spp    = n(),
@@ -160,6 +160,7 @@ spp_ohi_iucn <- ohi_spp_info %>%
 iucn_cell_sum_both <- iucn_spp_cells %>%
   filter(iucn_sid %in% spp_ohi_iucn$iucn_sid) %>%
   filter(!is.na(cat_score)) %>%
+  distinct() %>%
   group_by(loiczid) %>%
   summarize(mean_cat = mean(cat_score),
             n_spp    = n(),
@@ -187,7 +188,7 @@ ohi_rgn_sum <- ohi_cell_sum %>%
   arrange(loiczid)
 
 ohi_rgn_sum <- ohi_rgn_sum %>%
-  group_by(rgn_id) %>%
+  group_by(rgn_id, rgn_name) %>%
   summarize(rgn_mean_cat = sum(area_weighted_mean_cat)/sum(cell_area_weight),
             mean_n_spp = mean(n_spp))
 
@@ -206,10 +207,17 @@ am_rgn_sum    <- read_csv(file.path(dir_git, 'case_study_ohi/am_spp_region_sum.c
 ohi_rgn_sum   <- read_csv(file.path(dir_git, 'case_study_ohi/ohi_spp_region_sum.csv'))
 
 status_df <- ohi_rgn_sum %>%
-  select(rgn_id, ohi_st = status, mean_n_spp) %>%
+  select(rgn_id, rgn_name, ohi_st = status, mean_n_spp) %>%
+  distinct() %>%
   mutate(ohi_st = ohi_st) %>%
-  full_join(am_rgn_sum   %>% select(rgn_id,    am_st = status), by = 'rgn_id') %>%
-  full_join(iucn_rgn_sum %>% select(rgn_id, iucn_st = status), by = 'rgn_id') %>%
+  full_join(am_rgn_sum   %>% 
+              select(rgn_id, am_st = status) %>%
+              distinct(), 
+            by = 'rgn_id') %>%
+  full_join(iucn_rgn_sum %>% 
+              select(rgn_id, iucn_st = status) %>%
+              distinct(), 
+            by = 'rgn_id') %>%
   mutate(diff_am   = am_st - ohi_st ,
          diff_iucn = iucn_st - ohi_st) %>%
   gather(scenario, diff, diff_am:diff_iucn)
@@ -241,3 +249,124 @@ ggsave(file.path(dir_fig, 'fig3a_violinplot_ohi_maps.png'),
 #        height = 4.5, width = 8.7, units = 'cm', dpi = 600)
 
 ```
+
+
+``` {r check_weirdness}
+### noting that the mean and median by AM only and by IUCN only are both less than OHI...
+
+status_df$am_st %>% mean()     ### 91.352
+status_df$am_st %>% median()   ### 92.164
+status_df$iucn_st %>% mean()   ### 90.943
+status_df$iucn_st %>% median() ### 92.565
+status_df$ohi_st %>% mean()    ### 93.628
+status_df$ohi_st %>% median()  ### 93.803
+
+am_cell_sum_all <- read_csv(file.path(dir_git, 'case_study_ohi/am_spp_cell_sum.csv'))
+iucn_cell_sum_all <- read_csv(file.path(dir_git, 'case_study_ohi/iucn_spp_cell_sum.csv'))
+ohi_cell_sum_test <- iucn_cell_sum_both %>%
+  rename(mean_cat_i = mean_cat, n_spp_i = n_spp) %>%
+  select(-data) %>%
+  full_join(am_cell_sum_both %>%
+              rename(mean_cat_a = mean_cat, n_spp_a = n_spp) %>%
+              select(-data), 
+            by = 'loiczid')
+
+
+spp_info_trunc <- ohi_spp_info %>%
+  select(am_sid, iucn_sid, sciname, cat_score, spp_group, spatial_source)
+
+spp_ohi_am <- spp_info_trunc %>% 
+  filter(str_detect(spatial_source, 'am'))
+spp_ohi_iucn <- spp_info_trunc %>% 
+  filter(str_detect(spatial_source, 'iucn'))
+
+### examine one cell with lots of species to see what's happening
+a_all <- am_spp_cells %>%
+  filter(loiczid == 161563) %>%
+  inner_join(spp_info_trunc) %>%
+  distinct()
+a_ohi <- am_spp_cells %>%
+  filter(loiczid == 161563) %>%
+  inner_join(spp_ohi_am) %>%
+  mutate(type = 'ohi') %>%
+  distinct()
+a <- a_all %>%
+  full_join(a_ohi)
+i_all <- iucn_spp_cells %>%
+  filter(loiczid == 161563) %>%
+  inner_join(spp_info_trunc) %>%
+  distinct()
+i_ohi <- iucn_spp_cells %>%
+  filter(loiczid == 161563) %>%
+  inner_join(spp_ohi_iucn) %>%
+  mutate(type = 'ohi') %>%
+  distinct()
+i <- i_all %>%
+  full_join(i_ohi)
+
+# > mean(a$cat_score)
+# [1] 0.04671916
+# > mean(a$cat_score[is.na(a$type)])
+# [1] 0.2727273
+### for OHI, 44 (out of 381) relatively unhealthy species are removed from AM presence for this cell,
+### because the presence is driven by IUCN maps.
+### If they aren't replaced by IUCN presence, then this cell's score will seem artificially
+### healthier.
+
+### OK check a region with large IUCN changes and small spp numbers:
+### rgn 4 Macquarie Island
+
+macq_cells <- ohi_rgn_cells %>% filter(rgn_id == 4)
+### examine one rgn with lots of species to see what's happening
+a_rgn_all <- am_spp_cells %>%
+  filter(loiczid %in% macq_cells$loiczid) %>%
+  inner_join(spp_info_trunc) %>%
+  distinct() %>%
+  group_by(am_sid, cat_score, sciname) %>%
+  summarize(n_cells_spp = n())
+a_rgn_ohi <- am_spp_cells %>%
+  filter(loiczid %in% macq_cells$loiczid) %>%
+  inner_join(spp_ohi_am) %>%
+  distinct() %>%
+  group_by(am_sid, cat_score, sciname) %>%
+  summarize(n_cells_spp = n()) %>%
+  mutate(type = 'ohi')
+a_rgn <- a_rgn_all %>%
+  full_join(a_rgn_ohi)
+i_rgn_all <- iucn_spp_cells %>%
+  filter(loiczid %in% macq_cells$loiczid) %>%
+  inner_join(spp_info_trunc) %>%
+  distinct() %>%
+  group_by(iucn_sid, cat_score, sciname) %>%
+  summarize(n_cells_spp = n())
+i_rgn_ohi <- iucn_spp_cells %>%
+  filter(loiczid %in% macq_cells$loiczid) %>%
+  inner_join(spp_ohi_iucn) %>%
+  distinct() %>%
+  group_by(iucn_sid, cat_score, sciname) %>%
+  summarize(n_cells_spp = n()) %>%
+  mutate(type = 'ohi')
+i_rgn <- i_rgn_all %>%
+  full_join(i_rgn_ohi)
+
+a_rgn_overlap <- a_rgn %>% filter(is.na(type)) %>%
+  ungroup() %>%
+  mutate(weighted_cat = cat_score * n_cells_spp,
+         weighted_cat_mean = sum(weighted_cat) / sum(n_cells_spp))
+a_rgn_overlap$cat_score %>% mean()
+a_rgn_overlap$n_cells_spp %>% mean()
+a_rgn_overlap$weighted_cat_mean[1]
+### Removed these species and replaced with IUCN:
+### 0.1155556 mean cat score; 149.1556 mean cells; 45 species; mean weighted cat .2553
+
+i_rgn_replace <- i_rgn %>% filter(sciname %in% a_rgn_overlap$sciname) %>%
+  ungroup() %>%
+  mutate(weighted_cat = cat_score * n_cells_spp,
+         weighted_cat_mean = sum(weighted_cat) / sum(n_cells_spp))
+i_rgn_replace$cat_score %>% mean()
+i_rgn_replace$n_cells_spp %>% mean()
+i_rgn_replace$weighted_cat_mean[1]
+### These species overwrote AM species for combined score:
+### 0.225 mean cat score; 260.2 mean cells; 16 spp; .191 mean weighted cat
+
+look at weighted means globally

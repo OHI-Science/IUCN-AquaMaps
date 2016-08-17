@@ -78,7 +78,7 @@ ___from Methods___
 
 # Implications
 
-Neither IUCN nor AquaMaps claims a lock on the "truth", and the small overlap in mapped species means each provides value in taxonomic and geographic coverage.  Method-driven differences in commission and omission errors produce clear and significant disagreement in species range descriptions between AquaMaps and IUCN datasets.  To examine the implications of these differences, we repeated two recent studies, varying only the selection of one data set over the other.
+__Neither IUCN nor AquaMaps claims a lock on the "truth", and the small overlap in mapped species means each provides value in taxonomic and geographic coverage.  Method-driven differences in commission and omission errors produce clear and significant disagreement in species range descriptions between AquaMaps and IUCN datasets.__  To examine the implications of these differences, we repeated two recent studies, varying only the selection of one data set over the other.
 
 **Case Study: The Ocean Health Index**
 
