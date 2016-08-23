@@ -1,0 +1,322 @@
+---
+title: 'Data Exploration: IUCN and AquaMaps'
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Libraries and Paths
+
+library(ggplot2)
+library(readr)
+library(raster)
+library(rgdal)
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+dir_M <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
+           'Darwin'  = '/Volumes/ohi',    ### connect (cmd-K) to smb://mazu/ohi
+           'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_M, 'git-annex/globalprep')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
+
+source(file.path(dir_git, 'data_explore/data_explore_fxns.R'))
+### When knitting this, it automatically sets WD to be this directory...
+### the 'setwd()' is there for running by chunk
+```
+
+
+- get aquamaps cells for all quadrant 3 species (and quadrant 4?)
+- focus on any particular group? filter as appropriate
+    - maybe by `occurcells` field? for low-data spp
+- add lat/long from the hcaf file (or at least long)
+- for each species:
+    - identify east/west limits of range (between -180 and +180)
+        - what about species who cross over in pacific? maybe a flag for pacific species?
+        - maybe just select Pacific species and avoid Atlantic?
+    - rescale 0-1?
+        - here we'd be looking for what happens at the edges - is there a sudden jump from no presence to a bunch just at a single longitude?
+        - with this, we could stack all the species and see the cumulative effects of the ends
+    - plot end points, east/west bounds on a horizontal line/histogram/density plot, and put verticals on the longitudes of the FAO region boundaries
+        - not even worrying about N/S? or maybe include just a big swath across the equator or whatever?
+        
+``` {r get_am_spp}
+
+### get quadrant species list; filter to q3 and q4
+spp_quad_list <- read_csv(file.path(dir_git, 'data', 'spp_list_quads.csv')) %>%
+  select(sciname, am_sid, iucn_sid, reviewed, occurcells, quad) %>%
+  filter(quad %in% c('q3', 'q4'))
+
+hist(spp_quad_list$occurcells)
+nrow(spp_quad_list %>% filter(occurcells > 100))
+### 110 out of 1078 (~10%) have more than 100 occurrence cells
+
+### load full AM list and filter to those in q3 and q4
+am_spp_cells <- read_csv(file.path(dir_anx, 'spp_ico',
+                                   'v2016/int/am_cells_spp_prob0.csv')) %>%
+  filter(am_sid %in% spp_quad_list$am_sid) %>% 
+  distinct()
+
+### join with hcaf to get longitudes (and latitudes) for each cell
+hcaf <- read_csv(file.path(dir_anx, '_raw_data/aquamaps/d2015',
+                           'csv/hcaf_truncated.csv')) %>%
+  select(-csquarecode)
+
+am_spp_latlong <- am_spp_cells %>%
+  left_join(hcaf, by = 'loiczid')
+
+am_spp_latlong <- am_spp_latlong %>%
+  mutate(clongadj  = ifelse(centerlong < 0, centerlong + 360, centerlong),
+         wlimitadj = ifelse(wlimit < 0, wlimit + 360, wlimit),
+         elimitadj = ifelse(elimit < 0, elimit + 360, elimit))
+
+### filter out species from Atlantic... rough pass:
+### - filter out everything west of 30 E and east of 70 W
+
+am_spp_latlong <- am_spp_latlong %>%
+  filter(clongadj >= 30 & clongadj <= 290)
+
+```
+
+
+Major fishing area boundaries
+- 175W north from 25S
+- 120W from 5N to 60 S
+- 150E south from 25S (south of Australia)
+- 80E from 0N to 55S
+- 30 E from Africa on down
+        
+``` {r northmost_band}
+### 5N north     - look for spike at 175 W (185E)
+am_spp_north <- am_spp_latlong %>%
+  filter(centerlat >= 5) %>%
+  filter(clongadj <= 260) ### west of North America
+
+am_spp_north_lims <- am_spp_north %>%
+  group_by(am_sid) %>%
+  summarize(w_lim = min(wlimitadj),
+            e_lim = max(elimitadj),
+            n_w_lim = sum(wlimitadj == w_lim),
+            n_e_lim = sum(elimitadj == e_lim),
+            n_tot = n()) %>%
+  gather(lim, long, w_lim:e_lim) %>%
+  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
+  filter(str_detect(lim_n, lim)) %>%
+  select(-lim_n) %>%
+  mutate(long = ifelse(long %in% c(30, 260), NA, long)) %>%
+  filter(!is.na(long))
+    ### delete artificially imposed limits
+
+tmp <- am_spp_north_lims %>%
+  group_by(long) %>%
+  summarize(n_cells = sum(ncells),
+            n_spp   = n())
+
+ggplot(tmp, aes(x = long, y = n_spp)) +
+  geom_point() +
+  geom_vline(xintercept = c(77, 185), color = 'red')
+
+```
+
+``` {r central_band}
+### 25 S to 5 N  - look for spikes at 120W (240E), 175W (185E), 80E (and 77E)
+am_spp_central <- am_spp_latlong %>%
+  filter(centerlat <= 5 & centerlat >= -25)
+
+am_spp_central_lims <- am_spp_central %>%
+  group_by(am_sid) %>%
+  summarize(w_lim = min(wlimitadj),
+            e_lim = max(elimitadj),
+            n_w_lim = sum(wlimitadj == w_lim),
+            n_e_lim = sum(elimitadj == e_lim),
+            n_tot = n()) %>%
+  gather(lim, long, w_lim:e_lim) %>%
+  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
+  filter(str_detect(lim_n, lim)) %>%
+  select(-lim_n) %>%
+  mutate(long = ifelse(long %in% c(30, 260), NA, long)) %>%
+  filter(!is.na(long))
+    ### delete artificially imposed limits
+
+tmp <- am_spp_central_lims %>%
+  group_by(long) %>%
+  summarize(n_cells = sum(ncells),
+            n_spp   = n())
+
+ggplot(tmp, aes(x = long, y = n_spp)) +
+  geom_point() +
+  geom_vline(xintercept = c(77, 185, 240), color = 'red')
+
+```
+
+
+``` {r southmost_band}
+### 60 S to 25 S - look for spikes at 120W (240E), 150E, 80E
+am_spp_south <- am_spp_latlong %>%
+  filter(centerlat >= -60 & centerlat <= -25)
+
+am_spp_south_lims <- am_spp_south %>%
+  group_by(am_sid) %>%
+  summarize(w_lim = min(wlimitadj),
+            e_lim = max(elimitadj),
+            n_w_lim = sum(wlimitadj == w_lim),
+            n_e_lim = sum(elimitadj == e_lim),
+            n_tot = n()) %>%
+  gather(lim, long, w_lim:e_lim) %>%
+  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
+  filter(str_detect(lim_n, lim)) %>%
+  select(-lim_n) %>%
+  mutate(long = ifelse(long %in% c(30, 260), NA, long)) %>%
+  filter(!is.na(long))
+    ### delete artificially imposed limits
+
+tmp <- am_spp_south_lims %>%
+  group_by(long) %>%
+  summarize(n_cells = sum(ncells),
+            n_spp   = n())
+
+ggplot(tmp, aes(x = long, y = n_spp)) +
+  geom_point() +
+  geom_vline(xintercept = c(80, 150, 240), color = 'red')
+
+```
+
+``` {r all_bands}
+
+am_spp_all_lims <- am_spp_latlong %>%
+  filter(clongadj <= 260) %>% ### west of North America
+  filter(clongadj >= 50) %>% ### east of West Africa
+  filter(centerlat >= -25) %>% ### north of Australia
+  group_by(am_sid) %>%
+  summarize(w_lim = min(wlimitadj),
+            e_lim = max(elimitadj),
+            n_w_lim = sum(wlimitadj == w_lim),
+            n_e_lim = sum(elimitadj == e_lim),
+            n_tot = n()) %>%
+  gather(lim, long, w_lim:e_lim) %>%
+  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
+  filter(str_detect(lim_n, lim)) %>%
+  select(-lim_n) %>%
+  mutate(long = ifelse(long %in% c(50, 260), NA, long)) %>%
+  filter(!is.na(long))
+    ### delete artificially imposed limits
+
+tmp <- am_spp_all_lims %>%
+  group_by(long) %>%
+  summarize(n_cells = sum(ncells),
+            n_spp   = n())
+
+ggplot(tmp, aes(x = long, y = n_spp)) +
+  geom_point() +
+  geom_vline(xintercept = c(80, 150, 240), color = 'red') +
+  geom_vline(xintercept = c(77, 185), color = 'red')
+
+
+
+```
+
+``` {r all_bands_low_data}
+
+datapoor <- spp_quad_list %>%
+  filter(is.na(reviewed)) %>%
+  filter(occurcells < 50)
+  
+
+am_spp_dp_lims <- am_spp_latlong %>%
+  filter(am_sid %in% datapoor$am_sid) %>%
+  filter(clongadj <= 260) %>% ### west of North America
+  filter(clongadj >= 50) %>% ### east of West Africa
+  filter(centerlat >= -25) %>% ### north of Australia
+  group_by(am_sid) %>%
+  summarize(w_lim = min(wlimitadj),
+            e_lim = max(elimitadj),
+            n_w_lim = sum(wlimitadj == w_lim),
+            n_e_lim = sum(elimitadj == e_lim),
+            n_tot = n()) %>%
+  gather(lim, long, w_lim:e_lim) %>%
+  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
+  filter(str_detect(lim_n, lim)) %>%
+  select(-lim_n) %>%
+  mutate(long = ifelse(long %in% c(50, 260), NA, long)) %>%
+  filter(!is.na(long))
+    ### delete artificially imposed limits
+
+tmp <- am_spp_dp_lims %>%
+  group_by(long) %>%
+  summarize(n_cells = sum(ncells),
+            n_spp   = n())
+
+ggplot(tmp, aes(x = long, y = n_spp)) +
+  geom_point() +
+  geom_vline(xintercept = c(80, 240), color = 'red') +
+  geom_vline(xintercept = c(77, 185), color = 'red')
+
+
+
+```
+
+``` {r what_species_are_these}
+
+### this first batch is Coral Triangle-area species
+clipped_spp1 <- am_spp_all_lims %>%
+  # filter(long %in% c(77, 185)) %>%
+  filter((long == 77  & lim == 'w_lim') | 
+         (long == 185 & lim == 'e_lim')) %>%
+  select(am_sid) %>%
+  distinct %>%
+  left_join(spp_quad_list, by = 'am_sid')
+
+### This next batch is open Pacific or Indian Ocean species
+clipped_spp2 <- am_spp_all_lims %>%
+  # filter(long %in% c(77, 185)) %>%
+  filter((long == 77  & lim == 'e_lim') | 
+         (long == 185 & lim == 'w_lim')) %>%
+  select(am_sid) %>%
+  distinct %>%
+  left_join(spp_quad_list, by = 'am_sid')
+
+write_csv(clipped_spp1, file.path(dir_git, 'clip_fao', 'clipped_se_asia.csv'))
+write_csv(clipped_spp2, file.path(dir_git, 'clip_fao', 'clipped_india_pacific.csv'))
+
+```
+
+``` {r plot_spp, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+clipped_spp1 <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_se_asia.csv'))
+clipped_spp2 <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_india_pacific.csv'))
+
+loiczid_raster <- raster('data/rasters/loiczid_raster.tif')
+
+spp_examples <- sample_n(clipped_spp2, 10)
+
+for (i in 1:nrow(spp_examples)) {
+  
+  spp <- spp_examples[i, ]
+  map_cells <- am_spp_cells %>%
+    filter(am_sid == spp$am_sid) %>%
+    mutate(am_pres = 1)
+  
+  r_am_spp  <-  subs(loiczid_raster, 
+                     map_cells[ , c('loiczid', 'am_pres')], 
+                     by = 'loiczid', 
+                     which = 'am_pres', 
+                     subsWithNA = TRUE)
+  
+  spp_pts <- as.data.frame(rasterToPoints(r_am_spp))
+  
+  spp_plot <- ggplot(spp_pts, aes(x = x, y = y)) +
+    ggtheme_map + 
+    geom_raster(aes(fill = am_pres), alpha = .8, show.legend = FALSE) +
+    borders('world', color='gray30', fill='gray40', size = .1) +  # create a layer of borders
+    scale_x_continuous(breaks = seq(-180, 180, by = 30)) +
+    scale_y_continuous(breaks = seq( -90,  90, by = 30))
+
+  plot(spp_plot)
+}
+
+```

@@ -36,9 +36,9 @@ source(file.path(dir_git, 'data_explore/data_explore_fxns.R'))
 ### get shapefile
 ### rasterize to half-degree grid; or raster::extract
 
-if(!file.exists(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))) {
+if(!file.exists(file.path(dir_git, 'clip_depth', 'bathy_cells.csv'))) {
     
-  poly_bath <- readOGR(dsn = file.path(path.expand(dir_git), 'coralmaps/ne_10m_bathymetry_K_200'), 
+  poly_bath <- readOGR(dsn = file.path(path.expand(dir_git), 'clip_depth/ne_10m_bathymetry_K_200'), 
                        layer = 'ne_10m_bathymetry_K_200', 
                        stringsAsFactors = TRUE)
   
@@ -60,10 +60,10 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))) {
   bath_raster <- subs(loiczid_raster, bath_df, by = 'loiczid', which = 'weight')
   values(bath_raster)[values(bath_raster) > 5] <- NA
   
-  writeRaster(bath_raster, file.path(dir_git, 'coralmaps', 'bathy_cells.tif'))
+  writeRaster(bath_raster, file.path(dir_git, 'clip_depth', 'bathy_cells.tif'))
   
-  write_csv(bath_df, file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))
-  # bath_df <- read_csv(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'), col_types = 'dd')
+  write_csv(bath_df, file.path(dir_git, 'clip_depth', 'bathy_cells.csv'))
+  # bath_df <- read_csv(file.path(dir_git, 'clip_depth', 'bathy_cells.csv'), col_types = 'dd')
   ### probably want to filter to just 100% 200m+
 }
 
@@ -74,7 +74,7 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'))) {
 ### find spp depth limits
 ### focus just on corals?
 
-if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_depth.csv'))) {
+if(!file.exists(file.path(dir_git, 'clip_depth', 'coral_spp_depth.csv'))) {
   
   library(jsonlite)
   api_key <- 'fb71ae836f415f04f41176f6d30c4a9e4cea620d46b9e5021bf2fb142ea51bf5'
@@ -113,7 +113,7 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_depth.csv'))) {
   spp_narr_url <- 'http://apiv3.iucnredlist.org/api/v3/species/narrative/id/%s?token=%s'
   spp_narr     <- mc_get_from_api(spp_narr_url, coral_spp_sid) 
   
-  write_csv(spp_narr, file.path(dir_git, 'coralmaps', 'coral_spp_narratives.csv'))
+  write_csv(spp_narr, file.path(dir_git, 'clip_depth', 'coral_spp_narratives.csv'))
   
   spp_depth <- spp_narr %>%
     select(iucn_sid = species_id, habitat) %>%
@@ -130,10 +130,10 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_depth.csv'))) {
     mutate(shallow_str = str_detect(tolower(habitat), 'shallow'),
            shallow = max_depth <= 200 | shallow_str)
   
-  write_csv(spp_depth, file.path(dir_git, 'coralmaps', 'coral_spp_depth.csv'))
+  write_csv(spp_depth, file.path(dir_git, 'clip_depth', 'coral_spp_depth.csv'))
   
 } else 
-  spp_depth <- read_csv(file.path(dir_git, 'coralmaps', 'coral_spp_depth.csv'))
+  spp_depth <- read_csv(file.path(dir_git, 'clip_depth', 'coral_spp_depth.csv'))
 
 summary(spp_depth)
  #    iucn_sid        habitat          paired_map        max_depth      shallow_str     shallow       
@@ -167,12 +167,12 @@ quantile(spp_d1$max_depth, seq(.9, 1, .01), na.rm = TRUE)
 
 ``` {r extract_IUCN_cells_for_coral_pairs}
 
-bath_df <-  read_csv(file.path(dir_git, 'coralmaps', 'bathy_cells.csv'), col_types = 'dd') %>%
+bath_df <-  read_csv(file.path(dir_git, 'clip_depth', 'bathy_cells.csv'), col_types = 'dd') %>%
   filter(weight >= 1) %>% ### cell must be 100% within the deep polygon to count as deep
   mutate(deep = 1) %>%
   select(-weight)
 
-spp_depth <- read_csv(file.path(dir_git, 'coralmaps', 'coral_spp_depth.csv'))
+spp_depth <- read_csv(file.path(dir_git, 'clip_depth', 'coral_spp_depth.csv'))
 
 ### load iucn spp_cells
 coral_files <- list.files(file.path(dir_anx, 'v2016', 'iucn_intersections'), 
@@ -185,7 +185,7 @@ coral_cells_iucn <- lapply(coral_files, read_csv) %>%
   left_join(bath_df, by = 'loiczid') %>%
   mutate(deep = ifelse(is.na(deep), 0, deep))
 
-write_csv(coral_cells_iucn, file.path(dir_git, 'coralmaps', 'coral_cells_iucn.csv'))
+write_csv(coral_cells_iucn, file.path(dir_git, 'clip_depth', 'coral_cells_iucn.csv'))
 length(unique(coral_cells_iucn$iucn_sid))
 ### NOTE: only 473 coral species with IUCN maps
 ```
@@ -195,7 +195,7 @@ length(unique(coral_cells_iucn$iucn_sid))
 ### read hcaf to get areas; left join to coral_cells_iucn
 ### group_by iucn_sid and depth, summarize area (deep and shallow)
 ### group_by iucn_sid, summarize total area
-coral_cells_iucn <- read_csv(file.path(dir_git, 'coralmaps', 'coral_cells_iucn.csv')) %>%
+coral_cells_iucn <- read_csv(file.path(dir_git, 'clip_depth', 'coral_cells_iucn.csv')) %>%
   mutate(deep = ifelse(deep == 1, 'deep', 'shallow'))
 
 hcaf <- read_csv(file.path(dir_anx, '../_raw_data/aquamaps/d2015/csv/hcaf_truncated.csv')) %>%
@@ -222,17 +222,17 @@ iucn_coral_areas <- iucn_coral_areas %>%
   left_join(spp_depth,     by = 'iucn_sid') %>%
   left_join(spp_map_pairs, by = 'iucn_sid')
 
-write_csv(iucn_coral_areas, file.path(dir_git, 'coralmaps', 'iucn_coral_areas.csv'))
+write_csv(iucn_coral_areas, file.path(dir_git, 'clip_depth', 'iucn_coral_areas.csv'))
 
 ```
 
 
 
 ``` {r calc_overlaps}
-if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))) {
+if(!file.exists(file.path(dir_git, 'clip_depth', 'coral_spp_areas.csv'))) {
   
   ### get species list
-  coral_cells_iucn_shallow <- read_csv(file.path(dir_git, 'coralmaps', 'coral_cells_iucn.csv')) %>%
+  coral_cells_iucn_shallow <- read_csv(file.path(dir_git, 'clip_depth', 'coral_cells_iucn.csv')) %>%
     filter(deep == 0)
   
   spp_coralmaps <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv')) %>%
@@ -240,14 +240,14 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))) {
     select(am_sid, sciname, iucn_sid)
   
   ### copy aquamaps cells to local file, keeping only corals in the paired maps
-  if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_cells_am.csv'))) {
+  if(!file.exists(file.path(dir_git, 'clip_depth', 'coral_cells_am.csv'))) {
     coral_cells_am <- read_csv(file.path(dir_anx, '../_raw_data/aquamaps/d2015/csv', 'hcaf_sp_native_trunc.csv')) %>%
       rename(am_sid = speciesid, prob = probability) %>%
       filter(am_sid %in% spp_coralmaps$am_sid) 
-    write_csv(coral_cells_am, file.path(dir_git, 'coralmaps', 'coral_cells_am.csv'))
+    write_csv(coral_cells_am, file.path(dir_git, 'clip_depth', 'coral_cells_am.csv'))
   }
   
-  coral_cells_am <- read_csv(file.path(dir_git, 'coralmaps', 'coral_cells_am.csv'))
+  coral_cells_am <- read_csv(file.path(dir_git, 'clip_depth', 'coral_cells_am.csv'))
   
   loiczid_raster_file  <- file.path(dir_git, 'shiny_am_iucn/data/loiczid_raster.tif')
   loiczid_raster       <- raster(loiczid_raster_file)
@@ -369,14 +369,14 @@ if(!file.exists(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))) {
                        sm_perc_raw = sm_perc, sm_range_raw = sm_range, area_ratio_raw = area_ratio),
               by = c('iucn_sid', 'am_sid'))
   
-  write_csv(spp_coralmaps, file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))
+  write_csv(spp_coralmaps, file.path(dir_git, 'clip_depth', 'coral_spp_areas.csv'))
 }
 
 ```
 
 ``` {r generate_area_plots}
 
-spp_coral_clip <- read_csv(file.path(dir_git, 'coralmaps', 'iucn_coral_areas.csv')) %>%
+spp_coral_clip <- read_csv(file.path(dir_git, 'clip_depth', 'iucn_coral_areas.csv')) %>%
   select(iucn_sid, shallow_pct, deep_pct, totarea, shallow_area = area) %>%
   mutate(shallow_pct = 100 * shallow_pct,
          deep_pct    = 100 * deep_pct)
@@ -454,7 +454,7 @@ ggsave(plot = coral_area_plot,
 
 ``` {r generate_coral_quadmap}
 
-spp_coralmaps <- read_csv(file.path(dir_git, 'coralmaps', 'coral_spp_areas.csv'))
+spp_coralmaps <- read_csv(file.path(dir_git, 'clip_depth', 'coral_spp_areas.csv'))
 
 ### recalc areas and overlaps
 iucn_coral_fixed <- spp_coralmaps %>%
@@ -464,7 +464,7 @@ iucn_coral_fixed <- spp_coralmaps %>%
   filter(!(str_detect(dist, 'shallow') & !(str_detect(area, 'shallow')))) %>%
   mutate(method = ifelse(str_detect(dist, 'shallow'), '200 m clip', 'original'))
 
-write_csv(iucn_coral_fixed, file.path(dir_git, 'coralmaps', 'iucn_coral_fixed.csv'))
+write_csv(iucn_coral_fixed, file.path(dir_git, 'clip_depth', 'iucn_coral_fixed.csv'))
 
 break_nums <- seq(0, 100, 20)
 
@@ -514,7 +514,7 @@ ggsave(plot = clipped_quads,
 
 ``` {r examine_coral_quartiles, echo = FALSE, eval = TRUE}
 
-iucn_coral_fixed <- read_csv(file.path(dir_git, 'coralmaps', 'iucn_coral_fixed.csv'))
+iucn_coral_fixed <- read_csv(file.path(dir_git, 'clip_depth', 'iucn_coral_fixed.csv'))
 
 ### identify quads based on original breaks from data_explore.Rmd
 
@@ -546,11 +546,11 @@ quad_names <- data.frame('quad' = c('q1', 'q2', 'q3', 'q4'),
 iucn_coral_quads <- iucn_coral_quads %>%
   left_join(quad_names, by = 'quad')
 
-write_csv(iucn_coral_quads, file.path(dir_git, 'coralmaps', 'iucn_coral_quads.csv'))
+write_csv(iucn_coral_quads, file.path(dir_git, 'clip_depth', 'iucn_coral_quads.csv'))
 
 break_nums <- seq(0, 100, 20)
 
-iucn_coral_quad_sum <- read_csv(file.path(dir_git, 'coralmaps', 'iucn_coral_quads.csv')) %>%
+iucn_coral_quad_sum <- read_csv(file.path(dir_git, 'clip_depth', 'iucn_coral_quads.csv')) %>%
   select(method, quad, quad_name, pct_quad) %>%
   distinct()
 ### Plot the bar chart
@@ -581,6 +581,6 @@ ggsave(plot = barchart_coral_quads,
        filename = file.path(dir_fig, 'fig3c_barchart_coral_quads.png'),
        width = 17.8, height = 4, units = 'cm', dpi = 600)
 
-write_csv(iucn_coral_quad_sum, file.path(dir_git, 'coralmaps', 'iucn_coral_quad_sum.csv'))
+write_csv(iucn_coral_quad_sum, file.path(dir_git, 'clip_depth', 'iucn_coral_quad_sum.csv'))
 
 ```
