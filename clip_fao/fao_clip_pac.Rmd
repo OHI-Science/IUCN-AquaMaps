@@ -8,6 +8,9 @@ output: html_document
 # Libraries and Paths
 
 library(ggplot2)
+library(tmap)
+data(World)
+
 library(readr)
 library(raster)
 library(rgdal)
@@ -79,7 +82,7 @@ am_spp_latlong <- am_spp_latlong %>%
 ### - filter out everything west of 30 E and east of 70 W
 
 am_spp_latlong <- am_spp_latlong %>%
-  filter(clongadj >= 30 & clongadj <= 290)
+  filter(clongadj >= 60 & clongadj <= 240)
 
 ```
 
@@ -94,8 +97,7 @@ Major fishing area boundaries
 ``` {r northmost_band}
 ### 5N north     - look for spike at 175 W (185E)
 am_spp_north <- am_spp_latlong %>%
-  filter(centerlat >= 5) %>%
-  filter(clongadj <= 260) ### west of North America
+  filter(centerlat >= 5) 
 
 am_spp_north_lims <- am_spp_north %>%
   group_by(am_sid) %>%
@@ -108,7 +110,7 @@ am_spp_north_lims <- am_spp_north %>%
   gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
   filter(str_detect(lim_n, lim)) %>%
   select(-lim_n) %>%
-  mutate(long = ifelse(long %in% c(30, 260), NA, long)) %>%
+  mutate(long = ifelse(long <= 70 | long >= 200, NA, long)) %>%
   filter(!is.na(long))
     ### delete artificially imposed limits
 
@@ -139,7 +141,7 @@ am_spp_central_lims <- am_spp_central %>%
   gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
   filter(str_detect(lim_n, lim)) %>%
   select(-lim_n) %>%
-  mutate(long = ifelse(long %in% c(30, 260), NA, long)) %>%
+  mutate(long = ifelse(long <= 70 | long >= 200, NA, long)) %>%
   filter(!is.na(long))
     ### delete artificially imposed limits
 
@@ -150,153 +152,58 @@ tmp <- am_spp_central_lims %>%
 
 ggplot(tmp, aes(x = long, y = n_spp)) +
   geom_point() +
-  geom_vline(xintercept = c(77, 185, 240), color = 'red')
-
-```
-
-
-``` {r southmost_band}
-### 60 S to 25 S - look for spikes at 120W (240E), 150E, 80E
-am_spp_south <- am_spp_latlong %>%
-  filter(centerlat >= -60 & centerlat <= -25)
-
-am_spp_south_lims <- am_spp_south %>%
-  group_by(am_sid) %>%
-  summarize(w_lim = min(wlimitadj),
-            e_lim = max(elimitadj),
-            n_w_lim = sum(wlimitadj == w_lim),
-            n_e_lim = sum(elimitadj == e_lim),
-            n_tot = n()) %>%
-  gather(lim, long, w_lim:e_lim) %>%
-  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
-  filter(str_detect(lim_n, lim)) %>%
-  select(-lim_n) %>%
-  mutate(long = ifelse(long %in% c(30, 260), NA, long)) %>%
-  filter(!is.na(long))
-    ### delete artificially imposed limits
-
-tmp <- am_spp_south_lims %>%
-  group_by(long) %>%
-  summarize(n_cells = sum(ncells),
-            n_spp   = n())
-
-ggplot(tmp, aes(x = long, y = n_spp)) +
-  geom_point() +
-  geom_vline(xintercept = c(80, 150, 240), color = 'red')
-
-```
-
-``` {r all_bands}
-
-am_spp_all_lims <- am_spp_latlong %>%
-  filter(clongadj <= 260) %>% ### west of North America
-  filter(clongadj >= 50) %>% ### east of West Africa
-  filter(centerlat >= -25) %>% ### north of Australia
-  group_by(am_sid) %>%
-  summarize(w_lim = min(wlimitadj),
-            e_lim = max(elimitadj),
-            n_w_lim = sum(wlimitadj == w_lim),
-            n_e_lim = sum(elimitadj == e_lim),
-            n_tot = n()) %>%
-  gather(lim, long, w_lim:e_lim) %>%
-  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
-  filter(str_detect(lim_n, lim)) %>%
-  select(-lim_n) %>%
-  mutate(long = ifelse(long %in% c(50, 260), NA, long)) %>%
-  filter(!is.na(long))
-    ### delete artificially imposed limits
-
-tmp <- am_spp_all_lims %>%
-  group_by(long) %>%
-  summarize(n_cells = sum(ncells),
-            n_spp   = n())
-
-ggplot(tmp, aes(x = long, y = n_spp)) +
-  geom_point() +
-  geom_vline(xintercept = c(80, 150, 240), color = 'red') +
   geom_vline(xintercept = c(77, 185), color = 'red')
-
-
-
-```
-
-``` {r all_bands_low_data}
-
-datapoor <- spp_quad_list %>%
-  filter(is.na(reviewed)) %>%
-  filter(occurcells < 50)
-  
-
-am_spp_dp_lims <- am_spp_latlong %>%
-  filter(am_sid %in% datapoor$am_sid) %>%
-  filter(clongadj <= 260) %>% ### west of North America
-  filter(clongadj >= 50) %>% ### east of West Africa
-  filter(centerlat >= -25) %>% ### north of Australia
-  group_by(am_sid) %>%
-  summarize(w_lim = min(wlimitadj),
-            e_lim = max(elimitadj),
-            n_w_lim = sum(wlimitadj == w_lim),
-            n_e_lim = sum(elimitadj == e_lim),
-            n_tot = n()) %>%
-  gather(lim, long, w_lim:e_lim) %>%
-  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
-  filter(str_detect(lim_n, lim)) %>%
-  select(-lim_n) %>%
-  mutate(long = ifelse(long %in% c(50, 260), NA, long)) %>%
-  filter(!is.na(long))
-    ### delete artificially imposed limits
-
-tmp <- am_spp_dp_lims %>%
-  group_by(long) %>%
-  summarize(n_cells = sum(ncells),
-            n_spp   = n())
-
-ggplot(tmp, aes(x = long, y = n_spp)) +
-  geom_point() +
-  geom_vline(xintercept = c(80, 240), color = 'red') +
-  geom_vline(xintercept = c(77, 185), color = 'red')
-
-
 
 ```
 
 ``` {r what_species_are_these}
 
-### this first batch is Coral Triangle-area species
-clipped_spp1 <- am_spp_all_lims %>%
+clipped_spp <- am_spp_central_lims %>%
+  # bind_rows(am_spp_north_lims) %>%
   # filter(long %in% c(77, 185)) %>%
-  filter((long == 77  & lim == 'w_lim') | 
-         (long == 185 & lim == 'e_lim')) %>%
-  select(am_sid) %>%
-  distinct %>%
+  filter(long == 185) %>%
+  select(am_sid, lim) %>%
+  distinct() %>%
   left_join(spp_quad_list, by = 'am_sid')
 
-### This next batch is open Pacific or Indian Ocean species
-clipped_spp2 <- am_spp_all_lims %>%
-  # filter(long %in% c(77, 185)) %>%
-  filter((long == 77  & lim == 'e_lim') | 
-         (long == 185 & lim == 'w_lim')) %>%
-  select(am_sid) %>%
-  distinct %>%
-  left_join(spp_quad_list, by = 'am_sid')
-
-write_csv(clipped_spp1, file.path(dir_git, 'clip_fao', 'clipped_se_asia.csv'))
-write_csv(clipped_spp2, file.path(dir_git, 'clip_fao', 'clipped_india_pacific.csv'))
+write_csv(clipped_spp, file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
 
 ```
 
-``` {r plot_spp, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
-
-clipped_spp1 <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_se_asia.csv'))
-clipped_spp2 <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_india_pacific.csv'))
+``` {r plot_setup, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
 loiczid_raster <- raster('data/rasters/loiczid_raster.tif')
+fao_polys <- rgdal::readOGR(dsn = file.path(path.expand(dir_git), 'clip_fao/fao_rgns'),
+                            layer = 'fao_rgns2')
 
-spp_examples <- sample_n(clipped_spp2, 10)
+assemble_map <- function(map_rast, spp) {
+  message('...mapping ', spp)
+  map_obj <- tm_shape(map_rast) +
+    tm_raster(palette = 'Reds',
+              colorNA = NULL,
+              title = spp,
+              alpha = 1) +
+    tm_shape(World) +
+      tm_polygons() + 
+    tm_layout(basemaps = "Esri.WorldTopoMap", 
+              # title.position = 'TOP', 
+              legend.outside = TRUE, attr.outside = TRUE)
 
-for (i in 1:nrow(spp_examples)) {
+  return(map_obj)
+}
+```
+
+``` {r plot_spp_e, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+spp_examples_e <- clipped_spp %>%
+  filter(lim == 'w_lim')
+
+
+rast_list <- vector('list', length = nrow(spp_examples_e))
+
+for (i in 1:nrow(spp_examples_e)) {  # i <- 1
   
-  spp <- spp_examples[i, ]
+  spp <- spp_examples_e[i, ]
   map_cells <- am_spp_cells %>%
     filter(am_sid == spp$am_sid) %>%
     mutate(am_pres = 1)
@@ -307,16 +214,110 @@ for (i in 1:nrow(spp_examples)) {
                      which = 'am_pres', 
                      subsWithNA = TRUE)
   
-  spp_pts <- as.data.frame(rasterToPoints(r_am_spp))
+  r1 <- r_am_spp %>%
+    crop(extent(c(-180, 0, -50, 50)))
+  extent(r1) <- c(180, 360, -50, 50)
   
-  spp_plot <- ggplot(spp_pts, aes(x = x, y = y)) +
-    ggtheme_map + 
-    geom_raster(aes(fill = am_pres), alpha = .8, show.legend = FALSE) +
-    borders('world', color='gray30', fill='gray40', size = .1) +  # create a layer of borders
-    scale_x_continuous(breaks = seq(-180, 180, by = 30)) +
-    scale_y_continuous(breaks = seq( -90,  90, by = 30))
-
-  plot(spp_plot)
+  r2 <- r_am_spp %>%
+    crop(extent(c(0, 180, -50, 50)))
+  
+  r3 <- merge(r2, r1)
+  
+  new_ext <- extent(c(50, 240, -50, 50))
+  r_am_crop <- crop(r3, new_ext)
+  
+  rast_list[i] <- r_am_crop
+  names(rast_list)[i] <- spp
+  
+  spp_plot <- assemble_map(r_am_crop, spp$sciname)
 }
 
+mapstack_e <- stack(rast_list) %>%
+  calc(sum, na.rm = TRUE)
+plot(mapstack_e)
+values(mapstack_e)[values(mapstack_e) == 0] <- NA
+mapstack_e <- crop(mapstack_e, extent(c(85, 220, -50, 50)))
+
+
+stack_plot_e <- assemble_map(mapstack_e, 'n_spp') +
+  tm_shape(fao_polys) +
+  tm_borders()
+print(stack_plot_e)
+
+```
+
+``` {r plot_spp_w, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+spp_examples_w <- clipped_spp %>%
+  filter(lim == 'e_lim') %>%
+  sample_n(30)
+
+rast_list <- vector('list', length = nrow(spp_examples_w))
+
+for (i in 1:nrow(spp_examples_w)) {  # i <- 1
+  
+  spp <- spp_examples_w[i, ]
+  map_cells <- am_spp_cells %>%
+    filter(am_sid == spp$am_sid) %>%
+    mutate(am_pres = 1)
+  
+  r_am_spp  <-  subs(loiczid_raster, 
+                     map_cells[ , c('loiczid', 'am_pres')], 
+                     by = 'loiczid', 
+                     which = 'am_pres', 
+                     subsWithNA = TRUE)
+  
+  r1 <- r_am_spp %>%
+    crop(extent(c(-180, 0, -50, 50)))
+  extent(r1) <- c(180, 360, -50, 50)
+  
+  r2 <- r_am_spp %>%
+    crop(extent(c(0, 180, -50, 50)))
+  
+  r3 <- merge(r2, r1)
+  
+  new_ext <- extent(c(70, 220, -50, 50))
+  r_am_crop <- crop(r3, new_ext)
+  
+  rast_list[i] <- r_am_crop
+  names(rast_list)[i] <- spp
+  
+  spp_plot <- assemble_map(r_am_crop, spp$sciname)
+}
+
+mapstack_w <- stack(rast_list) %>%
+  calc(sum, na.rm = TRUE)
+plot(mapstack_w)
+values(mapstack_w)[values(mapstack_w) == 0] <- NA
+mapstack_w <- crop(mapstack_w, extent(c(85, 220, -50, 50)))
+
+stack_plot_w <- assemble_map(mapstack_w, 'n_spp') +
+  tm_shape(fao_polys) +
+  tm_borders()
+
+print(stack_plot_w)
+
+```
+
+``` {r combine_rasts}
+
+stack_plot_both <- 
+  tm_shape(mapstack_w) +
+    tm_raster(palette = 'Reds',
+              colorNA = NULL,
+              title = 'n_spp',
+              alpha = 1) +
+  tm_shape(mapstack_e) +
+    tm_raster(palette = 'Blues',
+              colorNA = NULL,
+              title = 'n_spp') +
+  tm_shape(World) +
+    tm_polygons() + 
+  tm_shape(fao_polys) +
+    tm_borders() +
+  tm_layout(basemaps = "Esri.WorldTopoMap", 
+            # title.position = 'TOP', 
+            legend.outside = TRUE, attr.outside = TRUE)
+
+print(stack_plot_both)
 ```
