@@ -70,6 +70,32 @@ if(!file.exists(file.path(dir_git, 'clip_depth', 'bathy_cells.csv'))) {
 ```
 
 
+``` {r extract_IUCN_cells_for_coral_pairs}
+
+bath_df <-  read_csv(file.path(dir_git, 'clip_depth', 'bathy_cells.csv'), col_types = 'dd') %>%
+  filter(weight >= 1) %>% ### cell must be 100% within the deep polygon to count as deep
+  mutate(deep = 1) %>%
+  select(-weight)
+
+spp_depth <- read_csv(file.path(dir_git, 'clip_depth', 'coral_spp_depth.csv'))
+
+### load iucn spp_cells
+coral_files <- list.files(file.path(dir_anx, 'v2016', 'iucn_intersections'), 
+                          pattern = 'CORAL*.*',
+                          full.names = TRUE)
+coral_cells_iucn <- lapply(coral_files, read_csv) %>%
+  bind_rows() %>%
+  select(iucn_sid, loiczid = LOICZID) %>%
+  # filter(iucn_sid %in% spp_depth$iucn_sid[spp_depth$paired_map]) %>%
+  left_join(bath_df, by = 'loiczid') %>%
+  mutate(deep = ifelse(is.na(deep), 0, deep))
+
+write_csv(coral_cells_iucn, file.path(dir_git, 'clip_depth', 'coral_cells_iucn.csv'))
+length(unique(coral_cells_iucn$iucn_sid))
+### NOTE: only 473 coral species with IUCN maps
+```
+
+
 ``` {r}
 ### find spp depth limits
 ### focus just on corals?
@@ -165,30 +191,54 @@ quantile(spp_d1$max_depth, seq(.9, 1, .01), na.rm = TRUE)
 
 ```
 
-``` {r extract_IUCN_cells_for_coral_pairs}
 
-bath_df <-  read_csv(file.path(dir_git, 'clip_depth', 'bathy_cells.csv'), col_types = 'dd') %>%
-  filter(weight >= 1) %>% ### cell must be 100% within the deep polygon to count as deep
-  mutate(deep = 1) %>%
-  select(-weight)
+``` {r plot_coral_composite_map}
 
-spp_depth <- read_csv(file.path(dir_git, 'clip_depth', 'coral_spp_depth.csv'))
+library(tmap)
+data(World)
 
-### load iucn spp_cells
-coral_files <- list.files(file.path(dir_anx, 'v2016', 'iucn_intersections'), 
-                          pattern = 'CORAL*.*',
-                          full.names = TRUE)
-coral_cells_iucn <- lapply(coral_files, read_csv) %>%
-  bind_rows() %>%
-  select(iucn_sid, loiczid = LOICZID) %>%
-  # filter(iucn_sid %in% spp_depth$iucn_sid[spp_depth$paired_map]) %>%
-  left_join(bath_df, by = 'loiczid') %>%
-  mutate(deep = ifelse(is.na(deep), 0, deep))
 
-write_csv(coral_cells_iucn, file.path(dir_git, 'clip_depth', 'coral_cells_iucn.csv'))
-length(unique(coral_cells_iucn$iucn_sid))
-### NOTE: only 473 coral species with IUCN maps
+coral_comp <- coral_cells_iucn %>%
+  select(-iucn_sid) %>%
+  mutate(deep = deep * 200) %>%
+  distinct()
+
+
+rast_coral_comp <- subs(x = loiczid_raster, y = coral_comp %>% select(loiczid, deep), 
+                     by = 'loiczid', which = 'deep', 
+                     subsWithNA = TRUE) %>%
+  crop(extent(c(-180, 180, -63, 85)))
+
+  
+map_coral_comp <- 
+  tm_shape(rast_coral_comp) +
+    tm_raster(breaks = c(0, 200, Inf),
+              palette = c('lightblue', 'royalblue4'),
+              colorNA = NULL,
+              title = 'depth (meters)',
+              alpha = 1) +
+  tm_shape(World) +
+    tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
+  tm_layout(basemaps = "Esri.WorldTopoMap", 
+            legend.text.size = .35,
+            legend.title.size = .45,
+            # title.position = 'TOP', 
+            legend.outside = FALSE, 
+            legend.position = c('left', 'bottom'),
+            legend.bg.color = 'white',
+            legend.bg.alpha = .5,
+            attr.outside = TRUE)
+
+print(map_coral_comp)
+
+save_tmap(map_coral_comp,
+          filename = file.path(dir_fig, 'fig3a_coral_map.png'), 
+          width = 9, height = 4.2, units = 'cm', dpi = 600)
+
+
+
 ```
+
 
 ``` {r calc_areas_for_iucn_corals}
 ### calc areas

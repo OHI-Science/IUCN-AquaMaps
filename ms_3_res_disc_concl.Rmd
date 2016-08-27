@@ -7,6 +7,8 @@ output: pdf_document
 
 ## Taxonomic and geographic coverage
 
+- figure 1 and caption
+
 [results] The two datasets have notably different taxonomic (Fig. 1A) and regional (Figs. 1B, 1C) coverage.  AquaMaps encompasses a broader range of taxa than IUCN, as IUCN spatial data files are only available for select taxonomic groups that have been comprehensively assessed. While species numbers in both datasets peak in tropical latitudes near the equator, species counts for IUCN maps drop quickly beyond 30°N and 30°S, while species counts for AquaMaps remain robust well into temperate latitudes.  The longitude frequency plots show a slight shift in the IUCN dataset away from the Atlantic and eastern Pacific compared to AquaMaps.  
 
 <!-- need discussion here? [discussion] Each dataset offers spatial information on a -->
@@ -44,7 +46,11 @@ med_occ_q123 <- round(median(spp_quads_occ$mean_occ[spp_quads_occ$quad %in% c('q
 
 ```
 
+## Distribution and range area alignment
+
 [discussion] To explore differences in species distribution and range between the two datasets, we plotted the distribution alignment (how much of the smaller range falls within the larger range, i.e., where on the map) against the area ratio (ratio of smaller range area to larger range area, i.e., how much of the map) for each shared species (Fig. 2A).  Where two independent methods predict presence (or absence) of a species in the same location, we can assume a higher confidence in the accuracy of that prediction.  Where one method predicts presence while the other predicts absence, we can investigate potential sources of commission and omission errors to refine our understanding of the species' range.  Understanding these sources of error can provide guidance to improve predictions of species range even when only one source of spatial data is available.
+
+- quad plot and bar chart and captions
 
 [discussion] This analysis revealed a weak negative linear pattern, suggesting that increasing similarity in range area correlates with decreasing distribution alignment.
  AquaMaps tends to extrapolate species ranges into suitable areas beyond known occurrences, such that each additional unit of range predicted by AquaMaps will fall in different locations than an additional unit of range predicted using IUCN methodology. For species with dissimilar range areas, predicted distribution for the smaller range can more easily fall within the generous bounds of the larger range. For species with increasingly similar range areas, differences in methodology become more difficult to "hide," and the distribution alignment generally becomes poorer.
@@ -55,17 +61,17 @@ med_occ_q123 <- round(median(spp_quads_occ$mean_occ[spp_quads_occ$quad %in% c('q
 
 [results/discussion] The area-mismatched ranges contained in the upper left quadrant (n = `r n_q2`) include many species whose spatial distribution is similar, but where one range is notably larger than the other (For `r round(n_q2_iucn_larger/n_q2 * 100, 1)`% of the species in this quadrant, the IUCN range is an average of 2.57 times larger than the AquaMaps range).  This suggests a high rate of commission and/or omission errors by one or both datasets; further analysis is required to disentangle the source and type of error contributing to poor area alignment.  The results of the coral analysis (described below) provide some insight.  
 
-[results/discussion] ___area ratio suggests similar commission/omission errors, but dist suggests otherwise___ Species found in the lower right quadrant (n = `r n_q3`) seem to represent cases of "two wrongs make a right."  For these species, IUCN and AquaMaps both predict ranges extending far beyond the overlapping region, but the methodological differences result in very different extrapolations.   ___OMIT:___ _For these species, IUCN ranges frequently overextend into unsuitable depths, as in the case of many upper left quadrant species, while at the same time AquaMaps ranges often aggressively extrapolate presence into locations where IUCN predicts absence, likely introducing additional commission errors._  Consequently, area ratios are close to 100%, though the poor distribution alignment indicates that one or both datasets are introducing significant errors. As above, further analysis is required to disentangle the causes of error.
+[results/discussion] ___area ratio suggests similar commission/omission errors, but dist suggests otherwise___ Species found in the lower right quadrant (n = `r n_q3`) seem to represent cases of "two wrongs make a right."  For these species, IUCN and AquaMaps both predict ranges extending far beyond the overlapping region, but the methodological differences result in very different extrapolations.   Consequently, area ratios are close to 100%, though the poor distribution alignment indicates that one or both datasets are introducing significant errors. As above, further analysis is required to disentangle the causes of error.
 
 [results] The lower left quadrant includes species (n = `r n_q4`) where alignment is poor in both dimensions.  ___present a solution here?___ Data-poor species are more common in this quadrant; indeed, the median number of species occurrence records (averaging occurrences from the Ocean Biogeographic Information System (OBIS) [@obis_data_2016] and the Global Biodiversity Information Facility (GBIF) [@gbif_global_2010]) for this quadrant is `r med_occ_q4` records, compared to a median of `r med_occ_q123` records for species across the other three quadrants.  It is not surprising that range maps based upon fewer observations bear greater uncertainty.
 
-## Case study: Coral depth analysis
+## Coral depth exploration
 
 [discussion] Noting from Fig. 2B that corals dominate the upper-left "distribution-aligned" quadrant of Fig. 2A (n = `r n_q2_corals`; `r round(n_q2_corals/n_q2 * 100, 1)`% of all species in this quadrant), we chose to examine the effect of explicitly restricting IUCN ranges to depths based on species' life histories.  Corals offer an excellent case study, due to their foundational role in biodiverse habitats, as well as their lack of mobility and reliance on photosynthesis.  Ocean depth preference is explicitly included in AquaMaps models.  While depth is recommended by the IUCN as a criterion for providers of range maps ("The limits of distribution can be determined by using known occurrences of the species, along with the knowledge of habitat preferences, remaining suitable habitat, elevation limited, and other expert knowledge of the species and its range." [@REF http://www.iucnredlist.org/technical-documents/red-list-training/iucnspatialresources]), it is not presented as a requirement, so we cannot take its inclusion for granted.
 
 - Coral area plot
 
-[results] Fig. 3A shows the 463 coral species mapped in the IUCN dataset, with their ranges broken into proportional area deeper and shallower than 200 m.  None of these species is indicated to occur deeper than 200 m, and 94% are confined to waters shallower than 50 m; seven of the mapped species had no reported depth information.  Clipping coral ranges to shallower than 200 m eliminated an average of 47.6% of the total predicted area while still allowing for a conservative estimate of suitable habitat.
+[results] Fig. 3A shows the 463 coral species mapped in the IUCN dataset, with their ranges broken into proportional area deeper and shallower than 200 m.  ___show a map of all coral species aggregated, with deeper than 200 m cells shown___  None of these species is indicated to occur deeper than 200 m, and 94% are confined to waters shallower than 50 m; seven of the mapped species had no reported depth information.  Clipping coral ranges to shallower than 200 m eliminated an average of 47.6% of the total predicted area while still allowing for a generous estimate of suitable habitat.
 
 - Coral new quads
 
