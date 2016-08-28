@@ -7,7 +7,9 @@ The IUCN publishes species range maps developed by species experts.  These exper
 
 In contrast, AquaMaps models species distribution based on environmental preferences, such as temperature, depth, and salinity, deduced from occurrence records, published species databases such as FishBase, and expert knowledge.  The AquaMaps model overlays these environmental preferences atop a map of environmental attributes on a global 0.5° grid to determine suitable habitat, resulting in a "probability of occurrence" for each species.  Of these, 1296 (5.7%) have been further refined through an expert review process [@kaschner_mapping_2006; @ready_predicting_2010]. ___Fig. SXXX___
 
+<!--
 ___OMIT: Studies using AquaMaps data frequently define "presence" by applying a probability threshold, e.g., previously, the Ocean Health Index defined presence as 40% or greater probability of occurrence [@halpern_index_2012; @halpern_patterns_2015].  In the 2016 OHI assessment, the presence threshold was eliminated, to better approximate the "extent of occurrence" generally indicated by IUCN maps, since the two datasets are used together.___
+-->
 
 __Comparison of taxonomic and regional distribution__:
 To examine the overall taxonomic distribution across the spatial datasets (Fig. 1A), we grouped species by taxonomic class and data source, and determined the proportion of each class represented in each dataset.  
@@ -33,6 +35,8 @@ AquaMaps uses Food and Agriculture Organization of the United Nations (FAO) Majo
 
 To identify data-poor species, we used the ___robis???___ and ___rgbif???___ packages [@REFS] in R to identify known occurrences of each species; occurrences were averaged between the two occurrence databases as a proxy for data richness.
 
+<!--
+
 ## Methods for Ocean Health Index (OHI) case study
 
 The global Ocean Health Index (OHI) [@halpern_index_2012; @halpern_patterns_2015], a composite index comprising ten sustainable benefits provided by a healthy ocean, uses species spatial distribution data to calculate biodiversity status for each of the world's 221 exclusive economic zones. 
@@ -40,6 +44,8 @@ The global Ocean Health Index (OHI) [@halpern_index_2012; @halpern_patterns_2015
 The Species component of the OHI Biodiversity goal (abbreviated as SPP) uses IUCN Red List extinction risk as a proxy for a species' health.  Each species is assigned a risk score based on IUCN Red List extinction risk category, from Least Concern (0.0) to Extinct (1.0) (Data Deficient and unassessed species are excluded).  Species range is determined from its IUCN range map, where available, or its AquaMaps range map if an IUCN map is unavailable.  For each assessed OHI region, an area-weighted mean extinction risk across all species is calculated, and rescaled to calculate a status score from 0 (mean extinction risk = 0.75) to 100 (mean extinction risk = 0) [@halpern_index_2012; @halpern_patterns_2015].
 
 _To highlight the differences in the datasets, we recalculated the OHI SPP status values using only one complete dataset at a time, and compared to the values resulting from the combined datasets.  For the AquaMaps dataset, we used a "probability of occurrence" threshold of 0% to determine presence, to align with the OHI 2016 assessment._  
+
+-->
 
 ## Methods for MPA Gap Analysis case study
 To assess the effectiveness of MPAs in protecting biodiversity, Klein et al. [-@klein_shortfalls_2015] compared the coverage of the global MPA network presented by the World Database on Protected Areas (WDPA) [@iucn_world_2014] to the species ranges described in the 2014 AquaMaps dataset [@aquamaps_XXX].  For the primary analysis, the researchers defined species presence as 50% or greater probability of occurrence.

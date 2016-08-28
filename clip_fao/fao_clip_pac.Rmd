@@ -64,6 +64,13 @@ am_spp_cells <- read_csv(file.path(dir_anx, 'spp_ico',
   # filter(am_sid %in% spp_quad_list$am_sid) %>% 
   # distinct()
 
+am_spp_list <- read_csv(file.path(dir_git, 'data/spp_all.csv')) %>%
+  filter(!is.na(am_sid)) %>%
+  arrange(reviewed) %>%
+  filter(!duplicated(am_sid)) %>%
+  select(am_sid, sciname, reviewed) %>%
+  distinct()
+
 message('loading hcaf and adjusting to se asia')
 ### join with hcaf to get longitudes (and latitudes) for each cell
 hcaf <- read_csv(file.path(dir_anx, '_raw_data/aquamaps/d2015',
@@ -165,7 +172,7 @@ clipped_spp <- am_spp_central_lims %>%
   filter(long == 185) %>%
   select(am_sid, lim) %>%
   distinct() %>%
-  left_join(spp_quad_list, by = 'am_sid')
+  left_join(am_spp_list, by = 'am_sid')
 
 write_csv(clipped_spp, file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
 
@@ -259,111 +266,69 @@ save_tmap(rast_spp_map_e, file.path(dir_fig, 'fig4_am_edge.png'),
 
 ```
 
-``` {r plot_spp_e, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
-
-clipped_spp <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
-
-spp_examples_e <- clipped_spp %>%
-  filter(lim == 'w_lim')
-
-
-rast_list <- vector('list', length = nrow(spp_examples_e))
-
-for (i in 1:nrow(spp_examples_e)) {  # i <- 1
-  
-  spp <- spp_examples_e[i, ]
-  map_cells <- am_spp_cells %>%
-    filter(am_sid == spp$am_sid) %>%
-    mutate(am_pres = 1)
-  
-  r_am_spp  <-  subs(loiczid_raster, 
-                     map_cells[ , c('loiczid', 'am_pres')], 
-                     by = 'loiczid', 
-                     which = 'am_pres', 
-                     subsWithNA = TRUE)
-  
-  r1 <- r_am_spp %>%
-    crop(extent(c(-180, 0, -50, 50)))
-  extent(r1) <- c(180, 360, -50, 50)
-  
-  r2 <- r_am_spp %>%
-    crop(extent(c(0, 180, -50, 50)))
-  
-  r3 <- merge(r2, r1)
-  
-  new_ext <- extent(c(50, 240, -50, 50))
-  r_am_crop <- crop(r3, new_ext)
-  
-  rast_list[i] <- r_am_crop
-  names(rast_list)[i] <- spp
-  
-  spp_plot <- assemble_map(r_am_crop, spp$sciname)
-}
-
-mapstack_e <- stack(rast_list) %>%
-  calc(sum, na.rm = TRUE)
-plot(mapstack_e)
-values(mapstack_e)[values(mapstack_e) == 0] <- NA
-mapstack_e <- crop(mapstack_e, extent(c(85, 220, -50, 50)))
-
-
-stack_plot_e <- assemble_map(mapstack_e, 'n_spp') +
-  tm_shape(fao_polys) +
-  tm_borders()
-print(stack_plot_e)
-
-```
 
 ``` {r plot_spp_w, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
+clipped_spp <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
+
 spp_examples_w <- clipped_spp %>%
-  filter(lim == 'e_lim') %>%
-  sample_n(30)
+  filter(lim == 'e_lim')
 
-rast_list <- vector('list', length = nrow(spp_examples_w))
+message('grouping affected species and summing to loiczid')
+### group affected spp by loiczid and sum
+spp_cells_clipped <- am_spp_cells %>%
+  filter(am_sid %in% spp_examples_w$am_sid) %>%
+  group_by(loiczid) %>%
+  summarize(n_spp = n())
 
-for (i in 1:nrow(spp_examples_w)) {  # i <- 1
-  
-  spp <- spp_examples_w[i, ]
-  map_cells <- am_spp_cells %>%
-    filter(am_sid == spp$am_sid) %>%
-    mutate(am_pres = 1)
-  
-  r_am_spp  <-  subs(loiczid_raster, 
-                     map_cells[ , c('loiczid', 'am_pres')], 
-                     by = 'loiczid', 
-                     which = 'am_pres', 
-                     subsWithNA = TRUE)
-  
-  r1 <- r_am_spp %>%
-    crop(extent(c(-180, 0, -50, 50)))
-  extent(r1) <- c(180, 360, -50, 50)
-  
-  r2 <- r_am_spp %>%
-    crop(extent(c(0, 180, -50, 50)))
-  
-  r3 <- merge(r2, r1)
-  
-  new_ext <- extent(c(70, 220, -50, 50))
-  r_am_crop <- crop(r3, new_ext)
-  
-  rast_list[i] <- r_am_crop
-  names(rast_list)[i] <- spp
-  
-  spp_plot <- assemble_map(r_am_crop, spp$sciname)
-}
+### create raster, then shift raster
 
-mapstack_w <- stack(rast_list) %>%
-  calc(sum, na.rm = TRUE)
-plot(mapstack_w)
-values(mapstack_w)[values(mapstack_w) == 0] <- NA
-mapstack_w <- crop(mapstack_w, extent(c(85, 220, -50, 50)))
+rast_spp  <-  subs(loiczid_raster, 
+                   spp_cells_clipped[ , c('loiczid', 'n_spp')], 
+                   by = 'loiczid', 
+                   which = 'n_spp', 
+                   subsWithNA = TRUE)
 
-stack_plot_w <- assemble_map(mapstack_w, 'n_spp') +
+rast_spp_shift <- rast_spp %>%
+  raster::shift(360)
+
+rast_spp_w <- merge(rast_spp, rast_spp_shift)
+
+values(rast_spp_w)[values(rast_spp_w) == 0] <- NA
+# values(rast_spp_w)[is.na(values(rast_spp_w))] <- 0
+rast_spp_w <- crop(rast_spp_w, extent(c(85, 220, -59, 50)))
+
+rast_spp_map_w <- 
+  tm_shape(rast_spp_w) +
+    tm_raster(palette = 'Reds',
+              breaks = c(1, 15, 100, 200, 300, Inf),
+              colorNA = 'lightblue1',
+              textNA = 'Zero',
+              title = 'Count',
+              alpha = 1) +
+  tm_shape(World) +
+    tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
   tm_shape(fao_polys) +
-  tm_borders()
+    tm_borders(col = 'grey40', lwd = 0.25) +
+    tm_text('F_CODE_1',
+            col = 'orangered4',
+            fontface = 'bold.italic',
+            fontfamily = 'Helvetica',
+            size = .35) +
+  tm_layout(basemaps = "Esri.WorldTopoMap", 
+            legend.text.size = .35,
+            legend.title.size = .45,
+            # title.position = 'TOP', 
+            legend.outside = TRUE,
+            # legend.position = c('right', 'bottom'),
+            # legend.bg.color = 'white',
+            # legend.bg.alpha = .5,
+            attr.outside = TRUE)
 
-print(stack_plot_w)
+print(rast_spp_map_w)
+
+save_tmap(rast_spp_map_w, file.path(dir_fig, 'fig4_am_edge_w.png'), 
+          width = 9, height = 6, units = 'cm', dpi = 600)
 
 ```
 
