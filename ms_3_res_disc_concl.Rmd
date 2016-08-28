@@ -71,15 +71,19 @@ med_occ_q123 <- round(median(spp_quads_occ$mean_occ[spp_quads_occ$quad %in% c('q
 
 - Coral area plot
 
-[results] Fig. 3A shows the 463 coral species mapped in the IUCN dataset, with their ranges broken into proportional area deeper and shallower than 200 m.  ___show a map of all coral species aggregated, with deeper than 200 m cells shown___  None of these species is indicated to occur deeper than 200 m, and 94% are confined to waters shallower than 50 m; seven of the mapped species had no reported depth information.  Clipping coral ranges to shallower than 200 m eliminated an average of 47.6% of the total predicted area while still allowing for a generous estimate of suitable habitat.
+[results] Fig. 3A shows the 463 coral species mapped in the IUCN dataset, with their ranges broken into proportional area deeper and shallower than 200 m.  According to IUCN descriptions, none of these species is indicated to occur deeper than 200 m, and 94% are confined to waters shallower than 50 m; seven of the mapped species had no reported depth information.  Clipping coral ranges to shallower than 200 m eliminated an average of 47.6% of the total predicted area while still allowing for a generous estimate of suitable habitat.
 
 - Coral new quads
 
-[results] In constraining coral ranges to shallow waters, we see a strong increase in the apparent alignment of species maps between IUCN and AquaMaps.  Using the original quadrant definitions from Fig. 2B, we see in Fig. 3B and 3C a massive shift in 354 paired map species due to constraining coral depths to 200 m.  Membership in the "well-aligned" quadrant jumped from 22.4% to 76.2%, with a corresponding decrease in all other quadrants.
+[results] In constraining coral ranges to shallow waters, we see a strong increase in the apparent alignment of species maps between IUCN and AquaMaps.  Using the original quadrant definitions from Fig. 2B, we see in Fig. 3B a massive shift in 354 paired-map coral species due to constraining coral depths to 200 m.  Membership in the "well-aligned" quadrant jumped from 22.4% to 76.2%, with a corresponding decrease in all other quadrants.  See SXXX to examine the shifts of individual species among the quadrants.
 
-[discussion] We cannot know for certain the true distribution of each of these corals; much of the apparent over-prediction of coral ranges is likely due to experts taking a conservative and precautionary approach.  But a sensible shift in method drastically decreases the likelihood of introducing commission errors, with little chance of introducing omission errors, greatly improving our confidence in the remaining reported ranges.  Note that this change applies just as well to the IUCN coral maps that are not included in the paired map analysis, and likely to other reef-associated flora and fauna.  While species depth preferences are an easy and consistent means of constraining range predictions, other conditions such as salinity and temperature could be cautiously used to refine the results of expert opinions.
+[discussion] We cannot know for certain the true distribution of each of these corals; much of the apparent over-expansion of coral ranges is likely due to experts taking a conservative and precautionary approach.  But a sensible shift in method drastically decreases the likelihood of introducing commission errors, with little chance of introducing omission errors, greatly improving our confidence in the remaining reported ranges.  Note that this change applies just as well to the IUCN coral maps that are not included in the paired map analysis, and likely to other reef-associated flora and fauna.  While species depth preferences are an easy and consistent means of constraining range predictions, other conditions such as salinity and temperature could be cautiously used to refine the results of expert opinions.
 
-***What is still missing here is something to show that AquaMaps ranges, clipped to FAO Major Fishing Areas, are probably introducing errors of commission as well*** - _the fish don't see that FAO boundary and suddenly decide not to cross; most obvious in the boundaries defined by longitudes - sudden vertical edges in range.  Can we show this with a couple of example maps?  That wasn't received well for the corals, but I can't think of a clear and unambiguous way to analyze this problem._
+## Georegion constraint exploration
+
+- AM clipped map
+
+[results] 
 
 ## Case Studies
 

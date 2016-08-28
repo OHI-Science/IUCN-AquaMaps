@@ -197,6 +197,8 @@ quantile(spp_d1$max_depth, seq(.9, 1, .01), na.rm = TRUE)
 library(tmap)
 data(World)
 
+coral_cells_iucn <- read_csv(file.path(dir_git, 'clip_depth', 'coral_cells_iucn.csv'))
+
 
 coral_comp <- coral_cells_iucn %>%
   select(-iucn_sid) %>%
