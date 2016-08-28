@@ -222,8 +222,8 @@ rast_spp_shift <- rast_spp %>%
 rast_spp_e <- merge(rast_spp, rast_spp_shift)
 
 values(rast_spp_e)[values(rast_spp_e) == 0] <- NA
-values(rast_spp_e)[is.na(values(rast_spp_e))] <- 0
-rast_spp_e <- crop(rast_spp_e, extent(c(85, 220, -60, 60)))
+# values(rast_spp_e)[is.na(values(rast_spp_e))] <- 0
+rast_spp_e <- crop(rast_spp_e, extent(c(85, 220, -59, 50)))
 
 rast_spp_map_e <- 
   tm_shape(rast_spp_e) +
@@ -231,17 +231,31 @@ rast_spp_map_e <-
               breaks = c(1, 15, 100, 200, 300, Inf),
               colorNA = 'lightblue1',
               textNA = 'Zero',
-              title = 'Species count',
+              title = 'Count',
               alpha = 1) +
   tm_shape(World) +
-    tm_polygons(border.col = 'grey50', col = 'grey55') + 
+    tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
   tm_shape(fao_polys) +
-    tm_borders(col = 'grey40') +
+    tm_borders(col = 'grey40', lwd = 0.25) +
+    tm_text('F_CODE_1',
+            col = 'orangered4',
+            fontface = 'bold.italic',
+            fontfamily = 'Helvetica',
+            size = .35) +
   tm_layout(basemaps = "Esri.WorldTopoMap", 
+            legend.text.size = .35,
+            legend.title.size = .45,
             # title.position = 'TOP', 
-            legend.outside = TRUE, attr.outside = TRUE)
+            legend.outside = TRUE,
+            # legend.position = c('right', 'bottom'),
+            # legend.bg.color = 'white',
+            # legend.bg.alpha = .5,
+            attr.outside = TRUE)
 
 print(rast_spp_map_e)
+
+save_tmap(rast_spp_map_e, file.path(dir_fig, 'fig4_am_edge.png'), 
+          width = 9, height = 6, units = 'cm', dpi = 600)
 
 ```
 

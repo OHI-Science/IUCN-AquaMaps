@@ -85,6 +85,8 @@ med_occ_q123 <- round(median(spp_quads_occ$mean_occ[spp_quads_occ$quad %in% c('q
 
 [results] 
 
+[discussion]
+
 ## Case Studies
 
 To examine the implications of differences between the AquaMaps and IUCN predicted species ranges, we repeated two recent studies, varying only the selection of one data set over the other.
