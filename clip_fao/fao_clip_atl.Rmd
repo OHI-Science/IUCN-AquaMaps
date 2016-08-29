@@ -1,0 +1,329 @@
+---
+title: 'Data Exploration: IUCN and AquaMaps'
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Libraries and Paths
+
+library(ggplot2)
+library(tmap)
+data(World)
+
+library(readr)
+library(raster)
+library(rgdal)
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+dir_M <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
+           'Darwin'  = '/Volumes/ohi',    ### connect (cmd-K) to smb://mazu/ohi
+           'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_M, 'git-annex/globalprep')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
+
+source(file.path(dir_git, 'data_explore/data_explore_fxns.R'))
+### When knitting this, it automatically sets WD to be this directory...
+### the 'setwd()' is there for running by chunk
+```
+
+
+- get aquamaps cells for all quadrant 3 species (and quadrant 4?)
+- focus on any particular group? filter as appropriate
+    - maybe by `occurcells` field? for low-data spp
+- add lat/long from the hcaf file (or at least long)
+- for each species:
+    - identify east/west limits of range (between -180 and +180)
+        - what about species who cross over in pacific? maybe a flag for pacific species?
+        - maybe just select Pacific species and avoid Atlantic?
+    - rescale 0-1?
+        - here we'd be looking for what happens at the edges - is there a sudden jump from no presence to a bunch just at a single longitude?
+        - with this, we could stack all the species and see the cumulative effects of the ends
+    - plot end points, east/west bounds on a horizontal line/histogram/density plot, and put verticals on the longitudes of the FAO region boundaries
+        - not even worrying about N/S? or maybe include just a big swath across the equator or whatever?
+        
+``` {r get_am_spp}
+
+### get quadrant species list; filter to q3 and q4
+spp_quad_list <- read_csv(file.path(dir_git, 'data', 'spp_list_quads.csv')) %>%
+  select(sciname, am_sid, iucn_sid, reviewed, occurcells, quad) %>%
+  filter(quad %in% c('q3', 'q4'))
+
+hist(spp_quad_list$occurcells)
+nrow(spp_quad_list %>% filter(occurcells > 100))
+### 110 out of 1078 (~10%) have more than 100 occurrence cells
+
+### load full AM list and filter to those in q3 and q4
+am_spp_cells <- read_csv(file.path(dir_anx, 'spp_ico',
+                                   'v2016/int/am_cells_spp_prob0.csv')) %>%
+  filter(am_sid %in% spp_quad_list$am_sid) %>% 
+  distinct()
+
+### join with hcaf to get longitudes (and latitudes) for each cell
+hcaf <- read_csv(file.path(dir_anx, '_raw_data/aquamaps/d2015',
+                           'csv/hcaf_truncated.csv')) %>%
+  select(-csquarecode)
+
+am_spp_latlong <- am_spp_cells %>%
+  left_join(hcaf, by = 'loiczid')
+
+### filter out species from Pacific... rough pass:
+### - filter out everything west of 100 W and east of 70 E
+### - this leaves southeast Pacific - coast of Chile etc
+
+am_spp_latlong <- am_spp_latlong %>%
+  filter(centerlong <= 50 & centerlong >= -65)
+
+```
+
+
+Major fishing area boundaries
+- Band 1: 42 W from 35 N to 59 N (North Atlantic)
+- Band 2: 40 W from 5 N to 36 N (temperate Atlantic)
+- Band 3: 20 W from equator to 50 S (tropical and southern Atlantic); 30 E from 25 S on down (below Africa)
+        
+``` {r band_1}
+### 35 north - look for spike at 42 W.  Not big! dammit.
+am_spp_band1 <- am_spp_latlong %>%
+  filter(centerlat >= 35)
+
+am_spp_band1_lims <- am_spp_band1 %>%
+  group_by(am_sid) %>%
+  summarize(w_lim = min(wlimit),
+            e_lim = max(elimit),
+            n_w_lim = sum(wlimit == w_lim),
+            n_e_lim = sum(elimit == e_lim),
+            n_tot = n()) %>%
+  gather(lim, long, w_lim:e_lim) %>%
+  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
+  filter(str_detect(lim_n, lim)) %>%
+  select(-lim_n) %>%
+  mutate(long = ifelse(long %in% c(-65, 50), NA, long)) %>%
+  filter(!is.na(long))
+    ### delete artificially imposed limits
+
+tmp <- am_spp_band1_lims %>%
+  group_by(long) %>%
+  summarize(n_cells = sum(ncells),
+            n_spp   = n())
+
+ggplot(tmp, aes(x = long, y = n_spp)) +
+  geom_point() +
+  geom_vline(xintercept = c(-42), color = 'red')
+
+```
+
+``` {r band_2}
+### 5-36 north - look for spike at 40 W.  NONE! dammit
+am_spp_band2 <- am_spp_latlong %>%
+  filter(centerlat <= 36 & centerlat >= 5)
+
+am_spp_band2_lims <- am_spp_band2 %>%
+  group_by(am_sid) %>%
+  summarize(w_lim = min(wlimit),
+            e_lim = max(elimit),
+            n_w_lim = sum(wlimit == w_lim),
+            n_e_lim = sum(elimit == e_lim),
+            n_tot = n()) %>%
+  gather(lim, long, w_lim:e_lim) %>%
+  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
+  filter(str_detect(lim_n, lim)) %>%
+  select(-lim_n) %>%
+  mutate(long = ifelse(long %in% c(-65, 50), NA, long)) %>%
+  filter(!is.na(long))
+    ### delete artificially imposed limits
+
+tmp <- am_spp_band2_lims %>%
+  group_by(long) %>%
+  summarize(n_cells = sum(ncells),
+            n_spp   = n())
+
+ggplot(tmp, aes(x = long, y = n_spp)) +
+  geom_point() +
+  geom_vline(xintercept = c(-40), color = 'red')
+
+```
+
+``` {r band_3}
+### 50 S to equator - look for spike at 20 W and 30 E
+am_spp_band3 <- am_spp_latlong %>%
+  filter(centerlat <= 0 & centerlat >= -70)
+
+am_spp_band3_lims <- am_spp_band3 %>%
+  group_by(am_sid) %>%
+  summarize(w_lim = min(wlimit),
+            e_lim = max(elimit),
+            n_w_lim = sum(wlimit == w_lim),
+            n_e_lim = sum(elimit == e_lim),
+            n_tot = n()) %>%
+  gather(lim, long, w_lim:e_lim) %>%
+  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
+  filter(str_detect(lim_n, lim)) %>%
+  select(-lim_n) %>%
+  mutate(long = ifelse(long %in% c(-65, 50), NA, long)) %>%
+  filter(!is.na(long))
+    ### delete artificially imposed limits
+
+tmp <- am_spp_band3_lims %>%
+  group_by(long) %>%
+  summarize(n_cells = sum(ncells),
+            n_spp   = n())
+
+ggplot(tmp, aes(x = long, y = n_spp)) +
+  geom_point() +
+  geom_vline(xintercept = c(-20, 30), color = 'red')
+
+```
+
+
+``` {r what_species_are_these}
+
+### which species are clipped at bottom of Africa
+clipped_spp <- am_spp_band3_lims %>%
+  filter(long == 30) %>%
+  select(am_sid, lim) %>%
+  distinct() %>%
+  left_join(spp_quad_list, by = 'am_sid')
+
+
+write_csv(clipped_spp, file.path(dir_git, 'clip_fao', 'clipped_s_afr.csv'))
+```
+
+``` {r plot_w_lim_spp, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+loiczid_raster <- raster('data/rasters/loiczid_raster.tif')
+
+spp_examples <- sample_n(clipped_spp %>% filter(lim == 'w_lim'), 20)
+
+
+assemble_map <- function(map_rast, spp) {
+  message('...mapping ', spp)
+  map_obj <- tm_shape(map_rast) +
+    tm_raster(palette = 'Reds',
+              colorNA = NULL,
+              title = spp,
+              alpha = 1) +
+    tm_shape(World) +
+      tm_polygons() + 
+    tm_layout(basemaps = "Esri.WorldTopoMap", 
+              # title.position = 'TOP', 
+              legend.outside = TRUE, attr.outside = TRUE)
+
+  return(map_obj)
+}
+
+rast_list <- vector('list', length = 20)
+
+for (i in 1:nrow(spp_examples)) {  # i <- 1
+  
+  spp <- spp_examples[i, ]
+  map_cells <- am_spp_cells %>%
+    filter(am_sid == spp$am_sid) %>%
+    mutate(am_pres = 1)
+  
+  r_am_spp  <-  subs(loiczid_raster, 
+                     map_cells[ , c('loiczid', 'am_pres')], 
+                     by = 'loiczid', 
+                     which = 'am_pres', 
+                     subsWithNA = TRUE)
+  
+  
+  new_ext <- extent(c(0, 70, -70, 0))
+  r_am_spp <- crop(r_am_spp, new_ext)
+  
+  rast_list[i] <- r_am_spp
+  names(rast_list)[i] <- spp
+  
+  spp_plot <- assemble_map(r_am_spp, spp$sciname)
+  
+  print(spp_plot)
+
+}
+
+mapstack <- stack(rast_list) %>%
+  calc(sum, na.rm = TRUE)
+
+values(mapstack)[values(mapstack) == 0] <- NA
+
+fao_polys <- rgdal::readOGR(dsn = file.path(dir_anx, '_raw_data/FAO/FAO_AREAS'),
+                            layer = 'FAO_AREAS')
+
+stack_plot <- assemble_map(mapstack, 'multi') +
+  tm_shape(fao_polys) +
+  tm_borders()
+print(stack_plot)
+
+```
+
+``` {r plot_e_lim_spp, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+loiczid_raster <- raster('data/rasters/loiczid_raster.tif')
+
+spp_examples_e <- clipped_spp %>% 
+  filter(lim == 'e_lim')
+
+
+assemble_map <- function(map_rast, spp) {
+  message('...mapping ', spp)
+  map_obj <- tm_shape(map_rast) +
+    tm_raster(palette = 'Reds',
+              colorNA = NULL,
+              title = spp,
+              alpha = 1) +
+    tm_shape(World) +
+      tm_polygons() + 
+    tm_layout(basemaps = "Esri.WorldTopoMap", 
+              # title.position = 'TOP', 
+              legend.outside = TRUE, attr.outside = TRUE)
+
+  return(map_obj)
+}
+
+rast_list <- vector('list', length = length(spp_examples_e))
+
+for (i in 1:nrow(spp_examples_e)) {  # i <- 1
+  
+  spp <- spp_examples_e[i, ]
+  map_cells <- am_spp_cells %>%
+    filter(am_sid == spp$am_sid) %>%
+    mutate(am_pres = 1)
+  
+  r_am_spp  <-  subs(loiczid_raster, 
+                     map_cells[ , c('loiczid', 'am_pres')], 
+                     by = 'loiczid', 
+                     which = 'am_pres', 
+                     subsWithNA = TRUE)
+  
+  
+  new_ext <- extent(c(0, 70, -70, 0))
+  r_am_spp <- crop(r_am_spp, new_ext)
+  
+  rast_list[i] <- r_am_spp
+  names(rast_list)[i] <- spp
+  
+  spp_plot <- assemble_map(r_am_spp, spp$sciname)
+  
+  print(spp_plot)
+
+}
+
+mapstack_e <- stack(rast_list) %>%
+  calc(sum, na.rm = TRUE)
+
+values(mapstack_e)[values(mapstack_e) == 0] <- NA
+
+fao_polys <- rgdal::readOGR(dsn = file.path(dir_anx, '_raw_data/FAO/FAO_AREAS'),
+                            layer = 'FAO_AREAS')
+
+stack_plot_e <- assemble_map(mapstack_e, 'multi') +
+  tm_shape(fao_polys) +
+  tm_borders()
+print(stack_plot_e)
+
+```

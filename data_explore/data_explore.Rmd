@@ -145,65 +145,21 @@ taxa_df <- taxa_am_all %>%
 #                              Both = n_class_both))
 ```
 
-``` {r plot_bar_charts_by_taxa_old, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE}
-# ### bar charts comparing number of species in each class for each data set
-# 
-# #library(colorspace)
-# #hclvec <- heat_hcl(3); colvec <- c('AquaMaps' = hclvec[1], 'Both' = hclvec[2], 'IUCN' = hclvec[3])
-# #colvec <- c('AquaMaps' = '#1b9e77', 'Both' = '#565080', 'IUCN' = '#d95f02')
-# colvec <- c('AquaMaps' = '#76A94C', 'Both' = '#e18258', 'IUCN' = '#9168a9')
-# 
-# taxa_df_long <- taxa_df %>%
-#   dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
-#   gather(dataset, n_spp, AquaMaps:Both) %>%
-#   group_by(class) %>%
-#   mutate(n_total = sum(n_spp, na.rm = TRUE),
-#          percent = n_spp/n_total * 100,
-#          dataset = factor(dataset, levels = c('AquaMaps', 'Both', 'IUCN'), ordered = TRUE)) %>%
-#   arrange(desc(dataset))
-# 
-# break_nums <- seq(0, 100, 20)
-# 
-# bar_taxa <- ggplot(taxa_df_long, aes(x = class, y = percent, fill = dataset)) +
-#   ggtheme_plot + 
-#   theme(panel.grid.major.x = element_blank()) +
-#   geom_bar(stat = 'identity', alpha = 1) +
-#   geom_hline(yintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
-#   scale_fill_manual(values = colvec) +
-#   geom_text(aes(label = sprintf('n = %s', n_total), y = 102), 
-#             size = 2, 
-#             angle = 90, hjust = 0, color = 'grey30') +
-#   theme(axis.text.x = element_text(angle = 75, hjust = 1)) + 
-#   scale_y_continuous(expand = c(0, 0), 
-#                      limits = c(0, 130),
-#                      breaks = break_nums,
-#                      labels = sprintf('%s%%', break_nums)) + 
-#   labs(# title = 'Species maps by taxonomic class',
-#        x = 'Class', 
-#        y = 'Percent of mapped species',
-#        fill = 'Dataset')
-# 
-# print(bar_taxa)
-# ggsave(filename = file.path(dir_fig, 'fig1a_bar_by_taxa_all.png'), 
-#        width = 17.8, height = 7, units = 'cm', dpi = 600)
-
-```
-
 ``` {r plot_barline_charts_by_taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
 ### bar charts comparing number of species in each class for each data set
 
 taxa_df1 <- taxa_df %>%
-  dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Both = n_class_both) %>%
+  dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Paired = n_class_both) %>%
   mutate(AquaMaps = ifelse(is.na(AquaMaps), 0, AquaMaps),
          IUCN     = ifelse(is.na(IUCN),     0, IUCN),
-         Both     = ifelse(is.na(Both),     0, Both),
-         n_total  = AquaMaps + IUCN + Both,
-         IUCN_end = 100 * (IUCN + Both)/n_total,
+         Paired     = ifelse(is.na(Paired),     0, Paired),
+         n_total  = AquaMaps + IUCN + Paired,
+         IUCN_end = 100 * (IUCN + Paired)/n_total,
          IUCN_start = 0,
          AquaMaps_end   = 100,
-         AquaMaps_start = 100 * (n_total - AquaMaps - Both)/n_total,
-         Both_end = AquaMaps_start,
-         Both_start = IUCN_end) %>%
+         AquaMaps_start = 100 * (n_total - AquaMaps - Paired)/n_total,
+         Paired_end = AquaMaps_start,
+         Paired_start = IUCN_end) %>%
   gather(key = dataset,  value = start, ends_with('start')) %>%
   gather(key = dataset2, value = end, ends_with('end')) %>%
   mutate(dataset = str_replace(dataset, '_start', ''),
@@ -214,15 +170,15 @@ taxa_df1 <- taxa_df %>%
 taxa_all_df <- taxa_df1 %>%
   group_by(dataset) %>%
   summarize(class = 'Total',
-            AquaMaps_total = sum(AquaMaps) + sum(Both),
-            IUCN_total = sum(IUCN) + sum(Both),
+            AquaMaps_total = sum(AquaMaps) + sum(Paired),
+            IUCN_total = sum(IUCN) + sum(Paired),
             n_total  = sum(n_total),
             IUCN_end = 100 * IUCN_total/n_total,
             IUCN_start = 0,
             AquaMaps_end   = 100,
             AquaMaps_start = 100 * (n_total - AquaMaps_total)/n_total,
-            Both_end = AquaMaps_start,
-            Both_start = IUCN_end) %>%
+            Paired_end = AquaMaps_start,
+            Paired_start = IUCN_end) %>%
   select(-dataset) %>% distinct() %>%
   gather(key = dataset,  value = start, ends_with('start')) %>%
   gather(key = dataset2, value = end, ends_with('end')) %>%
@@ -238,9 +194,11 @@ taxa_df2 <- taxa_all_df %>%
                      end   = 0,
                      n_total = NA)) %>%
   bind_rows(taxa_df1 %>%
-              select(-IUCN, -AquaMaps, -Both)) %>%
+              select(-IUCN, -AquaMaps, -Paired) %>%
+              arrange(desc(n_total))) %>%
   mutate(class = factor(class, levels = unique(.$class), ordered = TRUE),
-         n_label = ifelse(!is.na(n_total), paste0('n = ', n_total), ''))
+         n_label = ifelse(!is.na(n_total), paste0('n = ', n_total), ''),
+         dataset = factor(dataset, levels = c('AquaMaps', 'Paired', 'IUCN'), ordered = TRUE))
 
 break_nums <- seq(0, 100, 20)
 
@@ -251,8 +209,8 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
   theme(panel.grid.major.x = element_blank()) +
   geom_linerange(aes(ymin = start, ymax = end, size = dataset),
                  position = position_dodge(width = 0.5)) +
-  scale_size_manual(values = c('IUCN' = .25, 'AquaMaps' = .25, 'Both' = 2.5)) +
-  scale_color_manual(values = c('IUCN' = 'black', 'AquaMaps' = 'grey60', 'Both' = 'black')) +
+  scale_size_manual(values = c('IUCN' = .25, 'AquaMaps' = .25, 'Paired' = 2.5)) +
+  scale_color_manual(values = c('IUCN' = 'black', 'AquaMaps' = 'grey60', 'Paired' = 'black')) +
   geom_text(aes(label = n_label, y = 102),
             size = 2,
             angle = 90, hjust = 0, color = 'grey30') +
@@ -261,7 +219,7 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
                      limits = c(0, 130),
                      breaks = break_nums,
                      labels = sprintf('%s%%', break_nums)) +
-  labs(x = 'Class',
+  labs(x = 'Class (in order of decreasing number of included species)',
        y = 'Percent of mapped species',
        fill = 'Dataset')
 

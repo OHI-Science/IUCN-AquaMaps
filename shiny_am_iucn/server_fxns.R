@@ -67,11 +67,11 @@ assemble_map <- function(map_rast, spp) {
   map_obj <- tm_shape(map_rast) +
     tm_raster(palette = 'Spectral',
               colorNA = NULL,
-              title = 'Presence',
+              title = spp,
               alpha = 1) +
     tm_shape(World) +
       tm_polygons() + 
-    tm_layout(title = spp, basemaps = "Esri.WorldTopoMap")
+    tm_layout(basemaps = "Esri.WorldTopoMap", title.position = 'TOP', legend.outside = TRUE, attr.outside = TRUE)
         
   
   # if(show_maps %in% c('am', 'both')) {

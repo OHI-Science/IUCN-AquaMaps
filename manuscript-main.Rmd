@@ -2,7 +2,7 @@
 title: "Aligning marine species range data to better serve science and conservation"
 author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjamin
   S. Halpern^1,2,3^
-csl: refs/journal-of-applied-ecology.csl
+csl: refs/plos-one.csl
 output:
   word_document: default
   pdf_document:
@@ -21,14 +21,12 @@ bibliography: refs/zotero_lib.bib
 
 _Author affiliation:_ <!--Include department, institution, and complete address, with the ZIP/postal code, for each author. Use superscripts to match authors with institutions. Authors are encouraged to supply their ORCID ID at submission-->
 
-1. National Center for Ecological Analysis and Synthesis, 735 State Street Suite 300, Santa Barbara CA 93101
+1. National Center for Ecological Analysis and Synthesis, University of California, 735 State Street Suite 300, Santa Barbara CA 93101
 2. Bren School of Environmental Science and Management, University of California, Santa Barbara CA 93106
 3. Department of Life Sciences, Imperial College London, Silwood Park Campus, Buckhurst Rd, Ascot, West Berkshire SL5 7PY, United Kingdom
 
 _Corresponding author:_ <!--Corresponding author: The name, complete address, telephone number, and email address of the author to whom correspondence and proofs should be sent. Email addresses will appear in the article footnotes.-->
 Casey O'Hara, National Center for Ecological Analysis and Synthesis, 735 State Street, Suite 300, Santa Barbara CA 93101; (805) 892-2500; ohara@nceas.ucsb.edu
-
-_Classification:_ BIOLOGICAL SCIENCES: Sustainability Science
 
 _Keywords:_ <!--Keywords are listed below the abstract of the published article. At least three keywords are required at submission.  maybe species distribution maps, AquaMaps, IUCN, marine protected area planning, biodiversity status--> Marine spatial planning, species distribution model, extent of occurrence, spatial ecology
 
@@ -51,6 +49,8 @@ See also: http://www.pnascentral.org/html/pnas_length_estimate_instructions.html
 
 
 ``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = FALSE, message = FALSE, warning = FALSE)
 
 # library(ggplot2)
 # library(maps)
@@ -76,7 +76,7 @@ dir_fig  <- 'figures'
 
 ```
 
-``` {r load data, echo = FALSE, warning = FALSE, message = FALSE}
+``` {r load data}
 ### use data_explore.Rmd to create this file, if it does not yet exist.  This
 ### filters out presence = Extinct from IUCN cells.
 
@@ -100,15 +100,15 @@ spp_am <- read_csv(spp_am_file)
 
 ```
 
-``` {r calc species numbers, echo = FALSE}
+``` {r calc species numbers}
 n_spp_am     <- nrow(spp_am)
 n_spp_am_rev <- nrow(spp_am %>% filter(reviewed == 1))
 n_spp_iucn   <- length(unique(spp_iucn_maps$iucn_sid))
 n_spp_both   <- length(unique(spp_map_pairs$iucn_sid))
 n_spp_all    <- n_spp_am + n_spp_iucn - n_spp_both
 
-p_spp_am     <- round(n_spp_am/n_spp_all * 100, 1)
-p_spp_iucn   <- round(n_spp_iucn/n_spp_all * 100, 1)
+p_spp_am     <- round(n_spp_am/n_spp_all    * 100, 1)
+p_spp_iucn   <- round(n_spp_iucn/n_spp_all  * 100, 1)
 p_both_am    <- round(n_spp_both/n_spp_am   * 100, 1)
 p_both_iucn  <- round(n_spp_both/n_spp_iucn * 100, 1)
 p_both_all   <- round(n_spp_both/n_spp_all  * 100, 1)
@@ -120,7 +120,7 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 ```
 -----
 
-``` {r abstract, child = 'ms_1_abst_sig.Rmd'}
+``` {r abstract, child = 'ms_0_abst.Rmd'}
 ```
 
 <!--
@@ -132,12 +132,15 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 
 -----
 
-\\body
-
-``` {r intro, child = 'ms_2_intro.Rmd'}
+``` {r intro, child = 'ms_1_intro.Rmd'}
 ```
 
-``` {r results_discussion, child = 'ms_2a_res_disc.Rmd'}
+
+``` {r methods, child = 'ms_2_methods.Rmd'}
+```
+
+
+``` {r results_discussion, child = 'ms_3_res_disc_concl.Rmd'}
 ```
 
 <!--
@@ -152,10 +155,6 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 -->
 
 
------
-
-``` {r methods, child = 'ms_3_methods.Rmd'}
-```
 
 -----
 
