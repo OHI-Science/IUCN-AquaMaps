@@ -224,7 +224,7 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
        fill = 'Dataset')
 
 print(bar_taxa)
-ggsave(filename = file.path(dir_fig, 'fig1a_bar_by_taxa_all.png'), 
+ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
        width = 17.8, height = 7, units = 'cm', dpi = 600)
 
 ```
@@ -326,7 +326,7 @@ scatter_quadplot <- scatter_quadplot +
 
 # print(scatter_quadplot)
 
-ggsave(file.path(dir_fig, 'fig2a_scatter_quadmap.png'),
+ggsave(file.path(dir_fig, 'scatter_quadmap.png'),
        width = 17.8, height = 9, units = 'cm', dpi = 600)
 
 ```
@@ -433,7 +433,7 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
 print(barchart_spp_gp_quads)
 
 ggsave(plot = barchart_spp_gp_quads,
-       filename = file.path(dir_fig, 'fig2b_barchart_spp_gp_quads.png'),
+       filename = file.path(dir_fig, 'barchart_spp_gp_quads.png'),
        width = 17.8, height = 7, units = 'cm', dpi = 600)
 
 write_csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads.csv'))

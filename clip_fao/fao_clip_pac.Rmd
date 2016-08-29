@@ -1,0 +1,366 @@
+---
+title: 'Data Exploration: IUCN and AquaMaps'
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Libraries and Paths
+
+library(ggplot2)
+library(tmap)
+data(World)
+library(maptools)
+data(wrld_simpl)
+
+library(readr)
+library(raster)
+library(rgdal)
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+dir_M <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
+           'Darwin'  = '/Volumes/ohi',    ### connect (cmd-K) to smb://mazu/ohi
+           'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_M, 'git-annex/globalprep')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
+
+source(file.path(dir_git, 'data_explore/data_explore_fxns.R'))
+### When knitting this, it automatically sets WD to be this directory...
+### the 'setwd()' is there for running by chunk
+```
+
+
+- get aquamaps cells for all quadrant 3 species (and quadrant 4?)
+- focus on any particular group? filter as appropriate
+    - maybe by `occurcells` field? for low-data spp
+- add lat/long from the hcaf file (or at least long)
+- for each species:
+    - identify east/west limits of range (between -180 and +180)
+        - what about species who cross over in pacific? maybe a flag for pacific species?
+        - maybe just select Pacific species and avoid Atlantic?
+    - rescale 0-1?
+        - here we'd be looking for what happens at the edges - is there a sudden jump from no presence to a bunch just at a single longitude?
+        - with this, we could stack all the species and see the cumulative effects of the ends
+    - plot end points, east/west bounds on a horizontal line/histogram/density plot, and put verticals on the longitudes of the FAO region boundaries
+        - not even worrying about N/S? or maybe include just a big swath across the equator or whatever?
+        
+``` {r get_am_spp}
+
+### get quadrant species list; filter to q3 and q4
+spp_quad_list <- read_csv(file.path(dir_git, 'data', 'spp_list_quads.csv')) %>%
+  select(sciname, am_sid, iucn_sid, reviewed, occurcells, quad) %>%
+  filter(quad %in% c('q3', 'q4'))
+
+nrow(spp_quad_list %>% filter(occurcells > 100))
+### 110 out of 1078 (~10%) have more than 100 occurrence cells
+
+### load full AM list and filter to those in q3 and q4
+am_spp_cells <- read_csv(file.path(dir_anx, 'spp_ico',
+                                   'v2016/int/am_cells_spp_prob0.csv')) # %>%
+  # filter(am_sid %in% spp_quad_list$am_sid) %>% 
+  # distinct()
+
+am_spp_list <- read_csv(file.path(dir_git, 'data/spp_all.csv')) %>%
+  filter(!is.na(am_sid)) %>%
+  arrange(reviewed) %>%
+  filter(!duplicated(am_sid)) %>%
+  select(am_sid, sciname, reviewed) %>%
+  distinct()
+
+message('loading hcaf and adjusting to se asia')
+### join with hcaf to get longitudes (and latitudes) for each cell
+hcaf <- read_csv(file.path(dir_anx, '_raw_data/aquamaps/d2015',
+                           'csv/hcaf_truncated.csv')) %>%
+  select(-csquarecode, -cellarea, -oceanarea) %>%
+  mutate(clongadj  = ifelse(centerlong < 0, centerlong + 360, centerlong),
+         wlimitadj = ifelse(wlimit < 0, wlimit + 360, wlimit),
+         elimitadj = ifelse(elimit < 0, elimit + 360, elimit)) %>%
+  filter(clongadj >= 60 & clongadj <= 240)
+
+### filter out species from Atlantic... rough pass:
+### - filter out everything west of 30 E and east of 70 W
+message('binding hcaf to am_spp_latlong')
+
+am_spp_latlong <- hcaf %>%
+  left_join(am_spp_cells, by = 'loiczid')
+
+```
+
+
+Major fishing area boundaries
+- 175W north from 25S
+- 120W from 5N to 60 S
+- 150E south from 25S (south of Australia)
+- 80E from 0N to 55S
+- 30 E from Africa on down
+        
+``` {r northmost_band, eval = FALSE}
+### 5N north     - look for spike at 175 W (185E)
+am_spp_north <- am_spp_latlong %>%
+  filter(centerlat >= 5) 
+
+am_spp_north_lims <- am_spp_north %>%
+  group_by(am_sid) %>%
+  summarize(w_lim = min(wlimitadj),
+            e_lim = max(elimitadj),
+            n_w_lim = sum(wlimitadj == w_lim),
+            n_e_lim = sum(elimitadj == e_lim),
+            n_tot = n()) %>%
+  gather(lim, long, w_lim:e_lim) %>%
+  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
+  filter(str_detect(lim_n, lim)) %>%
+  select(-lim_n) %>%
+  filter(!(long <= 70 | long >= 200))
+    ### delete artificially imposed limits
+
+tmp <- am_spp_north_lims %>%
+  group_by(long) %>%
+  summarize(n_cells = sum(ncells),
+            n_spp   = n())
+
+ggplot(tmp, aes(x = long, y = n_spp)) +
+  geom_point() +
+  geom_vline(xintercept = c(77, 185), color = 'red')
+
+```
+
+``` {r central_band}
+### 25 S to 5 N  - look for spikes at 120W (240E), 175W (185E), 80E (and 77E)
+am_spp_central <- am_spp_latlong %>%
+  filter(centerlat <= 5 & centerlat >= -25)
+
+message('summarizing...')
+am_spp_central_lims <- am_spp_central %>%
+  group_by(am_sid) %>%
+  summarize(w_lim = min(wlimitadj),
+            e_lim = max(elimitadj),
+            n_w_lim = sum(wlimitadj == w_lim),
+            n_e_lim = sum(elimitadj == e_lim),
+            n_tot = n())
+
+message('gathering...')
+am_spp_central_lims <- am_spp_central_lims %>%
+  gather(lim, long, w_lim:e_lim) %>%
+  gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
+  filter(str_detect(lim_n, lim)) %>%
+  select(-lim_n) %>%
+  filter(!(long <= 70 | long >= 200))
+    ### delete artificially imposed limits
+
+write_csv(am_spp_central_lims, file.path(dir_git, 'clip_fao/am_spp_central_lims.csv'))
+
+tmp <- am_spp_central_lims %>%
+  group_by(long) %>%
+  summarize(n_cells = sum(ncells),
+            n_spp   = n())
+
+ggplot(tmp, aes(x = long, y = n_spp)) +
+  geom_point() +
+  geom_vline(xintercept = c(77, 185), color = 'red')
+
+```
+
+``` {r what_species_are_these}
+
+clipped_spp <- am_spp_central_lims %>%
+  # bind_rows(am_spp_north_lims) %>%
+  # filter(long %in% c(77, 185)) %>%
+  filter(long == 185) %>%
+  select(am_sid, lim) %>%
+  distinct() %>%
+  left_join(am_spp_list, by = 'am_sid')
+
+write_csv(clipped_spp, file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
+
+```
+
+``` {r plot_setup, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+loiczid_raster <- raster('data/rasters/loiczid_raster.tif')
+fao_polys <- rgdal::readOGR(dsn = file.path(path.expand(dir_git), 'clip_fao/fao_rgns'),
+                            layer = 'fao_rgns2')
+rast_ext  <- extent(c(85, 220, -59, 50))
+fao_polys <- crop(fao_polys, rast_ext)
+
+World1 <- crop(wrld_simpl, rast_ext)
+
+
+assemble_map <- function(map_rast, spp) {
+  message('...mapping ', spp)
+  map_obj <- tm_shape(map_rast) +
+    tm_raster(palette = 'Reds',
+              colorNA = NULL,
+              title = spp,
+              alpha = 1) +
+    tm_shape(World1) +
+      tm_polygons() + 
+    tm_layout(basemaps = "Esri.WorldTopoMap", 
+              # title.position = 'TOP', 
+              legend.outside = TRUE, attr.outside = TRUE)
+
+  return(map_obj)
+}
+```
+
+``` {r plot_spp_e, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+clipped_spp <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
+
+spp_examples_e <- clipped_spp %>%
+  filter(lim == 'w_lim')
+
+message('grouping affected species and summing to loiczid')
+### group affected spp by loiczid and sum
+spp_cells_clipped <- am_spp_cells %>%
+  filter(am_sid %in% spp_examples_e$am_sid) %>%
+  group_by(loiczid) %>%
+  summarize(n_spp = n())
+
+### create raster, then shift raster
+
+rast_spp  <-  subs(loiczid_raster, 
+                   spp_cells_clipped[ , c('loiczid', 'n_spp')], 
+                   by = 'loiczid', 
+                   which = 'n_spp', 
+                   subsWithNA = TRUE)
+
+rast_spp_shift <- rast_spp %>%
+  raster::shift(360)
+
+rast_spp_e <- merge(rast_spp, rast_spp_shift)
+
+values(rast_spp_e)[values(rast_spp_e) == 0] <- NA
+# values(rast_spp_e)[is.na(values(rast_spp_e))] <- 0
+rast_spp_e  <- crop(rast_spp_e, extent(c(85, 220, -59, 50)))
+
+rast_spp_map_e <- 
+  tm_shape(rast_spp_e) +
+    tm_raster(palette = 'Reds',
+              breaks = c(1, 15, 100, 200, 300, Inf),
+              colorNA = 'lightblue1',
+              textNA = 'Zero',
+              title = 'Species count',
+              alpha = 1) +
+  tm_shape(World1) +
+    tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
+  tm_shape(fao_polys) +
+    tm_borders(col = 'grey40', lwd = 0.25) +
+    tm_text('F_CODE_1',
+            col = 'orangered4',
+            fontface = 'bold.italic',
+            fontfamily = 'Helvetica',
+            size = .35) +
+  tm_layout(basemaps = "Esri.WorldTopoMap", 
+            frame = FALSE,
+            legend.text.size = .35,
+            legend.title.size = .45,
+            # title.position = 'TOP', 
+            legend.outside = TRUE,
+            # legend.position = c('right', 'bottom'),
+            # legend.bg.color = 'white',
+            # legend.bg.alpha = .5,
+            attr.outside = TRUE)
+
+print(rast_spp_map_e)
+
+save_tmap(rast_spp_map_e, file.path(dir_fig, 'map_am_edge_map.png'), 
+          width = 9, height = 6, units = 'cm', dpi = 600)
+
+```
+
+
+``` {r plot_spp_w, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+clipped_spp <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
+
+spp_examples_w <- clipped_spp %>%
+  filter(lim == 'e_lim')
+
+message('grouping affected species and summing to loiczid')
+### group affected spp by loiczid and sum
+spp_cells_clipped <- am_spp_cells %>%
+  filter(am_sid %in% spp_examples_w$am_sid) %>%
+  group_by(loiczid) %>%
+  summarize(n_spp = n())
+
+### create raster, then shift raster
+
+rast_spp  <-  subs(loiczid_raster, 
+                   spp_cells_clipped[ , c('loiczid', 'n_spp')], 
+                   by = 'loiczid', 
+                   which = 'n_spp', 
+                   subsWithNA = TRUE)
+
+rast_spp_shift <- rast_spp %>%
+  raster::shift(360)
+
+rast_spp_w <- merge(rast_spp, rast_spp_shift)
+
+values(rast_spp_w)[values(rast_spp_w) == 0] <- NA
+# values(rast_spp_w)[is.na(values(rast_spp_w))] <- 0
+rast_spp_w <- crop(rast_spp_w, extent(c(85, 220, -59, 50)))
+
+rast_spp_map_w <- 
+  tm_shape(rast_spp_w) +
+    tm_raster(palette = 'Reds',
+              breaks = c(1, 50, 100, 500, 1000, 2000, Inf),
+              colorNA = 'lightblue1',
+              textNA = 'Zero',
+              title = 'Species count',
+              alpha = 1) +
+  tm_shape(World1) +
+    tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
+  tm_shape(fao_polys) +
+    tm_borders(col = 'grey40', lwd = 0.25) +
+    tm_text('F_CODE_1',
+            col = 'orangered4',
+            fontface = 'bold.italic',
+            fontfamily = 'Helvetica',
+            size = .35) +
+  tm_layout(basemaps = "Esri.WorldTopoMap", 
+            frame = FALSE,
+            legend.text.size = .35,
+            legend.title.size = .45,
+            # title.position = 'TOP', 
+            legend.outside = TRUE,
+            # legend.position = c('right', 'bottom'),
+            # legend.bg.color = 'white',
+            # legend.bg.alpha = .5,
+            attr.outside = TRUE)
+
+print(rast_spp_map_w)
+
+save_tmap(rast_spp_map_w, file.path(dir_fig, 'map_am_edge_w.png'), 
+          width = 9, height = 6, units = 'cm', dpi = 600)
+
+```
+
+``` {r combine_rasts}
+
+stack_plot_both <- 
+  tm_shape(rast_spp_w) +
+    tm_raster(palette = 'Greens',
+              colorNA = NULL,
+              title = 'n_spp',
+              alpha = 1) +
+  tm_shape(rast_spp_e) +
+    tm_raster(palette = 'Reds',
+              colorNA = NULL,
+              title = 'n_spp') +
+  tm_shape(World1) +
+    tm_polygons() + 
+  tm_shape(fao_polys_e) +
+    tm_borders() +
+  tm_layout(basemaps = "Esri.WorldTopoMap", 
+            frame = FALSE,
+            # title.position = 'TOP', 
+            legend.outside = TRUE, attr.outside = TRUE)
+
+print(stack_plot_both)
+```

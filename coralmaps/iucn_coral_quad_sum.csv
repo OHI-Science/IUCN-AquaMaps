@@ -1,9 +1,0 @@
-method,quad,quad_name,pct_quad
-original,q2,dist-matched,0.6132596685082873
-original,q4,poorly matched,0.04419889502762431
-original,q1,well-matched,0.22375690607734808
-original,q3,area-matched,0.11878453038674033
-200 m clip,q1,well-matched,0.7624309392265194
-200 m clip,q3,area-matched,0.049723756906077346
-200 m clip,q2,dist-matched,0.17403314917127072
-200 m clip,q4,poorly matched,0.013812154696132596
