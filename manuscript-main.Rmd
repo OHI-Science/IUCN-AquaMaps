@@ -1,6 +1,6 @@
 ---
 title: "Aligning marine species range data to better serve science and conservation"
-author: Casey O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjamin
+author: Casey C. O'Hara^1^, Jamie C. Afflerbach^1^, Courtney Scarborough^1^, Benjamin
   S. Halpern^1,2,3^
 csl: refs/plos-one.csl
 output:
@@ -16,8 +16,12 @@ output:
 bibliography: refs/zotero_lib.bib
 ---
 
-<!--Title: Titles should be no more than three typeset lines (generally 135 characters including spaces) and should be comprehensible to a broad scientific audience. Please provide a short title of fewer than 50 characters for mobile devices and RSS feeds.-->
-
+<!-- Full title	250 characters	Specific, descriptive, concise, and comprehensible to readers outside the field	 -->
+<!--   Impact of Cigarette Smoke Exposure on Innate Immunity: A Caenorhabditis elegans Model -->
+<!--   Solar Drinking Water Disinfection (SODIS) to Reduce Childhood Diarrhoea in Rural Bolivia: A Cluster-Randomized, Controlled Trial -->
+<!-- Short title	70 characters	State the topic of the study	 -->
+<!--   Cigarette Smoke Exposure and Innate Immunity -->
+<!--   SODIS and Childhood Diarrhoea -->
 
 _Author affiliation:_ <!--Include department, institution, and complete address, with the ZIP/postal code, for each author. Use superscripts to match authors with institutions. Authors are encouraged to supply their ORCID ID at submission-->
 
@@ -26,25 +30,10 @@ _Author affiliation:_ <!--Include department, institution, and complete address,
 3. Department of Life Sciences, Imperial College London, Silwood Park Campus, Buckhurst Rd, Ascot, West Berkshire SL5 7PY, United Kingdom
 
 _Corresponding author:_ <!--Corresponding author: The name, complete address, telephone number, and email address of the author to whom correspondence and proofs should be sent. Email addresses will appear in the article footnotes.-->
-Casey O'Hara, National Center for Ecological Analysis and Synthesis, 735 State Street, Suite 300, Santa Barbara CA 93101; (805) 892-2500; ohara@nceas.ucsb.edu
-
-_Keywords:_ <!--Keywords are listed below the abstract of the published article. At least three keywords are required at submission.  maybe species distribution maps, AquaMaps, IUCN, marine protected area planning, biodiversity status--> Marine spatial planning, species distribution model, extent of occurrence, spatial ecology
+Casey O'Hara, National Center for Ecological Analysis and Synthesis, University of California, 735 State Street, Suite 300, Santa Barbara CA 93101; (805) 892-2500; ohara@nceas.ucsb.edu
 
 <!--
-
-from PNAS (http://www.pnas.org/site/authors/preparation.xhtml):
-
-PNAS generally uses a two-column format averaging 67 characters, including spaces, per line. The maximum length of a regular research article is 6 pages (or 10 pages for PNAS Plus articles), including all text, spaces, and the number of characters displaced by figures, tables, and equations.
-
-An online submission tool provides authors with an estimation of whether their manuscript fits within the PNAS length requirements (see Length Estimate FAQ). Use the following guidelines to determine whether your manuscript exceeds the page-length requirements before submission:
-
-Text: When submitting tables, figures, and/or equations in addition to text, keep the text for your manuscript under 39,000 characters (including spaces).
-Figures: Calculated at 180 characters per cm in height for one column and 360 characters per cm in height for two columns; a figure wider than 8.7 cm is two columns wide.
-Tables and equations: Calculated at 60 characters per line for one column and 120 per line for two columns; a table with more than 60 characters per line is two columns wide.
-If the text in a figure or table is deemed illegible for production, the figure or table may be enlarged to improve legibility. Add the word count to the character count to obtain a character count that includes spaces.
-
-See also: http://www.pnascentral.org/html/pnas_length_estimate_instructions.html
-
+_Keywords:_  Marine spatial planning, species distribution model, extent of occurrence, spatial ecology
 -->
 
 
@@ -118,6 +107,35 @@ area_align_mean <- round(mean(spp_list$area_ratio, na.rm = TRUE), 1)
 dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 
 ```
+
+``` {r captions_for_barchart_by_taxa, echo = FALSE}
+n_spp <- spp_map_pairs %>%
+  mutate(spp_group = ifelse(str_detect(spp_group, 'CORAL'), 'CORAL', spp_group)) %>%
+  group_by(spp_group) %>%
+  summarize(n_spp = n()) %>%
+  arrange(desc(n_spp))
+
+n_corals   <- nrow(spp_map_pairs %>% 
+                     filter(str_detect(spp_group, 'CORAL')))
+n_bonyfish <- nrow(spp_map_pairs %>% 
+                     filter(spp_group %in% c('WRASSES', 'BUTTERFLYFISH', 'PARROTFISH',
+                                             'COMBTOOTHBLENNIES', 'SEABREAMS_PORGIES', 
+                                             'PUFFERFISH', 'GROUPERS', 'TUNAS_BILLFISHES', 
+                                             'SURGEONFISH_TANGS_UNICORNFISH', 'ANGELFISH', 
+                                             'DAMSELFISH', 'BONEFISH_TARPONS')))
+```
+
+``` {r captions_for_tally_quad_counts, echo = FALSE}
+dist_median <- round(median(spp_map_pairs$sm_perc,    na.rm = TRUE), 1)
+area_median <- round(median(spp_map_pairs$area_ratio, na.rm = TRUE), 1)
+q1_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio >= area_median)
+q2_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio >= area_median)
+q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio <  area_median)
+q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
+```
+
+
+
 -----
 
 ``` {r abstract, child = 'ms_0_abst.Rmd'}
@@ -126,8 +144,7 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 <!--
 | Section        |   Word #   | Char/spc # |
 | :------        |    ------: |    ------: |
-| Abstract       |  184 words |  1312 char |
-| Significance   |   73 words |   545 char |
+| Abstract       |  169 words |     - char |
 -->
 
 -----
@@ -146,15 +163,12 @@ dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 <!--
 | Section                   |   Word #   | Char/spc # |
 | :------                   |    ------: |    ------: |
-| Introduction              |  429 words |  2905 char |
-| Results/Discussion        |  999 words |  6697 char |
-| Implications (incomplete) |  597 words |  3794 char |
-| Conclusions               |  354 words |  2505 char |
-| Methods (incomplete)      |  601 words |  3919 char |
-| total body                | 2987 words | 19885 char |
+| Introduction              |  653 words |     - char |
+| Methods                   |  878 words |     - char |
+| Results/Discussion        | 2150 words |     - char |
+| Conclusions               |  499 words |     - char |
+| total body                | 4187 words |     - char |
 -->
-
-
 
 -----
 

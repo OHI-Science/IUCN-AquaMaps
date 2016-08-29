@@ -2,6 +2,15 @@
 output: pdf_document
 ---
 
+<!--
+The introduction should:
+  Provide background that puts the manuscript into context and allows readers outside the field to understand the purpose and significance of the study
+  Define the problem addressed and why it is important
+  Include a brief review of the key literature
+  Note any relevant controversies or disagreements in the field
+  Conclude with a brief statement of the overall aim of the work and a comment about whether that aim was achieved
+-->
+
 # Introduction
 
 Knowing where species exist and thrive is fundamental to the sciences of ecology, biogeography, and conservation, among many others.  This knowledge provides foundational information for 
@@ -24,4 +33,4 @@ We then reexamine two recent marine biodiversity studies - an assessment of the 
 
 We then reexamine a global analysis of gaps in protection afforded by marine protected areas (MPAs) [@klein_shortfalls_2015] - as a case study to explore the implications of prioritizing one data set over the other.  The results highlight possible consequences of different data use decisions on our understanding of marine biodiversity status and protection.  
 
-While we have identified some potential issues in each dataset, we cannot simply recommend one data set over the other.  Instead, we recommend simple methods to reduce incidence of commission errors in each dataset, improving confidence in species range predictions to better inform conservation management and policy decisions.
+While we have identified some potential issues in each dataset, we cannot simply recommend one data set over the other.  Instead, we recommend simple methods to reduce incidence of errors in each dataset, improving confidence in species range predictions to better inform conservation management and policy decisions.

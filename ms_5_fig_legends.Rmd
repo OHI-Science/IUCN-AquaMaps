@@ -1,6 +1,72 @@
 
 # Figure Legends
 
+``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = FALSE, message = FALSE, warning = FALSE)
+
+# library(ggplot2)
+# library(maps)
+
+
+# library(raster)
+# library(data.table)
+library(tidyr)
+library(dplyr)
+library(stringr)
+library(readr)
+
+if(basename(getwd()) != 'IUCN-AquaMaps') setwd('~/github/IUCN-AquaMaps')
+
+dir_data <- 'data'
+dir_fig  <- 'figures'
+
+```
+
+``` {r load data, echo = FALSE, warning = FALSE, message = FALSE}
+### use data_explore.Rmd to create this file, if it does not yet exist.  This
+### filters out presence = Extinct from IUCN cells.
+
+data_file <- 'data/spp_list_w_area_trimmed.csv'
+spp_map_pairs <- read_csv(data_file)
+### NOTE: as of Jan 31, includes all map pairs, even ones where IUCN area == 0
+
+### generate other lists
+spp_all_file <- 'data/spp_all.csv'
+spp_all <- read_csv(spp_all_file) ### NOTE: contains duped scinames
+
+# iucn_marine_file <- 'data/spp_iucn_marine.csv'
+# spp_iucn_marine <- read_csv(iucn_marine_file) 
+
+iucn_maps_file <- 'data/spp_iucn_maps.csv'
+spp_iucn_maps <- read_csv(iucn_maps_file) %>%
+  filter(!duplicated(iucn_sid))
+
+spp_am_file <- 'data/spp_am.csv'
+spp_am <- read_csv(spp_am_file)
+
+```
+
+``` {r calc species numbers, echo = FALSE}
+n_spp_am     <- nrow(spp_am)
+n_spp_am_rev <- nrow(spp_am %>% filter(reviewed == 1))
+n_spp_iucn   <- length(unique(spp_iucn_maps$iucn_sid))
+n_spp_both   <- length(unique(spp_map_pairs$iucn_sid))
+n_spp_all    <- n_spp_am + n_spp_iucn - n_spp_both
+
+p_spp_am     <- round(n_spp_am/n_spp_all * 100, 1)
+p_spp_iucn   <- round(n_spp_iucn/n_spp_all * 100, 1)
+p_both_am    <- round(n_spp_both/n_spp_am   * 100, 1)
+p_both_iucn  <- round(n_spp_both/n_spp_iucn * 100, 1)
+p_both_all   <- round(n_spp_both/n_spp_all  * 100, 1)
+
+spp_list <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
+area_align_mean <- round(mean(spp_list$area_ratio, na.rm = TRUE), 1)
+dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
+
+```
+
+
 ``` {r barchart_by_taxa, echo = FALSE}
 n_spp <- spp_map_pairs %>%
   mutate(spp_group = ifelse(str_detect(spp_group, 'CORAL'), 'CORAL', spp_group)) %>%
@@ -38,12 +104,16 @@ The lower left quadrant (quadrant 4) indicates species for which the map pairs a
 (n = `r q4_count`; `r round(q4_count/nrow(spp_map_pairs) * 100, 1)` %).
 (B) Alignment quadrant breakdown of species by taxonomic group.
 
-
+<!--
 __Fig. 3.__ Change in status score for the Species Subgoal within the global Ocean Health Index under three different scenarios.
 Scenario 1 shows the effect of reducing the probability threshold to 0% for AquaMaps presence to more accurately track the definition of IUCN “limits of distribution."
 Scenario 2 shows the effect of prioritizing AquaMaps data over IUCN, while maintaining the 40% presence threshold.  In general, AquaMaps ranges are smaller than IUCN ranges, so most overlapping species will see a decrease in represented range.
 Scenario 3 shows the effect of prioritizing AquaMaps data over IUCN, and simultaneously eliminating the presence threshold.  The zero threshold in scenario 3 drives a decrease in scores relative to scenario 2.  
+-->
 
+__Fig. 3.__ (A) Aggregate map combining ranges of the 463 coral species mapped in the IUCN dataset, showing raw ranges and ranges clipped to 200 m depth. (B) Alignment quadrant breakdown of paired map coral species using original data from IUCN and AquaMaps (as in Fig. 2B) and the same species with IUCN ranges clipped to 200 m depth.
 
-__Fig. 4.__  Percent of species range covered by MPAs based upon methods in Klein et al. (2015).  Scenario 1 replicates the original results, measuring protected range of species in AquaMaps 2014 dataset, with a 50% presence threshold, against the 2014 World Database of Protected Areas, filtered for IUCN categories I-IV that overlap marine areas.  Scenario 2 updates the results using AquaMaps 2015, showing very small changes despite the inclusion of an additional 5,545 species.  Scenario 3, using 2015 AquaMaps data, drops the presence threshold to zero, showing an expected decrease in gap species, but also a decrease in species with 5% or greater protected range.  Scenario 4 adds an additional 1745 species unique to IUCN, resulting in increases in gap species and species with less than 2% coverage.  Scenario 5 examines species MPA coverage using only the IUCN dataset.
+__Fig. 4.__ Composite map showing AquaMaps predicted ranges for 512 species whose mid-latitude range (between 5° S and 25° N) encounters a western limit exactly at 175° W, the boundary between FAO Major Fishing Areas 71 and 77.  The range maps for these species conform exactly to the bounds of Area 71, as a result of AquaMaps using FAO areas as a rough georegional constraint on species ranges.  The boundary of Area 57 creates an additional clear exclusion zone for most of these species, despite the fact that this was not used as a selection criteria.
+
+__Fig. 5.__  Percent of species range covered by MPAs based upon methods in Klein et al. (2015).  Scenario 1 replicates the original results, measuring protected range of species in AquaMaps 2014 dataset, with a 50% presence threshold, against the 2014 World Database of Protected Areas, filtered for IUCN categories I-IV that overlap marine areas.  Scenario 2 updates the results using AquaMaps 2015, showing very small changes despite the inclusion of an additional 5,545 species.  Scenario 3, using 2015 AquaMaps data, drops the presence threshold to zero, showing an expected decrease in gap species, but also a decrease in species with 5% or greater protected range.  Scenario 4 adds an additional 1745 species unique to IUCN, resulting in increases in gap species and species with less than 2% coverage.  Scenario 5 examines species MPA coverage using only the IUCN dataset.
 

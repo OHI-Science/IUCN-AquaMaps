@@ -10,6 +10,8 @@ output: html_document
 library(ggplot2)
 library(tmap)
 data(World)
+library(maptools)
+data(wrld_simpl)
 
 library(readr)
 library(raster)
@@ -183,6 +185,11 @@ write_csv(clipped_spp, file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
 loiczid_raster <- raster('data/rasters/loiczid_raster.tif')
 fao_polys <- rgdal::readOGR(dsn = file.path(path.expand(dir_git), 'clip_fao/fao_rgns'),
                             layer = 'fao_rgns2')
+rast_ext  <- extent(c(85, 220, -59, 50))
+fao_polys <- crop(fao_polys, rast_ext)
+
+World1 <- crop(wrld_simpl, rast_ext)
+
 
 assemble_map <- function(map_rast, spp) {
   message('...mapping ', spp)
@@ -191,7 +198,7 @@ assemble_map <- function(map_rast, spp) {
               colorNA = NULL,
               title = spp,
               alpha = 1) +
-    tm_shape(World) +
+    tm_shape(World1) +
       tm_polygons() + 
     tm_layout(basemaps = "Esri.WorldTopoMap", 
               # title.position = 'TOP', 
@@ -230,7 +237,7 @@ rast_spp_e <- merge(rast_spp, rast_spp_shift)
 
 values(rast_spp_e)[values(rast_spp_e) == 0] <- NA
 # values(rast_spp_e)[is.na(values(rast_spp_e))] <- 0
-rast_spp_e <- crop(rast_spp_e, extent(c(85, 220, -59, 50)))
+rast_spp_e  <- crop(rast_spp_e, extent(c(85, 220, -59, 50)))
 
 rast_spp_map_e <- 
   tm_shape(rast_spp_e) +
@@ -238,9 +245,9 @@ rast_spp_map_e <-
               breaks = c(1, 15, 100, 200, 300, Inf),
               colorNA = 'lightblue1',
               textNA = 'Zero',
-              title = 'Count',
+              title = 'Species count',
               alpha = 1) +
-  tm_shape(World) +
+  tm_shape(World1) +
     tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
   tm_shape(fao_polys) +
     tm_borders(col = 'grey40', lwd = 0.25) +
@@ -250,6 +257,7 @@ rast_spp_map_e <-
             fontfamily = 'Helvetica',
             size = .35) +
   tm_layout(basemaps = "Esri.WorldTopoMap", 
+            frame = FALSE,
             legend.text.size = .35,
             legend.title.size = .45,
             # title.position = 'TOP', 
@@ -261,7 +269,7 @@ rast_spp_map_e <-
 
 print(rast_spp_map_e)
 
-save_tmap(rast_spp_map_e, file.path(dir_fig, 'fig4_am_edge.png'), 
+save_tmap(rast_spp_map_e, file.path(dir_fig, 'map_am_edge_map.png'), 
           width = 9, height = 6, units = 'cm', dpi = 600)
 
 ```
@@ -301,12 +309,12 @@ rast_spp_w <- crop(rast_spp_w, extent(c(85, 220, -59, 50)))
 rast_spp_map_w <- 
   tm_shape(rast_spp_w) +
     tm_raster(palette = 'Reds',
-              breaks = c(1, 15, 100, 200, 300, Inf),
+              breaks = c(1, 50, 100, 500, 1000, 2000, Inf),
               colorNA = 'lightblue1',
               textNA = 'Zero',
-              title = 'Count',
+              title = 'Species count',
               alpha = 1) +
-  tm_shape(World) +
+  tm_shape(World1) +
     tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
   tm_shape(fao_polys) +
     tm_borders(col = 'grey40', lwd = 0.25) +
@@ -316,6 +324,7 @@ rast_spp_map_w <-
             fontfamily = 'Helvetica',
             size = .35) +
   tm_layout(basemaps = "Esri.WorldTopoMap", 
+            frame = FALSE,
             legend.text.size = .35,
             legend.title.size = .45,
             # title.position = 'TOP', 
@@ -327,7 +336,7 @@ rast_spp_map_w <-
 
 print(rast_spp_map_w)
 
-save_tmap(rast_spp_map_w, file.path(dir_fig, 'fig4_am_edge_w.png'), 
+save_tmap(rast_spp_map_w, file.path(dir_fig, 'map_am_edge_w.png'), 
           width = 9, height = 6, units = 'cm', dpi = 600)
 
 ```
@@ -335,20 +344,21 @@ save_tmap(rast_spp_map_w, file.path(dir_fig, 'fig4_am_edge_w.png'),
 ``` {r combine_rasts}
 
 stack_plot_both <- 
-  tm_shape(mapstack_w) +
-    tm_raster(palette = 'Reds',
+  tm_shape(rast_spp_w) +
+    tm_raster(palette = 'Greens',
               colorNA = NULL,
               title = 'n_spp',
               alpha = 1) +
-  tm_shape(mapstack_e) +
+  tm_shape(rast_spp_e) +
     tm_raster(palette = 'Reds',
               colorNA = NULL,
               title = 'n_spp') +
-  tm_shape(World) +
+  tm_shape(World1) +
     tm_polygons() + 
-  tm_shape(fao_polys) +
+  tm_shape(fao_polys_e) +
     tm_borders() +
   tm_layout(basemaps = "Esri.WorldTopoMap", 
+            frame = FALSE,
             # title.position = 'TOP', 
             legend.outside = TRUE, attr.outside = TRUE)
 
