@@ -8,6 +8,10 @@ library(maptools)
 library(tmap)
 
 data("wrld_simpl", package="maptools")
+data(World)
+ohi  <- readOGR(dsn = file.path(dir_M,'git-annex/globalprep/spatial/d2014/data'), layer = 'regions_gcs')
+land <- ohi%>%subset(rgn_typ=='land')
+
 
 source('~/github/ohiprep/src/R/common.R')
 
@@ -29,11 +33,15 @@ plot(r_iucn)
 grid(nx = 720, ny = 360, col = 'lightgray')
 
 #crop so we can zoom in and show grid cells
+crop_ext    <- c(-80, -50,30,50)
+r_iucn_crop <- crop(r_iucn, crop_ext)
+r_am_crop   <- crop(r_am, crop_ext)
+land_crop   <- crop(land, crop_ext)%>%subset(rgn_nam %in% c('Canada','United States'))
+plot(land_crop)
 
-r_iucn_crop <- crop(r_iucn, extent(c(100,150,-25,25)))
-r_am_crop   <- crop(r_am, extent(c(100,150,-25,25)))
 
-basemap <- crop(wrld_simpl, extent(c(100,150,-25,25)))
+basemap_simpl <- crop(wrld_simpl, crop_ext)
+basemap       <- crop(World, crop_ext)
 
 #pretty up with tmap
 tuna_iucn_raster_grid <- tm_shape(r_iucn_crop) +
@@ -41,22 +49,25 @@ tuna_iucn_raster_grid <- tm_shape(r_iucn_crop) +
                                         colorNA = NULL,
                                         alpha = .8,
                                         legend.show = FALSE) +
-                              tm_shape(basemap) +
-                              tm_fill(col = 'gray') + 
                               tm_layout(basemaps = "Esri.WorldTopoMap", 
                                         # title.position = 'TOP', 
                                         legend.outside = TRUE, attr.outside = TRUE)+
-                              tm_grid(n.x = 100, n.y = 100, projection = 'longlat', col = 'lightgray', labels.inside.frame = FALSE,labels.size=0)
+                              tm_grid(n.x = 60, n.y = 80, projection = 'longlat', col = 'gray', 
+                                      labels.inside.frame = FALSE,labels.size=0)+
+                                  tm_shape(land_crop) +
+                                  tm_polygons() +
+                                  tm_fill(col = 'gray')
 
 save_tmap(tuna_iucn_raster_grid, filename = 'figures/si_figs_JA/tuna_iucn_grid_raster.png')
 
 tuna_iucn_raster <- tm_shape(r_iucn_crop) +
-  tm_raster(palette = 'aquamarine3',
-            colorNA = NULL,
-            alpha = .8,
-            legend.show = FALSE) +
-  tm_shape(basemap) +
-  tm_fill(col = 'gray')
+                      tm_raster(palette = 'aquamarine3',
+                                colorNA = NULL,
+                                alpha = .8,
+                                legend.show = FALSE) +
+                      tm_shape(land_crop) +
+                      tm_polygons()+
+                      tm_fill(col = 'gray')
 
 save_tmap(tuna_iucn_raster, filename = 'figures/si_figs_JA/tuna_iucn_raster.png')
 
@@ -89,18 +100,29 @@ tuna_wrld <- tm_shape(ta)+
 save_tmap(tuna_wrld, filename ='figures/si_figs_JA/tuna_world.png')
 
 
-ta_crop <- crop(ta,extent(c(100,150,-25,25)))
+ta_crop <- crop(ta,crop_ext)
+extent(ta_crop)<-crop_ext
 
-tuna_shp_crop <- tm_shape(ta_crop)+
-                  tm_fill(col='aquamarine3', alpha = 0.8)+
-                  tm_shape(basemap)+
-                  tm_fill(col = 'gray')
+tuna_shp_crop <- tm_shape(land_crop)+
+                  tm_polygons() +
+                  tm_fill(col = 'gray')+
+                  tm_shape(ta_crop)+
+                  tm_fill(col='aquamarine3', alpha = 0.8)
+                  
+
 
 save_tmap(tuna_shp_crop, filename ='figures/si_figs_JA/tuna_crop.png')
 
-tuna_crop_grid <- tuna_shp_crop+
-                    tm_grid(n.x = 100, n.y = 100, projection = 'longlat', col = 'lightgray', labels.inside.frame = FALSE,labels.size=0)
-
-
+tuna_crop_grid <-tm_shape(land_crop)+
+                    tm_fill(col = 'gray')+
+                    tm_shape(ta_crop)+
+                        tm_fill(col='aquamarine3', alpha = 0.8)+
+                        tm_grid(n.x = 60, n.y = 80, projection = 'longlat', col = 'lightgray', 
+                                              labels.inside.frame = FALSE,labels.size=0)+
+                  tm_shape(land_crop)+
+                  tm_polygons()+
+                  tm_fill(col='gray')
+                        
+                    
 save_tmap(tuna_crop_grid,filename = 'figures/si_figs_JA/tuna_crop_grid.png')
 
