@@ -466,7 +466,7 @@ barchart_mpa_gap <- ggplot(mpa_all_runs1,
 print(barchart_mpa_gap)
 ggsave(plot = barchart_mpa_gap,
        filename = file.path(dir_fig, 'barchart_mpa_gap.png'),
-       width = 11.4, height = 5, units = 'cm', dpi = 600)
+       width = 19.05, height = 5, units = 'cm', dpi = 600)
 # ggsave(plot = barchart_mpa_gap,
 #        filename = file.path(dir_fig, 'barchart_mpa_gap.tif'), device = 'tiff',
 #        width = 11.4, height = 5, units = 'cm', dpi = 600)

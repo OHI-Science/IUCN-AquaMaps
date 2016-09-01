@@ -234,8 +234,8 @@ map_coral_comp <-
 print(map_coral_comp)
 
 save_tmap(map_coral_comp,
-          filename = file.path(dir_fig, 'fig3a_coral_map.png'), 
-          width = 9, height = 4.2, units = 'cm', dpi = 600)
+          filename = file.path(dir_fig, 'coral_map.png'), 
+          width = 19, height = 8, units = 'cm', dpi = 600)
 
 
 
@@ -446,25 +446,6 @@ scatterplot1 <- ggplot(spp_coral_clip, aes(x = totarea, y = shallow_area)) +
   geom_abline(color = 'red')
 scatterplot1
 
-violplot1 <- ggplot(spp_coral_clip, aes(x = 'sm_range_raw', y = shallow_pct)) +
-  ggtheme_plot +
-  # geom_violin(fill = 'grey80', alpha = .5,
-  #             draw_quantiles = c(.25, .5, .75)) +
-  # geom_point(position = position_jitter(w = .3), 
-  #            size = 0.25,
-  #            color = 'black', alpha = 1) +
-  geom_violin(fill = NA, size = 0.1, weight = 0.5,
-              draw_quantiles = c(seq(.005, .05, .005), seq(.05, .95, .02), seq(.95, 1.0, .005)),
-              color = 'black') +
-  geom_violin(fill = NA, size = 1,
-              draw_quantiles = NULL,
-              color = 'white') +
-  geom_hline(color = 'grey30', yintercept = 100) +
-  scale_y_continuous(limits = c(0, 100)) +
-  scale_x_discrete(labels = element_blank()) +
-  theme(axis.title.x = element_blank()) +
-  labs(y = 'IUCN coral range: (<= 200 m) / (total)')
-print(violplot1)
 
 ### for area plot, arrange from highest shallow pct to lowest (best to worst)
 spp_coral_clip <- spp_coral_clip %>%
@@ -523,7 +504,7 @@ break_nums <- seq(0, 100, 20)
 ### Plot the new quad graph
 clipped_quads <- ggplot(iucn_coral_fixed %>%
                       filter(!iucn_sid %in% (iucn_coral_fixed %>% 
-                                               filter(perc > 100) %>% 
+                                               filter(d_perc > 100) %>% 
                                                .$iucn_sid)),
                     aes(x = a_ratio, y = d_perc, group = iucn_sid)) +
   ggtheme_plot + 
@@ -557,8 +538,8 @@ clipped_quads <- ggplot(iucn_coral_fixed %>%
 print(clipped_quads)
 
 ggsave(plot = clipped_quads,
-       filename = file.path(dir_fig, 'fig3b_scatter_quadmap_corals.png'), device = 'png',
-       width = 17.8, height = 9, units = 'cm', dpi = 600)
+       filename = file.path(dir_fig, 'si_scatter_quadmap_corals.png'), device = 'png',
+       width = 19, height = 9, units = 'cm', dpi = 600)
 
 
 ```
@@ -630,8 +611,8 @@ barchart_coral_quads <- ggplot(iucn_coral_quad_sum,
 print(barchart_coral_quads)
 
 ggsave(plot = barchart_coral_quads,
-       filename = file.path(dir_fig, 'fig3c_barchart_coral_quads.png'),
-       width = 17.8, height = 4, units = 'cm', dpi = 600)
+       filename = file.path(dir_fig, 'barchart_coral_quads.png'),
+       width = 19, height = 4, units = 'cm', dpi = 600)
 
 write_csv(iucn_coral_quad_sum, file.path(dir_git, 'clip_depth', 'iucn_coral_quad_sum.csv'))
 

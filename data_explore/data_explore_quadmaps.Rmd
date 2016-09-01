@@ -8,6 +8,9 @@ output: html_document
 # Libraries and Paths
 
 library(ggplot2)
+library(tmap)
+library(maptools)
+data(wrld_simpl)
 library(maps)
 library(readr)
 library(data.table)
@@ -16,13 +19,13 @@ library(tidyr)
 library(dplyr)
 library(stringr)
 
-dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
-           'Darwin'  = '/Volumes/data_edit',
-           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+dir_M <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
+           'Darwin'  = '/Volumes/ohi',    ### connect (cmd-K) to smb://mazu/ohi
+           'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
 
 dir_git <- '~/github/IUCN-AquaMaps'
   
-dir_anx <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
+dir_anx <- file.path(dir_M, 'git-annex/globalprep/spp_ico')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
 
@@ -36,16 +39,15 @@ source('data_explore_fxns.R')
 
 # Data files
 #iucn spp cells WITHOUT extinct locations of IUCN subpopulations
-iucn_spp_cells <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/iucn_spp_cells_2015.csv'), 
+iucn_spp_cells <- read_csv(file.path(dir_anx, 'vAM_IUCN/iucn_spp_cells_2015.csv'), 
                            col_types = 'cddddc', progress = TRUE) %>%
-  as.data.frame() %>%
   filter(presence != 5) ### removes extinct subpopulations
 
-am_spp_cells   <- read_csv(file.path(dir_anx, 'explore_am_v_iucn/am_spp_cells_2015.csv'), progress = TRUE)
+am_spp_cells   <- read_csv(file.path(dir_anx, 'vAM_IUCN/am_spp_cells_2015.csv'), progress = TRUE)
 
 
 ### LOICZID cell ID numbers - used in plotting rasters
-loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+loiczid_raster_file  <- file.path(dir_git, 'data/rasters/loiczid_raster.tif')
 loiczid_raster       <- raster(loiczid_raster_file)
 names(loiczid_raster) <- 'loiczid'
 ```
@@ -53,7 +55,6 @@ names(loiczid_raster) <- 'loiczid'
 
 
 Quadrant map and quad breakdown by taxa and risk
-
 
 ``` {r pct_overlap_vs_ratio_of_area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
@@ -108,7 +109,7 @@ scatter_quadplot <- ggplot(spp_list,
                      ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
              fill= "#d01c8b") + 
-  geom_point(alpha = .5)
+  geom_point(alpha = .5, size = 1)
 
 ### Manage scales for color and size 
 scatter_quadplot <- scatter_quadplot +
@@ -170,32 +171,154 @@ ggsave(file.path(dir_fig, 'si_scatter_quadmap_spp.png'),
 
 ![](../figures/si_scatter_quadmap_spp.png)
 
+``` {r tmap_species_maps_fxns}
+
+get_spp_map_df <- function(species, am_cutoff = 0){ ### species <- spp_list$sciname[1]
+  message('in get_spp_map_df()')
+  ### am_cutoff is currently ignored
+  
+  spp_id <- spp_list %>%
+    filter(sciname == species) %>%
+    dplyr::select(am_sid, iucn_sid, sciname) %>%
+    distinct()
+  
+  iucn_spp_map <- iucn_spp_cells %>%
+    filter(iucn_sid %in% spp_id$iucn_sid) %>%
+    group_by(loiczid) %>%        
+    summarize(iucn_sid = first(iucn_sid))
+      ### The group_by() and summarize() are to eliminate duped cells (e.g. 
+      ### one am_sid matching two iucn_sids)
+    
+  am_spp_map   <- am_spp_cells %>%
+    filter(am_sid == spp_id$am_sid)
+  
+  spp_map_df <- full_join(iucn_spp_map, am_spp_map, by = 'loiczid') %>%
+    mutate(am_pres = ifelse(is.na(am_sid), NA, 1),
+           iucn_pres = ifelse(is.na(iucn_sid), NA, 1)) %>%
+    dplyr::select(loiczid, am_pres, iucn_pres) %>%
+    mutate(both_pres = ifelse(!is.na(iucn_pres), ### IUCN presence, so...
+                              ifelse(is.na(am_pres), 2, 3), ### if no AM, assign 2; if AM, assign 3. 
+                              am_pres))          ### no IUCN, so assign 1 for AM and NA for none
+  
+  return(spp_map_df)
+}
+
+get_rast <- function(spp_map_df, type) {
+  message('in get_rast()')
+  rast_obj  <-  subs(loiczid_raster, spp_map_df, 
+                     by    = 'loiczid', 
+                     which = paste0(type, '_pres'), 
+                     subsWithNA = TRUE)
+  
+  rast_obj_shift <- rast_obj %>%
+    raster::shift(360)
+
+  rast_obj <- raster::merge(rast_obj, rast_obj_shift)
+  return(rast_obj)
+}
+
+assemble_map <- function(map_rast, spp) {
+  message('in assemble_map()')
+  map_obj <- tm_shape(map_rast) +
+    tm_raster(palette = 'Spectral',
+              colorNA = NULL,
+              title = spp,
+              alpha = 1) +
+    tm_shape(World) +
+      tm_polygons() + 
+    tm_layout(basemaps = "Esri.WorldTopoMap", title.position = 'TOP', legend.outside = TRUE, attr.outside = TRUE)
+        
+  return(map_obj)
+}
+
+wrld_simpl2 <- wrld_simpl %>%
+  rgeos::gUnion(wrld_simpl %>% shift(360))
+  
+fao_polys <- rgdal::readOGR(dsn = file.path(path.expand(dir_git), 'clip_fao/fao_rgns'),
+                            layer = 'fao_rgns2')
+
+
+```
+
 
 
 ``` {r plot_spp_from_quadrants, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
-### define representative species from each quadrant, for over-plotting
-spp_quads <- c('q1' = 'Kajikia albida', 
+
+spp_quads <- c('q1' = 'Kajikia albida',       
                'q2' = 'Conus episcopatus',
                'q3' = 'Conus magnificus', 
                'q4' = 'Acanthurus nigroris')
-am_thresh <- 0
+
+spp_extents <- list(c(-150,  60, -75, 75), # 210 deg x 150 deg
+                    c(  30, 240, -75, 75), # 210 deg
+                    c(  90, 300, -75, 75), # 210 deg
+                    c(  30, 240, -75, 75)) # 210 deg
+
+spp_map_list <- vector('list', length = 4)
 
 for (i in 1:length(spp_quads)) { # i = 1
+  species = spp_quads[i]
+  
   spp <- spp_list %>% filter(sciname == spp_quads[i])
   spp_quad <- names(spp_quads)[i]
   
-  spp_plot <- plot_rangemap(spp)
-  spp_plot <- spp_plot + 
-    labs(title = element_blank()) +
-    theme(legend.position = 'none')
-
-  print(spp_plot)
-  plotfile <- file.path(dir_fig, 'spp_maps', 
-                        sprintf('%s_%s.png', 
-                                spp_quad, 
-                                tolower(str_replace(spp_quads[i], ' ', '_'))))
-  ggsave(plotfile, height = 4.5, width = 8.7, units = 'cm')
+  spp_map_df <- get_spp_map_df(species = spp_quads[i])
+  
+  spp_rast <- get_rast(spp_map_df, type = 'both') %>%
+    crop(extent(spp_extents[[i]]))
+  
+  fao_polys_crop <- crop(fao_polys,   extent(spp_extents[[i]]))
+  world_crop     <- crop(wrld_simpl2, extent(spp_extents[[i]]))
+  
+  # colvec <- c('AquaMaps' = '#76A94C', 'Both' = '#e18258', 'IUCN' = '#9168a9')
+  
+  if (i == 1) {
+    spp_map <- tm_shape(spp_rast) +
+      tm_raster(palette = c('#76A94C', '#9168a9', '#e18258'),
+                title  = 'Dataset',
+                labels = c('AquaMaps', 'IUCN', 'both'),
+                colorNA = '#f0f8ff',
+                showNA = FALSE,
+                alpha = 1)
+  } else {
+    spp_map <- tm_shape(spp_rast) +
+      tm_raster(palette = c('#76A94C', '#9168a9', '#e18258'),
+                legend.show = FALSE,
+                colorNA = '#f0f8ff',
+                alpha = 1)
   }
+  
+  spp_map <- spp_map +
+    tm_shape(fao_polys_crop) +
+      tm_borders(col = 'grey70', lwd = 0.25, alpha = .3) +
+    tm_shape(world_crop) +
+      tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
+    tm_layout(title = species, title.size = .5,
+              frame = FALSE,
+              legend.text.size = .35,
+              legend.title.size = .45,
+              # title.position = 'TOP', 
+              legend.outside = FALSE,
+              legend.position = c('right', 'bottom'),
+              legend.bg.color = '#f0f8ff',
+              legend.bg.alpha = .5,
+              attr.outside = TRUE)
+  
+  spp_map_list[[i]] <- spp_map
+
+  save_tmap(spp_map, file.path(dir_fig, sprintf('spp_maps/spp_map_%s_%s.png', 
+                                                spp_quad, 
+                                                str_replace(tolower(species), ' ', '_'))), 
+            width = 9.4, height = 6.5, units = 'cm', dpi = 600)
+
+}
+
+# multiplot <- grid.arrange(spp_map_list[[2]],
+#                           spp_map_list[[1]],
+#                           spp_map_list[[4]],
+#                           spp_map_list[[3]],
+#                           ncol = 2, main = "Main title")
+
 
 ```
 
@@ -262,7 +385,6 @@ spp_gp_quadrants <- spp_gp_quadrants %>%
          quad = str_replace(quad, 'q4', 'q4 poorly matched'))
 
 ```
-
 
 <!-- # Multiple species maps per quadrant -->
 ``` {r child = 'data_explore_pt3.Rmd', eval = FALSE}
