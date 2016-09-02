@@ -209,8 +209,8 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
   theme(panel.grid.major.x = element_blank()) +
   geom_linerange(aes(ymin = start, ymax = end, size = dataset),
                  position = position_dodge(width = 0.5)) +
-  scale_size_manual(values = c('IUCN' = .25, 'AquaMaps' = .25, 'Paired' = 2.5)) +
-  scale_color_manual(values = c('IUCN' = 'black', 'AquaMaps' = 'grey60', 'Paired' = 'black')) +
+  scale_size_manual(values = c('IUCN' = .5, 'AquaMaps' = .5, 'Paired' = 3)) +
+  scale_color_manual(values = c('IUCN' = 'black', 'AquaMaps' = 'grey70', 'Paired' = 'black')) +
   geom_text(aes(label = n_label, y = 102),
             size = 2,
             angle = 90, hjust = 0, color = 'grey30') +
@@ -224,8 +224,8 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
        fill = 'Dataset')
 
 print(bar_taxa)
-ggsave(filename = file.path(dir_fig, 'fig1a_bar_by_taxa_all.png'), 
-       width = 17.8, height = 7, units = 'cm', dpi = 600)
+ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
+       width = 19.05, height = 7, units = 'cm', dpi = 600)
 
 ```
 
@@ -326,8 +326,8 @@ scatter_quadplot <- scatter_quadplot +
 
 # print(scatter_quadplot)
 
-ggsave(file.path(dir_fig, 'fig2a_scatter_quadmap.png'),
-       width = 17.8, height = 9, units = 'cm', dpi = 600)
+ggsave(file.path(dir_fig, 'scatter_quadmap.png'),
+       width = 19.05, height = 9, units = 'cm', dpi = 600)
 
 ```
 
@@ -433,8 +433,8 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
 print(barchart_spp_gp_quads)
 
 ggsave(plot = barchart_spp_gp_quads,
-       filename = file.path(dir_fig, 'fig2b_barchart_spp_gp_quads.png'),
-       width = 17.8, height = 7, units = 'cm', dpi = 600)
+       filename = file.path(dir_fig, 'barchart_spp_gp_quads.png'),
+       width = 19.05, height = 7, units = 'cm', dpi = 600)
 
 write_csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads.csv'))
 
