@@ -237,7 +237,6 @@ wrld_simpl2 <- wrld_simpl %>%
 fao_polys <- rgdal::readOGR(dsn = file.path(path.expand(dir_git), 'clip_fao/fao_rgns'),
                             layer = 'fao_rgns2')
 
-
 ```
 
 
@@ -267,14 +266,14 @@ for (i in 1:length(spp_quads)) { # i = 1
   spp_rast <- get_rast(spp_map_df, type = 'both') %>%
     crop(extent(spp_extents[[i]]))
   
-  fao_polys_crop <- crop(fao_polys,   extent(spp_extents[[i]]))
   world_crop     <- crop(wrld_simpl2, extent(spp_extents[[i]]))
+  fao_polys_crop <- crop(fao_polys,   extent(spp_extents[[i]]))
   
   # colvec <- c('AquaMaps' = '#76A94C', 'Both' = '#e18258', 'IUCN' = '#9168a9')
   
   if (i == 1) {
     spp_map <- tm_shape(spp_rast) +
-      tm_raster(palette = c('#76A94C', '#9168a9', '#e18258'),
+      tm_raster(palette = c('#4dac26', '#d01c8b', '#4d4dac'),
                 title  = 'Dataset',
                 labels = c('AquaMaps', 'IUCN', 'both'),
                 colorNA = '#f0f8ff',
@@ -282,7 +281,7 @@ for (i in 1:length(spp_quads)) { # i = 1
                 alpha = 1)
   } else {
     spp_map <- tm_shape(spp_rast) +
-      tm_raster(palette = c('#76A94C', '#9168a9', '#e18258'),
+      tm_raster(palette = c('#4dac26', '#d01c8b', '#4d4dac'),
                 legend.show = FALSE,
                 colorNA = '#f0f8ff',
                 alpha = 1)
@@ -293,11 +292,11 @@ for (i in 1:length(spp_quads)) { # i = 1
       tm_borders(col = 'grey70', lwd = 0.25, alpha = .3) +
     tm_shape(world_crop) +
       tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
-    tm_layout(title = species, title.size = .5,
+    tm_layout(# title = species, title.size = .75,
+              # title.position = c('left', 'bottom'),
               frame = FALSE,
-              legend.text.size = .35,
-              legend.title.size = .45,
-              # title.position = 'TOP', 
+              legend.text.size = .5,
+              legend.title.size = .6,
               legend.outside = FALSE,
               legend.position = c('right', 'bottom'),
               legend.bg.color = '#f0f8ff',

@@ -209,8 +209,8 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
   theme(panel.grid.major.x = element_blank()) +
   geom_linerange(aes(ymin = start, ymax = end, size = dataset),
                  position = position_dodge(width = 0.5)) +
-  scale_size_manual(values = c('IUCN' = .25, 'AquaMaps' = .25, 'Paired' = 2.5)) +
-  scale_color_manual(values = c('IUCN' = 'black', 'AquaMaps' = 'grey60', 'Paired' = 'black')) +
+  scale_size_manual(values = c('IUCN' = .5, 'AquaMaps' = .5, 'Paired' = 3)) +
+  scale_color_manual(values = c('IUCN' = 'black', 'AquaMaps' = 'grey70', 'Paired' = 'black')) +
   geom_text(aes(label = n_label, y = 102),
             size = 2,
             angle = 90, hjust = 0, color = 'grey30') +

@@ -185,10 +185,27 @@ write_csv(clipped_spp, file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
 loiczid_raster <- raster('data/rasters/loiczid_raster.tif')
 fao_polys <- rgdal::readOGR(dsn = file.path(path.expand(dir_git), 'clip_fao/fao_rgns'),
                             layer = 'fao_rgns2')
-rast_ext  <- extent(c(85, 220, -59, 50))
+
+rast_ext  <- extent(c(-30, 330, -75, 75))
 fao_polys <- crop(fao_polys, rast_ext)
 
-World1 <- crop(wrld_simpl, rast_ext)
+
+# wrld_simpl_shift <- wrld_simpl %>%
+#   raster::shift(360)
+# 
+# World1 <- rgeos::gUnion(wrld_simpl, wrld_simpl_shift, byid = FALSE) %>%
+#   crop(rast_ext) %>%
+#   SpatialPolygonsDataFrame(data.frame(x = 1))
+# 
+# maptools::writePolyShape(World1, 'clip_fao/fao_rgns/world1')
+
+World1 <- maptools::readShapePoly('clip_fao/fao_rgns/world1')
+
+rast_spp_shift <- rast_spp %>%
+  raster::shift(360)
+
+rast_spp_e <- merge(rast_spp, rast_spp_shift)
+
 
 
 assemble_map <- function(map_rast, spp) {
@@ -215,12 +232,18 @@ clipped_spp <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
 spp_examples_e <- clipped_spp %>%
   filter(lim == 'w_lim')
 
+
+
 message('grouping affected species and summing to loiczid')
 ### group affected spp by loiczid and sum
-spp_cells_clipped <- am_spp_cells %>%
-  filter(am_sid %in% spp_examples_e$am_sid) %>%
-  group_by(loiczid) %>%
-  summarize(n_spp = n())
+
+# spp_cells_clipped <- am_spp_cells %>%
+#   filter(am_sid %in% spp_examples_e$am_sid) %>%
+#   group_by(loiczid) %>%
+#   summarize(n_spp = n())
+# write_csv(spp_cells_clipped, file.path(dir_git, 'clip_fao', 'spp_cells_clipped_e.csv'))
+
+spp_cells_clipped <- read_csv(file.path(dir_git, 'clip_fao', 'spp_cells_clipped_e.csv'))
 
 ### create raster, then shift raster
 
@@ -237,7 +260,7 @@ rast_spp_e <- merge(rast_spp, rast_spp_shift)
 
 values(rast_spp_e)[values(rast_spp_e) == 0] <- NA
 # values(rast_spp_e)[is.na(values(rast_spp_e))] <- 0
-rast_spp_e  <- crop(rast_spp_e, extent(c(85, 220, -59, 50)))
+rast_spp_e  <- crop(rast_spp_e, rast_ext)
 
 rast_spp_map_e <- 
   tm_shape(rast_spp_e) +
@@ -251,26 +274,29 @@ rast_spp_map_e <-
     tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
   tm_shape(fao_polys) +
     tm_borders(col = 'grey40', lwd = 0.25) +
-    tm_text('F_CODE_1',
+    tm_text('F_AREA_1',
             col = 'orangered4',
             fontface = 'bold.italic',
             fontfamily = 'Helvetica',
             size = .35) +
-  tm_layout(basemaps = "Esri.WorldTopoMap", 
-            frame = FALSE,
+  tm_layout(# basemaps = "Esri.WorldTopoMap", 
+            frame = TRUE,
             legend.text.size = .35,
             legend.title.size = .45,
             # title.position = 'TOP', 
-            legend.outside = TRUE,
-            # legend.position = c('right', 'bottom'),
-            # legend.bg.color = 'white',
-            # legend.bg.alpha = .5,
+            legend.outside = FALSE,
+            legend.position = c('right', 'top'),
+            legend.bg.color = 'white',
+            legend.bg.alpha = .8,
             attr.outside = TRUE)
 
 print(rast_spp_map_e)
 
-save_tmap(rast_spp_map_e, file.path(dir_fig, 'map_am_edge_map.png'), 
-          width = 9, height = 6, units = 'cm', dpi = 600)
+save_tmap(rast_spp_map_e, 
+          file.path(dir_fig, 'map_am_edge_map.png'), 
+          width = 19, 
+          # height = 6, 
+          units = 'cm', dpi = 600)
 
 ```
 
