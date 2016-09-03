@@ -20,7 +20,6 @@ output:
 methods:
 IUCN raw -> grid -> raster -> final
 AM raw -> presence
-bathymetry poly -> raster?
 
 results/discussion:
 quad plot with risk and four species (?)
