@@ -131,9 +131,9 @@ ggplot(tmp, aes(x = long, y = n_spp)) +
 ```
 
 ``` {r central_band}
-### 25 S to 5 N  - look for spikes at 120W (240E), 175W (185E), 80E (and 77E)
+### 25 S to 20 N  - look for spikes at 120W (240E), 175W (185E), 80E (and 77E)
 am_spp_central <- am_spp_latlong %>%
-  filter(centerlat <= 5 & centerlat >= -25)
+  filter(centerlat <= 20 & centerlat >= -25)
 
 message('summarizing...')
 am_spp_central_lims <- am_spp_central %>%
@@ -243,7 +243,8 @@ message('grouping affected species and summing to loiczid')
 #   summarize(n_spp = n())
 # write_csv(spp_cells_clipped, file.path(dir_git, 'clip_fao', 'spp_cells_clipped_e.csv'))
 
-spp_cells_clipped <- read_csv(file.path(dir_git, 'clip_fao', 'spp_cells_clipped_e.csv'))
+spp_cells_clipped <- read_csv(file.path(dir_git, 'clip_fao', 'spp_cells_clipped_e.csv')) %>%
+  as.data.frame()
 
 ### create raster, then shift raster
 
@@ -262,6 +263,12 @@ values(rast_spp_e)[values(rast_spp_e) == 0] <- NA
 # values(rast_spp_e)[is.na(values(rast_spp_e))] <- 0
 rast_spp_e  <- crop(rast_spp_e, rast_ext)
 
+### boundary line
+fao_boundary <- Line(matrix(c(185, 185, -25, 5), ncol = 2)) %>%
+  Lines(ID = 'a') %>%
+  list() %>%
+  SpatialLines()
+
 rast_spp_map_e <- 
   tm_shape(rast_spp_e) +
     tm_raster(palette = 'Reds',
@@ -278,22 +285,24 @@ rast_spp_map_e <-
             col = 'orangered4',
             fontface = 'bold.italic',
             fontfamily = 'Helvetica',
-            size = .35) +
+            size = .5) +
+  tm_shape(fao_boundary) +
+    tm_lines(col = 'blue', lwd = 1.5) +
   tm_layout(# basemaps = "Esri.WorldTopoMap", 
             frame = TRUE,
-            legend.text.size = .35,
-            legend.title.size = .45,
+            legend.text.size = .5,
+            legend.title.size = .6,
             # title.position = 'TOP', 
             legend.outside = FALSE,
             legend.position = c('right', 'top'),
             legend.bg.color = 'white',
-            legend.bg.alpha = .8,
+            legend.bg.alpha = .9,
             attr.outside = TRUE)
 
 print(rast_spp_map_e)
 
 save_tmap(rast_spp_map_e, 
-          file.path(dir_fig, 'map_am_edge_map.png'), 
+          file.path(dir_fig, 'map_am_edge.png'), 
           width = 19, 
           # height = 6, 
           units = 'cm', dpi = 600)
@@ -313,7 +322,8 @@ message('grouping affected species and summing to loiczid')
 spp_cells_clipped <- am_spp_cells %>%
   filter(am_sid %in% spp_examples_w$am_sid) %>%
   group_by(loiczid) %>%
-  summarize(n_spp = n())
+  summarize(n_spp = n()) %>%
+  as.data.frame()
 
 ### create raster, then shift raster
 

@@ -197,16 +197,21 @@ quantile(spp_d1$max_depth, seq(.9, 1, .01), na.rm = TRUE)
 library(tmap)
 data(World)
 
+loiczid_raster_file  <- file.path(dir_git, 'shiny_am_iucn/data/loiczid_raster.tif')
+loiczid_raster       <- raster(loiczid_raster_file)
+names(loiczid_raster) <- 'loiczid'
+
 coral_cells_iucn <- read_csv(file.path(dir_git, 'clip_depth', 'coral_cells_iucn.csv'))
 
 
 coral_comp <- coral_cells_iucn %>%
-  select(-iucn_sid) %>%
+  dplyr::select(-iucn_sid) %>%
   mutate(deep = deep * 200) %>%
-  distinct()
+  distinct() %>%
+  as.data.frame()
 
 
-rast_coral_comp <- subs(x = loiczid_raster, y = coral_comp %>% select(loiczid, deep), 
+rast_coral_comp <- raster::subs(x = loiczid_raster, y = coral_comp %>% select(loiczid, deep), 
                      by = 'loiczid', which = 'deep', 
                      subsWithNA = TRUE) %>%
   crop(extent(c(-180, 180, -63, 85)))
@@ -222,8 +227,8 @@ map_coral_comp <-
   tm_shape(World) +
     tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
   tm_layout(basemaps = "Esri.WorldTopoMap", 
-            legend.text.size = .35,
-            legend.title.size = .45,
+            legend.text.size = .5,
+            legend.title.size = .6,
             # title.position = 'TOP', 
             legend.outside = FALSE, 
             legend.position = c('left', 'bottom'),
