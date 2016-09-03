@@ -118,30 +118,26 @@ Formatting
 
 # Figures
 
+___NOTE:___ These images are all based on .png outputs, mostly from .psd files; submit the .tif versions for publication.
 
 ### Fig. 1
 <a id = 'fig1'></a>
 
-![](figures/bar_by_taxa_all.png)
-![](figures/all_aquamaps_map.png)
-![](figures/all_iucn_map.png)
+![](figures/Fig_1.png)
 
 -----
 
 ### Fig. 2
 <a id = 'fig2'></a>
 
-![](figures/scatter_quadmap.png)
-![](figures/barchart_spp_gp_quads.png)
+![](figures/Fig_2.png)
 
 -----
 
 ### Fig. 3
 <a id = 'fig3'></a>
 
-![coral area change due to depth clipping](figures/coral_map.png)
-
-![coral quadmap breakdown](figures/barchart_coral_quads.png)
+![coral area subject to depth clipping](figures/Fig_3.png)
 
 -----
 
@@ -149,7 +145,7 @@ Formatting
 
 <a id = 'fig4'></a>
 
-![aquamaps edge comparison](figures/am_edge_map.png)
+![aquamaps edge comparison](figures/Fig_4.png)
 
 -----
 
@@ -157,7 +153,7 @@ Formatting
 
 <a id = 'fig5'></a>
 
-![Change in MPA coverage](figures/barchart_mpa_gap.png)
+![Change in MPA coverage](figures/Fig_5.png)
 
 
 -----
