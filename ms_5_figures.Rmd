@@ -118,19 +118,19 @@ Formatting
 
 # Figures
 
-___NOTE:___ These images are all based on .png outputs, mostly from .psd files; submit the .tif versions for publication.
+___NOTE:___ These images are all based on .png outputs, exported from .psd files; submit the .tif versions for publication.
 
 ### Fig. 1
 <a id = 'fig1'></a>
 
-![](figures/Fig_1.png)
+![Taxonomic and geographic representation](figures/Fig_1.png)
 
 -----
 
 ### Fig. 2
 <a id = 'fig2'></a>
 
-![](figures/Fig_2.png)
+![Quadrant plot and spp breakdown by quadrant](figures/Fig_2.png)
 
 -----
 

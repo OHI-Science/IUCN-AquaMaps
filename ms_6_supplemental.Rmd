@@ -38,10 +38,10 @@ __Fig S2.__ Rasterizing shapefiles provided by IUCN. A portion of the _T. alalun
 ## Representative maps from each quadrant
 
 __Fig S3.__ Representative species maps to illustrate each quadrant from Fig 2A.  Each map is positioned to match its quadrant in Fig 2A.
-(A) Distribution-matched: Conus episcopatus, the dignified cone snail.  Ranges shows excellent overlap in the western Pacific, though IUCN range extends beyond the bounds of the AquaMaps range.
-(B) Well-matched: Kajikia albida, the Atlantic white marlin.  Ranges from each data set show nearly complete overlap, and very similar area of coverage.
-(C) Poorly-matched: Acanthurus nigroris, the blue-lined surgeonfish.  IUCN predicts species range only near the Hawaiian islands; AquaMaps predicts extensive range throughout the central and western Pacific Ocean.  The datasets align in neither distribution nor area of coverage.
-(D) Area-matched: Conus magnificus, the magnificent cone snail.  Ranges overlap in the southern Pacific, but align poorly elsewhere.  The total area for each range is similar.
+(A) Distribution-matched: Conus episcopatus, the dignified cone snail.  Distributions shows excellent overlap in the western Pacific, though IUCN range extends well beyond the bounds of the AquaMaps range.
+(B) Well-matched: Kajikia albida, the Atlantic white marlin.  Distributions from each data set show nearly complete overlap, and very similar range size.
+(C) Poorly-matched: Acanthurus nigroris, the blue-lined surgeonfish.  IUCN predicts species distribution only near the Hawaiian islands; AquaMaps predicts extensive distribution throughout the central and western Pacific Ocean.  The datasets align in neither distribution nor range size.
+(D) Area-matched: Conus magnificus, the magnificent cone snail.  Distributions overlap in the southern Pacific, but align poorly elsewhere.  The range sizes are similar.
 
 
 ## Risk by quadrant
