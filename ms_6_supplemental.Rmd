@@ -31,19 +31,34 @@ AM thresholds? not mentioned in body of paper as of yet
 
 ## Preparing AquaMaps and IUCN data layers
 
-__Fig S1.__  Examples of AquaMaps and IUCN raw species range data. (A) AquaMaps distribution of _Thunnus alalunga_ (Albacore Tuna) showing global range with varying probabilities of occurrence assigned to 0.5° grid cells. (B) IUCN distribution of _T. alalunga_ represented as extent of occurrence polygons.
+__Fig S1.__  Examples of AquaMaps and IUCN raw species range data. (A, B) AquaMaps distribution of _Thunnus alalunga_ (Albacore Tuna) [@kaschner_aquamaps:_2015] showing global range with varying probabilities of occurrence assigned to 0.5° grid cells (A) and presence within 0.5° grid cells (B). (C, D) IUCN distribution of _T. alalunga_ [@@iucn_iucn_2015] represented as extent of occurrence polygons (C) and presence within 0.5° grid cells (D).
+
+<!-- 	
+Fis-22832, Thunnus alalunga, 21856, citation general IUCN; 
+Reviewed distribution maps for Thunnus alalunga (Albacore), with modelled year 2100 native range map based on IPCC A2 emissions scenario. www.aquamaps.org, version of Aug. 2013. Web. Accessed 11 Sep. 2016.
+-->
 
 __Fig S2.__ Rasterizing shapefiles provided by IUCN. A portion of the _T. alalunga_ range map is used to exemplify the rasterization process.  To enable direct comparison of IUCN species ranges to AquaMaps species ranges, the raw IUCN polygon (A) is overlaid with a 0.5° degree grid matching the AquaMaps grid (B).  Each cell is assigned a value of "present" if the cell overlaps any portion of the polygon (C).  The resulting raster (D).
 
 ## Representative maps from each quadrant
 
-__Fig S3.__ Representative species maps to illustrate each quadrant from Fig 2A.  Each map is positioned to match its quadrant in Fig 2A.
-(A) Distribution-matched: Conus episcopatus, the dignified cone snail.  Distributions shows excellent overlap in the western Pacific, though IUCN range extends well beyond the bounds of the AquaMaps range.
-(B) Well-matched: Kajikia albida, the Atlantic white marlin.  Distributions from each data set show nearly complete overlap, and very similar range size.
-(C) Poorly-matched: Acanthurus nigroris, the blue-lined surgeonfish.  IUCN predicts species distribution only near the Hawaiian islands; AquaMaps predicts extensive distribution throughout the central and western Pacific Ocean.  The datasets align in neither distribution nor range size.
-(D) Area-matched: Conus magnificus, the magnificent cone snail.  Distributions overlap in the southern Pacific, but align poorly elsewhere.  The range sizes are similar.
+__Fig S3.__ Representative species maps [@kaschner_aquamaps:_2015; @iucn_iucn_2015] to illustrate each quadrant from Fig 2A.  Each map is positioned to match its quadrant in Fig 2A.
+(A) Distribution-matched: _Conus episcopatus_, the dignified cone snail.  Distributions show excellent overlap in the western Pacific, though IUCN range extends well beyond the bounds of the AquaMaps range.
+(B) Well-matched: _Kajikia albida_, the Atlantic white marlin.  Distributions from each data set show nearly complete overlap, and very similar range size.
+(C) Poorly-matched: _Acanthurus nigroris_, the blue-lined surgeonfish.  IUCN predicts species distribution only near the Hawaiian islands; AquaMaps predicts extensive distribution throughout the central and western Pacific Ocean.  The datasets align in neither distribution nor range size.
+(D) Area-matched: _Conus magnificus_, the magnificent cone snail.  Distributions overlap in the southern Pacific, but align poorly elsewhere.  The range sizes are similar.
 
+<!--
+W-Msc-215455, Conus episcopatus, 192664 citation Conch Books, Hackenheim, Germany; Computer generated distribution maps for Conus episcopatus, with modelled year 2100 native range map based on IPCC A2 emissions scenario. www.aquamaps.org, version of Aug. 2013. Web. Accessed 11 Sep. 2016.
 
+W-Msc-215551, Conus magnificus, 192573 citation Conch Books, Hackenheim, Germany; Computer generated distribution maps for Conus magnificus, with modelled year 2100 native range map based on IPCC A2 emissions scenario. www.aquamaps.org, version of Aug. 2013. Web. Accessed 11 Sep. 2016.
+
+Fis-31079, Acanthurus nigroris, 177999 citation IUCN; Reviewed distribution maps for Acanthurus nigroris (Bluelined surgeonfish), with modelled year 2100 native range map based on IPCC A2 emissions scenario. www.aquamaps.org, version of Aug. 2013. Web. Accessed 11 Sep. 2016.
+
+Fis-164253, Kajikia albida, 170322 citation IUCN; Computer generated distribution maps for Kajikia albida (Atlantic white marlin), with modelled year 2100 native range map based on IPCC A2 emissions scenario. www.aquamaps.org, version of Aug. 2013. Web. Accessed 11 Sep. 2016.
+-->
+
+<!--
 ## Risk by quadrant
 
 <a id = 'S2'></a>
@@ -85,7 +100,7 @@ B.
 ![](figures/si_ribbon_am_threshold.png)
 
 >  __Fig S4.__ AquaMaps distribution map extent remaining after applying a presence threshold. A higher threshold constrains an analysis to cells with near certainty of occurrence, while a low threshold captures larger areas of increasingly marginal suitability. (A) A 40% threshold applied to all species in the AquaMaps dataset shows a mean loss of 28% of total range compared to a 0% threshold, with a wide distribution in which some species lose nearly all of their apparent range.  (B) Median remaining extent at increments of presence threshold. Dark green ribbon includes 25% to 75% quantiles of remaining species range, while lighter ribbon includes 5% to 95% quantiles.  Incrementing the presence threshold from 0.00 to 1.00 for the entire AquaMaps dataset, the shallow downward trend indicates a low but consistent sensitivity of apparent species range to threshold choice, with no surprising tradeoffs that could suggest an "optimal" threshold.
-
+-->
 
 <!--
 ## MPA gap analysis - explanation
@@ -99,10 +114,5 @@ ___why so many gaps and 10+ species show up with IUCN.  I will write up a paragr
     - introducing errors: AM = likely commission (overestimates species with tiny bits of range in MPAs) vs IUCN = possible omission (misses possible real habitat that falls within MPAs)
 - hypothesis to explain more 10%+ species - ten random samples most have IUCN polygons just east of Australia where a large MPA is indicated - Great Barrier Reef I assume - a single large poly falling in GBR gets a high score, while for the same species, many of the AM ranges (also in same area) scatter suitable area over larger extent, so lower percent of species range is protected
     - introducing errors: IUCN = likely omission (skipping possible real habitat outside of MPAs) and likely commission (possibly overcounting real habitat in MPAs e.g. GBR); AquaMaps = probably a little commission (possibly underestimating, if it overpredicts lots of range outside MPAs, thus reducing the proportion of protected range)
--->
-
-<!--
-#### Caveats
-For example, as of this writing, IUCN has released no spatial data for class Elasmobranchii (cartilaginous fishes including sharks and rays); and while IUCN offers a large number of maps within class Actinopterygii (ray-finned bony fishes), the available maps include only a few primarily tropical taxonomic sub-groups, such as wrasses, damselfish, butterflyfish, tunas, and billfishes, but are missing economically important subgroups including salmon, rockfish, and clupeids.  However, IUCN's criterion of comprehensive assessment greatly reduces the risk of sample bias within the bounds of the assessed taxonomic groups.
 -->
 

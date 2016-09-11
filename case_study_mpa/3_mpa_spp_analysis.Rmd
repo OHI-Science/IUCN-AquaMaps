@@ -429,7 +429,10 @@ mpa_all_runs1 <- mpa_all_runs %>%
   summarize(p_cat = n()/first(n_trial)) %>%
   ungroup() %>%
   mutate(cat = factor(cat, levels = c('gap', '0-2%', '2-5%', '5-10%', '>10%'))) %>%
-  mutate(trial = factor(trial, levels = c('IUCN 2015', 'AM 2015 (0%) +\nIUCN 2015', 'AM 2015 (0%)', 'AM 2015 (50%)', 'AM 2014 (50%)'))) %>%
+  filter(trial != 'AM 2015 (0%) +\nIUCN 2015') %>%
+  mutate(trial = factor(trial, levels = c('IUCN 2015', 
+                                          # 'AM 2015 (0%) +\nIUCN 2015', 
+                                          'AM 2015 (0%)', 'AM 2015 (50%)', 'AM 2014 (50%)'))) %>%
   mutate(p_cat = p_cat * 100) %>%
   arrange(cat)
 
@@ -453,8 +456,8 @@ barchart_mpa_gap <- ggplot(mpa_all_runs1,
   geom_text(aes(label = sprintf('n = %s', n_trial), y = 101), hjust = 0, 
             size = 2, 
             color = 'grey30') +
-  scale_x_discrete(labels = c('5. IUCN 2015',
-                              '4. AM 2015 (0%) +\nIUCN 2015', 
+  scale_x_discrete(labels = c('4. IUCN 2015',
+                              # '4. AM 2015 (0%) +\nIUCN 2015', 
                               '3. AM 2015 (0%)', 
                               '2. AM 2015 (50%)', 
                               '1. AM 2014 (50%)')) +

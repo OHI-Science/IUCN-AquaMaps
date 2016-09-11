@@ -326,8 +326,8 @@ scatter_quadplot <- scatter_quadplot +
 
 # print(scatter_quadplot)
 
-ggsave(file.path(dir_fig, 'scatter_quadmap.png'),
-       width = 19.05, height = 9, units = 'cm', dpi = 600)
+# ggsave(file.path(dir_fig, 'scatter_quadmap.png'),
+#        width = 19.05, height = 9, units = 'cm', dpi = 600)
 
 ```
 
