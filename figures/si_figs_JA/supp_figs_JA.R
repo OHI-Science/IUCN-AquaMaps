@@ -2,6 +2,7 @@ library(raster)
 # library(maps)
 library(maptools)
 library(tmap)
+library(rgdal)
 library(readr)
 
 source('~/github/ohiprep/src/R/common.R')
@@ -54,13 +55,14 @@ tuna_iucn_raster_grid <- tm_shape(r_iucn_crop) +
   tm_layout(basemaps = "Esri.WorldTopoMap", 
             # title.position = 'TOP', 
             legend.outside = TRUE, attr.outside = TRUE)+
-  tm_grid(n.x = 60, n.y = 80, projection = 'longlat', col = 'gray', 
+  tm_grid(n.x = 60, n.y = 40, projection = 'longlat', col = 'gray', 
           labels.inside.frame = FALSE,labels.size=0)+
   tm_shape(land_crop) +
   tm_polygons() +
   tm_fill(col = 'gray')
 
-save_tmap(tuna_iucn_raster_grid, filename = 'figures/si_figs_JA/tuna_iucn_grid_raster.png')
+save_tmap(tuna_iucn_raster_grid, filename = 'figures/si_figs_JA/tuna_iucn_grid_raster.png',
+          width = 9.5, units = "cm", dpi = 600)
 
 tuna_iucn_raster <- tm_shape(r_iucn_crop) +
   tm_raster(palette = 'aquamarine3',
@@ -71,7 +73,8 @@ tuna_iucn_raster <- tm_shape(r_iucn_crop) +
   tm_polygons()+
   tm_fill(col = 'gray')
 
-save_tmap(tuna_iucn_raster, filename = 'figures/si_figs_JA/tuna_iucn_raster.png')
+save_tmap(tuna_iucn_raster, filename = 'figures/si_figs_JA/tuna_iucn_raster.png',
+          width = 9.5, units = "cm", dpi = 600)
 
 tuna_am_raster <- tm_shape(r_am) +
   tm_raster(palette = 'indianred3',
@@ -81,7 +84,8 @@ tuna_am_raster <- tm_shape(r_am) +
   tm_shape(wrld_simpl) +
   tm_fill(col = 'gray')
 
-save_tmap(tuna_am_raster, filename = 'figures/si_figs_JA/tuna_am_world.png')
+save_tmap(tuna_am_raster, filename = 'figures/si_figs_JA/tuna_am_world.png',
+          width = 19, units = "cm", dpi = 600)
 
 #get shapefile and crop to same extent
 
@@ -99,7 +103,8 @@ tuna_wrld <- tm_shape(ta)+
   tm_shape(wrld_simpl)+
   tm_fill(col = 'gray')
 
-save_tmap(tuna_wrld, filename ='figures/si_figs_JA/tuna_world.png')
+save_tmap(tuna_wrld, filename ='figures/si_figs_JA/tuna_world.png',
+          width = 19, units = "cm", dpi = 600)
 
 
 ta_crop <- crop(ta,crop_ext)
@@ -113,7 +118,8 @@ tuna_shp_crop <- tm_shape(land_crop)+
 
 
 
-save_tmap(tuna_shp_crop, filename ='figures/si_figs_JA/tuna_crop.png')
+save_tmap(tuna_shp_crop, filename ='figures/si_figs_JA/tuna_crop.png',
+          width = 9.5, units = "cm", dpi = 600)
 
 tuna_crop_grid <-tm_shape(land_crop)+
   tm_fill(col = 'gray')+
@@ -126,5 +132,29 @@ tuna_crop_grid <-tm_shape(land_crop)+
   tm_fill(col='gray')
 
 
-save_tmap(tuna_crop_grid,filename = 'figures/si_figs_JA/tuna_crop_grid.png')
+save_tmap(tuna_crop_grid,filename = 'figures/si_figs_JA/tuna_crop_grid.png',
+          width = 9.5, units = "cm", dpi = 600)
 
+
+#create world map of tuna for IUCN combining shapefile and raster
+
+ta_crop <- crop(ta,extent(0,180,-90,90))
+
+r_na <- raster(vals=NA,ext=extent(0,180,-90,90), res = 0.5)
+r_iucn_half <- r_iucn%>%crop(extent(-180,0,-90,90))%>%merge(r_na)
+plot(r_iucn_half, box = F, axes = F, legend = F)
+plot(ta_crop, add = T, col = 'darkgreen')
+
+
+tuna_iucn_world <- tm_shape(r_iucn_half)+
+                    tm_raster(palette = 'indianred3',
+                              colorNA = NULL,
+                              alpha = .8,
+                              legend.show=FALSE)+
+                    tm_shape(ta_crop)+
+                    tm_fill(col = 'aquamarine3', alpha = 0.8) +
+                    tm_shape(wrld_simpl) +
+                    tm_fill(col = 'gray')
+
+save_tmap(tuna_iucn_world, filename = 'figures/si_figs_JA/tuna_world_map_IUCN_raster_poly.png',
+          width = 19, units = "cm", dpi = 600)
