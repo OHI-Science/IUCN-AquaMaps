@@ -40,22 +40,10 @@ _Keywords:_  Marine spatial planning, species distribution model, extent of occu
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = FALSE, message = FALSE, warning = FALSE)
 
-# library(ggplot2)
-# library(maps)
-
-
-# library(raster)
-# library(data.table)
 library(tidyr)
 library(dplyr)
 library(stringr)
 library(readr)
-
-# dir_N <- c('Windows' = '//neptune.nceas.ucsb.edu/data_edit',
-#            'Darwin'  = '/Volumes/data_edit',
-#            'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
-
-# dir_anx  <- file.path(dir_N, 'git-annex/globalprep/SPP_ICO')
 
 if(basename(getwd()) != 'IUCN-AquaMaps') setwd('~/github/IUCN-AquaMaps')
 
