@@ -256,8 +256,8 @@ rast_spp_map_e <-
     tm_lines(col = 'blue', lwd = 1.5) +
   tm_layout(# basemaps = "Esri.WorldTopoMap", 
             frame = TRUE,
-            legend.text.size = .5,
-            legend.title.size = .6,
+            legend.text.size = .6,
+            legend.title.size = .7,
             # title.position = 'TOP', 
             legend.outside = FALSE,
             legend.position = c('right', 'top'),
@@ -322,8 +322,8 @@ fao_boundary <- Line(matrix(c(185, 185, -25, 20), ncol = 2)) %>%
 rast_spp_map_w <- 
   tm_shape(rast_spp_w) +
     tm_raster(palette = 'Reds',
-              breaks = c(1, 15, 100, 500, 1000, 2000, Inf),
-              colorNA = 'lightblue1',
+              breaks = c(1, 15, 100, 1000, 2000, Inf),
+              colorNA = '#ddeeff',
               textNA = 'Zero',
               title = 'Species count',
               alpha = 1) +
@@ -340,13 +340,13 @@ rast_spp_map_w <-
     tm_lines(col = 'blue', lwd = 1.5) +
   tm_layout(# basemaps = "Esri.WorldTopoMap", 
             frame = TRUE,
-            legend.text.size = .5,
-            legend.title.size = .6,
+            legend.text.size = .6,
+            legend.title.size = .7,
             # title.position = 'TOP', 
             legend.outside = FALSE,
             legend.position = c('right', 'top'),
             legend.bg.color = 'white',
-            legend.bg.alpha = 1,
+            legend.bg.alpha = .95,
             attr.outside = TRUE)
 
 print(rast_spp_map_w)
@@ -354,7 +354,6 @@ print(rast_spp_map_w)
 save_tmap(rast_spp_map_w, 
           file.path(dir_fig, 'map_am_edge_w.png'), 
           width = 19, 
-          # height = 6, 
           units = 'cm', dpi = 600)
 
 ```

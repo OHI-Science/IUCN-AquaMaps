@@ -29,8 +29,8 @@ dir_anx <- file.path(dir_M, 'git-annex/globalprep/spp_ico')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
 
-if(basename(getwd()) != 'data_explore') setwd('data_explore')
-source('data_explore_fxns.R')
+# if(basename(getwd()) != 'data_explore') setwd('data_explore')
+source(file.path(dir_git, 'data_explore', 'data_explore_fxns.R'))
 ### When knitting this, it automatically sets WD to be this directory...
 ### the 'setwd()' is there for running by chunk
 ```
@@ -273,18 +273,18 @@ for (i in 1:length(spp_quads)) { # i = 1
   
   if (i == 1) {
     spp_map <- tm_shape(spp_rast) +
-      tm_raster(palette = c('#4dac26', '#d01c8b', '#4d4dac'),
+      tm_raster(palette = c('#4dac26', '#d01c8b', '#88ccff'),
                 title  = 'Dataset',
                 labels = c('AquaMaps', 'IUCN', 'both'),
                 colorNA = '#f0f8ff',
                 showNA = FALSE,
-                alpha = 1)
+                alpha = .8)
   } else {
     spp_map <- tm_shape(spp_rast) +
-      tm_raster(palette = c('#4dac26', '#d01c8b', '#4d4dac'),
+      tm_raster(palette = c('#4dac26', '#d01c8b', '#aaccff'),
                 legend.show = FALSE,
                 colorNA = '#f0f8ff',
-                alpha = 1)
+                alpha = .8)
   }
   
   spp_map <- spp_map +
@@ -295,12 +295,12 @@ for (i in 1:length(spp_quads)) { # i = 1
     tm_layout(# title = species, title.size = .75,
               # title.position = c('left', 'bottom'),
               frame = FALSE,
-              legend.text.size = .5,
-              legend.title.size = .6,
+              legend.text.size = .6,
+              legend.title.size = .7,
               legend.outside = FALSE,
               legend.position = c('right', 'bottom'),
               legend.bg.color = '#f0f8ff',
-              legend.bg.alpha = .5,
+              legend.bg.alpha = .9,
               attr.outside = TRUE)
   
   spp_map_list[[i]] <- spp_map

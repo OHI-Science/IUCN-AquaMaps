@@ -4,7 +4,7 @@ library(ggplot2)
 
 ### generic theme for all plots
 ggtheme_basic <- theme(axis.ticks = element_blank(),
-        text = element_text(family = 'Helvetica', color = 'gray30', size = 8),
+        text = element_text(family = 'Helvetica', color = 'gray30', size = 9),
         plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
         panel.background = element_blank(),
         legend.position = 'right')
@@ -14,6 +14,7 @@ ggtheme_plot <- ggtheme_basic +
         panel.grid.minor = element_blank(), 
         # panel.grid.major = element_line(colour = 'grey90', size = .25),
         panel.grid.major = element_blank(),
+        legend.key = element_rect(colour = NA, fill = NA),
         axis.line = element_line(colour = "grey30", size = .5))
 
   
