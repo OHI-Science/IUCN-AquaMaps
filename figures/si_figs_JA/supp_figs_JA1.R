@@ -63,8 +63,8 @@ tuna_iucn_raster <- tm_shape(tuna_rast_iucn_crop) +
             legend.show = FALSE) +
   tm_shape(land_crop) +
   tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
-  tm_layout(legend.text.size = .5,
-            legend.title.size = .6,
+  tm_layout(legend.text.size = .8,
+            legend.title.size = .9,
             # title.position = 'TOP', 
             legend.outside = FALSE, 
             legend.position = c('left', 'bottom'),
@@ -209,8 +209,8 @@ tuna_am_combine <- tm_shape(rast_am_prob_half) +
             alpha = .8,
             legend.show = TRUE,
             title = "Probability of Occurrence") +
-  tm_layout(legend.text.size = .5, #Casey's default from coral maps was .5 - pretty small for this map; Jamie changed to .8
-            legend.title.size = .6, #default from coral maps was .6; Jamie changed to .9
+  tm_layout(legend.text.size = .8,
+            legend.title.size = .9,
             # title.position = 'TOP', 
             legend.outside = FALSE, 
             legend.position = c('left', 'bottom'),

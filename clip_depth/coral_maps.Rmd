@@ -220,15 +220,15 @@ rast_coral_comp <- raster::subs(x = loiczid_raster, y = coral_comp %>% select(lo
 map_coral_comp <- 
   tm_shape(rast_coral_comp) +
     tm_raster(breaks = c(0, 200, Inf),
-              palette = c('lightblue', 'royalblue4'),
+              palette = c('lightblue', 'cyan4'),
               colorNA = NULL,
               title = 'depth (meters)',
               alpha = 1) +
   tm_shape(World) +
     tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
   tm_layout(basemaps = "Esri.WorldTopoMap", 
-            legend.text.size = .5,
-            legend.title.size = .6,
+            legend.text.size = .8,
+            legend.title.size = .9,
             # title.position = 'TOP', 
             legend.outside = FALSE, 
             legend.position = c('left', 'bottom'),
