@@ -255,7 +255,7 @@ spp_extents <- list(c(-150,  60, -75, 75), # 210 deg x 150 deg
 
 spp_map_list <- vector('list', length = 4)
 
-for (i in 1:length(spp_quads)) { # i = 1
+for (i in 1:length(spp_quads)) { # i = 3
   species = spp_quads[i]
   
   spp <- spp_list %>% filter(sciname == spp_quads[i])
@@ -273,7 +273,8 @@ for (i in 1:length(spp_quads)) { # i = 1
   
   if (i == 1) {
     spp_map <- tm_shape(spp_rast) +
-      tm_raster(palette = c('#4dac26', '#d01c8b', '#88ccff'),
+      # tm_raster(palette = c('#8da0cb', '#fc8d62', '#66c2a5'),
+      tm_raster(palette = c('#660000', 'yellowgreen', 'firebrick1'),
                 title  = 'Dataset',
                 labels = c('AquaMaps', 'IUCN', 'both'),
                 colorNA = '#f0f8ff',
@@ -281,7 +282,7 @@ for (i in 1:length(spp_quads)) { # i = 1
                 alpha = .8)
   } else {
     spp_map <- tm_shape(spp_rast) +
-      tm_raster(palette = c('#4dac26', '#d01c8b', '#aaccff'),
+      tm_raster(palette = c('#660000', 'yellowgreen', 'firebrick1'),
                 legend.show = FALSE,
                 colorNA = '#f0f8ff',
                 alpha = .8)
@@ -291,7 +292,7 @@ for (i in 1:length(spp_quads)) { # i = 1
     tm_shape(fao_polys_crop) +
       tm_borders(col = 'grey70', lwd = 0.25, alpha = .3) +
     tm_shape(world_crop) +
-      tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
+      tm_polygons(border.col = 'grey50', col = 'grey40', lwd = 0.25) + 
     tm_layout(# title = species, title.size = .75,
               # title.position = c('left', 'bottom'),
               frame = FALSE,
