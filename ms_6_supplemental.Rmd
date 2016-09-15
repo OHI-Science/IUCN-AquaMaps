@@ -31,21 +31,13 @@ output:
 
 ## Preparing AquaMaps and IUCN data layers
 
-![](figures/Fig_S1ab.png)
-
-![](figures/Fig_S1cd.png)
+![](figures/Fig_S1.png)
 
 > __Fig S1.__  Examples of AquaMaps and IUCN raw species range data. (A, B) AquaMaps distribution of _Thunnus alalunga_ (Albacore Tuna) (AquaMaps 2013e) showing global range with varying probabilities of occurrence assigned to 0.5° grid cells (A) and presence within 0.5° grid cells (B). (C, D) IUCN distribution of _T. alalunga_ (IUCN 2011b) represented as extent of occurrence polygons (C) and presence within 0.5° grid cells (D).
 
 <!-- Fis-22832, Thunnus alalunga, 21856 -->
 
-![](figures/Fig_S2a.png)
-
-![](figures/Fig_S2b.png)
-
-![](figures/Fig_S2c.png)
-
-![](figures/Fig_S2d.png)
+![](figures/Fig_S2.png)
 
 > __Fig S2.__ Rasterizing shapefiles provided by IUCN. A portion of the _T. alalunga_ range map is used to exemplify the rasterization process.  To enable direct comparison of IUCN species ranges to AquaMaps species ranges, the raw IUCN polygon (A) is overlaid with a 0.5° degree grid matching the AquaMaps grid (B).  Each cell is assigned a value of "present" if the cell overlaps any portion of the polygon (C).  The resulting raster (D).
 
