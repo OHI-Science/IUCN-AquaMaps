@@ -359,6 +359,224 @@ save_tmap(rast_spp_map_w,
 ```
 
 
+``` {r plot_several_spp_w, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+clipped_spp <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
+
+spp_examples_w <- clipped_spp %>%
+  filter(lim == 'e_lim')
+
+spp_w_cells <- am_spp_cells %>%
+  filter(am_sid %in% spp_examples_w$am_sid)
+
+spp_w_all <- spp_w_cells %>%
+  group_by(am_sid) %>%
+  summarize(n_cells = n())
+
+spp_w_samples <- spp_w_all %>%
+  filter(n_cells > 9000) %>% ### focus on large-range species
+  sample_n(20) %>%
+  .$am_sid
+
+print(spp_w_all %>% filter(am_sid %in% spp_w_samples))
+### some good candidates:
+#     am_sid n_cells
+# Fis-143854   23422
+#  Fis-34036   13796
+# URM-2-3539   16664
+#  Fis-33989   15715
+spp_plotted <- read_csv('data/spp_all.csv') %>%
+  filter(am_sid %in% spp_w_samples) %>%
+  left_join(read_csv('data/speciesoccursum.csv') %>%
+              select(am_sid = speciesid, occurcells, fbname),
+            by = 'am_sid')
+
+for(spp in spp_w_samples) {
+  # spp <- spp_w_samples[1]
+  message('Processing map for ', spp)
+  message('... filtering cells for ', spp)
+  spp_cells <- spp_w_cells %>%
+    filter(am_sid == spp) %>%
+    mutate(presence = 1)
+  rast_spp  <-  subs(loiczid_raster, 
+                     spp_cells[ , c('loiczid', 'presence')], 
+                     by = 'loiczid', 
+                     which = 'presence', 
+                     subsWithNA = TRUE)
+  
+  message('... shifting raster and setting 0 to NA for ', spp)
+  rast_spp_shift <- rast_spp %>%
+    raster::shift(360)
+  
+  rast_spp_w <- merge(rast_spp, rast_spp_shift)
+  
+  values(rast_spp_w)[values(rast_spp_w) == 0] <- NA
+  # values(rast_spp_w)[is.na(values(rast_spp_w))] <- 0
+  rast_spp_w  <- crop(rast_spp_w, rast_ext)
+  
+  ### boundary line
+  fao_boundary <- Line(matrix(c(185, 185, -25, 20), ncol = 2)) %>%
+    Lines(ID = 'a') %>%
+    list() %>%
+    SpatialLines()
+  
+  message('... generating map for ', spp)
+
+  rast_spp_map_w <- 
+    tm_shape(rast_spp_w) +
+      tm_raster(palette = 'Reds',
+                colorNA = '#ddeeff',
+                textNA = 'not present',
+                title = spp,
+                alpha = 1) +
+    tm_shape(World1) +
+      tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
+    tm_shape(fao_polys) +
+      tm_borders(col = 'grey40', lwd = 0.25) +
+      tm_text('F_AREA_1',
+              col = 'royalblue4',
+              fontface = 'bold.italic',
+              fontfamily = 'Helvetica',
+              size = .5) +
+    tm_shape(fao_boundary) +
+      tm_lines(col = 'blue', lwd = 1.5) +
+    tm_layout(# basemaps = "Esri.WorldTopoMap", 
+              frame = TRUE,
+              legend.text.size = .6,
+              legend.title.size = .7,
+              # title.position = 'TOP', 
+              legend.outside = FALSE,
+              legend.position = c('right', 'top'),
+              legend.bg.color = 'white',
+              legend.bg.alpha = .95,
+              attr.outside = TRUE)
+  
+  print(rast_spp_map_w)
+}
+
+# save_tmap(rast_spp_map_w, 
+#           file.path(dir_fig, 'map_am_edge_w.png'), 
+#           width = 19, 
+#           units = 'cm', dpi = 600)
+
+```
+
+``` {r plot_example_spp, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+spp_ex <- c('Hoplichthys regani' = 'Fis-34036', 
+            'Ipnops meadi'       = 'Fis-143854', 
+            'Culeolus herdmani'  = 'URM-2-3539', 
+            'Chrionema chlorotaenia' = 'Fis-33989')
+
+# spp_ex_cells <- am_spp_cells %>%
+#   filter(am_sid %in% spp_ex)
+# 
+# spp_ex_info <- read_csv('data/spp_all.csv') %>%
+#   filter(am_sid %in% spp_ex)
+
+for(i in 1:length(spp_ex)) {
+  spp <- spp_ex[i]
+  spp_name <- names(spp_ex)[i]
+  
+  message('Processing map for ', spp)
+  
+  message('... loading occurrences for ', spp)
+  spp_occur <- read_csv(paste0('clip_fao/obs_for_', tolower(spp) %>% 
+                                 str_replace_all('-', '_'), '.csv')) %>%
+    select(id, long = decimalLongitude, lat = decimalLatitude) %>%
+    mutate(long = ifelse(long < 0, long + 360, long))
+  spp_occur_pts <- SpatialPoints(spp_occur[ , 2:3])
+  
+  message('... creating raster for ', spp)
+  spp_cells <- spp_ex_cells %>%
+    filter(am_sid == spp) %>%
+    mutate(presence = 1)
+  rast_spp  <-  subs(loiczid_raster, 
+                     spp_cells[ , c('loiczid', 'presence')], 
+                     by = 'loiczid', 
+                     which = 'presence', 
+                     subsWithNA = TRUE)
+  
+  message('... shifting raster and setting 0 to NA for ', spp)
+  rast_spp_shift <- rast_spp %>%
+    raster::shift(360)
+  
+  rast_spp <- merge(rast_spp, rast_spp_shift)
+  
+  values(rast_spp)[values(rast_spp_w) == 0] <- NA
+  # values(rast_spp_w)[is.na(values(rast_spp_w))] <- 0
+  rast_spp  <- crop(rast_spp, rast_ext)
+  
+  ### boundary line
+  fao_boundary <- Line(matrix(c(185, 185, -25, 20), ncol = 2)) %>%
+    Lines(ID = 'a') %>%
+    list() %>%
+    SpatialLines()
+  
+  message('... generating map for ', spp)
+
+  rast_spp_map <- 
+    tm_shape(rast_spp) +
+      tm_raster(palette = 'Reds',
+                colorNA = '#ddeeff',
+                textNA  = 'not present',
+                title   = spp_name,
+                legend.show = FALSE,
+                showNA  = FALSE,
+                alpha   = 1) +
+    tm_shape(World1) +
+      tm_polygons(border.col = 'grey45', col = 'grey40', lwd = 0.25) + 
+    tm_shape(fao_polys) +
+      tm_borders(col = 'grey40', lwd = 0.25) +
+      tm_text('F_AREA_1',
+              col = 'royalblue4',
+              fontface = 'bold.italic',
+              fontfamily = 'Helvetica',
+              size = .5) +
+    tm_shape(fao_boundary) +
+      tm_lines(col = 'blue', lwd = 1.5) +
+    tm_shape(spp_occur_pts) + 
+      tm_bubbles(col = NA,
+                 border.col = 'red',
+                 border.lwd = 0.25,
+                 border.alpha = 1,
+                 size = 1,
+                 scale = .3,
+                 alpha = .2) +
+      # tm_dots(col = 'red') +
+    tm_layout(title = spp_name,
+              title.position = c('left', 'bottom'),
+              fontface = 'bold.italic',
+              fontfamily = 'Helvetica',
+              title.size = .8,
+              frame = TRUE,
+              legend.text.size = .6,
+              legend.title.size = .7,
+              legend.outside = FALSE,
+              legend.position = c('right', 'top'),
+              legend.bg.color = 'white',
+              legend.bg.alpha = .95,
+              attr.outside = TRUE)
+  
+  print(rast_spp_map)
+  
+  message('... saving map')
+  save_tmap(rast_spp_map,
+            paste0('clip_fao/map_fao_clip_', tolower(spp_name) %>% 
+                     str_replace_all(' ', '_'), '.png'),
+            width = 19,
+            units = 'cm', dpi = 600)
+
+}
+
+# save_tmap(rast_spp_map_w, 
+#           file.path(dir_fig, 'map_am_edge_w.png'), 
+#           width = 19, 
+#           units = 'cm', dpi = 600)
+
+```
+
+
 ``` {r combine_rasts}
 
 stack_plot_both <- 

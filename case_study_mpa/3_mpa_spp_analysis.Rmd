@@ -451,10 +451,10 @@ barchart_mpa_gap <- ggplot(mpa_all_runs1,
                                'gap'   = '#d01c8b')) +
   ### add grid lines; horizontal but then get flipped
   geom_hline(yintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 125), breaks = break_nums,
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 112), breaks = break_nums,
                      labels = sprintf('%s%%', break_nums)) + 
   geom_text(aes(label = sprintf('n = %s', n_trial), y = 101), hjust = 0, 
-            size = 2, 
+            size = 2.5, 
             color = 'grey30') +
   scale_x_discrete(labels = c('4. IUCN 2015',
                               # '4. AM 2015 (0%) +\nIUCN 2015', 
@@ -470,9 +470,6 @@ print(barchart_mpa_gap)
 ggsave(plot = barchart_mpa_gap,
        filename = file.path(dir_fig, 'barchart_mpa_gap.png'),
        width = 19.05, height = 5, units = 'cm', dpi = 600)
-# ggsave(plot = barchart_mpa_gap,
-#        filename = file.path(dir_fig, 'barchart_mpa_gap.tif'), device = 'tiff',
-#        width = 11.4, height = 5, units = 'cm', dpi = 600)
 
 mpa_all_runs_wide <- mpa_all_runs1 %>%
   mutate(p_cat = paste(round(p_cat, 1), '%', sep = '')) %>%
