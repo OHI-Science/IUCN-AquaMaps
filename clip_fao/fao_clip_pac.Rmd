@@ -53,7 +53,7 @@ source(file.path(dir_git, 'data_explore/data_explore_fxns.R'))
 
 ### get quadrant species list; filter to q3 and q4
 spp_quad_list <- read_csv(file.path(dir_git, 'data', 'spp_list_quads.csv')) %>%
-  select(sciname, am_sid, iucn_sid, reviewed, occurcells, quad) %>%
+  dplyr::select(sciname, am_sid, iucn_sid, reviewed, occurcells, quad) %>%
   filter(quad %in% c('q3', 'q4'))
 
 nrow(spp_quad_list %>% filter(occurcells > 100))
@@ -69,14 +69,14 @@ am_spp_list <- read_csv(file.path(dir_git, 'data/spp_all.csv')) %>%
   filter(!is.na(am_sid)) %>%
   arrange(reviewed) %>%
   filter(!duplicated(am_sid)) %>%
-  select(am_sid, sciname, reviewed) %>%
+  dplyr::select(am_sid, sciname, reviewed) %>%
   distinct()
 
 message('loading hcaf and adjusting to se asia')
 ### join with hcaf to get longitudes (and latitudes) for each cell
 hcaf <- read_csv(file.path(dir_anx, '_raw_data/aquamaps/d2015',
                            'csv/hcaf_truncated.csv')) %>%
-  select(-csquarecode, -cellarea, -oceanarea) %>%
+  dplyr::select(-csquarecode, -cellarea, -oceanarea) %>%
   mutate(clongadj  = ifelse(centerlong < 0, centerlong + 360, centerlong),
          wlimitadj = ifelse(wlimit < 0, wlimit + 360, wlimit),
          elimitadj = ifelse(elimit < 0, elimit + 360, elimit))
@@ -97,7 +97,7 @@ Major fishing area boundaries
 - 30 E from Africa on down
         
 ``` {r atlantic_spp} 
-### identify species that appear in the mid-atlantic - focus just on pacific/indopacific spp only
+### identify (to cut) species that appear in the mid-atlantic - focus just on pacific/indopacific spp only
 
 hcaf_atl <- hcaf %>%
   filter(centerlong >= -60 & centerlong <= 10)
@@ -129,7 +129,7 @@ am_spp_central_lims <- am_spp_central_lims %>%
   gather(lim, long, w_lim:e_lim) %>%
   gather(lim_n, ncells, n_w_lim:n_e_lim) %>%
   filter(str_detect(lim_n, lim)) %>%
-  select(-lim_n) %>%
+  dplyr::select(-lim_n) %>%
   filter(!(long <= 70 | long >= 200))
     ### delete artificially imposed limits
 
@@ -154,7 +154,7 @@ ggplot(tmp, aes(x = long, y = n_spp)) +
 clipped_spp <- am_spp_central_lims %>%
   filter(!am_sid %in% spp_atl) %>%
   filter(long == 185) %>%
-  select(am_sid, lim) %>%
+  dplyr::select(am_sid, lim) %>%
   distinct() %>%
   left_join(am_spp_list, by = 'am_sid')
 
@@ -169,7 +169,7 @@ loiczid_raster <- raster(file.path(dir_git, 'data/rasters/loiczid_raster.tif'))
 fao_polys <- rgdal::readOGR(dsn = file.path(path.expand(dir_git), 'clip_fao/fao_rgns'),
                             layer = 'fao_rgns2')
 
-rast_ext  <- extent(c(-30, 330, -75, 75))
+rast_ext  <- extent(c(-30, 330, -63, 75)) ### was -75 but changed to -63 to cut more from bottom
 fao_polys <- crop(fao_polys, rast_ext)
 
 
@@ -184,10 +184,6 @@ fao_polys <- crop(fao_polys, rast_ext)
 
 World1 <- maptools::readShapePoly('clip_fao/fao_rgns/world1')
 
-rast_spp_shift <- rast_spp %>%
-  raster::shift(360)
-
-rast_spp_e <- merge(rast_spp, rast_spp_shift)
 
 ```
 
@@ -282,8 +278,6 @@ clipped_spp <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
 spp_examples_w <- clipped_spp %>%
   filter(lim == 'e_lim')
 
-
-
 message('grouping affected species and summing to loiczid')
 ### group affected spp by loiczid and sum
 
@@ -351,10 +345,10 @@ rast_spp_map_w <-
 
 print(rast_spp_map_w)
 
-save_tmap(rast_spp_map_w, 
-          file.path(dir_fig, 'map_am_edge_w.png'), 
-          width = 19, 
-          units = 'cm', dpi = 600)
+# save_tmap(rast_spp_map_w, 
+#           file.path(dir_fig, 'map_am_edge_w.png'), 
+#           width = 19, 
+#           units = 'cm', dpi = 600)
 
 ```
 
@@ -388,7 +382,7 @@ print(spp_w_all %>% filter(am_sid %in% spp_w_samples))
 spp_plotted <- read_csv('data/spp_all.csv') %>%
   filter(am_sid %in% spp_w_samples) %>%
   left_join(read_csv('data/speciesoccursum.csv') %>%
-              select(am_sid = speciesid, occurcells, fbname),
+              dplyr::select(am_sid = speciesid, occurcells, fbname),
             by = 'am_sid')
 
 for(spp in spp_w_samples) {
@@ -461,20 +455,22 @@ for(spp in spp_w_samples) {
 
 ```
 
-``` {r plot_example_spp, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+``` {r plot_selected_spp, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
+### Select four example species
 spp_ex <- c('Hoplichthys regani' = 'Fis-34036', 
             'Ipnops meadi'       = 'Fis-143854', 
             'Culeolus herdmani'  = 'URM-2-3539', 
             'Chrionema chlorotaenia' = 'Fis-33989')
 
-# spp_ex_cells <- am_spp_cells %>%
-#   filter(am_sid %in% spp_ex)
-# 
-# spp_ex_info <- read_csv('data/spp_all.csv') %>%
-#   filter(am_sid %in% spp_ex)
+spp_ex_cells <- am_spp_cells %>%
+  filter(am_sid %in% spp_ex)
+
+spp_ex_info <- read_csv('data/spp_all.csv') %>%
+  filter(am_sid %in% spp_ex)
 
 for(i in 1:length(spp_ex)) {
+  # i <- 1
   spp <- spp_ex[i]
   spp_name <- names(spp_ex)[i]
   
@@ -483,9 +479,11 @@ for(i in 1:length(spp_ex)) {
   message('... loading occurrences for ', spp)
   spp_occur <- read_csv(paste0('clip_fao/obs_for_', tolower(spp) %>% 
                                  str_replace_all('-', '_'), '.csv')) %>%
-    select(id, long = decimalLongitude, lat = decimalLatitude) %>%
-    mutate(long = ifelse(long < 0, long + 360, long))
-  spp_occur_pts <- SpatialPoints(spp_occur[ , 2:3])
+    mutate(long = ifelse(long < 0, long + 360, long),
+           obs = toupper(obs),
+           obs = ifelse(obs == 'BOTH', 'Both', obs),
+           obs = factor(obs, levels = c('OBIS', 'GBIF', 'Both')))
+  spp_occur_pts <- SpatialPointsDataFrame(spp_occur[ , 1:2], data = spp_occur[ , 3])
   
   message('... creating raster for ', spp)
   spp_cells <- spp_ex_cells %>%
@@ -503,8 +501,7 @@ for(i in 1:length(spp_ex)) {
   
   rast_spp <- merge(rast_spp, rast_spp_shift)
   
-  values(rast_spp)[values(rast_spp_w) == 0] <- NA
-  # values(rast_spp_w)[is.na(values(rast_spp_w))] <- 0
+  values(rast_spp)[values(rast_spp) == 0] <- NA
   rast_spp  <- crop(rast_spp, rast_ext)
   
   ### boundary line
@@ -520,7 +517,7 @@ for(i in 1:length(spp_ex)) {
       tm_raster(palette = 'Reds',
                 colorNA = '#ddeeff',
                 textNA  = 'not present',
-                title   = spp_name,
+                # title   = spp_name,
                 legend.show = FALSE,
                 showNA  = FALSE,
                 alpha   = 1) +
@@ -534,17 +531,21 @@ for(i in 1:length(spp_ex)) {
               fontfamily = 'Helvetica',
               size = .5) +
     tm_shape(fao_boundary) +
-      tm_lines(col = 'blue', lwd = 1.5) +
+      tm_lines(col = 'blue', lwd = 1.5)
+  
+  rast_map <- rast_spp_map +
     tm_shape(spp_occur_pts) + 
-      tm_bubbles(col = NA,
+      tm_bubbles(col = 'obs',
+                 title.col = 'Occurrences ',
+                 palette = c('red', 'blue', 'green'),
                  border.col = 'red',
                  border.lwd = 0.25,
                  border.alpha = 1,
                  size = 1,
                  scale = .3,
-                 alpha = .2) +
+                 alpha = .3) +
       # tm_dots(col = 'red') +
-    tm_layout(title = spp_name,
+    tm_layout(# title = spp_name,
               title.position = c('left', 'bottom'),
               fontface = 'bold.italic',
               fontfamily = 'Helvetica',
@@ -558,10 +559,10 @@ for(i in 1:length(spp_ex)) {
               legend.bg.alpha = .95,
               attr.outside = TRUE)
   
-  print(rast_spp_map)
+  print(rast_map)
   
   message('... saving map')
-  save_tmap(rast_spp_map,
+  save_tmap(rast_map,
             paste0('clip_fao/map_fao_clip_', tolower(spp_name) %>% 
                      str_replace_all(' ', '_'), '.png'),
             width = 19,
@@ -573,6 +574,113 @@ for(i in 1:length(spp_ex)) {
 #           file.path(dir_fig, 'map_am_edge_w.png'), 
 #           width = 19, 
 #           units = 'cm', dpi = 600)
+
+```
+
+``` {r quad_spp_w, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+am_spp_cells <- read_csv(file.path(dir_anx, 'spp_ico',
+                                   'v2016/int/am_cells_spp_prob0.csv')) 
+
+am_spp_list <- read_csv(file.path(dir_anx, '_raw_data/aquamaps/d2015/csv/speciesoccursum.csv')) %>%
+  dplyr::select(am_sid = speciesid, genus, species, reviewed, occurcells) %>%
+  mutate(sciname = paste(str_trim(genus), str_trim(species), sep = ' ')) %>%
+  dplyr::select(-genus, -species) %>%
+  distinct()
+
+hcaf <- read_csv(file.path(dir_anx, '_raw_data/aquamaps/d2015/csv/hcaf_truncated.csv')) %>%
+  dplyr::select(loiczid, cellarea, oceanarea)
+
+am_spp_cells2 <- hcaf %>%
+  left_join(am_spp_cells, by = 'loiczid')
+
+clipped_spp <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv')) %>%
+  filter(lim == 'e_lim') %>%
+  dplyr::select(am_sid)
+
+spp_quad_list <- read_csv(file.path(dir_data, 'spp_list_quads.csv'))
+
+spp_area_df <- am_spp_cells2 %>%
+  group_by(am_sid) %>%
+  summarize(cellarea = sum(cellarea),
+            oceanarea = sum(oceanarea))
+
+spp_area_df <- spp_area_df %>%
+  inner_join(am_spp_list, by = 'am_sid') %>%
+  mutate(area_per_cells = oceanarea/occurcells)
+
+head(spp_area_df)
+#                                     am_sid    cellarea   oceanarea reviewed occurcells                   sciname
+#                                      <chr>       <dbl>       <dbl>    <chr>      <int>                     <chr>
+# 1                                Biv-32126   949988.02   642706.64     null          4        Corbicula japonica
+# 2                                Biv-32832  9698932.54  7589672.98     null         23          Polymesoda erosa
+# 3                               Bra-235673    16143.75    13895.96        1         10       Dyscritosia secreta
+# 4 Chn-013ca97e-46a8-4c5e-b398-8bb4f340f88b 11288439.81 10048833.94     null         76          Lenisquilla lata
+# 5 Chn-015453c0-3ff9-477d-ab51-c68d85e65af5 15078672.39 12760166.60     null         13        Clorida albolitura
+# 6 Chn-0721ac0c-7d19-46fa-9dcc-02da54310867 35256268.05 33846838.22     null         23 Leiogalathea laevirostris
+summary(spp_area_df$oceanarea)
+   # Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+   # 1806    946600   2921000  10210000   7875000 501300000 
+summary(spp_area_df$occurcells)
+   # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   # 0.00    6.00   16.00   57.13   49.00 7663.00 
+summary(spp_area_df %>% filter(occurcells != 0) %>% .$area_per_cells)
+    # Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+    #  190    50540   158000   485300   439100 44700000 
+nrow(spp_area_df %>% filter(!str_detect(reviewed, 'null')))
+   # 1296 out of 22889 = 5.66%
+
+spp_area_clipped <- spp_area_df %>%
+  filter(am_sid %in% clipped_spp$am_sid)
+nrow(spp_area_clipped %>% filter(!str_detect(reviewed, 'null')))
+   # 22 out of 3208 = .686%
+
+summary(spp_area_clipped$oceanarea)
+   #   Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+   # 134900   4646000   7032000   8960000   9690000 111300000 
+summary(spp_area_clipped$occurcells)
+   # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   # 3.00    6.00   15.00   26.86   33.00  494.00 
+summary(spp_area_clipped$area_per_cells)
+    # Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+    # 6578   202900   452400   827200   923300 26090000 
+
+
+# quad_names <- data.frame('quad' = c('q1', 'q2', 'q3', 'q4'),
+#                          'quad_name' = factor(c('well-matched', 'dist-matched', 
+#                                                 'area-matched', 'poorly matched'),
+#                                              ordered = TRUE))
+# 
+# clipped_spp_quads <- clipped_spp_quads %>%
+#   left_join(quad_names, by = 'quad') %>%
+#   mutate(method = 'FAO clipped')
+# 
+# break_nums <- seq(0, 100, 20)
+
+### Plot the bar chart
+# barchart_clipped_spp_quads <- ggplot(clipped_spp_quads, 
+#                                 aes(x = method, fill = quad, weight = pct_quad)) +
+#   ggtheme_plot + 
+#   theme(panel.grid.major.y = element_blank()) +
+#   geom_bar(stat = 'count', alpha = 1) +
+#   scale_fill_manual(values = c('q4' = '#d01c8b', 
+#                                'q3' = '#f1b6da', 
+#                                'q2' = '#b8e186',
+#                                'q1' = '#4dac26'),
+#                     labels = quad_names$quad_name) +
+#   scale_y_continuous(expand = c(0, 0), 
+#                      limits = c(0, 1),
+#                      breaks = break_nums/100,
+#                      labels = sprintf('%s%%', break_nums)) + 
+#   ### add grid lines; horizontal but then get flipped
+#   geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
+#   coord_flip() +
+#   labs(x = '', 
+#        y = 'Percent of species by quadrant', 
+#        fill = 'Alignment')
+# 
+# print(barchart_clipped_spp_quads)
+
 
 ```
 
@@ -594,7 +702,7 @@ stack_plot_both <-
   tm_shape(fao_polys) +
     tm_borders() +
   tm_layout(basemaps = "Esri.WorldTopoMap", 
-            frame = FALSE,
+            frame = TRUE,
             # title.position = 'TOP', 
             legend.outside = TRUE, attr.outside = TRUE)
 

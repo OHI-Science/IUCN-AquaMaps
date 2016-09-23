@@ -388,8 +388,8 @@ spp_gp_quadrants <- spp_gp_q1 %>%
 
 
 quad_names <- data.frame('quad' = c('q1', 'q2', 'q3', 'q4'),
-                         'quad_name' = factor(c('well-matched', 'dist-matched', 
-                                                'area-matched', 'poorly matched'),
+                         'quad_name' = factor(c('well-aligned', 'dist-aligned', 
+                                                'area-aligned', 'poorly aligned'),
                                              ordered = TRUE))
 
 spp_gp_quadrants <- spp_gp_quadrants %>%
@@ -482,10 +482,10 @@ spp_risk_quadrants1 <- spp_risk_quadrants %>%
               filter(quad == 'q1') %>%
               dplyr::select(popn_category, pct_q1 = pct_quad),
             by = 'popn_category') %>%
-  mutate(quad = str_replace(quad, 'q1', 'q1 well-matched'),
-         quad = str_replace(quad, 'q2', 'q2 dist-matched'),
-         quad = str_replace(quad, 'q3', 'q3 area-matched'),
-         quad = str_replace(quad, 'q4', 'q4 poorly matched')) %>%
+  mutate(quad = str_replace(quad, 'q1', 'q1 well-aligned'),
+         quad = str_replace(quad, 'q2', 'q2 dist-aligned'),
+         quad = str_replace(quad, 'q3', 'q3 area-aligned'),
+         quad = str_replace(quad, 'q4', 'q4 poorly aligned')) %>%
   left_join(spp_list %>%
               dplyr::select(popn_category, cat_rank = category_score) %>%
               unique() %>%
@@ -499,10 +499,10 @@ barchart_spp_risk_quads <- ggplot(spp_risk_quadrants1 %>%
   ggtheme_plot + 
   theme(panel.grid.major.y = element_blank()) +
   geom_bar(stat = 'count', alpha = 1) +
-  scale_fill_manual(values = c('q1 well-matched'   = '#4dac26', 
-                               'q2 dist-matched'   = '#b8e186', 
-                               'q3 area-matched'   = '#f1b6da', 
-                               'q4 poorly matched' = '#d01c8b')) +
+  scale_fill_manual(values = c('q1 well-aligned'   = '#4dac26', 
+                               'q2 dist-aligned'   = '#b8e186', 
+                               'q3 area-aligned'   = '#f1b6da', 
+                               'q4 poorly aligned' = '#d01c8b')) +
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 1.1),
                      breaks = break_nums/100,

@@ -52,20 +52,7 @@ dir_fig  <- 'figures'
 
 ```
 
-``` {r load data}
-### use data_explore.Rmd to create this file, if it does not yet exist.  This
-### filters out presence = Extinct from IUCN cells.
-
-data_file <- 'data/spp_list_w_area_trimmed.csv'
-spp_map_pairs <- read_csv(data_file)
-### NOTE: as of Jan 31, includes all map pairs, even ones where IUCN area == 0
-
-### generate other lists
-spp_all_file <- 'data/spp_all.csv'
-spp_all <- read_csv(spp_all_file) ### NOTE: contains duped scinames
-
-# iucn_marine_file <- 'data/spp_iucn_marine.csv'
-# spp_iucn_marine <- read_csv(iucn_marine_file) 
+``` {r load_dataset_specific_info}
 
 iucn_maps_file <- 'data/spp_iucn_maps.csv'
 spp_iucn_maps <- read_csv(iucn_maps_file) %>%
@@ -76,11 +63,32 @@ spp_am <- read_csv(spp_am_file)
 
 ```
 
+``` {r load_spp_list_by_quad, echo = FALSE}
+spp_list_quads <- read_csv('data/spp_list_quads.csv')
+
+area_align_mean <- round(mean(spp_list_quads$area_ratio, na.rm = TRUE), 1)
+dist_align_mean <- round(mean(spp_list_quads$sm_perc, na.rm = TRUE), 1)
+
+n_q1 <- nrow(spp_list_quads %>% filter(quad == 'q1'))
+n_q2 <- nrow(spp_list_quads %>% filter(quad == 'q2'))
+n_q3 <- nrow(spp_list_quads %>% filter(quad == 'q3'))
+n_q4 <- nrow(spp_list_quads %>% filter(quad == 'q4'))
+
+n_q2_iucn_larger <- nrow(spp_list_quads %>% filter(sm_range == 'AM' & quad == 'q2'))
+n_q2_corals <- nrow(spp_list_quads %>% filter(str_detect(tolower(spp_group), 'coral') & quad == 'q2'))
+n_corals    <- nrow(spp_list_quads %>% filter(str_detect(tolower(spp_group), 'coral')))
+
+spp_quads_occ <- read_csv(file.path(dir_data, 'spp_quads_occ.csv'))
+med_occ_q4    <- round(median(spp_quads_occ$mean_occ[spp_quads_occ$quad == 'q4']))
+med_occ_q123  <- round(median(spp_quads_occ$mean_occ[spp_quads_occ$quad %in% c('q1', 'q2', 'q3')]))
+
+```
+
 ``` {r calc species numbers}
 n_spp_am     <- nrow(spp_am)
 n_spp_am_rev <- nrow(spp_am %>% filter(reviewed == 1))
 n_spp_iucn   <- length(unique(spp_iucn_maps$iucn_sid))
-n_spp_both   <- length(unique(spp_map_pairs$iucn_sid))
+n_spp_both   <- length(unique(spp_list_quads$iucn_sid))
 n_spp_all    <- n_spp_am + n_spp_iucn - n_spp_both
 
 p_spp_am     <- round(n_spp_am/n_spp_all    * 100, 1)
@@ -89,36 +97,25 @@ p_both_am    <- round(n_spp_both/n_spp_am   * 100, 1)
 p_both_iucn  <- round(n_spp_both/n_spp_iucn * 100, 1)
 p_both_all   <- round(n_spp_both/n_spp_all  * 100, 1)
 
-spp_list <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
-area_align_mean <- round(mean(spp_list$area_ratio, na.rm = TRUE), 1)
-dist_align_mean <- round(mean(spp_list$sm_perc, na.rm = TRUE), 1)
 
 ```
 
+
 ``` {r captions_for_barchart_by_taxa, echo = FALSE}
-n_spp <- spp_map_pairs %>%
+n_spp <- spp_list_quads %>%
   mutate(spp_group = ifelse(str_detect(spp_group, 'CORAL'), 'CORAL', spp_group)) %>%
   group_by(spp_group) %>%
   summarize(n_spp = n()) %>%
   arrange(desc(n_spp))
 
-n_corals   <- nrow(spp_map_pairs %>% 
+n_corals   <- nrow(spp_list_quads %>% 
                      filter(str_detect(spp_group, 'CORAL')))
-n_bonyfish <- nrow(spp_map_pairs %>% 
+n_bonyfish <- nrow(spp_list_quads %>% 
                      filter(spp_group %in% c('WRASSES', 'BUTTERFLYFISH', 'PARROTFISH',
                                              'COMBTOOTHBLENNIES', 'SEABREAMS_PORGIES', 
                                              'PUFFERFISH', 'GROUPERS', 'TUNAS_BILLFISHES', 
                                              'SURGEONFISH_TANGS_UNICORNFISH', 'ANGELFISH', 
                                              'DAMSELFISH', 'BONEFISH_TARPONS')))
-```
-
-``` {r captions_for_tally_quad_counts, echo = FALSE}
-dist_median <- round(median(spp_map_pairs$sm_perc,    na.rm = TRUE), 1)
-area_median <- round(median(spp_map_pairs$area_ratio, na.rm = TRUE), 1)
-q1_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio >= area_median)
-q2_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio >= area_median)
-q3_count <- sum(spp_map_pairs$sm_perc >= dist_median & spp_map_pairs$area_ratio <  area_median)
-q4_count <- sum(spp_map_pairs$sm_perc <  dist_median & spp_map_pairs$area_ratio <  area_median)
 ```
 
 
