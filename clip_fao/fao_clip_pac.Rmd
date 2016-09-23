@@ -577,7 +577,7 @@ for(i in 1:length(spp_ex)) {
 
 ```
 
-``` {r quad_spp_w, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+``` {r area_to_data_ratio, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
 am_spp_cells <- read_csv(file.path(dir_anx, 'spp_ico',
                                    'v2016/int/am_cells_spp_prob0.csv')) 
@@ -646,65 +646,8 @@ summary(spp_area_clipped$area_per_cells)
     # 6578   202900   452400   827200   923300 26090000 
 
 
-# quad_names <- data.frame('quad' = c('q1', 'q2', 'q3', 'q4'),
-#                          'quad_name' = factor(c('well-matched', 'dist-matched', 
-#                                                 'area-matched', 'poorly matched'),
-#                                              ordered = TRUE))
-# 
-# clipped_spp_quads <- clipped_spp_quads %>%
-#   left_join(quad_names, by = 'quad') %>%
-#   mutate(method = 'FAO clipped')
-# 
-# break_nums <- seq(0, 100, 20)
-
-### Plot the bar chart
-# barchart_clipped_spp_quads <- ggplot(clipped_spp_quads, 
-#                                 aes(x = method, fill = quad, weight = pct_quad)) +
-#   ggtheme_plot + 
-#   theme(panel.grid.major.y = element_blank()) +
-#   geom_bar(stat = 'count', alpha = 1) +
-#   scale_fill_manual(values = c('q4' = '#d01c8b', 
-#                                'q3' = '#f1b6da', 
-#                                'q2' = '#b8e186',
-#                                'q1' = '#4dac26'),
-#                     labels = quad_names$quad_name) +
-#   scale_y_continuous(expand = c(0, 0), 
-#                      limits = c(0, 1),
-#                      breaks = break_nums/100,
-#                      labels = sprintf('%s%%', break_nums)) + 
-#   ### add grid lines; horizontal but then get flipped
-#   geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
-#   coord_flip() +
-#   labs(x = '', 
-#        y = 'Percent of species by quadrant', 
-#        fill = 'Alignment')
-# 
-# print(barchart_clipped_spp_quads)
 
 
 ```
 
 
-``` {r combine_rasts}
-
-stack_plot_both <- 
-  tm_shape(rast_spp_w) +
-    tm_raster(palette = 'Greens',
-              colorNA = NULL,
-              title = 'n_spp',
-              alpha = 1) +
-  tm_shape(rast_spp_e) +
-    tm_raster(palette = 'Reds',
-              colorNA = NULL,
-              title = 'n_spp') +
-  tm_shape(World1) +
-    tm_polygons() + 
-  tm_shape(fao_polys) +
-    tm_borders() +
-  tm_layout(basemaps = "Esri.WorldTopoMap", 
-            frame = TRUE,
-            # title.position = 'TOP', 
-            legend.outside = TRUE, attr.outside = TRUE)
-
-print(stack_plot_both)
-```
