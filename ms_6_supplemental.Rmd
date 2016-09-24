@@ -1,5 +1,5 @@
 ---
-title: "Supplemental Information: Aligning marine species range data to better serve science and conservation"
+title: "Supplemental Figures: Aligning marine species range data to better serve science and conservation"
 author: "Casey O'Hara, Jamie C. Afflerbach, Courtney Scarborough, Benjamin S. Halpern"
 output:
   word_document: default
@@ -33,19 +33,19 @@ output:
 
 ![](figures/Fig_S1.png)
 
-> __Fig S1.__  Examples of AquaMaps and IUCN raw species range data. (A, B) AquaMaps distribution of _Thunnus alalunga_ (Albacore Tuna) (AquaMaps 2013e) showing global range with varying probabilities of occurrence assigned to 0.5° grid cells (A) and presence within 0.5° grid cells (B). (C, D) IUCN distribution of _T. alalunga_ (IUCN 2011b) represented as extent of occurrence polygons (C) and presence within 0.5° grid cells (D).
+> __Fig S1.  Examples of AquaMaps and IUCN raw species range data.__ (A, B) AquaMaps distribution of _Thunnus alalunga_ (Albacore Tuna) (AquaMaps 2013e) showing (A) global range with varying probabilities of occurrence assigned to 0.5° grid cells and (B) presence within 0.5° grid cells. (C, D) IUCN distribution of _T. alalunga_ (IUCN 2011b) represented as (C) extent of occurrence polygons and (D) presence within 0.5° grid cells.
 
 <!-- Fis-22832, Thunnus alalunga, 21856 -->
 
 ![](figures/Fig_S2.png)
 
-> __Fig S2.__ Rasterizing shapefiles provided by IUCN. A portion of the _T. alalunga_ range map is used to exemplify the rasterization process.  To enable direct comparison of IUCN species ranges to AquaMaps species ranges, the raw IUCN polygon (A) is overlaid with a 0.5° degree grid matching the AquaMaps grid (B).  Each cell is assigned a value of "present" if the cell overlaps any portion of the polygon (C).  The resulting raster (D).
+> __Fig S2.  Rasterizing shapefiles provided by IUCN.__ A portion of the _T. alalunga_ range map is used to exemplify the rasterization process.  To enable direct comparison of IUCN species ranges to AquaMaps species ranges, the raw IUCN polygon (A) is overlaid with a 0.5° degree grid matching the AquaMaps grid (B).  Each cell is assigned a value of "present" if the cell overlaps any portion of the polygon (C).  The resulting raster (D).
 
 ## Representative maps from each quadrant
 
 ![](figures/Fig_S3.png)
 
-> __Fig S3.__ Representative species maps (AquaMaps 2013abcd; Conch 2013ab; IUCN 2011a; IUCN 2012) to illustrate each quadrant from Fig 2A.  Each map is positioned to match its quadrant in Fig 2A.  FAO Major Fishing Area boundaries [@fao_fisheries_and_aquaculture_department_cwp_2015] are outlined in light grey.
+> __Fig S3.  Representative species maps to illustrate each quadrant from Fig 2A.__ (AquaMaps 2013abcd; Conch 2013ab; IUCN 2011a; IUCN 2012) Each map is positioned to match its quadrant in Fig 2A.  FAO Major Fishing Area boundaries [@fao_fisheries_and_aquaculture_department_cwp_2015] are outlined in light grey.
 (A) Distribution-matched: _Conus episcopatus_, the dignified cone snail.  Distributions show excellent overlap in the western Pacific, though IUCN range extends well beyond the bounds of the AquaMaps range.
 (B) Well-matched: _Kajikia albida_, the Atlantic white marlin.  Distributions from each data set show nearly complete overlap, and very similar range size.
 (C) Poorly-matched: _Acanthurus nigroris_, the blue-lined surgeonfish.  IUCN predicts species distribution only near the Hawaiian islands; AquaMaps predicts extensive distribution throughout the central and western Pacific Ocean.  The datasets align in neither distribution nor range size.
@@ -62,68 +62,11 @@ Fis-164253, Kajikia albida, 170322
 
 ![](figures/Fig_S4.png)
 
-> __Fig. S4.__  Shift in alignment of paired-map coral species due to clipping IUCN ranges to areas shallower than 200 m.  The grey lines represent the change in apparent alignment for a single species.  Most coral species shift rightward from the upper left quadrant to the upper right, with little if any loss in distribution alignment, since in general, only unsuitable habitat has been removed.  Leftward shifts can be seen in species whose larger original range is represented in AquaMaps; by trimming IUCN ranges, the area ratio becomes smaller.
+> __Fig. S4.  Shift in alignment of paired-map coral species due to clipping IUCN ranges to areas shallower than 200 m.__  The grey lines represent the change in apparent alignment for a single species.  Most coral species shift rightward from the upper left quadrant to the upper right, with little if any loss in distribution alignment, since in general, only unsuitable habitat has been removed.  Leftward shifts can be seen in species whose larger original range is represented in AquaMaps; by trimming IUCN ranges, the area ratio becomes smaller.
 
 
-<!--
-## Risk by quadrant
 
-<a id = 'S2'></a>
-
-![](figures/si_barchart_spp_risk_quads.png)
-
->  __Fig S2.__ Breakdown of quadrants (Fig S1A) by IUCN extinction risk categories.  IUCN and Aquamaps ranges were in better agreement (i.e., had a higher probability of being in the upper-right, "well-aligned" quadrant, Figure 2A/Figure S1A) for species at greater risk according to IUCN risk categories (p < 0.001, generalized linear model, family = binomial, Table S1).  This suggests at-risk species may receive more attention in terms of data collection or model refinement.  
-
-> __Table S1.__  Generalized linear model (family = binomial) describing how the agreement between IUCN and Aquamap range maps (i.e., probability of occurring in quadrant 1, Figure 2A/S1A) increases for a species as its IUCN risk status increases.  For this analysis, we excluded all species that had "data deficient" IUCN status (n = 255).  We analyzed the IUCN risk categories as a continuous variable (LC = 0.0, NT = 0.2, VU = 0.4, EN = 0.6, CR = 0.8, EX = 1.0).
-
-_Model: glm(quadrant 1 membership ~ IUCN category, family = binomial) n = 2,059_
-
-| Coefficients:  | Estimate | Std. Error | z value | p value      |
-| :-----         |   -----: |     -----: |  -----: |       -----: |
-| Intercept      | -1.32933 |   0.05804  | -22.902 | < 2e-16 ***  |
-| IUCN category  |  1.18672 |   0.33469  |   3.546 | 0.000391 *** |
-
-
-### Coral range vs. depth
-
-<a id = 'S3'></a>
-
-![oculina varicosa](figures/si_coralmap.png)
-
->  __Fig S3.__ IUCN-defined range of _Oculina varicosa_, a typical photosynthetic coral, plotted against a 200 m bathymetry contour. According to IUCN, _O. varicosa_ can be found to depths of 152 m.  Maps of many other coral species and other reef-associated organisms followed similar patterns.
-
-### AquaMaps threshold examination
-
-<a id = 'S4'></a>
-
-AquaMaps distribution maps indicate "probability of occurrence" within each 0.5° cell, with values ranging from zero to one, rather than a simple present/absent value as indicated by IUCN maps.  Many studies convert this AquaMaps probability to a simple presence value by assigning a threshold value.  
-
-To examine the effect of different presence threshold selections on the represented range of a species, we varied the threshold from 0% to 100% and calculated the average species range relative to a zero threshold.
-
-A. 
-![](figures/si_am_threshold.png) 
-
-B. 
-![](figures/si_ribbon_am_threshold.png)
-
->  __Fig S4.__ AquaMaps distribution map extent remaining after applying a presence threshold. A higher threshold constrains an analysis to cells with near certainty of occurrence, while a low threshold captures larger areas of increasingly marginal suitability. (A) A 40% threshold applied to all species in the AquaMaps dataset shows a mean loss of 28% of total range compared to a 0% threshold, with a wide distribution in which some species lose nearly all of their apparent range.  (B) Median remaining extent at increments of presence threshold. Dark green ribbon includes 25% to 75% quantiles of remaining species range, while lighter ribbon includes 5% to 95% quantiles.  Incrementing the presence threshold from 0.00 to 1.00 for the entire AquaMaps dataset, the shallow downward trend indicates a low but consistent sensitivity of apparent species range to threshold choice, with no surprising tradeoffs that could suggest an "optimal" threshold.
--->
-
-<!--
-## MPA gap analysis - explanation
- 
-___why so many gaps and 10+ species show up with IUCN.  I will write up a paragraph once I've had a little more time to examine maps___
-
-- check which species are gap species; check maps
-- check which species are 10%+ species and check maps
-- where do these species fall georegionally? is there anything odd about their ranges? any reason why IUCN would be 
-- hypothesis to explain more gap species: Aquamaps more diffuse than IUCN, catching individual cells that could be suitable; a single cell (even low probability) moves a species from "gap" to non-gap status.  IUCN more clustered by polygon boundaries; so no scattered cells to accidentally fall into an MPA. 
-    - introducing errors: AM = likely commission (overestimates species with tiny bits of range in MPAs) vs IUCN = possible omission (misses possible real habitat that falls within MPAs)
-- hypothesis to explain more 10%+ species - ten random samples most have IUCN polygons just east of Australia where a large MPA is indicated - Great Barrier Reef I assume - a single large poly falling in GBR gets a high score, while for the same species, many of the AM ranges (also in same area) scatter suitable area over larger extent, so lower percent of species range is protected
-    - introducing errors: IUCN = likely omission (skipping possible real habitat outside of MPAs) and likely commission (possibly overcounting real habitat in MPAs e.g. GBR); AquaMaps = probably a little commission (possibly underestimating, if it overpredicts lots of range outside MPAs, thus reducing the proportion of protected range)
--->
-
-## References for supplemental information
+## References for supplemental figures
 
 Conch Books, Hackenheim, Germany 2013. Conus episcopatus. The IUCN Red List of Threatened Species. Version 2016-2
 
