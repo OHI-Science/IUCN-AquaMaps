@@ -461,7 +461,7 @@ for(spp in spp_w_samples) {
 spp_ex <- c('Hoplichthys regani' = 'Fis-34036', 
             'Ipnops meadi'       = 'Fis-143854', 
             'Culeolus herdmani'  = 'URM-2-3539', 
-            'Chrionema chlorotaenia' = 'Fis-33989')
+            'Chrionema chlorotaenia' = 'Fis-33989')[1]
 
 spp_ex_cells <- am_spp_cells %>%
   filter(am_sid %in% spp_ex)
@@ -539,18 +539,13 @@ for(i in 1:length(spp_ex)) {
                  title.col = 'Occurrences ',
                  palette = c('red', 'blue', 'green'),
                  border.col = 'red',
-                 border.lwd = 0.25,
+                 border.lwd = 0.5,
                  border.alpha = 1,
                  size = 1,
-                 scale = .3,
+                 scale = .4,
                  alpha = .3) +
       # tm_dots(col = 'red') +
-    tm_layout(# title = spp_name,
-              title.position = c('left', 'bottom'),
-              fontface = 'bold.italic',
-              fontfamily = 'Helvetica',
-              title.size = .8,
-              frame = TRUE,
+    tm_layout(frame = TRUE,
               legend.text.size = .6,
               legend.title.size = .7,
               legend.outside = FALSE,
@@ -569,11 +564,6 @@ for(i in 1:length(spp_ex)) {
             units = 'cm', dpi = 600)
 
 }
-
-# save_tmap(rast_spp_map_w, 
-#           file.path(dir_fig, 'map_am_edge_w.png'), 
-#           width = 19, 
-#           units = 'cm', dpi = 600)
 
 ```
 
