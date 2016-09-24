@@ -24,7 +24,7 @@ The two datasets have notably different taxonomic (Fig 1A) and regional (Figs 1B
 
 ![](figures/Fig_1.png)
 
-> __Fig 1.__ (A) Number and proportion of species by taxa included in each dataset.  Overlapping species are dominated by bony fishes (`r format(n_bonyfish, big.mark = ',')` species, primarily tropical taxa) and corals (`r format(n_corals, big.mark = ',')` species).  (B, C) Global marine species count per 0.5° cell according to (B) AquaMaps and (C) IUCN.  The margin frequency plots show relative species count per cell at each latitude and longitude. 
+> __Fig 1. Taxonomic and geographic coverage of AquaMaps and IUCN range data.__ (A) Number and proportion of species by taxa included in each dataset.  Overlapping species are dominated by bony fishes (`r format(n_bonyfish, big.mark = ',')` species, primarily tropical taxa) and corals (`r format(n_corals, big.mark = ',')` species).  (B, C) Global marine species count per 0.5° cell according to (B) AquaMaps and (C) IUCN.  The margin frequency plots show relative species count per cell at each latitude and longitude. 
 
 ## Distribution and range size alignment
 
@@ -35,7 +35,7 @@ The mean distribution alignment for species included in both datasets was `r dis
 
 ![](figures/Fig_2.png)
 
-> __Fig 2.__ (A) Distribution alignment (overlap of smaller range within larger) versus area ratio (the ratio of smaller range area to the larger range area) for `r format(n_spp_both, big.mark = ',')` species included in both IUCN and AquaMaps datasets.  The upper right quadrant (quadrant 1) comprises species whose maps largely agree in both spatial distribution and the extent of described ranges (n = `r n_q1`; `r round(n_q1/nrow(spp_list_quads) * 100, 1)` %).
+> __Fig 2. Comparison of alignment between AquaMaps and IUCN range data.__ (A) Distribution alignment (overlap of smaller range within larger) versus area ratio (the ratio of smaller range area to the larger range area) for `r format(n_spp_both, big.mark = ',')` species included in both IUCN and AquaMaps datasets.  The upper right quadrant (quadrant 1) comprises species whose maps largely agree in both spatial distribution and the extent of described ranges (n = `r n_q1`; `r round(n_q1/nrow(spp_list_quads) * 100, 1)` %).
 The upper left quadrant (quadrant 2) comprises species whose maps agree well in distribution, but disagree in area
 (n = `r n_q2`; `r round(n_q2/nrow(spp_list_quads) * 100, 1)` %).
 The lower right quadrant (quadrant 3) includes species for which the paired maps generally agree in range area, but disagree on where those ranges occur
@@ -69,7 +69,7 @@ Fig 3A shows aggregated ranges of the 463 coral species mapped in the IUCN datas
 
 ![](figures/Fig_3.png)
 
-> __Fig 3.__ (A) Aggregate map combining ranges of the 463 coral species mapped in the IUCN dataset, showing raw ranges and ranges clipped to 200 m depth. (B) Alignment quadrant breakdown of paired map coral species using original data from IUCN and AquaMaps (as in Fig 2B) and the same species with IUCN ranges clipped to 200 m depth.
+> __Fig 3.  Effect of 200 m depth constraint on IUCN range maps for coral species.__ (A) Aggregate map combining ranges of the 463 coral species mapped in the IUCN dataset, showing raw ranges and ranges clipped to 200 m depth. (B) Alignment quadrant breakdown of paired map coral species using original data from IUCN and AquaMaps (as in Fig 2B) and the same species with IUCN ranges clipped to 200 m depth.
 
 In constraining coral ranges to appropriate depths, we see a strong increase in the apparent alignment of species maps between IUCN and AquaMaps (Fig 3B).  Membership in the "well-aligned" quadrant jumped from 22.4% to 76.2%, with a corresponding decrease in all other quadrants.  By excluding the unsuitable areas from IUCN's extent of occurrence, we eliminate preventable commission errors and more closely approximate the area of occupancy described by AquaMaps.  See Fig S4 to examine the shifts of individual species among the quadrants.
 
@@ -77,11 +77,11 @@ The true distribution of each of these corals remains imperfectly known.  Certai
 
 ## Georegional constraint exploration
 
-From the entirety of the AquaMaps dataset, we identified 3,208 Indo-Pacific species whose equatorial distributions (between 25° S and 20° N) encounter an eastern range limit at 175° W.  A clear discontinuity in species distributions of these species (Figs 4A, 4B) matches perfectly with FAO region 77 [@fao_fisheries_and_aquaculture_department_cwp_2015]; other discontinuities are apparent at other FAO boundaries, despite these boundaries not being actively studied in the analysis.
+From the entirety of the AquaMaps dataset, we identified 3,208 Indo-Pacific species whose equatorial distributions (between 25° S and 20° N) encounter an eastern range limit at 175° W.  A clear discontinuity in species distributions of a single example species (Fig 4A) and all 3,208 species in aggregate (Fig 4B) matches perfectly with FAO region 77 [@fao_fisheries_and_aquaculture_department_cwp_2015]; other discontinuities are apparent at other FAO boundaries, despite these boundaries not being actively studied in this analysis.
 
 ![](figures/Fig_4.png)
 
-> __Fig 4.__ (A) AquaMaps species distribution of _Hoplichthys regani_, the ghost flathead, with known occurrence records.  (B) Aggregated AquaMaps predicted ranges for 3,208 species whose equatorial distribution encounters an eastern discontinuity exactly at 175° W, the boundary between FAO Major Fishing Areas 71 and 77 (shown in blue).  Other FAO area boundaries create additional clear discontinuities.
+> __Fig 4. Effect of FAO Major Fishing Area constraints on AquaMaps distributions.__ (A) AquaMaps species distribution of _Hoplichthys regani_, the ghost flathead, with known occurrence records.  (B) Aggregated AquaMaps predicted ranges for 3,208 species whose equatorial distribution encounters an eastern discontinuity exactly at 175° W, the boundary between FAO Major Fishing Areas 71 and 77 (shown in blue).  Other FAO area boundaries create additional clear discontinuities.
 
 FAO Major Fishing Area boundaries provide a readily available method to roughly constrain AquaMaps predictions to appropriate ocean basins, thus eliminating a large source of potential commission errors and enabling rapid modeling of thousands of species ranges.  However, these boundaries are defined for statistical purposes based on economic and political considerations rather than ecological considerations, and can result in odd discontinuities in species range predictions where otherwise suitable habitat is excluded.  While such a discontinuous boundary would likely be obvious when inspecting the distribution of an individual species, the distinction is likely to be obscured when aggregating many species ranges as is typical for biodiversity or conservation studies.  
 
@@ -97,7 +97,7 @@ We recalculated the amount of under-protected and gap species using all availabl
 
 ![](figures/Fig_5.png)
 
-> __Fig 5.__  Percent of species range covered by MPAs based upon methods in Klein et al. (2015).  Scenario 1 replicates the original results, measuring protected range of species in AquaMaps 2014 dataset, with a 50% presence threshold, against the 2014 World Database of Protected Areas, filtered for IUCN categories I-IV that overlap marine areas.  Scenario 2 updates the results using AquaMaps 2015, showing very small changes despite the inclusion of an additional 5,545 species.  Scenario 3, using 2015 AquaMaps data, drops the presence threshold to zero, showing an expected decrease in gap species, but also a decrease in species with 5% or greater protected range.  Scenario 4 examines species MPA coverage using only the IUCN dataset.
+> __Fig 5.  MPA gap analysis results based upon alternate choices of datasets.__  Percent of species range covered by MPAs based upon methods in Klein et al. (2015).  Scenario 1 replicates the original results, measuring protected range of species in AquaMaps 2014 dataset, with a 50% presence threshold, against the 2014 World Database of Protected Areas, filtered for IUCN categories I-IV that overlap marine areas.  Scenario 2 updates the results using AquaMaps 2015, showing very small changes despite the inclusion of an additional 5,545 species.  Scenario 3, using 2015 AquaMaps data, drops the presence threshold to zero, showing an expected decrease in gap species, but also a decrease in species with 5% or greater protected range.  Scenario 4 examines species MPA coverage using only the IUCN dataset.
 
 To achieve more comprehensive taxonomic coverage of species ranges it may be desirable to use these two datasets together.  The Ocean Health Index (OHI) is one analysis that uses both IUCN and AquaMaps spatial data, in conjunction with extinction risk categories from the IUCN Red List of Threatened Species, to calculate area-weighted extinction risks for the Species component of the index.  To combine these data sets, OHI uses all available IUCN range maps, and then supplements with AquaMaps data (with "presence" determined by 40% or greater probability of occurrence) for species whose ranges are not represented within IUCN; species without valid Red List extinction risk categories are excluded from analysis [@halpern_index_2012; @halpern_patterns_2015].  Such a combination of two inherently different datasets increases the number of species represented within the analysis, but the differences in range representations between the datasets is likely to distort the results.  
 
