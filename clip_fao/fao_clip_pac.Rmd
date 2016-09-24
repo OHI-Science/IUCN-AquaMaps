@@ -569,74 +569,91 @@ for(i in 1:length(spp_ex)) {
 
 ``` {r area_to_data_ratio, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
-am_spp_cells <- read_csv(file.path(dir_anx, 'spp_ico',
-                                   'v2016/int/am_cells_spp_prob0.csv')) 
+# am_spp_cells <- read_csv(file.path(dir_anx, 'spp_ico',
+#                                    'v2016/int/am_cells_spp_prob0.csv')) 
+# 
+# am_spp_list <- read_csv(file.path(dir_anx, '_raw_data/aquamaps/d2015/csv/speciesoccursum.csv')) %>%
+#   dplyr::select(am_sid = speciesid, genus, species, reviewed, occurcells) %>%
+#   mutate(sciname = paste(str_trim(genus), str_trim(species), sep = ' ')) %>%
+#   dplyr::select(-genus, -species) %>%
+#   distinct()
+# 
+# hcaf <- read_csv(file.path(dir_anx, '_raw_data/aquamaps/d2015/csv/hcaf_truncated.csv')) %>%
+#   dplyr::select(loiczid, cellarea, oceanarea)
+# 
+# am_spp_cells2 <- hcaf %>%
+#   left_join(am_spp_cells, by = 'loiczid')
+# 
+# 
+# spp_area_df <- am_spp_cells2 %>%
+#   group_by(am_sid) %>%
+#   summarize(cellarea = sum(cellarea),
+#             oceanarea = sum(oceanarea))
+# 
+# spp_area_df <- spp_area_df %>%
+#   inner_join(am_spp_list, by = 'am_sid') %>%
+#   mutate(area_per_cells = oceanarea/occurcells)
+# 
+# clipped_spp <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv')) %>%
+#   filter(lim == 'e_lim') %>%
+#   dplyr::select(am_sid)
+# 
+# spp_area_df <- spp_area_df %>%
+#   mutate(log_area_cells = log(area_per_cells + 1),
+#          clipped = am_sid %in% clipped_spp$am_sid)
 
-am_spp_list <- read_csv(file.path(dir_anx, '_raw_data/aquamaps/d2015/csv/speciesoccursum.csv')) %>%
-  dplyr::select(am_sid = speciesid, genus, species, reviewed, occurcells) %>%
-  mutate(sciname = paste(str_trim(genus), str_trim(species), sep = ' ')) %>%
-  dplyr::select(-genus, -species) %>%
-  distinct()
+# write_csv(spp_area_df, 'clip_fao/spp_area_per_cell.csv')
 
-hcaf <- read_csv(file.path(dir_anx, '_raw_data/aquamaps/d2015/csv/hcaf_truncated.csv')) %>%
-  dplyr::select(loiczid, cellarea, oceanarea)
-
-am_spp_cells2 <- hcaf %>%
-  left_join(am_spp_cells, by = 'loiczid')
-
-clipped_spp <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv')) %>%
-  filter(lim == 'e_lim') %>%
-  dplyr::select(am_sid)
-
-spp_quad_list <- read_csv(file.path(dir_data, 'spp_list_quads.csv'))
-
-spp_area_df <- am_spp_cells2 %>%
-  group_by(am_sid) %>%
-  summarize(cellarea = sum(cellarea),
-            oceanarea = sum(oceanarea))
-
-spp_area_df <- spp_area_df %>%
-  inner_join(am_spp_list, by = 'am_sid') %>%
-  mutate(area_per_cells = oceanarea/occurcells)
-
-head(spp_area_df)
-#                                     am_sid    cellarea   oceanarea reviewed occurcells                   sciname
-#                                      <chr>       <dbl>       <dbl>    <chr>      <int>                     <chr>
-# 1                                Biv-32126   949988.02   642706.64     null          4        Corbicula japonica
-# 2                                Biv-32832  9698932.54  7589672.98     null         23          Polymesoda erosa
-# 3                               Bra-235673    16143.75    13895.96        1         10       Dyscritosia secreta
-# 4 Chn-013ca97e-46a8-4c5e-b398-8bb4f340f88b 11288439.81 10048833.94     null         76          Lenisquilla lata
-# 5 Chn-015453c0-3ff9-477d-ab51-c68d85e65af5 15078672.39 12760166.60     null         13        Clorida albolitura
-# 6 Chn-0721ac0c-7d19-46fa-9dcc-02da54310867 35256268.05 33846838.22     null         23 Leiogalathea laevirostris
-summary(spp_area_df$oceanarea)
-   # Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-   # 1806    946600   2921000  10210000   7875000 501300000 
-summary(spp_area_df$occurcells)
-   # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-   # 0.00    6.00   16.00   57.13   49.00 7663.00 
-summary(spp_area_df %>% filter(occurcells != 0) %>% .$area_per_cells)
-    # Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-    #  190    50540   158000   485300   439100 44700000 
-nrow(spp_area_df %>% filter(!str_detect(reviewed, 'null')))
-   # 1296 out of 22889 = 5.66%
+spp_area_df <- read_csv('clip_fao/spp_area_per_cell.csv')
 
 spp_area_clipped <- spp_area_df %>%
-  filter(am_sid %in% clipped_spp$am_sid)
-nrow(spp_area_clipped %>% filter(!str_detect(reviewed, 'null')))
-   # 22 out of 3208 = .686%
+  filter(clipped)
 
+### compare ocean areas
+summary(spp_area_df$oceanarea)
+   #   Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+   #   1806    946600   2921000  10210000   7875000 501300000 
 summary(spp_area_clipped$oceanarea)
    #   Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
    # 134900   4646000   7032000   8960000   9690000 111300000 
+
+### compare occurcells
+summary(spp_area_df$occurcells)
+   # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   # 0.00    6.00   16.00   57.13   49.00 7663.00 
 summary(spp_area_clipped$occurcells)
    # Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
    # 3.00    6.00   15.00   26.86   33.00  494.00 
+
+
+### compare area_per_cells
+summary(spp_area_df %>% filter(occurcells != 0) %>% .$area_per_cells)
+    # Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+    #  190    50540   158000   485300   439100 44700000 
 summary(spp_area_clipped$area_per_cells)
     # Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
     # 6578   202900   452400   827200   923300 26090000 
 
+### compare reviewed species
+nrow(spp_area_df %>% filter(!str_detect(reviewed, 'null')))
+   # 1296 out of 22889 = 5.66%
+nrow(spp_area_clipped %>% filter(!str_detect(reviewed, 'null')))
+   # 22 out of 3208 = .686%
 
+hist(spp_area_clipped$area_per_cells)
+hist(spp_area_clipped$log_area_cells)
+hist(spp_area_df$log_area_cells)
 
+t.test(x = spp_area_clipped$log_area_cells,
+       y = spp_area_df %>% filter(occurcells != 0) %>% .$log_area_cells,
+       alternative = 'greater') ### clipped sample mean greater than overall
+# t = 49.082, df = 5244.6, p-value < 2.2e-16
+# alternative hypothesis: true difference in means is greater than 0
+# 95 percent confidence interval:
+#  1.058579      Inf
+# sample estimates:
+# mean of x mean of y 
+#  12.97963  11.88434 
 
 ```
 
