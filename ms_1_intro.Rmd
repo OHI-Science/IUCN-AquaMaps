@@ -2,15 +2,6 @@
 output: html_document
 ---
 
-<!--
-The introduction should:
-  Provide background that puts the manuscript into context and allows readers outside the field to understand the purpose and significance of the study
-  Define the problem addressed and why it is important
-  Include a brief review of the key literature
-  Note any relevant controversies or disagreements in the field
-  Conclude with a brief statement of the overall aim of the work and a comment about whether that aim was achieved
--->
-
 # Introduction
 
 Knowing where species exist and thrive is fundamental to the sciences of ecology, biogeography, and conservation.  This body of science has resulted in various compiled databases of species distribution and range maps which provide foundational information for understanding species diversity and extinction risk, predicting species responses to human impacts and climate change, and managing and protecting species effectively.  No species range dataset can claim to represent the "truth" of any species' spatial distribution, but rather each offers its own distinct understanding of that latent distribution.  These varying predictions of species presence and absence, driven by intent and methodology, can result in very different predictions of species' ranges.  However, conservation managers and policy makers must base their actions on conclusions drawn from these imperfect datasets.  It is critical to understand the differences in spatial range datasets and the implications of these differences for conservation research and decision-making.

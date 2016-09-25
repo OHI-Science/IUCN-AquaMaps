@@ -123,21 +123,21 @@ ___NOTE:___ These images are all based on .png outputs, exported from .psd files
 ### Fig. 1
 <a id = 'fig1'></a>
 
-![Taxonomic and geographic representation](figures/Fig_1.png)
+![Taxonomic and geographic representation](figures/fig1.png)
 
 -----
 
 ### Fig. 2
 <a id = 'fig2'></a>
 
-![Quadrant plot and spp breakdown by quadrant](figures/Fig_2.png)
+![Quadrant plot and spp breakdown by quadrant](figures/fig2.png)
 
 -----
 
 ### Fig. 3
 <a id = 'fig3'></a>
 
-![coral area subject to depth clipping](figures/Fig_3.png)
+![coral area subject to depth clipping](figures/fig3.png)
 
 -----
 
@@ -145,7 +145,7 @@ ___NOTE:___ These images are all based on .png outputs, exported from .psd files
 
 <a id = 'fig4'></a>
 
-![aquamaps edge comparison](figures/Fig_4.png)
+![aquamaps edge comparison](figures/fig4.png)
 
 -----
 
@@ -153,11 +153,6 @@ ___NOTE:___ These images are all based on .png outputs, exported from .psd files
 
 <a id = 'fig5'></a>
 
-![Change in MPA coverage](figures/Fig_5.png)
+![Change in MPA coverage](figures/fig5.png)
 
-
------
-
-``` {r figure_legends, child = 'ms_5_fig_legends.Rmd', eval = FALSE}
-```
 

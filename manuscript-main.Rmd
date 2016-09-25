@@ -32,7 +32,7 @@ _Corresponding author:_ <!--Corresponding author: The name, complete address, te
 Casey O'Hara, National Center for Ecological Analysis and Synthesis, University of California, 735 State Street, Suite 300, Santa Barbara CA 93101; (805) 892-2500; ohara@nceas.ucsb.edu
 
 <!--
-_Keywords:_  Marine spatial planning, species distribution model, extent of occurrence, spatial ecology
+_Keywords:_  Marine spatial planning, species distribution model, extent of occurrence, area of occupancy, spatial ecology
 -->
 
 
@@ -119,9 +119,6 @@ n_bonyfish <- nrow(spp_list_quads %>%
 ```
 
 
-
------
-
 ``` {r abstract, child = 'ms_0_abst.Rmd'}
 ```
 
@@ -131,7 +128,6 @@ n_bonyfish <- nrow(spp_list_quads %>%
 | Abstract       |  169 words |     - char |
 -->
 
------
 
 ``` {r intro, child = 'ms_1_intro.Rmd'}
 ```
@@ -159,17 +155,3 @@ n_bonyfish <- nrow(spp_list_quads %>%
 ``` {r references, child = 'ms_4_refs.Rmd'}
 ```
 
-
-<!--
-| Figure  |  w x h (px) | w x h (cm)  | char # |
-| :------ |     ------: |     ------: |------: |
-| 1 A - C | 2102 x 1536 | 17.8 x 13.0 |   4680 |
-| caption |             |             |    367 | 
-| 2 A - B | 2102 x 1940 | 17.8 x 16.5 |   5940 |
-| caption |             |             |    934 | 
-|       3 | 1027 x  531 |  8.7 x  4.5 |    810 |
-| caption |             |             |    744 | 
-|       4 | 1346 x  590 | 11.4 x  5.0 |   1800 |
-| caption |             |             |    870 | 
-|  total  |             |             |  16145 |
--->
