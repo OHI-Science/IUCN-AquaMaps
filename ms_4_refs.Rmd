@@ -1,6 +1,6 @@
 # Acknowledgments
 
-We are thankful to Melanie Frazier, Julia Stewart Lowndes, Halley Froelich, Claire Runge, and two anonymous reviewers for their insightful comments on earlier versions of this manuscript, and to the National Center for Ecological Analysis and Synthesis for computation support.  We acknowledge financial support from the Gordon and Betty Moore Foundation. 
+We are thankful to Melanie Frazier, Julia Stewart Lowndes, Halley Froelich, and Claire Runge for their insightful comments on this manuscript, and to the National Center for Ecological Analysis and Synthesis for computation support.  We acknowledge financial support from the Gordon and Betty Moore Foundation. 
 
 -----
 
