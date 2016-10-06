@@ -12,26 +12,26 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
                  theme = shinytheme('cerulean'),
                  
   tabPanel('Introduction',
-    # main tab: composite map (no ranges of values, only go/no go); check boxes to turn on/off clusters
+    # Abstract of paper; sidebar is authors, publication info, etc
     sidebarPanel(
       h5('sidebar text')
     ),
     mainPanel(
-      h5('main panel text')
-    )
+      includeMarkdown('pages/intro_main.md')
+      )
   ),
   
-  tabPanel('Quad plot',
+  tabPanel('Species paired map alignment',
     fluidRow(column(2, 
-        h5('controls?')
-      ),
+      includeMarkdown('pages/quad_plot_methods.md')
+    ),
       column(10,
         plotlyOutput('quad_plot')
       )
     )
   ),
   
-  tabPanel('Species map compare',
+  tabPanel('Species paired map comparison',
     fluidRow(column(2,
         h6('Add selector for species group, then
           adjust species selector accordingly'),
@@ -45,7 +45,7 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
                                     'Both'     = 'both'),
                      selected = 'both'),
         sliderInput('am_cutoff', 'Probability of Occurrence cutoff (Aquamaps):',
-                    min = 0, max = 1, value = .4, step = 0.1),
+                    min = 0, max = 1, value = 0, step = 0.1),
         verbatimTextOutput('summary')
       ),
       column(10,
@@ -54,12 +54,22 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
     )
   ),
   
-  tabPanel('Coral map compare',
+  tabPanel('Coral map depth clipping',
     fluidRow(column(2, 
         h5('controls?')
       ),
       column(10,
         plotlyOutput('coral_plot')
+      )
+    )
+  ), 
+  
+  tabPanel('FAO boundary map exploration',
+    fluidRow(column(2, 
+        h5('controls?')
+      ),
+      column(10,
+            plotlyOutput('coral_plot')
       )
     )
   )
