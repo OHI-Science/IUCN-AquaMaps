@@ -73,42 +73,51 @@ spp_iucn_maps <- read_csv(iucn_maps_file) %>%
 
 sciname_lookup <- read_csv(file.path(dir_data, 'sciname_lookups/spp_iucn_scinames.csv'))
 
-spp_am_file <- file.path(dir_data, 'spp_am.csv')
-spp_am <- read_csv(spp_am_file)
-
-spp_am <- spp_am %>%
+spp_am <- read_csv(file.path(dir_data, 'spp_am.csv')) %>%
   left_join(read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2015/csv/speciesoccursum.csv')) %>% 
               dplyr::select(am_sid = speciesid, class) %>%
               unique(), 
             by = 'am_sid')
 
-iucn_maps_class <- spp_iucn_maps %>% 
+iucn_maps_class_all <- spp_iucn_maps %>% 
   left_join(sciname_lookup %>% 
               dplyr::select(sciname, class) %>%
               unique(), 
-            by = 'sciname')
+            by = 'sciname') %>%
+  select(-iucn_subpop, -spp_group) %>%
+  distinct() %>% ### first, get rid of dupes due to subpopulations
+  mutate(class    = str_to_title(class),
+         am_match = sciname %in% spp_am$sciname)
 
-taxa_iucn_all <- iucn_maps_class[!duplicated(iucn_maps_class$sciname), ] %>%
-  filter(!is.na(class)) %>% ### don't count the unknowns
-  mutate(class = str_to_title(class),
-         n_iucn_tot = n()) %>%        ### length of whole maps list
+### next, identify spp scinames with matches in AM; if an iucn_sid has a match,
+### keep it; if there are multiple matches, keep the one with the fewest
+### instances of sciname (to keep more specific names...?)
+iucn_maps_class <- iucn_maps_class_all %>% 
+  group_by(sciname) %>%
+  mutate(sciname_count = n()) %>% ### for each sciname, figure out how many times it appears
+  group_by(iucn_sid) %>%
+  arrange(desc(am_match), sciname_count) %>% ### for each iucn_spp, put the AM matches on top; then...
+  filter(sciname == first(sciname)) %>% ### just keep the first instance of each iucn_spp
+  ungroup()
+
+taxa_iucn_all <- iucn_maps_class %>%
+  filter(!is.na(class)) %>%           ### don't count the unknowns
+  mutate(n_iucn_tot = n()) %>%        ### length of whole maps list
   group_by(class) %>%
   summarize(n_iucn_class_all  = n(),
             p_iucn_class_all  = round((n_iucn_class_all/first(n_iucn_tot) * 100), 2))
 
-taxa_iucn_solo <- iucn_maps_class[!duplicated(iucn_maps_class$sciname), ] %>%
+taxa_iucn_solo <- iucn_maps_class %>%
   filter(!is.na(class)) %>%                 ### don't count the unknowns
   filter(!sciname %in% spp_am$sciname) %>%  ### filter list to IUCN only
-  mutate(class = str_to_title(class),
-         n_iucn_solo = n()) %>%             ### length of IUCN only list
+  mutate(n_iucn_solo = n()) %>%             ### length of IUCN only list
   group_by(class) %>%
   summarize(n_iucn_class_solo = n(),
             p_iucn_class_solo = round((n_iucn_class_solo/first(n_iucn_solo) * 100), 2))
 
 taxa_am_all <- spp_am %>%
   filter(!class %in% c('Not assigned', 'null') & !is.na(class)) %>%
-  mutate(class = str_to_title(class),
-         n_am_tot = n()) %>%        ### length of whole AM maps list
+  mutate(n_am_tot = n()) %>%        ### length of whole AM maps list
   group_by(class) %>%
   summarize(n_am_class_all  = n(),
             p_am_class_all  = round((n_am_class_all/first(n_am_tot) * 100), 2))
@@ -116,8 +125,7 @@ taxa_am_all <- spp_am %>%
 taxa_am_solo <- spp_am %>%
   filter(!class %in% c('Not assigned', 'null') & !is.na(class)) %>%
   filter(!sciname %in% iucn_maps_class$sciname) %>%  ### filter list to AM only
-  mutate(class = str_to_title(class),
-         n_am_solo = n()) %>%       ### length of AM only list
+  mutate(n_am_solo = n()) %>%       ### length of AM only list
   group_by(class) %>%
   summarize(n_am_class_solo = n(),
             p_am_class_solo = round((n_am_class_solo/first(n_am_solo) * 100), 2))
@@ -125,8 +133,7 @@ taxa_am_solo <- spp_am %>%
 taxa_both <- spp_am %>%
   filter(sciname %in% spp_iucn_maps$sciname) %>%
   filter(!class %in% c('Not assigned', 'null')) %>%
-  mutate(class = str_to_title(class),
-         n_both_tot = n()) %>%
+  mutate(n_both_tot = n()) %>%
   group_by(class) %>%
   summarize(n_class_both = n(),
             p_class_both = round(n_class_both/first(n_both_tot) * 100, 2))
@@ -138,15 +145,29 @@ taxa_df <- taxa_am_all %>%
   full_join(taxa_both,      by = 'class') %>%
   filter(!(is.na(n_iucn_class_all) & p_am_class_all < 0.5))
 
+taxa_omitted <- taxa_am_all %>%
+  full_join(taxa_am_solo,   by = 'class') %>%
+  full_join(taxa_iucn_all,  by = 'class') %>%
+  full_join(taxa_iucn_solo, by = 'class') %>%
+  full_join(taxa_both,      by = 'class') %>%
+  filter(is.na(n_iucn_class_all) & p_am_class_all < 0.5)
+
 # knitr::kable(taxa_df %>%
 #                dplyr::select(class, 
 #                              AquaMaps = n_am_class_all, 
 #                              IUCN = n_iucn_class_all, 
 #                              Both = n_class_both))
+
+write_csv(taxa_df, file.path(dir_data, 'taxa_df.csv'))
+write_csv(taxa_omitted, file.path(dir_data, 'taxa_omitted.csv'))
+
 ```
 
 ``` {r plot_barline_charts_by_taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
 ### bar charts comparing number of species in each class for each data set
+
+taxa_df <- read_csv(file.path(dir_data, 'taxa_df.csv'))
+
 
 taxa_df1 <- taxa_df %>%
   dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Paired = n_class_both) %>%
@@ -196,9 +217,18 @@ taxa_df2 <- taxa_all_df %>%
   bind_rows(taxa_df1 %>%
               select(-IUCN, -AquaMaps, -Paired) %>%
               arrange(desc(n_total))) %>%
+  bind_rows(taxa_omitted %>%
+              summarize(class = 'other (47 classes)',
+                        n_total = sum(n_am_class_all),
+                        dataset = 'AquaMaps',
+                        start = 0,
+                        end = 100)) %>%
   mutate(class = factor(class, levels = unique(.$class), ordered = TRUE),
          n_label = ifelse(!is.na(n_total), paste0('n = ', n_total), ''),
          dataset = factor(dataset, levels = c('AquaMaps', 'Paired', 'IUCN'), ordered = TRUE))
+
+### cut the labels for all but the first instance
+taxa_df2$n_label[duplicated(taxa_df2$class)] <- NA
 
 break_nums <- seq(0, 100, 20)
 
@@ -209,27 +239,28 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
   theme(panel.grid.major.x = element_blank()) +
   geom_linerange(aes(ymin = start, ymax = end, size = dataset),
                  position = position_dodge(width = 0.5)) +
-  scale_size_manual(values = c('IUCN' = .5, 'AquaMaps' = .5, 'Paired' = 2.9)) +
+  scale_size_manual(values = c('IUCN' = .5, 'AquaMaps' = .5, 'Paired' = 2.8)) +
   scale_color_manual(values = c('IUCN' = 'black', 'AquaMaps' = 'grey70', 'Paired' = 'black')) +
   geom_text(aes(label = n_label, y = 102),
-            size = 2.5,
+            size = 2.4,
             angle = 90, hjust = 0, color = 'grey30') +
-  theme(axis.text.x = element_text(angle = 75, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 75, hjust = 1),
+        axis.title.y = element_text(hjust = 0)) +
   scale_y_continuous(expand = c(0, 0),
                      limits = c(0, 140),
                      breaks = break_nums,
                      labels = sprintf('%s%%', break_nums)) +
   labs(x = 'Class (in order of decreasing number of included species)',
-       y = 'Percent of mapped species',
+       y = '% of mapped species',
        fill = 'Dataset')
 
-print(bar_taxa)
+# print(bar_taxa)
 ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
        width = 19.05, height = 7, units = 'cm', dpi = 600)
 
 ```
 
-![](../figures/bar2_by_taxa_all.png)
+![](../figures/bar_by_taxa_all.png)
 
 ``` {r, child = 'data_explore_global_maps.Rmd', echo = FALSE, message = FALSE, eval = TRUE}
 ```
