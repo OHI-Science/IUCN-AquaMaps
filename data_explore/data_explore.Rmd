@@ -62,16 +62,11 @@ spp_iucn <- read_csv(iucn_file)
 
 message('Getting IUCN maps list')
 iucn_maps_file <- file.path(dir_data, 'spp_iucn_maps.csv')
-spp_iucn_maps <- read_csv(iucn_maps_file) %>%
-  filter(spp_group != 'hagfishes') %>%           ### not from IUCN...
-  filter(sciname %in% spp_iucn$sciname)   ### ditch freshwater spp
-
+spp_iucn_maps <- read_csv(iucn_maps_file)
 
 ```
 
 ``` {r breakdown by taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
-
-sciname_lookup <- read_csv(file.path(dir_data, 'sciname_lookups/spp_iucn_scinames.csv'))
 
 spp_am <- read_csv(file.path(dir_data, 'spp_am.csv')) %>%
   left_join(read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2015/csv/speciesoccursum.csv')) %>% 
@@ -80,10 +75,6 @@ spp_am <- read_csv(file.path(dir_data, 'spp_am.csv')) %>%
             by = 'am_sid')
 
 iucn_maps_class_all <- spp_iucn_maps %>% 
-  left_join(sciname_lookup %>% 
-              dplyr::select(sciname, class) %>%
-              unique(), 
-            by = 'sciname') %>%
   select(-iucn_subpop, -spp_group) %>%
   distinct() %>% ### first, get rid of dupes due to subpopulations
   mutate(class    = str_to_title(class),
@@ -150,7 +141,14 @@ taxa_omitted <- taxa_am_all %>%
   full_join(taxa_iucn_all,  by = 'class') %>%
   full_join(taxa_iucn_solo, by = 'class') %>%
   full_join(taxa_both,      by = 'class') %>%
-  filter(is.na(n_iucn_class_all) & p_am_class_all < 0.5)
+  filter(is.na(n_iucn_class_all) & p_am_class_all < 0.5) %>%
+  left_join(read_csv(file.path(dir_data, 'sciname_lookups/scinames.csv')) %>%
+              select(class, kingdom, phylum) %>%
+              mutate(class = str_to_title(class)),
+            by = 'class') %>%
+  mutate(class = paste('other', str_to_title(kingdom), sep = ' ')) %>%
+  select(-kingdom, -phylum) %>%
+  distinct()
 
 # knitr::kable(taxa_df %>%
 #                dplyr::select(class, 
@@ -217,9 +215,9 @@ taxa_df2 <- taxa_all_df %>%
   bind_rows(taxa_df1 %>%
               select(-IUCN, -AquaMaps, -Paired) %>%
               arrange(desc(n_total))) %>%
-  bind_rows(taxa_omitted %>%
-              summarize(class = 'other (47 classes)',
-                        n_total = sum(n_am_class_all),
+  bind_rows(x <- taxa_omitted %>%
+              group_by(class) %>%
+              summarize(n_total = sum(n_am_class_all),
                         dataset = 'AquaMaps',
                         start = 0,
                         end = 100)) %>%
@@ -239,7 +237,7 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
   theme(panel.grid.major.x = element_blank()) +
   geom_linerange(aes(ymin = start, ymax = end, size = dataset),
                  position = position_dodge(width = 0.5)) +
-  scale_size_manual(values = c('IUCN' = .5, 'AquaMaps' = .5, 'Paired' = 2.8)) +
+  scale_size_manual(values = c('IUCN' = .5, 'AquaMaps' = .5, 'Paired' = 2.6)) +
   scale_color_manual(values = c('IUCN' = 'black', 'AquaMaps' = 'grey70', 'Paired' = 'black')) +
   geom_text(aes(label = n_label, y = 102),
             size = 2.4,

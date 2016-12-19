@@ -1,48 +1,32 @@
 class,n_am_class_all,p_am_class_all,n_am_class_solo,p_am_class_solo,n_iucn_class_all,p_iucn_class_all,n_iucn_class_solo,p_iucn_class_solo,n_class_both,p_class_both
-Amphibia,1,0,1,0,NA,NA,NA,NA,NA,NA
-Anopla,5,0.02,5,0.02,NA,NA,NA,NA,NA,NA
-Aplacophora,32,0.14,32,0.16,NA,NA,NA,NA,NA,NA
-Appendicularia,11,0.05,11,0.05,NA,NA,NA,NA,NA,NA
-Articulata,36,0.16,36,0.18,NA,NA,NA,NA,NA,NA
-Bacillariophyceae,1,0,1,0,NA,NA,NA,NA,NA,NA
-Bicosoecophyceae,2,0.01,2,0.01,NA,NA,NA,NA,NA,NA
-Bryopsidophyceae,22,0.1,22,0.11,NA,NA,NA,NA,NA,NA
-Calcarea,29,0.13,29,0.14,NA,NA,NA,NA,NA,NA
-Cephalaspidomorphi,6,0.03,6,0.03,NA,NA,NA,NA,NA,NA
-Cephalochordata,7,0.03,7,0.03,NA,NA,NA,NA,NA,NA
-Clitellata,1,0,1,0,NA,NA,NA,NA,NA,NA
-Coscinodiscophyceae,1,0,1,0,NA,NA,NA,NA,NA,NA
-Crinoidea,34,0.15,34,0.17,NA,NA,NA,NA,NA,NA
-Cubozoa,1,0,1,0,NA,NA,NA,NA,NA,NA
-Dinophyceae,2,0.01,2,0.01,NA,NA,NA,NA,NA,NA
-Enopla,2,0.01,2,0.01,NA,NA,NA,NA,NA,NA
-Enteropneusta,2,0.01,2,0.01,NA,NA,NA,NA,NA,NA
-Equisetopsida,5,0.02,1,0,NA,NA,NA,NA,4,0.17
-Eucycliophora,1,0,1,0,NA,NA,NA,NA,NA,NA
-Florideophyceae,54,0.24,54,0.26,NA,NA,NA,NA,NA,NA
-Foraminifera,1,0,1,0,NA,NA,NA,NA,NA,NA
-Gymnolaemata,93,0.41,93,0.45,NA,NA,NA,NA,NA,NA
-Hexactinellida,4,0.02,4,0.02,NA,NA,NA,NA,NA,NA
-Holocephali,44,0.19,44,0.22,NA,NA,NA,NA,NA,NA
-Inarticulata,4,0.02,4,0.02,NA,NA,NA,NA,NA,NA
-Merostomata,1,0,1,0,NA,NA,NA,NA,NA,NA
-Monoplacophora,1,0,1,0,NA,NA,NA,NA,NA,NA
-Myxini,49,0.22,49,0.24,NA,NA,NA,NA,NA,NA
-Oligohymenophorea,1,0,1,0,NA,NA,NA,NA,NA,NA
-Ostracoda,19,0.08,19,0.09,NA,NA,NA,NA,NA,NA
-Palaeacanthocephala,2,0.01,2,0.01,NA,NA,NA,NA,NA,NA
-Phaeophyceae,61,0.27,61,0.3,NA,NA,NA,NA,NA,NA
-Phascolosomatidea,30,0.13,30,0.15,NA,NA,NA,NA,NA,NA
-Polyplacophora,54,0.24,54,0.26,NA,NA,NA,NA,NA,NA
-Polythalamea,10,0.04,10,0.05,NA,NA,NA,NA,NA,NA
-Priapulomorpha,4,0.02,4,0.02,NA,NA,NA,NA,NA,NA
-Prymnesiophyceae,1,0,1,0,NA,NA,NA,NA,NA,NA
-Pterobranchia,3,0.01,3,0.01,NA,NA,NA,NA,NA,NA
-Rhodellophyceae,1,0,1,0,NA,NA,NA,NA,NA,NA
-Sarcopterygii,1,0,1,0,NA,NA,NA,NA,NA,NA
-Scyphozoa,18,0.08,18,0.09,NA,NA,NA,NA,NA,NA
-Sipunculidea,35,0.15,35,0.17,NA,NA,NA,NA,NA,NA
-Tentaculata,5,0.02,5,0.02,NA,NA,NA,NA,NA,NA
-Thaliacea,11,0.05,11,0.05,NA,NA,NA,NA,NA,NA
-Turbellaria,6,0.03,6,0.03,NA,NA,NA,NA,NA,NA
-Ulvophyceae,15,0.07,15,0.07,NA,NA,NA,NA,NA,NA
+other Animalia,1,0,1,0,NA,NA,NA,NA,NA,NA
+other Animalia,5,0.02,5,0.02,NA,NA,NA,NA,NA,NA
+other Animalia,32,0.14,32,0.16,NA,NA,NA,NA,NA,NA
+other Animalia,11,0.05,11,0.05,NA,NA,NA,NA,NA,NA
+other Animalia,36,0.16,36,0.18,NA,NA,NA,NA,NA,NA
+other Chromista,1,0,1,0,NA,NA,NA,NA,NA,NA
+other Plantae,1,0,1,0,NA,NA,NA,NA,NA,NA
+other Chromista,2,0.01,2,0.01,NA,NA,NA,NA,NA,NA
+other Plantae,22,0.1,22,0.11,NA,NA,NA,NA,NA,NA
+other Animalia,29,0.13,29,0.14,NA,NA,NA,NA,NA,NA
+other Animalia,6,0.03,6,0.03,NA,NA,NA,NA,NA,NA
+other Animalia,7,0.03,7,0.03,NA,NA,NA,NA,NA,NA
+other Animalia,34,0.15,34,0.17,NA,NA,NA,NA,NA,NA
+other Protozoa,2,0.01,2,0.01,NA,NA,NA,NA,NA,NA
+other Animalia,2,0.01,2,0.01,NA,NA,NA,NA,NA,NA
+other Plantae,5,0.02,1,0,NA,NA,NA,NA,4,0.17
+other Plantae,54,0.24,54,0.26,NA,NA,NA,NA,NA,NA
+other Protozoa,1,0,1,0,NA,NA,NA,NA,NA,NA
+other Animalia,93,0.41,93,0.45,NA,NA,NA,NA,NA,NA
+other Animalia,4,0.02,4,0.02,NA,NA,NA,NA,NA,NA
+other Animalia,44,0.19,44,0.22,NA,NA,NA,NA,NA,NA
+other Animalia,49,0.22,49,0.24,NA,NA,NA,NA,NA,NA
+other Animalia,19,0.08,19,0.09,NA,NA,NA,NA,NA,NA
+other Chromista,61,0.27,61,0.3,NA,NA,NA,NA,NA,NA
+other Animalia,30,0.13,30,0.15,NA,NA,NA,NA,NA,NA
+other Animalia,54,0.24,54,0.26,NA,NA,NA,NA,NA,NA
+other Protozoa,10,0.04,10,0.05,NA,NA,NA,NA,NA,NA
+other Animalia,3,0.01,3,0.01,NA,NA,NA,NA,NA,NA
+other Animalia,18,0.08,18,0.09,NA,NA,NA,NA,NA,NA
+other Animalia,35,0.15,35,0.17,NA,NA,NA,NA,NA,NA
+other Plantae,15,0.07,15,0.07,NA,NA,NA,NA,NA,NA
