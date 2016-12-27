@@ -7,8 +7,8 @@ This looks at the full 2014 Aquamaps dataset... should it be limited to species 
 # get spp_cells raw data for aquamaps
 dir_aquamaps <- file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2015')
 
-spp_cells <- read_csv(file.path(dir_aquamaps, 'csv/hcaf_sp_native_trunc.csv'), 
-                      col_types = 'ccd', progress = TRUE)
+spp_cells <- read_csv(file.path(dir_aquamaps, 'csv/hcaf_sp_native_trunc.csv'),
+                      progress = TRUE)
 
 spp <- fread(input = file.path(dir_aquamaps, 'csv/speciesoccursum.csv'), 
              verbose = FALSE, header = TRUE) %>%
@@ -17,6 +17,66 @@ spp <- fread(input = file.path(dir_aquamaps, 'csv/speciesoccursum.csv'),
          iucn_code = str_replace(iucn_code, 'N.E.', 'NE'))
 spp <- as.data.frame(spp)
 
+```
+
+``` {r inspect_extrapolation_ratios}
+spp_list <- read_csv(file.path(dir_git, 'data/spp_list_w_area_trimmed.csv'))
+hcaf <- read_csv(file.path(dir_aquamaps, 'csv/hcaf_truncated.csv'))
+
+spp_cell_matches <- spp_cells %>%
+  rename(am_sid = speciesid) %>%
+  filter(am_sid %in% spp_list$am_sid | am_sid %in% c('Fis-131802', 'W-Oph-245456')) %>%
+  left_join(hcaf, by = 'loiczid') %>%
+  mutate(probability = as.numeric(probability)) %>%
+  select(-csquarecode, -contains('limit'), -contains('center'))
+
+spp_cell_sums <- spp_cell_matches %>%
+  group_by(am_sid) %>%
+  summarize(n_cells = n(),
+            area    = sum(oceanarea, na.rm = TRUE),
+            area_wt = sum(oceanarea * probability, na.rm = TRUE)) %>%
+  left_join(spp, by = c('am_sid' = 'speciesid')) %>%
+  select(am_sid, n_cells, area, area_wt, sciname, reviewed, occurcells) %>%
+  mutate(geog_space_extrapolate = area / occurcells,
+         env_space_extrapolate = area_wt / occurcells)
+  
+spp_cell_sums_Oplana <- spp_cells %>%
+  filter(speciesid == 'W-Oph-245456')
+spp_cell_sums_Rfyllae <- spp_cells %>%
+  filter(speciesid == 'Fis-131802')
+
+hist(spp_cell_sums_Oplana$probability)
+hist(spp_cell_sums_Rfyllae$probability)
+
+summary(spp_cell_sums_Oplana$probability)
+summary(spp_cell_sums_Rfyllae$probability)
+### Very similar distributions
+# > summary(spp_cell_sums_Oplana$probability)
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  0.0100  0.2300  0.6000  0.5725  0.9600  1.0000 
+# > summary(spp_cell_sums_Rfyllae$probability)
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  0.0100  0.2300  0.6500  0.5981  1.0000  1.0000 
+
+### How do prob-weighted areas compare to non-prob-weighted areas?  consistent 
+### ratio would indicate that the uncertainty due to # of occurcells is not
+### being considered in the predictions
+
+spp_cell_sums1 <- spp_cell_sums %>%
+  mutate(a_to_a_wt = area / area_wt,
+         gspace_to_espace = geog_space_extrapolate / env_space_extrapolate) %>%
+  arrange(desc(a_to_a_wt)) %>%
+  filter(a_to_a_wt < 50) ### get rid of Zalophus wollbaeki outlier
+
+summary(spp_cell_sums1$a_to_a_wt)
+  #  Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  # 1.023   1.258   1.371   1.495   1.571   8.062 
+summary(spp_cell_sums1$gspace_to_espace)
+### haha the same, duh
+### but fairly consistent ratios seem to indicate no relationship
+
+summary(lm(a_to_a_wt ~ occurcells, data = spp_cell_sums1))
+# Adjusted R-squared:  0.01058 - essentially no explanatory power
 ```
 
 ```{r hist_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE, eval = TRUE}

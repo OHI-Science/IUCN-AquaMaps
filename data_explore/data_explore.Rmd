@@ -23,7 +23,7 @@ dir_M             <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
 
 dir_git <- '~/github/IUCN-AquaMaps'
   
-dir_anx <- file.path(dir_M, 'git-annex/globalprep/SPP_ICO')
+dir_anx <- file.path(dir_M, 'git-annex/globalprep/spp_ico')
 dir_fig <- file.path(dir_git, 'figures')
 dir_data <- file.path(dir_git, 'data')
 
@@ -48,9 +48,7 @@ spp_list <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 ### use data_prep.Rmd to create this file, if it does not yet exist.
 
 data_file <- file.path(dir_data, 'spp_list_w_area_trimmed.csv')
-spp_map_pairs <- read.csv(data_file, stringsAsFactors = FALSE) %>%
-  filter(!is.na(popn_category)) %>% ### filter out unassessed species
-  filter(!is.na(sm_perc))           ### filter out NA maps
+spp_map_pairs <- read_csv(data_file)
 
 ### generate other lists
 
@@ -426,21 +424,22 @@ spp_gp_quadrants <- spp_gp_quadrants %>%
               filter(quad == 'q1') %>%
               dplyr::select(spp_group_text, pct_q1 = pct_quad),
             by = 'spp_group_text') %>%
-  left_join(quad_names, by = 'quad')
+  left_join(quad_names, by = 'quad') %>% 
+  mutate(quad = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'))) %>%
+  transform(spp_group_text = reorder(spp_group_text, pct_q1))
 
 break_nums <- seq(0, 100, 20)
 
 ### Plot the bar chart
-barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>% 
-                                  transform(spp_group_text = reorder(spp_group_text, pct_q1)), 
+barchart_spp_gp_quads <- ggplot(spp_gp_quadrants, 
                                 aes(x = spp_group_text, fill = quad, weight = pct_quad)) +
   ggtheme_plot + 
-  theme(panel.grid.major.y = element_blank()) +
+  # theme(panel.grid.major.y = element_blank()) +
   geom_bar(stat = 'count', alpha = 1) +
-  scale_fill_manual(values = c('q4' = '#d01c8b', 
-                               'q3' = '#f1b6da', 
-                               'q2' = '#b8e186',
-                               'q1' = '#4dac26'),
+  scale_fill_manual(values = c('q1' = '#4dac26', 
+                               'q2' = '#b8e186', 
+                               'q3' = '#f1b6da',
+                               'q4' = '#d01c8b'),
                     labels = quad_names$quad_name) +
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 1.1),
@@ -463,8 +462,8 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants %>%
 print(barchart_spp_gp_quads)
 
 # ggsave(plot = barchart_spp_gp_quads,
-#        filename = file.path(dir_fig, 'barchart_spp_gp_quads.png'),
-#        width = 19.05, height = 7, units = 'cm', dpi = 600)
+       filename = file.path(dir_fig, 'barchart_spp_gp_quads.png'),
+       width = 19.05, height = 7, units = 'cm', dpi = 600)
 
 write_csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads.csv'))
 
@@ -473,6 +472,234 @@ write_csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads.csv'))
 ![](../figures/barchart_spp_gp_quads.png)
 
 # Plots for SI
+
+## quad plot experts only
+
+``` {r pct_overlap_vs_ratio_of_area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+spp_list_experts <- spp_list %>%
+  filter(reviewed == 1)
+
+### means for both x and y axes - use original means
+area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
+dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
+
+area_align_mean_ex <- mean(spp_list_experts$area_ratio, na.rm = TRUE)
+dist_align_mean_ex <- mean(spp_list_experts$sm_perc, na.rm = TRUE)
+
+### define windows for labels
+q1 <- c('x1' = 84, 'x2' = 98, 'y1' = 92.5, 'y2' = 97.5)
+q2 <- c('x1' =  2, 'x2' = 22, 'y1' = 92.5, 'y2' = 97.5)
+q3 <- c('x1' = 84, 'x2' = 98, 'y1' =  2.5, 'y2' = 7.5)
+q4 <- c('x1' =  2, 'x2' = 18, 'y1' =  2.5, 'y2' = 7.5)
+
+spp_list_experts_labs <- spp_list_experts %>%
+  rename(x = area_ratio, y = sm_perc) %>%
+  mutate(fade = FALSE,
+         fade = ifelse((x > q1[1] & x < q1[2] & y > q1[3] & y < q1[4]), TRUE, fade),
+         fade = ifelse((x > q2[1] & x < q2[2] & y > q2[3] & y < q2[4]), TRUE, fade),
+         fade = ifelse((x > q3[1] & x < q3[2] & y > q3[3] & y < q3[4]), TRUE, fade),
+         fade = ifelse((x > q4[1] & x < q4[2] & y > q4[3] & y < q4[4]), TRUE, fade))
+
+break_nums <- seq(0, 100, 20)
+
+### mongo plot time
+scatter_quadplot_ex <- ggplot(spp_list_experts_labs, aes(x = x, y = y)) +
+  ggtheme_plot + 
+  ### color the quadrant backgrounds:
+  annotate("rect", xmin = area_align_mean, xmax = 100, ymin = dist_align_mean, ymax = 100, 
+           alpha = .3, fill= "#4dac26")  + 
+  annotate("rect", xmax = area_align_mean, xmin =   0, ymin = dist_align_mean, ymax = 100, 
+           alpha = .3, fill= "#b8e186") + 
+  annotate("rect", xmin = area_align_mean, xmax = 100, ymax = dist_align_mean, ymin =   0, 
+           alpha = .3, fill= "#f1b6da") + 
+  annotate("rect", xmax = area_align_mean, xmin =   0, ymax = dist_align_mean, ymin =   0, 
+           alpha = .3, fill= "#d01c8b") +
+  ### add grid lines
+  geom_vline(xintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
+  geom_hline(yintercept = break_nums, size = 0.25, color = 'white', alpha = .5)
+
+
+
+### plot the data points!
+scatter_quadplot_ex <- scatter_quadplot_ex +
+  # geom_point(color = '#4d4dac', aes(alpha = fade), show.legend = FALSE) +
+  # geom_point(data = spp_list_experts_labs %>%
+  #              filter(str_detect(spp_group_text, 'Corals')),
+  #            color = 'red', aes(alpha = fade), 
+  #            shape = 4, stroke = .5, 
+  #            size = 1, show.legend = FALSE) +
+  # scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = 1)) +
+  geom_point(color = 'black', aes(alpha = fade), size = .1, show.legend = FALSE) +
+  scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = 1))
+
+### label the quadrants:
+scatter_quadplot_ex <- scatter_quadplot_ex +
+  annotate("text", x = 97, y = 95, hjust = 1, vjust = .5, size = 3, color = 'grey20', 
+           fontface = 'bold.italic', label = "Well-aligned") + 
+  annotate("text", x =  3, y = 95, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Distribution-aligned") + 
+  annotate("text", x = 97, y =  5, hjust = 1, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Area-aligned") + 
+  annotate("text", x =  3, y =  5, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Poorly aligned")
+
+### Manage axis scales 
+scatter_quadplot_ex <- scatter_quadplot_ex +
+  scale_x_continuous(expand = c(0, 0), limits = c(-1, 101),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(-1, 101),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums))
+
+### here are mean labels:
+scatter_quadplot_ex <- scatter_quadplot_ex +
+  annotate(geom = 'text', x = area_align_mean, y = 5,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 90,
+           label = sprintf('Mean (all) = %s%%', round(area_align_mean, 1))) +
+  annotate(geom = 'text', x = 5, y = dist_align_mean,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 0,
+           label = sprintf('Mean (all) = %s%%', round(dist_align_mean, 1))) +
+  geom_hline(yintercept = dist_align_mean_ex, color = 'grey40', linetype = 2, size = 0.25) + 
+  geom_vline(xintercept = area_align_mean_ex, color = 'grey40', linetype = 2, size = 0.25) + 
+  annotate(geom = 'text', x = area_align_mean_ex - .25, y = 5,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 90,
+           label = sprintf('Mean (reviewed) = %s%%', round(area_align_mean_ex, 1))) +
+  annotate(geom = 'text', x = 5, y = dist_align_mean_ex + .25,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 0,
+           label = sprintf('Mean (reviewed) = %s%%', round(dist_align_mean_ex, 1)))
+
+scatter_quadplot_ex <- scatter_quadplot_ex +
+  labs(x = bquote('Area ratio '*alpha['ext']*' (%)'), 
+       y = bquote('Distribution alignment '*alpha['dist']*' (%)'))
+
+# print(scatter_quadplot_ex)
+
+# ggsave(file.path(dir_fig, 'scatter_quadmap_expert.png'),
+#        width = 19.05, height = 9, units = 'cm', dpi = 600)
+
+```
+
+![](../figures/scatter_quadmap.png)
+
+## Break down quads by species group for expert reviewed maps
+
+``` {r examine_spp_gp_quartiles, echo = FALSE, eval = TRUE}
+
+### means for both x and y axes - use original means
+area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
+dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
+
+spp_list_experts1 <- spp_list_experts %>%
+  group_by(spp_group_text) %>%
+  mutate(n_spp = n()) %>%
+  ungroup()
+
+### Create species lists by quadrant
+spp_list_experts_q1 <- spp_list_experts1 %>%
+  filter(area_ratio >= area_align_mean & sm_perc >= dist_align_mean)
+spp_list_experts_q2 <- spp_list_experts1 %>%
+  filter(area_ratio <  area_align_mean & sm_perc >= dist_align_mean)
+spp_list_experts_q3 <- spp_list_experts1 %>%
+  filter(area_ratio >= area_align_mean & sm_perc < dist_align_mean)
+spp_list_experts_q4 <- spp_list_experts1 %>%
+  filter(area_ratio <  area_align_mean & sm_perc < dist_align_mean)
+
+spp_list_experts_quads <- spp_list_experts1 %>%
+  mutate(quad = NA,
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_experts_q1$sciname, 'q1', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_experts_q2$sciname, 'q2', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_experts_q3$sciname, 'q3', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_experts_q4$sciname, 'q4', quad))
+write_csv(spp_list_experts_quads, file.path(dir_data, 'spp_list_experts_quads.csv'))
+
+### Summarize quadrant species list by species group (e.g. CORALS1)
+spp_gp_q1_ex <- spp_list_experts_q1 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q1 = n())
+spp_gp_q2_ex <- spp_list_experts_q2 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q2 = n())
+spp_gp_q3_ex <- spp_list_experts_q3 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q3 = n())
+spp_gp_q4_ex <- spp_list_experts_q4 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q4 = n())
+
+### Join species group by quadrant into a single dataframe
+spp_gp_quads_ex <- spp_gp_q1_ex %>%
+  full_join(spp_gp_q2_ex, by = c('spp_group_text', 'n_spp')) %>%
+  full_join(spp_gp_q3_ex, by = c('spp_group_text', 'n_spp')) %>%
+  full_join(spp_gp_q4_ex, by = c('spp_group_text', 'n_spp')) %>%
+  gather(quad, n_quad, n_spp_q1, n_spp_q2, n_spp_q3, n_spp_q4) %>% 
+  mutate(quad = str_replace(quad, 'n_spp_', ''),
+         pct_quad = n_quad/n_spp,
+         n_quad   = ifelse(is.na(n_quad),   0, n_quad),
+         pct_quad = ifelse(is.na(pct_quad), 0, pct_quad))
+
+
+quad_names <- data.frame('quad' = c('q1', 'q2', 'q3', 'q4'),
+                         'quad_name' = factor(c('well-aligned', 'dist-aligned', 
+                                                'area-aligned', 'poorly aligned'),
+                                             ordered = TRUE))
+
+spp_gp_quads_ex <- spp_gp_quads_ex %>%
+  left_join(spp_gp_quads_ex %>% 
+              filter(quad == 'q1') %>%
+              dplyr::select(spp_group_text, pct_q1 = pct_quad),
+            by = 'spp_group_text') %>%
+  left_join(quad_names, by = 'quad') %>% 
+  mutate(quad = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'))) %>%
+  transform(spp_group_text = reorder(spp_group_text, pct_q1))
+
+break_nums <- seq(0, 100, 20)
+
+### Plot the bar chart
+bar_spp_gp_quads_ex <- ggplot(spp_gp_quads_ex, 
+                                aes(x = spp_group_text, fill = quad, weight = pct_quad)) +
+  ggtheme_plot + 
+  # theme(panel.grid.major.y = element_blank()) +
+  geom_bar(stat = 'count', alpha = 1) +
+  scale_fill_manual(values = c('q1' = '#4dac26', 
+                               'q2' = '#b8e186', 
+                               'q3' = '#f1b6da',
+                               'q4' = '#d01c8b'),
+                    labels = quad_names$quad_name) +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 1.1),
+                     breaks = break_nums/100,
+                     labels = sprintf('%s%%', break_nums)) + 
+  ### add grid lines; horizontal but then get flipped
+  geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
+  ### add text
+  geom_text(# data = spp_gp_quadrants %>%
+              # select(spp_group_text, n_spp) %>%
+              # distinct(),
+            aes(label = sprintf('n = %s', n_spp), y = 1.01), hjust = 0, 
+            size = 2.5, 
+            color = 'grey30') +
+  coord_flip() +
+  labs(x = 'Taxonomic Group', 
+       y = 'Percent of species by quadrant', 
+       fill = 'Alignment')
+
+print(bar_spp_gp_quads_ex)
+
+# ggsave(plot = bar_spp_gp_quads_ex,
+       filename = file.path(dir_fig, 'barchart_spp_gp_quads_ex.png'),
+       width = 19.05, height = 7, units = 'cm', dpi = 600)
+
+write_csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads_ex.csv'))
+
+```
+
+![](../figures/barchart_spp_gp_quads.png)
 
 ## Break down quadrants by risk category
 

@@ -16,7 +16,7 @@ library(stringr)
 
 dir_M <- c('Windows' = '//mazu.nceas.ucsb.edu/data_edit',
            'Darwin'  = '/Volumes/ohi',
-           'Linux'   = '/var/data/ohi')[[ Sys.info()[['sysname']] ]]
+           'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
 
 dir_git <- '~/github/IUCN-AquaMaps'
   
@@ -132,7 +132,7 @@ write_csv(am_spp_cells, file.path(dir_anx, 'vAM_IUCN/am_spp_cells_2015.csv'))
 ```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 ### Create files for species list with area info, both a complete list and a trimmed list
 
-loiczid_raster_file  <- file.path(dir_git, 'shiny/data/loiczid_raster.grd')
+loiczid_raster_file  <- file.path(dir_git, 'data/rasters/loiczid_raster.tif')
 loiczid_raster       <- raster::raster(loiczid_raster_file)
 names(loiczid_raster) <- 'loiczid'
 
@@ -147,8 +147,8 @@ if (!file.exists(data_file) | reload) {
   
   ### species info list - scinames, IUCN species ID, AM species ID, category etc
   spp_list_base <- read_csv(file.path(dir_data, 'spp_am_v_iucn.csv'))
+  create_spp_list2(spp_list_base, data_file, am_spp_cells, iucn_spp_cells, loiczid_raster)
   
-  create_spp_list(spp_list_base, data_file, am_spp_cells, iucn_spp_cells, loiczid_raster)
 }
 
 spp_list <- read_csv(data_file) 
@@ -164,20 +164,21 @@ spp_list <- spp_list %>%
 spp_list <- spp_list %>%
   left_join(x <- read_csv(file.path(dir_data, 'sciname_lookups/spp_groupnames.csv')),
             by = 'spp_group') %>%
-  left_join(read_csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv')) %>% 
+  left_join(read_csv(file.path(dir_data_remote, 'aquamaps/d2015/csv/speciesoccursum.csv')) %>% 
               select(am_sid = speciesid, occurcells),
             by = 'am_sid')
 
-cat_score_df <- data.frame(popn_category  = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE'),
-                           category_score = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0,   NA,  NA))
-spp_list <- spp_list %>%
-  left_join(cat_score_df, by = 'popn_category')
+# cat_score_df <- data.frame(popn_category  = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE'),
+#                            category_score = c( 0.0,  0.2,  0.4,  0.6,  0.8,  1.0,   NA,  NA))
+# spp_list <- spp_list %>%
+#   left_join(cat_score_df, by = 'popn_category')
 
 write_csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 
 ```
 
 ``` {r counts_spp_all_observations, echo = FALSE}
+
 spp_all <- read_csv(file.path(dir_data, 'spp_all.csv'))
 
 # library(rgbif)
@@ -221,49 +222,5 @@ gbif_occur <- read_csv(file.path(dir_data, 'gbif_occurrence.csv'))
 # 
 # write_csv(obis_occur, file.path(dir_data, 'obis_occurrence.csv'))
 obis_occur <- read_csv(file.path(dir_data, 'obis_occurrence.csv'))
-
-totes_occur <- obis_occur %>%
-  left_join(gbif_occur) %>%
-  rowwise() %>%
-  mutate(mean_occ = mean(c(gbif_occ, obis_occ), na.rm = TRUE))
-
-```
-
-__Possible "data poor" indicators:__
-
-* (of matched species) how does bottom decile get distributed across quadrants
-* use mean of OBIS and GBIF, and just report average (or median?) occurrences across all species in each quadrant
-* also use similar method for AM occurcells
-
-``` {r data_poor_analysis, echo = FALSE, eval = FALSE}
-spp_quads <- read_csv(file.path(dir_data, 'spp_list_quads.csv')) %>% 
-  select(am_sid, iucn_sid, occurcells, quad) %>%
-  unique()
-### This contains all mapped species, discarding those with no actual IUCN maps
-
-spp_occ_counts <- spp_quads %>%
-  left_join(totes_occur) %>%
-  group_by(iucn_sid, am_sid, quad) %>%
-  summarize(occurcells = mean(occurcells, na.rm = TRUE), occ = mean(mean_occ, na.rm = TRUE)) %>%
-  group_by(iucn_sid, quad) %>%
-  summarize(occurcells = sum(occurcells, na.rm = TRUE), occ = sum(occ, na.rm = TRUE)) %>%
-  ungroup()
-
-btm_dec_occurcells <- spp_occ_counts$occurcells %>% quantile(c(.1, .25))
-btm_dec_occ <- spp_occ_counts$occ %>% quantile(c(.1, .25))
-
-quad_count_means <- spp_occ_counts %>%
-  mutate(quad = ifelse(quad == 'q4', 'q4', 'q123')) %>%
-  group_by(quad) %>%
-  summarize(mean_occurcells = mean(occurcells),
-            mean_occ        = mean(occ),
-            med_occurcells  = median(occurcells),
-            med_occ         = median(occ),
-            dp_am_10 = sum(occurcells <= btm_dec_occurcells[1])/n(),
-            dp_am_25 = sum(occurcells <= btm_dec_occurcells[2])/n(),
-            dp_gb_10 = sum(occ <= btm_dec_occ[1])/n(),
-            dp_gb_25 = sum(occ <= btm_dec_occ[2])/n())
-
-write_csv(quad_count_means, file.path(dir_data, 'quads_data_poor.csv'))
 
 ```

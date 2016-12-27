@@ -160,6 +160,12 @@ clipped_spp <- am_spp_central_lims %>%
 
 write_csv(clipped_spp, file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv'))
 
+### how many of these are expert-reviewed?
+clipped_spp_rev <- read_csv(file.path(dir_git, 'clip_fao', 'clipped_mid_pac.csv')) %>%
+  filter(reviewed == '1')
+  
+
+
 ```
 
 ``` {r plot_setup, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
