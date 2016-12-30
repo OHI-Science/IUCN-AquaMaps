@@ -163,7 +163,9 @@ write_csv(taxa_omitted, file.path(dir_data, 'taxa_omitted.csv'))
 ### bar charts comparing number of species in each class for each data set
 
 taxa_df <- read_csv(file.path(dir_data, 'taxa_df.csv'))
+taxa_omitted <- read_csv(file.path(dir_data, 'taxa_omitted.csv'))
 
+n_spp_omitted <- taxa_omitted$n_am_class_all %>% sum()
 
 taxa_df1 <- taxa_df %>%
   dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Paired = n_class_both) %>%
@@ -187,9 +189,9 @@ taxa_df1 <- taxa_df %>%
 taxa_all_df <- taxa_df1 %>%
   group_by(dataset) %>%
   summarize(class = 'Total',
-            AquaMaps_total = sum(AquaMaps) + sum(Paired),
+            AquaMaps_total = sum(AquaMaps)  + n_spp_omitted + sum(Paired),
             IUCN_total = sum(IUCN) + sum(Paired),
-            n_total  = sum(n_total),
+            n_total  = sum(n_total) + n_spp_omitted,
             IUCN_end = 100 * IUCN_total/n_total,
             IUCN_start = 0,
             AquaMaps_end   = 100,
@@ -213,7 +215,7 @@ taxa_df2 <- taxa_all_df %>%
   bind_rows(taxa_df1 %>%
               select(-IUCN, -AquaMaps, -Paired) %>%
               arrange(desc(n_total))) %>%
-  bind_rows(x <- taxa_omitted %>%
+  bind_rows(taxa_omitted %>%
               group_by(class) %>%
               summarize(n_total = sum(n_am_class_all),
                         dataset = 'AquaMaps',
