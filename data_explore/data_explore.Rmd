@@ -416,9 +416,11 @@ spp_gp_quadrants <- spp_gp_q1 %>%
          pct_quad = ifelse(is.na(pct_quad), 0, pct_quad))
 
 
-quad_names <- data.frame('quad' = c('q1', 'q2', 'q3', 'q4'),
-                         'quad_name' = factor(c('well-aligned', 'dist-aligned', 
-                                                'area-aligned', 'poorly aligned'),
+quad_names <- data.frame('quad' = c('q4', 'q3', 'q2', 'q1'),
+                         'quad_name' = factor(c('poorly aligned', 
+                                                'area-aligned', 
+                                                'dist-aligned',
+                                                'well-aligned'),
                                              ordered = TRUE))
 
 spp_gp_quadrants <- spp_gp_quadrants %>%
@@ -427,22 +429,25 @@ spp_gp_quadrants <- spp_gp_quadrants %>%
               dplyr::select(spp_group_text, pct_q1 = pct_quad),
             by = 'spp_group_text') %>%
   left_join(quad_names, by = 'quad') %>% 
-  mutate(quad = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'))) %>%
+  mutate(quad = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'), ordered = TRUE)) %>%
   transform(spp_group_text = reorder(spp_group_text, pct_q1))
 
 break_nums <- seq(0, 100, 20)
 
 ### Plot the bar chart
 barchart_spp_gp_quads <- ggplot(spp_gp_quadrants, 
-                                aes(x = spp_group_text, fill = quad, weight = pct_quad)) +
+                                aes(x = spp_group_text, 
+                                    y = pct_quad,
+                                    fill = quad, 
+                                    weight = pct_quad)) +
   ggtheme_plot + 
-  # theme(panel.grid.major.y = element_blank()) +
-  geom_bar(stat = 'count', alpha = 1) +
-  scale_fill_manual(values = c('q1' = '#4dac26', 
+  geom_bar(stat = 'identity', alpha = 1) +
+  scale_fill_manual(values = c('q1' = '#4dac26',
                                'q2' = '#b8e186', 
                                'q3' = '#f1b6da',
                                'q4' = '#d01c8b'),
-                    labels = quad_names$quad_name) +
+                    labels = quad_names$quad_name,
+                    guide = guide_legend(reverse = TRUE)) +
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 1.1),
                      breaks = break_nums/100,
@@ -450,10 +455,7 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants,
   ### add grid lines; horizontal but then get flipped
   geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
   ### add text
-  geom_text(# data = spp_gp_quadrants %>%
-              # select(spp_group_text, n_spp) %>%
-              # distinct(),
-            aes(label = sprintf('n = %s', n_spp), y = 1.01), hjust = 0, 
+  geom_text(aes(label = sprintf('n = %s', n_spp), y = 1.01), hjust = 0, 
             size = 2.5, 
             color = 'grey30') +
   coord_flip() +
@@ -532,7 +534,9 @@ scatter_quadplot_ex <- scatter_quadplot_ex +
   #            shape = 4, stroke = .5, 
   #            size = 1, show.legend = FALSE) +
   # scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = 1)) +
-  geom_point(color = 'black', aes(alpha = fade), size = .1, show.legend = FALSE) +
+  geom_point(data = spp_list, aes(x = area_ratio, y = sm_perc), 
+             color = 'black', alpha = .15, size = .1, show.legend = FALSE) +
+  geom_point(color = 'black', aes(alpha = fade), size = .25, show.legend = FALSE) +
   scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = 1))
 
 ### label the quadrants:
@@ -587,7 +591,7 @@ scatter_quadplot_ex <- scatter_quadplot_ex +
 
 ```
 
-![](../figures/scatter_quadmap.png)
+![](../figures/scatter_quadmap_expert.png)
 
 ## Break down quads by species group for expert reviewed maps
 
@@ -596,6 +600,9 @@ scatter_quadplot_ex <- scatter_quadplot_ex +
 ### means for both x and y axes - use original means
 area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
 dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
+
+spp_list_experts <- spp_list %>%
+  filter(reviewed == 1)
 
 spp_list_experts1 <- spp_list_experts %>%
   group_by(spp_group_text) %>%
@@ -646,9 +653,11 @@ spp_gp_quads_ex <- spp_gp_q1_ex %>%
          pct_quad = ifelse(is.na(pct_quad), 0, pct_quad))
 
 
-quad_names <- data.frame('quad' = c('q1', 'q2', 'q3', 'q4'),
-                         'quad_name' = factor(c('well-aligned', 'dist-aligned', 
-                                                'area-aligned', 'poorly aligned'),
+quad_names <- data.frame('quad' = c('q4', 'q3', 'q2', 'q1'),
+                         'quad_name' = factor(c('poorly aligned', 
+                                                'area-aligned', 
+                                                'dist-aligned',
+                                                'well-aligned'),
                                              ordered = TRUE))
 
 spp_gp_quads_ex <- spp_gp_quads_ex %>%
@@ -672,7 +681,8 @@ bar_spp_gp_quads_ex <- ggplot(spp_gp_quads_ex,
                                'q2' = '#b8e186', 
                                'q3' = '#f1b6da',
                                'q4' = '#d01c8b'),
-                    labels = quad_names$quad_name) +
+                    labels = quad_names$quad_name,
+                    guide = guide_legend(reverse = TRUE)) +
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 1.1),
                      breaks = break_nums/100,
