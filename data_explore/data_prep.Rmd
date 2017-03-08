@@ -50,12 +50,29 @@ spp_all <- spp_all %>%
   mutate(iucn_match = iucn_sid == iucn_id,
          iucn_wrong_map = ifelse(!iucn_match & iucn_id %in% spp_all$iucn_sid, TRUE, FALSE)) %>%
   mutate(iucn_sid = ifelse(iucn_wrong_map & !is.na(iucn_wrong_map), iucn_id, iucn_sid)) %>%
-  select(-iucn_match, -iucn_wrong_map, -iucn_id, -sciname_count) %>%
+  # select(-iucn_match, -iucn_wrong_map, -iucn_id, -sciname_count) %>%
   distinct()
 
 
-length(unique(x$iucn_sid)) ###  4013, incl NA
-length(unique(x$am_sid))   ### 22890, incl NA
+# length(unique(spp_all$iucn_sid)) ###  4013, incl NA
+# length(unique(spp_all$am_sid))   ### 22890, incl NA
+# qwer <- spp_all %>% filter(!is.na(iucn_sid) & !is.na(am_sid))
+# length(unique(qwer$iucn_sid)) ### 2320
+# length(unique(qwer$am_sid)) ### 2314
+# length(qwer %>% filter(iucn_match) %>% .$iucn_sid %>% unique()) ### 1852
+# 
+# x <- spp_iucn_maps %>%
+#   rename(iucn_sciname = sciname) %>%
+#   full_join(spp_am_maps %>% 
+#               rename(am_sciname = sciname), 
+#             by = c('iucn_sid' = 'iucn_id')) %>%
+#   select(iucn_sid, iucn_sciname, am_sid, am_sciname) %>%
+#   mutate(name_match = iucn_sciname == am_sciname) %>%
+#   distinct()
+# asdf <- x %>% filter(!is.na(iucn_sid) & !is.na(am_sid)) %>%
+#   filter(!is.na(iucn_sciname) & !is.na(am_sciname))
+# length(unique(asdf$iucn_sid))
+# length(unique(asdf$am_sid))
 
 write_csv(spp_all, file.path(dir_data, 'spp_all_maps.csv'))
 

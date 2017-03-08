@@ -17,8 +17,8 @@ ggtheme_plot <- theme(axis.ticks = element_blank(),
 
 
 ### theme for species range maps - based on generic plot theme
-ggtheme_map <- ggtheme_basic +
-  theme(axis.text = element_blank(),
+ggtheme_map <- ggtheme_plot +
+  theme_update(axis.text = element_blank(),
         axis.title = element_blank())
 
 
