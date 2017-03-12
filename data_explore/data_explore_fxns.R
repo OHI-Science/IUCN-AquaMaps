@@ -3,7 +3,8 @@
 library(ggplot2)
 
 ### generic theme for all plots
-ggtheme_plot <- theme(axis.ticks = element_blank(),
+theme_set(theme_bw())
+ggtheme_plot <- theme_update(axis.ticks = element_blank(),
                       text = element_text(family = 'Helvetica', color = 'gray30', size = 9),
                       plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
                       panel.background = element_blank(),
@@ -16,12 +17,6 @@ ggtheme_plot <- theme(axis.ticks = element_blank(),
                       axis.line = element_blank()) # element_line(colour = "grey30", size = .5))
 
 
-### theme for species range maps - based on generic plot theme
-ggtheme_map <- ggtheme_plot +
-  theme_update(axis.text = element_blank(),
-        axis.title = element_blank())
-
-
 
 #################################################################=
 ### Species Map Function ###
@@ -32,6 +27,8 @@ ggtheme_map <- ggtheme_plot +
 get_spp_map <- function(sid, spp_cells) { 
   data_type <- ifelse('am_sid' %in% names(spp_cells), 'am', 'iucn')
   
+  
+  
   if(data_type == 'am') {
     ### if AquaMaps, process it thusly:
     spp_map <- spp_cells %>%
@@ -41,6 +38,10 @@ get_spp_map <- function(sid, spp_cells) {
       message('no AquaMaps cells found')
   } else {
     ### if IUCN, process it thusly:
+    if(!'prop_area' %in% names(spp_cells)) {
+      spp_cells <- spp_cells %>%
+        mutate(prop_area = 1)
+    }
     spp_map <- spp_cells %>%
       filter(iucn_sid %in% sid)
     if(nrow(spp_map) == 0) {
@@ -101,7 +102,6 @@ plot_rangemap <- function(spp) {
   colvec <- c('AquaMaps' = '#76A94C', 'Both' = '#e18258', 'IUCN' = '#9168a9')
   
   spp_plot <- ggplot(spp_pts, aes(x = x, y = y)) +
-    ggtheme_map + 
     geom_raster(aes(fill = presence), alpha = .8) +
     scale_fill_manual(values = colvec) +
     borders('world', color='gray30', fill='gray40', size = .1) +  # create a layer of borders
@@ -144,6 +144,7 @@ create_spp_list <- function(spp_list_base, data_file, am_spp_cells,
   ### Here's the big function!
   library(parallel)
   ptm <- proc.time()
+  # test <- calc_areas(sid_vector[1])
   spp_list_build <- mclapply(sid_vector, calc_areas, mc.cores = 16) %>%
     bind_rows()
   proc.time() - ptm
@@ -247,4 +248,70 @@ calc_areas <- function(sid) {
                   ifelse(area_am < area_iucn, area_am/area_iucn*100, area_iucn/area_am*100)))
   
   return(spp_list_chunk)
+}
+
+library(parallel)
+library(jsonlite)
+
+### api_key stored on git-annex so outside users can use their own key
+
+get_from_api <- function(url, param, api_key, delay) {
+  
+  i <- 1; tries <- 5; success <- FALSE
+  
+  while(i <= tries & success == FALSE) {
+    message('try #', i)
+    Sys.sleep(delay * i) ### be nice to the API server? later attempts wait longer
+    api_info <- fromJSON(sprintf(url, param, api_key)) 
+    if (class(api_info) != 'try-error') {
+      success <- TRUE
+    } else {
+      warning(sprintf('try #%s: class(api_info) = %s\n', i, class(api_info)))
+    }
+    message('... successful? ', success)
+    i <- i + 1
+  }
+  
+  if (class(api_info) == 'try-error') { ### multi tries and still try-error
+    api_return <- data.frame(param_id  = param,
+                             api_error = 'try-error after multiple attempts')
+  } else if (class(api_info$result) != 'data.frame') { ### result isn't data frame for some reason
+    api_return <- data.frame(param_id  = param,
+                             api_error = paste('non data.frame output: ', class(api_info$result), ' length = ', length(api_info$result)))
+  } else if (length(api_info$result) == 0) { ### result is empty
+    api_return <- data.frame(param_id  = param,
+                             api_error = 'zero length data.frame')
+  } else {
+    api_return <- api_info %>%
+      data.frame(stringsAsFactors = FALSE)
+  }
+  
+  return(api_return)
+}
+
+mc_get_from_api <- function(url, param_vec, api_key, cores = NULL, delay = 0.5) {
+  
+  if(is.null(cores)) 
+    numcores <- ifelse(Sys.info()[['nodename']] == 'mazu', 12, 1)
+  else 
+    numcores <- cores
+  
+  out_list <- parallel::mclapply(param_vec, 
+                                 function(x) get_from_api(url, x, api_key, delay),
+                                 mc.cores   = numcores,
+                                 mc.cleanup = TRUE) 
+  
+  if(any(sapply(out_list, class) != 'data.frame')) {
+    error_list <- out_list[sapply(out_list, class) != 'data.frame']
+    message('List items are not data frame: ', paste(sapply(error_list, class), collapse = '; '))
+    message('might be causing the bind_rows() error; returning the raw list instead')
+    return(out_list)
+  }
+  
+  out_df <- out_list %>%
+    bind_rows()
+  out_df <- out_df %>%
+    setNames(names(.) %>%
+               str_replace('result.', ''))
+  return(out_df)
 }

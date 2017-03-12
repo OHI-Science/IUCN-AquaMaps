@@ -32,9 +32,44 @@ source('data_explore_fxns.R')
 ### the 'setwd()' is there for running by chunk
 ```
 
-```{r get_spp_all, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+
+```{r verify_spp_names_in_shps, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
 
 spp_iucn_maps <- read_csv(file.path(dir_data, 'spp_iucn_maps.csv'))
+
+# x <- spp_iucn_maps %>%
+#   filter(is.na(iucn_subpop) & !is.na(iucn_sid)) %>%
+#   filter(! spp_group %in% c('REPTILES', 'SEASNAKES', 'MANGROVES', 'SEAGRASSES')) %>%
+#   filter(sciname %in% .$sciname[duplicated(.$sciname)])
+### 37 instances of duped scinames with different IDs
+
+api_key <- scan(file.path(dir_anx, 'api_key.csv'), what = 'character')
+
+spp_id_url <- 'http://apiv3.iucnredlist.org/api/v3/species/id/%s?token=%s'
+
+sid_list <- spp_iucn_maps %>%
+  filter(!is.na(iucn_sid)) %>% 
+  .$iucn_sid %>%
+  unique() %>%
+  sort()
+    
+ptm <- proc.time()
+spp_names_df <- mc_get_from_api(spp_id_url, sid_list, api_key, delay = 1, cores = 16) %>%
+  select(iucn_sid = taxonid, sciname2 = scientific_name)
+proc.time() - ptm
+
+spp_iucn_maps1 <- spp_iucn_maps %>%
+  left_join(spp_names_df, by = 'iucn_sid') %>% ### here, both the shapefile name and API name
+  select(-sciname) %>%
+  rename(sciname = sciname2) ### now just the API name by ID number
+
+write_csv(spp_iucn_maps1, file.path(dir_data, 'spp_iucn_maps_verified.csv'))
+
+```
+
+```{r get_spp_all, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+
+spp_iucn_maps <- read_csv(file.path(dir_data, 'spp_iucn_maps_verified.csv'))
 
 spp_am_maps <- read_csv(file.path(dir_data, 'speciesoccursum.csv')) %>%
   mutate(sciname = paste(str_trim(genus), str_trim(species)),
@@ -42,37 +77,44 @@ spp_am_maps <- read_csv(file.path(dir_data, 'speciesoccursum.csv')) %>%
   dplyr::select(am_sid = speciesid, sciname, reviewed, iucn_id)
 
 spp_all <- spp_iucn_maps %>%
-  full_join(spp_am_maps, by = 'sciname') %>%
+  filter(iucn_sid %in% spp_am_maps$iucn_id) %>%
+  left_join(spp_am_maps %>% 
+              rename(am_sciname = sciname) %>%
+              mutate(iucn_sid = iucn_id), ### keep the IUCN noted ID separate from AM-noted IUCN id
+            by = c('iucn_sid')) %>%
+  bind_rows(x <- spp_iucn_maps %>%
+              filter(!iucn_sid %in% spp_am_maps$iucn_id) %>%
+              full_join(spp_am_maps %>%
+                          mutate(am_sciname = sciname) %>%
+                          filter(!iucn_id %in% spp_iucn_maps$iucn_sid | is.na(iucn_id)),
+                        by = c('sciname'))) %>%
   distinct()
 
-### some confusion due to non-matching scinames and IDs...
-spp_all <- spp_all %>%
-  mutate(iucn_match = iucn_sid == iucn_id,
-         iucn_wrong_map = ifelse(!iucn_match & iucn_id %in% spp_all$iucn_sid, TRUE, FALSE)) %>%
-  mutate(iucn_sid = ifelse(iucn_wrong_map & !is.na(iucn_wrong_map), iucn_id, iucn_sid)) %>%
-  # select(-iucn_match, -iucn_wrong_map, -iucn_id, -sciname_count) %>%
-  distinct()
+# x <- spp_all %>% 
+#   filter(is.na(iucn_subpop) & !is.na(iucn_sid)) %>%
+#   filter(iucn_sid %in% .$iucn_sid[duplicated(.$iucn_sid)])
+### just seasnakes/reptiles and mangroves/seagrasses
 
-
-# length(unique(spp_all$iucn_sid)) ###  4013, incl NA
+# length(unique(spp_all$iucn_sid)) ###  4028, incl NA
 # length(unique(spp_all$am_sid))   ### 22890, incl NA
 # qwer <- spp_all %>% filter(!is.na(iucn_sid) & !is.na(am_sid))
-# length(unique(qwer$iucn_sid)) ### 2320
-# length(unique(qwer$am_sid)) ### 2314
-# length(qwer %>% filter(iucn_match) %>% .$iucn_sid %>% unique()) ### 1852
+# length(unique(qwer$iucn_sid)) ### 2343
+# length(unique(qwer$am_sid)) ### 2337
+
 # 
 # x <- spp_iucn_maps %>%
 #   rename(iucn_sciname = sciname) %>%
-#   full_join(spp_am_maps %>% 
-#               rename(am_sciname = sciname), 
+#   full_join(spp_am_maps %>%
+#               rename(am_sciname = sciname),
 #             by = c('iucn_sid' = 'iucn_id')) %>%
 #   select(iucn_sid, iucn_sciname, am_sid, am_sciname) %>%
 #   mutate(name_match = iucn_sciname == am_sciname) %>%
 #   distinct()
 # asdf <- x %>% filter(!is.na(iucn_sid) & !is.na(am_sid)) %>%
 #   filter(!is.na(iucn_sciname) & !is.na(am_sciname))
-# length(unique(asdf$iucn_sid))
-# length(unique(asdf$am_sid))
+# length(unique(asdf$iucn_sid)) # 1880
+# length(unique(asdf$am_sid)) # 1880
+### 1880 species matched if only using ID number...
 
 write_csv(spp_all, file.path(dir_data, 'spp_all_maps.csv'))
 
@@ -90,7 +132,7 @@ spp_am_v_iucn <- spp_all %>%
   unique()
 
 # length(unique(spp_am_v_iucn$sciname)); length(unique(spp_am_v_iucn$am_sid)); length(unique(spp_am_v_iucn$iucn_sid))
-### NOTE: 2314 unique scientific names; but 2314 unique am_sid and 2320 unique iucn_sid.
+### NOTE: 2332 unique scientific names, unique am_sid and unique iucn_sid.
 ### Seasnakes are included in Reptiles (IUCN).  Two "mangroves" that are actually seagrasses.
 spp_am_v_iucn <- spp_am_v_iucn %>%
   group_by(am_sid, iucn_sid) %>%
@@ -100,12 +142,12 @@ spp_am_v_iucn <- spp_am_v_iucn %>%
   filter(spp_group != 'SEASNAKES') %>%
   select(-dupes)
 # length(unique(spp_am_v_iucn$sciname)); length(unique(spp_am_v_iucn$am_sid)); length(unique(spp_am_v_iucn$iucn_sid))
+### still same scinames and am_sid
 
 sciname_dupes <- spp_am_v_iucn %>%
   group_by(sciname) %>%
   filter(n() > 1)
 ### these seem to be spp with IUCN maps for synonyms.  Keep 'em in.
-
 
 write_csv(spp_am_v_iucn, file.path(dir_data, 'spp_am_v_iucn.csv'))
 
@@ -113,40 +155,52 @@ write_csv(spp_am_v_iucn, file.path(dir_data, 'spp_am_v_iucn.csv'))
 
 ```{r read_am_and_iucn_data, echo = FALSE, warning = FALSE, message = FALSE}
 
-spp_am_v_iucn <- read_csv(file.path(dir_data, 'spp_am_v_iucn.csv'))
+# spp_am_v_iucn <- read_csv(file.path(dir_data, 'spp_am_v_iucn.csv'))
 
 # Data files
 
-# iucn_spp_cells_files <- list.files(file.path(dir_anx, 'v2016/iucn_intersections'), full.names = TRUE)
+# iucn_spp_cells_files <- list.files(file.path(dir_anx, 'vAM_IUCN/iucn_intersections'), full.names = TRUE)
 # iucn_spp_cells_all <- lapply(iucn_spp_cells_files, FUN = function(x) {
-#   read_csv(x) %>% 
-#     mutate(id_no = as.integer(id_no)) %>%
-#     rename(iucn_sid = id_no)
+#   read_csv(x) %>%
+#     mutate(iucn_sid = as.integer(iucn_sid))
 #   }) %>%
-#   bind_rows()
+#   bind_rows() %>%
+#   setNames(tolower(names(.)))
 # 
-# iucn_spp_cells <- iucn_spp_cells_all %>%
+# spp_iucn_maps1 <- read_csv(file.path(dir_data, 'spp_iucn_maps_verified.csv')) %>%
+#   select(sciname, iucn_sid_ver = iucn_sid) %>%
+#   distinct()
+
+### because the 2015 shapefiles for reptiles and mammals were modified
+### to attach subpop IDs rather than parent IDs to subpops, we will undo
+### this here by overwriting the IDs based on parent IDs.
+# iucn_spp_cells_verified <- iucn_spp_cells_all %>%
+#   left_join(spp_iucn_maps1, by = 'sciname') %>%
+#   mutate(iucn_sid = iucn_sid_ver)
+# 
+# iucn_spp_cells <- iucn_spp_cells_verified %>%
 #   filter(iucn_sid %in% spp_am_v_iucn$iucn_sid) %>%
-#   filter(presence != 5)
+#   filter(presence != 5) %>%
+#   select(-iucn_sid_ver)
 
-### length(unique(iucn_spp_cells$iucn_sid)) results in 2271 species found...
-###   some species with no cells reported.  
-### spp_missing <- spp_am_v_iucn %>% filter(!iucn_sid %in% iucn_spp_cells$iucn_sid)
-###   49 spp with no cells reported.  Shapefile errors?
+## length(unique(iucn_spp_cells$iucn_sid)) #  2330 species found...
+##   some species with no cells reported.
+## spp_missing <- spp_am_v_iucn %>% filter(!iucn_sid %in% iucn_spp_cells$iucn_sid)
+##   2 spp with no cells reported.  Shapefile errors?
 # write_csv(iucn_spp_cells, file.path(dir_anx, 'vAM_IUCN/iucn_spp_cells_2015.csv'))
-
-message('Loading AquaMaps species to cell table.  This might take a few minutes.')
-am_spp_cells_all <- fread(file.path(dir_data_remote, 'aquamaps/d2015/csv/hcaf_sp_native_trunc.csv'), 
-                         showProgress = TRUE)
-am_spp_cells <- am_spp_cells_all %>%
-  rename(am_sid = speciesid, prob = probability) %>%
-  filter(am_sid %in% spp_am_v_iucn$am_sid)
-### length(unique(am_spp_cells$am_sid)) results in 2314 species found
-write_csv(am_spp_cells, file.path(dir_anx, 'vAM_IUCN/am_spp_cells_2015.csv'))
+# 
+# message('Loading AquaMaps species to cell table.  This might take a few minutes.')
+# am_spp_cells_all <- fread(file.path(dir_data_remote, 'aquamaps/d2015/csv/hcaf_sp_native_trunc.csv'),
+#                          showProgress = TRUE)
+# am_spp_cells <- am_spp_cells_all %>%
+#   rename(am_sid = speciesid, prob = probability) %>%
+#   filter(am_sid %in% spp_am_v_iucn$am_sid)
+# ### length(unique(am_spp_cells$am_sid)) # results in 2332 species found
+# write_csv(am_spp_cells, file.path(dir_anx, 'vAM_IUCN/am_spp_cells_2015.csv'))
 
 ```
 
-```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+``` {r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 ### Create files for species list with area info, both a complete list and a trimmed list
 
 loiczid_raster_file  <- file.path(dir_git, 'data/rasters/loiczid_raster.tif')
@@ -154,7 +208,7 @@ loiczid_raster       <- raster::raster(loiczid_raster_file)
 names(loiczid_raster) <- 'loiczid'
 
 data_file <- file.path(dir_data, 'spp_list_w_area_all.csv')
-reload <- FALSE
+reload <- TRUE
 if (!file.exists(data_file) | reload) {
 
   if(!exists('am_spp_cells'))
@@ -164,7 +218,7 @@ if (!file.exists(data_file) | reload) {
   
   ### species info list - scinames, IUCN species ID, AM species ID, category etc
   spp_list_base <- read_csv(file.path(dir_data, 'spp_am_v_iucn.csv'))
-  create_spp_list2(spp_list_base, data_file, am_spp_cells, iucn_spp_cells, loiczid_raster)
+  create_spp_list(spp_list_base, data_file, am_spp_cells, iucn_spp_cells, loiczid_raster)
   
 }
 
@@ -175,7 +229,7 @@ spp_list <- spp_list %>%
   mutate(sm_perc = ifelse(is.na(sm_perc), 0, sm_perc)) %>%
   filter(!area_iucn == 0)
   ### will ditch the ones with no IUCN area - formerly caused by DD species
-  ### being filtered out.  Now, none suffer this consequence.
+  ### being filtered out.  Now, only 2 suffer this consequence.
 
 ### attach group name text field, and occurcells field
 spp_list <- spp_list %>%

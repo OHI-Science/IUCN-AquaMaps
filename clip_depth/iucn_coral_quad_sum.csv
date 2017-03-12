@@ -1,9 +1,9 @@
 method,quad,quad_name,pct_quad
-original,q2,dist-aligned,0.6132596685082873
-original,q4,poorly aligned,0.04419889502762431
-original,q1,well-aligned,0.22375690607734808
-original,q3,area-aligned,0.11878453038674033
-200 m clip,q1,well-aligned,0.7624309392265194
-200 m clip,q3,area-aligned,0.049723756906077346
-200 m clip,q2,dist-aligned,0.17403314917127072
-200 m clip,q4,poorly aligned,0.013812154696132596
+original,q2,dist-aligned,0.5913705583756346
+original,q4,poorly aligned,0.0532994923857868
+original,q1,well-aligned,0.22081218274111675
+original,q3,area-aligned,0.13451776649746192
+200 m clip,q1,well-aligned,0.7411167512690355
+200 m clip,q3,area-aligned,0.0532994923857868
+200 m clip,q2,dist-aligned,0.18274111675126903
+200 m clip,q4,poorly aligned,0.02284263959390863

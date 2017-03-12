@@ -59,7 +59,7 @@ iucn_file <- file.path(dir_data, 'spp_iucn.csv')
 spp_iucn <- read_csv(iucn_file) 
 
 message('Getting IUCN maps list')
-iucn_maps_file <- file.path(dir_data, 'spp_iucn_maps.csv')
+iucn_maps_file <- file.path(dir_data, 'spp_iucn_maps_verified.csv')
 spp_iucn_maps <- read_csv(iucn_maps_file)
 
 ```
@@ -70,24 +70,16 @@ spp_am <- read_csv(file.path(dir_data, 'spp_am.csv')) %>%
   left_join(read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2015/csv/speciesoccursum.csv')) %>% 
               dplyr::select(am_sid = speciesid, class) %>%
               unique(), 
-            by = 'am_sid')
+            by = 'am_sid') %>%
+  mutate(paired_map = am_sid %in% spp_map_pairs$am_sid)
+### nrow(spp_am %>% filter(paired_map)) ### 2330 spp
 
-iucn_maps_class_all <- spp_iucn_maps %>% 
-  select(-iucn_subpop, -spp_group) %>%
-  distinct() %>% ### first, get rid of dupes due to subpopulations
-  mutate(class    = str_to_title(class),
-         am_match = sciname %in% spp_am$sciname)
-
-### next, identify spp scinames with matches in AM; if an iucn_sid has a match,
-### keep it; if there are multiple matches, keep the one with the fewest
-### instances of sciname (to keep more specific names...?)
-iucn_maps_class <- iucn_maps_class_all %>% 
-  group_by(sciname) %>%
-  mutate(sciname_count = n()) %>% ### for each sciname, figure out how many times it appears
-  group_by(iucn_sid) %>%
-  arrange(desc(am_match), sciname_count) %>% ### for each iucn_spp, put the AM matches on top; then...
-  filter(sciname == first(sciname)) %>% ### just keep the first instance of each iucn_spp
-  ungroup()
+iucn_maps_class <- spp_iucn_maps %>% 
+  select(-iucn_subpop, -name_verified, -spp_group) %>%
+  distinct() %>%
+  mutate(class      = str_to_title(class),
+         paired_map = iucn_sid %in% spp_map_pairs$iucn_sid)
+### nrow(iucn_maps_class %>% filter(paired_map)) ### 2330 spp
 
 taxa_iucn_all <- iucn_maps_class %>%
   filter(!is.na(class)) %>%           ### don't count the unknowns
@@ -98,7 +90,7 @@ taxa_iucn_all <- iucn_maps_class %>%
 
 taxa_iucn_solo <- iucn_maps_class %>%
   filter(!is.na(class)) %>%                 ### don't count the unknowns
-  filter(!sciname %in% spp_am$sciname) %>%  ### filter list to IUCN only
+  filter(!paired_map) %>%  ### filter list to IUCN only
   mutate(n_iucn_solo = n()) %>%             ### length of IUCN only list
   group_by(class) %>%
   summarize(n_iucn_class_solo = n(),
@@ -113,14 +105,14 @@ taxa_am_all <- spp_am %>%
 
 taxa_am_solo <- spp_am %>%
   filter(!class %in% c('Not assigned', 'null') & !is.na(class)) %>%
-  filter(!sciname %in% iucn_maps_class$sciname) %>%  ### filter list to AM only
+  filter(!paired_map) %>%  ### filter list to AM only
   mutate(n_am_solo = n()) %>%       ### length of AM only list
   group_by(class) %>%
   summarize(n_am_class_solo = n(),
             p_am_class_solo = round((n_am_class_solo/first(n_am_solo) * 100), 2))
 
 taxa_both <- spp_am %>%
-  filter(sciname %in% spp_iucn_maps$sciname) %>%
+  filter(paired_map) %>%
   filter(!class %in% c('Not assigned', 'null')) %>%
   mutate(n_both_tot = n()) %>%
   group_by(class) %>%
@@ -208,10 +200,10 @@ taxa_all_df <- taxa_df1 %>%
 
 taxa_df2 <- taxa_all_df %>%
   bind_rows(taxa_all_df %>%
-              mutate(class = ' ',
+              mutate(class = '',
                      start = 0,
                      end   = 0,
-                     n_total = NA)) %>%
+                     n_total = 0)) %>%
   bind_rows(taxa_df1 %>%
               select(-IUCN, -AquaMaps, -Paired) %>%
               arrange(desc(n_total))) %>%
@@ -222,28 +214,29 @@ taxa_df2 <- taxa_all_df %>%
                         start = 0,
                         end = 100)) %>%
   mutate(class = factor(class, levels = unique(.$class), ordered = TRUE),
-         n_label = ifelse(!is.na(n_total), paste0('n = ', n_total), ''),
+         n_label = ifelse(n_total > 0, paste0('n = ', n_total), ''),
          dataset = factor(dataset, levels = c('AquaMaps', 'Paired', 'IUCN'), ordered = TRUE))
 
 ### cut the labels for all but the first instance
-taxa_df2$n_label[duplicated(taxa_df2$class)] <- NA
+taxa_df2$n_label[duplicated(taxa_df2$class)] <- ''
 
 break_nums <- seq(0, 100, 20)
 
 dodge <- position_dodge(width = 0.1)
 
 bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
-  ggtheme_plot + 
-  theme(panel.grid.major.x = element_blank()) +
+  theme(panel.grid.major.x = element_blank(),
+        axis.text.x  = element_text(angle = 75, hjust = 1),
+        axis.title.y = element_text(hjust = 0)) +
   geom_linerange(aes(ymin = start, ymax = end, size = dataset),
                  position = position_dodge(width = 0.5)) +
   scale_size_manual(values = c('IUCN' = .5, 'AquaMaps' = .5, 'Paired' = 2.6)) +
   scale_color_manual(values = c('IUCN' = 'black', 'AquaMaps' = 'grey70', 'Paired' = 'black')) +
   geom_text(aes(label = n_label, y = 102),
             size = 2.4,
-            angle = 90, hjust = 0, color = 'grey30') +
-  theme(axis.text.x = element_text(angle = 75, hjust = 1),
-        axis.title.y = element_text(hjust = 0)) +
+            angle = 90,
+            hjust = 0,
+            color = 'grey30') +
   scale_y_continuous(expand = c(0, 0),
                      limits = c(0, 140),
                      breaks = break_nums,
@@ -291,8 +284,8 @@ break_nums <- seq(0, 100, 20)
 
 ### mongo plot time
 scatter_quadplot <- ggplot(spp_list_labs, aes(x = x, y = y)) +
-  ggtheme_plot + 
-  ### color the quadrant backgrounds:
+  theme(panel.grid.major.x = element_blank()) +
+        ### color the quadrant backgrounds:
   annotate("rect", xmin = area_align_mean, xmax = 100, ymin = dist_align_mean, ymax = 100, 
            alpha = .3, fill= "#4dac26")  + 
   annotate("rect", xmax = area_align_mean, xmin =   0, ymin = dist_align_mean, ymax = 100, 
@@ -356,8 +349,8 @@ scatter_quadplot <- scatter_quadplot +
 
 # print(scatter_quadplot)
 
-# ggsave(file.path(dir_fig, 'scatter_quadmap.png'),
-#        width = 19.05, height = 9, units = 'cm', dpi = 600)
+ggsave(file.path(dir_fig, 'scatter_quadmap.png'),
+       width = 19.05, height = 9, units = 'cm', dpi = 600)
 
 ```
 
@@ -440,7 +433,7 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants,
                                     y = pct_quad,
                                     fill = quad, 
                                     weight = pct_quad)) +
-  ggtheme_plot + 
+  theme(panel.grid.major.x = element_blank()) +
   geom_bar(stat = 'identity', alpha = 1) +
   scale_fill_manual(values = c('q1' = '#4dac26',
                                'q2' = '#b8e186', 
@@ -509,7 +502,7 @@ break_nums <- seq(0, 100, 20)
 
 ### mongo plot time
 scatter_quadplot_ex <- ggplot(spp_list_experts_labs, aes(x = x, y = y)) +
-  ggtheme_plot + 
+  theme(panel.grid.major.x = element_blank()) +
   ### color the quadrant backgrounds:
   annotate("rect", xmin = area_align_mean, xmax = 100, ymin = dist_align_mean, ymax = 100, 
            alpha = .3, fill= "#4dac26")  + 
@@ -674,8 +667,7 @@ break_nums <- seq(0, 100, 20)
 ### Plot the bar chart
 bar_spp_gp_quads_ex <- ggplot(spp_gp_quads_ex, 
                                 aes(x = spp_group_text, fill = quad, weight = pct_quad)) +
-  ggtheme_plot + 
-  # theme(panel.grid.major.y = element_blank()) +
+  theme(panel.grid.major.x = element_blank()) +
   geom_bar(stat = 'count', alpha = 1) +
   scale_fill_manual(values = c('q1' = '#4dac26', 
                                'q2' = '#b8e186', 

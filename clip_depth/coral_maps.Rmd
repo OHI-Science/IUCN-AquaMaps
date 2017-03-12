@@ -80,7 +80,7 @@ bath_df <-  read_csv(file.path(dir_git, 'clip_depth', 'bathy_cells.csv'), col_ty
 spp_depth <- read_csv(file.path(dir_git, 'clip_depth', 'coral_spp_depth.csv'))
 
 ### load iucn spp_cells
-coral_files <- list.files(file.path(dir_anx, 'v2016', 'iucn_intersections'), 
+coral_files <- list.files(file.path(dir_anx, 'vAM_IUCN', 'iucn_intersections'), 
                           pattern = 'CORAL*.*',
                           full.names = TRUE)
 coral_cells_iucn <- lapply(coral_files, read_csv) %>%
@@ -92,7 +92,8 @@ coral_cells_iucn <- lapply(coral_files, read_csv) %>%
 
 write_csv(coral_cells_iucn, file.path(dir_git, 'clip_depth', 'coral_cells_iucn.csv'))
 length(unique(coral_cells_iucn$iucn_sid))
-### NOTE: only 473 coral species with IUCN maps
+### NOTE: 562 coral species with IUCN maps
+
 ```
 
 
@@ -124,7 +125,6 @@ if(!file.exists(file.path(dir_git, 'clip_depth', 'coral_spp_depth.csv'))) {
   ### get paired species list
   paired_maps_file <- file.path(dir_data, 'spp_list_w_area_trimmed.csv')
   spp_map_pairs <- read_csv(paired_maps_file) %>%
-    filter(!is.na(popn_category)) %>% ### filter out unassessed species
     filter(!is.na(sm_perc))           ### filter out NA maps
   
   ### get full species list
@@ -158,8 +158,9 @@ if(!file.exists(file.path(dir_git, 'clip_depth', 'coral_spp_depth.csv'))) {
   
   write_csv(spp_depth, file.path(dir_git, 'clip_depth', 'coral_spp_depth.csv'))
   
-} else 
+} else {
   spp_depth <- read_csv(file.path(dir_git, 'clip_depth', 'coral_spp_depth.csv'))
+}
 
 summary(spp_depth)
  #    iucn_sid        habitat          paired_map        max_depth      shallow_str     shallow       
@@ -272,7 +273,6 @@ iucn_coral_areas <- coral_cells_iucn %>%
 ### get species list
 data_file <- file.path(dir_data, 'spp_list_w_area_trimmed.csv')
 spp_map_pairs <- read_csv(data_file) %>%
-  filter(!is.na(popn_category)) %>%   ### filter out unassessed species
   filter(!is.na(sm_perc))             ### filter out NA maps
 
 iucn_coral_areas <- iucn_coral_areas %>%
@@ -512,7 +512,7 @@ clipped_quads <- ggplot(iucn_coral_fixed %>%
                                                filter(d_perc > 100) %>% 
                                                .$iucn_sid)),
                     aes(x = a_ratio, y = d_perc, group = iucn_sid)) +
-  ggtheme_plot + 
+  theme(panel.grid.major.x = element_blank()) +
   ### color the quadrant backgrounds:
   annotate("rect", xmin = 54.5, xmax = 100, ymin = 63, ymax = 100,
            alpha = .3, fill= "#4dac26")  +
@@ -556,8 +556,9 @@ iucn_coral_fixed <- read_csv(file.path(dir_git, 'clip_depth', 'iucn_coral_fixed.
 
 ### identify quads based on original breaks from data_explore.Rmd
 
-area_align_mean <- 54.53334
-dist_align_mean <- 62.98212
+spp_list <- read_csv(file.path(dir_git, 'data/spp_list_w_area_trimmed.csv'))
+area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
+dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
 
 # iucn_sid  am_sid  sciname  area_am  area_iucn_shallow  area_overlap_shallow  sm_range_shallow  area_iucn_raw
 # area_overlap_raw  sm_range_raw  dist  perc  area  ratio  method
@@ -594,7 +595,6 @@ iucn_coral_quad_sum <- read_csv(file.path(dir_git, 'clip_depth', 'iucn_coral_qua
 ### Plot the bar chart
 barchart_coral_quads <- ggplot(iucn_coral_quad_sum, 
                                 aes(x = method, fill = quad, weight = pct_quad)) +
-  ggtheme_plot + 
   theme(panel.grid.major.y = element_blank()) +
   geom_bar(stat = 'count', alpha = 1) +
   scale_fill_manual(values = c('q4' = '#d01c8b', 
@@ -615,9 +615,9 @@ barchart_coral_quads <- ggplot(iucn_coral_quad_sum,
 
 print(barchart_coral_quads)
 
-# ggsave(plot = barchart_coral_quads,
-#        filename = file.path(dir_fig, 'barchart_coral_quads.png'),
-#        width = 19, height = 4, units = 'cm', dpi = 600)
+ggsave(plot = barchart_coral_quads,
+       filename = file.path(dir_fig, 'barchart_coral_quads.png'),
+       width = 19, height = 4, units = 'cm', dpi = 600)
 
 write_csv(iucn_coral_quad_sum, file.path(dir_git, 'clip_depth', 'iucn_coral_quad_sum.csv'))
 
