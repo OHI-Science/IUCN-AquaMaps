@@ -707,7 +707,7 @@ write_csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads_ex.csv'))
 
 ## Break down quadrants by risk category
 
-``` {r examine_risk_quartiles, echo = FALSE, eval = TRUE}
+``` {r examine_risk_quartiles, echo = FALSE, eval = FALSE}
 
 ### Summarize quadrant species list by species group (e.g. CORALS1)
 spp_risk_q1 <- spp_list_q1 %>%
@@ -835,6 +835,8 @@ binomial logistic regression model
 ## Count species occurrences as proxy for data poverty
 
 ``` {r count_occurrences_by_quad, echo = FALSE, warning = FALSE}
+
+spp_list_quads <- read_csv(file.path(dir_data, 'spp_list_quads.csv'))
 
 gbif_occur <- read_csv(file.path(dir_data, 'gbif_occurrence.csv'))
 obis_occur <- read_csv(file.path(dir_data, 'obis_occurrence.csv'))

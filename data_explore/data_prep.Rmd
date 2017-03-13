@@ -34,6 +34,7 @@ source('data_explore_fxns.R')
 
 
 ```{r verify_spp_names_in_shps, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+### Some species names in the shapefile polygons do not match the IUCN database names.  Fix this!
 
 spp_iucn_maps <- read_csv(file.path(dir_data, 'spp_iucn_maps.csv'))
 
@@ -64,6 +65,130 @@ spp_iucn_maps1 <- spp_iucn_maps %>%
   rename(sciname = sciname2) ### now just the API name by ID number
 
 write_csv(spp_iucn_maps1, file.path(dir_data, 'spp_iucn_maps_verified.csv'))
+
+```
+
+``` {r test_worrms_matching}
+
+library(worrms)
+spp_map_pairs <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
+
+spp_names <- spp_map_pairs$sciname
+
+iucn_maps_file <- file.path(dir_data, 'spp_iucn_maps_verified.csv')
+spp_iucn_maps <- read_csv(iucn_maps_file)
+
+spp_am_maps <- read_csv(file.path(dir_data, 'speciesoccursum.csv')) %>%
+  mutate(sciname = paste(str_trim(genus), str_trim(species)),
+         iucn_id = as.integer(iucn_id)) %>%
+  dplyr::select(am_sid = speciesid, sciname, reviewed, iucn_id)
+
+spp_am_ver <- lapply(spp_am_maps$sciname, FUN = function(x) {
+    y <- try(wm_records_names(x))
+    if (class(y) != 'try-error') {
+      return(as.data.frame(y))
+    } else {
+      return(data.frame(status = 'error'))
+    }
+  }) %>%
+  setNames(spp_am_maps$sciname) %>%
+  bind_rows(.id = 'sciname_orig')
+
+spp_am_ver1 <- spp_am_maps %>%
+  select(am_sid, sciname, iucn_id) %>%
+  left_join(spp_am_ver %>%
+    select(sciname_orig, sciname_worrms = scientificname, status, sciname_accepted = valid_name),
+    by = c('sciname' = 'sciname_orig')) %>%
+  distinct() %>%
+  mutate(am_name_ver = sciname == sciname_accepted)
+
+write_csv(spp_am_ver1, file.path(dir_git, 'data/sciname_lookups/am_worrms_verified.csv'))
+
+spp_iucn_ver <- lapply(spp_iucn_maps$sciname, FUN = function(x) {
+    y <- try(wm_records_names(x))
+    if (class(y) != 'try-error') {
+      return(as.data.frame(y))
+    } else {
+      return(data.frame(status = 'error'))
+    }
+  }) %>%
+  setNames(spp_iucn_maps$sciname) %>%
+  bind_rows(.id = 'sciname_orig')
+
+spp_iucn_ver1 <- spp_iucn_maps %>%
+  select(iucn_sid, sciname, spp_group) %>%
+  left_join(spp_iucn_ver %>%
+    select(sciname_orig, sciname_worrms = scientificname, status, sciname_accepted = valid_name),
+    by = c('sciname' = 'sciname_orig')) %>%
+  distinct() %>%
+  mutate(iucn_name_ver = sciname == sciname_accepted)
+
+write_csv(spp_iucn_ver1, file.path(dir_git, 'data/sciname_lookups/iucn_worrms_verified.csv'))
+
+
+### match by id first
+id_match <- inner_join(spp_iucn_ver1 %>%
+                         select(iucn_sid, iucn_sciname = sciname, iucn_sciname_accepted = sciname_accepted), 
+                       spp_am_ver1 %>%
+                         select(am_sid, iucn_id, am_sciname = sciname, am_sciname_accepted = sciname_accepted),
+                       by = c('iucn_sid' = 'iucn_id')) %>%
+  distinct()
+### 1960 matches; all distinct?
+# length(id_match$iucn_sid %>% unique()); length(id_match$am_sid %>% unique())
+# 1880 for both (same as prior method, which makes sense)
+
+### then match the rest by verified accepted name
+iucn_id_miss <- spp_iucn_ver1 %>%
+  filter(!iucn_sid %in% id_match$iucn_sid)
+am_id_miss <- spp_am_ver1 %>%
+  filter(!am_sid %in% id_match$am_sid)
+
+name_match_base <- inner_join(iucn_id_miss, am_id_miss, by = 'sciname')
+# length(name_match_base$iucn_sid %>% unique()); length(name_match_base$am_sid %>% unique())
+### additional 463; 452 are unique, for total of 2332, which matches old method
+name_match_worms <- inner_join(iucn_id_miss %>%
+                                 filter(!is.na(sciname_accepted)) %>%
+                                 rename(iucn_sciname = sciname), 
+                               am_id_miss %>%
+                                 filter(!is.na(sciname_accepted)) %>%
+                                 rename(am_sciname = sciname), 
+                               by = 'sciname_accepted') %>%
+  filter(status.x != 'unaccepted' & status.y != 'unaccepted') ### both unaccepted? too much uncertainty - eliminate
+
+# length(name_match_worms$iucn_sid %>% unique()); length(name_match_worms$am_sid %>% unique())
+### additional 480; 467 IUCN are unique, and 464 AquaMaps, for total of 2332, which makes sense
+worms_no_basename <- name_match_worms %>%
+  filter(!iucn_sid %in% name_match_base$iucn_sid) %>%
+  select(iucn_sid, am_sid, sciname = sciname_accepted)
+### matched by WoRMS names but not by basic names from original databases
+
+basename_no_worms <- name_match_base %>%
+  filter(!am_sid %in% name_match_worms$am_sid) %>%
+  select(iucn_sid, am_sid, sciname)
+### these are all ones with no WoRMS match for either database, but matched by original names
+
+id_match_cleaned <- id_match %>%
+  select(iucn_sid, am_sid, sciname = iucn_sciname) %>%
+  distinct()
+
+species_id_lookup <- id_match_cleaned %>%
+  mutate(match = 'id') %>%
+  bind_rows(name_match_base %>%
+              select(iucn_sid, am_sid, sciname) %>%
+              mutate(match = 'basic name')) %>%
+  bind_rows(worms_no_basename %>%
+              mutate(match = 'worms')) %>%
+  distinct()
+
+### 2351 species on the list
+x <- species_id_lookup %>%
+  filter(iucn_sid %in% species_id_lookup$iucn_sid[duplicated(species_id_lookup$iucn_sid)])
+y <- species_id_lookup %>%
+  filter(am_sid %in% species_id_lookup$am_sid[duplicated(species_id_lookup$am_sid)])
+
+write_csv(species_id_lookup, file.path(dir_git, 'data/species_id_lookup.csv'))
+# length(species_id_lookup$iucn_sid %>% unique()); length(species_id_lookup$am_sid %>% unique())
+### 2335 iucn_sid, 2335 am_sid
 
 ```
 
@@ -126,13 +251,15 @@ write_csv(spp_all, file.path(dir_data, 'spp_all_maps.csv'))
 ### that also have a non-NA AquaMaps ID code.
 spp_all <- read_csv(file.path(dir_data, 'spp_all_maps.csv'))
 
+species_id_lookup <- read_csv(file.path(dir_git, 'data/species_id_lookup.csv'))
+
 spp_am_v_iucn <- spp_all %>%
   select(-iucn_subpop) %>%
-  filter(!is.na(iucn_sid) & !is.na(am_sid)) %>%
+  filter(iucn_sid %in% species_id_lookup$iucn_sid & am_sid %in% species_id_lookup$am_sid) %>% #  & !is.na(am_sid)) %>%
   unique()
 
 # length(unique(spp_am_v_iucn$sciname)); length(unique(spp_am_v_iucn$am_sid)); length(unique(spp_am_v_iucn$iucn_sid))
-### NOTE: 2332 unique scientific names, unique am_sid and unique iucn_sid.
+### NOTE: 23325 unique scientific names, unique am_sid and unique iucn_sid.
 ### Seasnakes are included in Reptiles (IUCN).  Two "mangroves" that are actually seagrasses.
 spp_am_v_iucn <- spp_am_v_iucn %>%
   group_by(am_sid, iucn_sid) %>%
@@ -145,7 +272,7 @@ spp_am_v_iucn <- spp_am_v_iucn %>%
 ### still same scinames and am_sid
 
 sciname_dupes <- spp_am_v_iucn %>%
-  group_by(sciname) %>%
+  group_by(am_sid) %>%
   filter(n() > 1)
 ### these seem to be spp with IUCN maps for synonyms.  Keep 'em in.
 
@@ -250,48 +377,49 @@ write_csv(spp_list, file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 
 ``` {r counts_spp_all_observations, echo = FALSE}
 
-spp_all <- read_csv(file.path(dir_data, 'spp_all.csv'))
+spp_map_pairs <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
 
-# library(rgbif)
+library(rgbif)
 
 # system.time({
-#   x <- occ_search(scientificName = spp_all$sciname[1:100], fields = 'minimal', limit = 1)
+#   x <- occ_search(scientificName = spp_map_pairs$sciname, fields = 'minimal', limit = 1)
 #   ### seems linear - 10 names ~ 2.5 sec, 100 names ~ 25 sec, 1000 names, ~250 sec
 #   ### so 30000 names ~ 7500 sec or 2 hours
 # })
-# y <- sapply(x, function(x) x$meta$count)
+# y <- sapply(x, function(x) x$meta$count) %>%
+#   unlist()
 # gbif_occur <- data.frame(sciname = names(y), gbif_occ = y)
 # 
-# gbif_occur <- gbif_occur %>% 
-#   left_join(spp_all %>%
-#               select(iucn_sid, am_sid, sciname),
+# gbif_occur <- spp_map_pairs %>%
+#   select(iucn_sid, am_sid, sciname) %>%
+#   left_join(gbif_occur,
 #             by = 'sciname') %>%
-#   left_join(read_csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv')) %>%
+#   left_join(read_csv(file.path(dir_data_remote, 'aquamaps/d2015/csv/speciesoccursum.csv')) %>%
 #                        select(am_sid = speciesid, occurcells),
 #                      by = 'am_sid')
-
-# plot(ln_obs ~ ln_occurcells, data = gbif_occur)
-# plot(obs ~ occurcells, data = gbif_occur)
-# print(summary(lm(obs ~ occurcells, data = gbif_occur)))
-
+# 
+# # plot(gbif_occ ~ occurcells, data = gbif_occur)
+# # print(summary(lm(obs ~ occurcells, data = gbif_occur)))
+# 
 # write_csv(gbif_occur, file.path(dir_data, 'gbif_occurrence.csv'))
-gbif_occur <- read_csv(file.path(dir_data, 'gbif_occurrence.csv'))
+# # gbif_occur <- read_csv(file.path(dir_data, 'gbif_occurrence.csv'))
 
 # source('obis_count.R')
-# scinames <- spp_all$sciname
+# scinames <- spp_map_pairs$sciname
 # 
-# obis_occur <- obis_count(scinames)
-# obis_occur <- obis_count(scinames[26500:26600], verbose = TRUE)
+# obis_occur <- obis_count(scinames, verbose = TRUE)
+# # obis_occur <- obis_count(scinames[1:10], verbose = TRUE)
 # 
-# obis_occur <- obis_occur %>% 
-#   left_join(spp_all %>%
-#               select(iucn_sid, am_sid, sciname),
+# obis_occur <- spp_map_pairs %>%
+#   select(iucn_sid, am_sid, sciname) %>%
+#   left_join(obis_occur,
 #             by = 'sciname') %>%
-#   left_join(read_csv(file.path(dir_data_remote, 'aquamaps/v2015/csv/speciesoccursum.csv')) %>%
+#   left_join(read_csv(file.path(dir_data_remote, 'aquamaps/d2015/csv/speciesoccursum.csv')) %>%
 #                        select(am_sid = speciesid, occurcells),
 #                      by = 'am_sid')
 # 
 # write_csv(obis_occur, file.path(dir_data, 'obis_occurrence.csv'))
-obis_occur <- read_csv(file.path(dir_data, 'obis_occurrence.csv'))
+# # obis_occur <- read_csv(file.path(dir_data, 'obis_occurrence.csv'))
 
 ```
+
