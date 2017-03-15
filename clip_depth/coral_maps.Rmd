@@ -546,6 +546,9 @@ ggsave(plot = clipped_quads,
        filename = file.path(dir_fig, 'si_scatter_quadmap_corals.png'), device = 'png',
        width = 19, height = 9, units = 'cm', dpi = 600)
 
+ggsave(plot = clipped_quads,
+       filename = file.path(dir_fig, 'si_scatter_quadmap_corals.tif'), device = 'tiff',
+       width = 19, height = 9, units = 'cm', dpi = 600)
 
 ```
 
@@ -577,19 +580,22 @@ iucn_coral_quads <- iucn_coral_fixed %>%
          pct_quad = n_quad/n_total) %>%
   ungroup()
 
-quad_names <- data.frame('quad' = c('q1', 'q2', 'q3', 'q4'),
-                         'quad_name' = factor(c('well-aligned', 'dist-aligned', 
-                                                'area-aligned', 'poorly aligned'),
+quad_names <- data.frame('quad' = c('q4', 'q3', 'q2', 'q1'),
+                         'quad_name' = factor(c('poorly aligned', 
+                                                'area-aligned', 
+                                                'dist-aligned',
+                                                'well-aligned'),
                                              ordered = TRUE))
 
-iucn_coral_quads <- iucn_coral_quads %>%
-  left_join(quad_names, by = 'quad')
+iucn_coral_quads1 <- iucn_coral_quads %>%
+  left_join(quad_names, by = 'quad') %>%
+  mutate(quad = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'), ordered = TRUE))
 
-write_csv(iucn_coral_quads, file.path(dir_git, 'clip_depth', 'iucn_coral_quads.csv'))
+write_csv(iucn_coral_quads1, file.path(dir_git, 'clip_depth', 'iucn_coral_quads.csv'))
 
 break_nums <- seq(0, 100, 20)
 
-iucn_coral_quad_sum <- read_csv(file.path(dir_git, 'clip_depth', 'iucn_coral_quads.csv')) %>%
+iucn_coral_quad_sum <- iucn_coral_quads1 %>%
   dplyr::select(method, quad, quad_name, pct_quad) %>%
   distinct()
 ### Plot the bar chart
@@ -601,7 +607,8 @@ barchart_coral_quads <- ggplot(iucn_coral_quad_sum,
                                'q3' = '#f1b6da', 
                                'q2' = '#b8e186',
                                'q1' = '#4dac26'),
-                    labels = quad_names$quad_name) +
+                    labels = quad_names$quad_name,
+                    guide = guide_legend(reverse = TRUE)) +
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 1),
                      breaks = break_nums/100,
