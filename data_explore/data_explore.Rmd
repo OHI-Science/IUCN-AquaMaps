@@ -86,21 +86,84 @@ iucn_maps_class <- spp_iucn_maps %>%
 
 spp_class_all <- am_maps_class %>%
   full_join(iucn_maps_class, by = 'iucn_sid') %>%
-  mutate(am_class = ifelse(am_class %in% c('null', 'not assigned'), NA, am_class),
-         class    = if_else(is.na(am_class), iucn_class, am_class))
+  mutate(am_class = ifelse(tolower(am_class) %in% c('null', 'not assigned'), NA, am_class),
+         class    = ifelse(identical(iucn_class, am_class), am_class, NA),
+         class    = ifelse(is.na(class & !is.na(iucn_class)), iucn_class, am_class))
 
-### Fix some missing class values
-# spp_class_all1 %>% filter(is.na(class))
-#       am_sid                   sciname am_class iucn_sid sciname_iucn iucn_class class
-# 1  Fis-22442 Metapenaeopsis tarawensis     <NA>       NA         <NA>       <NA>  <NA> # Malacostraca
-# 2 Fis-170350          Oenopota eriopis     <NA>       NA         <NA>       <NA>  <NA> # Gastropoda
-# 3 Fis-170316          Yarica hyalosoma     <NA>       NA         <NA>       <NA>  <NA> # Actinopterygii
+### NAs due to null or not assigned Aquamaps species.
+# spp_class_na <- spp_class_all %>%
+#   filter(is.na(class)) %>%
+#   select(am_sid, sciname)
+# 
+# spp_class_from_worrms <- data.table()
+# for (i in seq_along(spp_class_na$sciname)) { ## i <- 1
+#   am_sid  = spp_class_na$am_sid[i]
+#   sciname = spp_class_na$sciname[i]
+#   print(paste(i, sciname, sep = ' '))
+#   x <- try(worrms::wm_records_taxamatch(name = spp_class_na$sciname[i]))
+#   if(class(x) == 'try-error') {
+#     x <- data.frame('am_sid'  = am_sid,
+#                     'sciname' = sciname,
+#                     'result'  = 'try-error')
+#   } else {
+#     x <- x %>%
+#       as.data.frame() %>%
+#       select(scientificname, valid_name, class, phylum, kingdom) %>%
+#       mutate(sciname = sciname,
+#              am_sid  = am_sid)
+#   }
+#   spp_class_from_worrms <- bind_rows(spp_class_from_worrms, x)
+# }
+# 
+# ### still a few NAs:
+# spp_class_from_worrms %>% filter(result == 'try-error') %>% select(am_sid, sciname)
+# # Fis-170350	Oenopota eriopis			
+# # Fis-170316	Yarica hyalosoma			
+# # ITS-156736	Loxosoma murmanica
+# spp_class_from_worrms1 <- spp_class_from_worrms %>%
+#   mutate(class = case_when(
+#     is.na(.$class) & .$am_sid == 'Fis-170350' ~ 'Gastropoda', ### from ITIS
+#     is.na(.$class) & .$am_sid == 'Fis-170316' ~ 'Actinopterygii', ### from FishBase: cardinalfish
+#     is.na(.$class) & .$am_sid == 'ITS-156736' ~ 'Entoprocta', ### from ITIS; Loxosomella murmanica
+#     TRUE ~ .$class))
+# write_csv(spp_class_from_worrms, file.path(dir_data, 'sciname_lookups/spp_class_from_worrms.csv'))
+
+# spp_class_from_itis <- data.table()
+# for (i in seq_along(spp_class_na$sciname)) { ## i <- 3
+#   am_sid  = spp_class_na$am_sid[i]
+#   sciname = spp_class_na$sciname[i]
+#   print(paste(i, sciname, sep = ' '))
+#   x <- taxize::classification(spp_class_na$sciname[i], 'itis')[[1]]
+#   if(is.na(x)) {
+#     y <- data.frame(am_sid  = am_sid,
+#                   sciname = sciname,
+#                   result = 'error')
+#   } else {
+#     class <- x$name[x$rank == 'class']
+#     phylum <- x$name[x$rank == 'phylum']
+#     kingdom <- x$name[x$rank == 'kingdom']
+#     y <- data.frame(am_sid  = am_sid,
+#                     sciname = sciname,
+#                     class_itis = ifelse(length(class > 0), x$name[x$rank == 'class'], NA),
+#                     phylum_itis = ifelse(length(phylum > 0), x$name[x$rank == 'phylum'], NA),
+#                     kingdom_itis = ifelse(length(kingdom > 0), x$name[x$rank == 'kingdom'], NA))
+#   }
+#   spp_class_from_itis <- bind_rows(spp_class_from_itis, y)
+# }
+# write_csv(spp_class_from_itis, file.path(dir_data, 'sciname_lookups/spp_class_from_itis.csv'))
+
+spp_class_fill <- read_csv(file.path(dir_data, 'sciname_lookups/spp_class_from_worrms.csv')) %>%
+  select(-result) %>%
+  full_join(read_csv(file.path(dir_data, 'sciname_lookups/spp_class_from_itis.csv')) %>%
+                       select(-result),
+            by = c('sciname', 'am_sid')) %>%
+  mutate(class = ifelse(!is.na(class_worrms), class_worrms, class_itis)) %>%
+  select(am_sid, sciname, class)
+### NOTE: still some NAs; these are all class Animalia
+
 spp_class_all <- spp_class_all %>%
-  mutate(class = case_when(
-    is.na(.$class) & .$am_sid == 'Fis-22442' ~ 'Malacostraca',
-    is.na(.$class) & .$am_sid == 'Fis-170350' ~ 'Gastropoda',
-    is.na(.$class) & .$am_sid == 'Fis-170316' ~ 'Actinopterygii',
-    TRUE ~ .$class))
+  filter(!is.na(class)) %>%
+  bind_rows(spp_class_fill)
   
 write_csv(spp_class_all, file.path(dir_data, 'spp_class_all.csv'))
 
@@ -150,7 +213,7 @@ taxa_all <- taxa_am_all %>%
   full_join(taxa_iucn_all,  by = 'class') %>%
   full_join(taxa_iucn_solo, by = 'class') %>%
   full_join(taxa_both,      by = 'class') %>%
-  mutate(small_class = (is.na(n_iucn_class_all) & p_am_class_all < 0.5))
+  mutate(small_class = (is.na(n_iucn_class_all) & p_am_class_all < 0.5) | is.na(class))
 
 taxa_df <- taxa_all %>%
   filter(!small_class) %>%
@@ -159,21 +222,32 @@ taxa_df <- taxa_all %>%
 class_to_kingdom <- read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data',
                                        'aquamaps/d2015/csv/speciesoccursum.csv')) %>%
   select(class, kingdom, phylum) %>%
+  bind_rows(read_csv(file.path(dir_data, 'sciname_lookups/spp_class_from_worrms.csv')) %>%
+              select(class = class_worrms, kingdom = kingdom_worrms, phylum = phylum_worrms)) %>%
+  bind_rows(read_csv(file.path(dir_data, 'sciname_lookups/spp_class_from_itis.csv')) %>%
+              select(class = class_itis, kingdom = kingdom_itis, phylum = phylum_itis)) %>%
   mutate(class = str_to_title(class)) %>%
-  distinct()
+  select(-phylum) %>% ### avoid duplicates
+  filter(!is.na(kingdom)) %>% ### NA class doesn't match with kingdom or phylum
+  distinct() ### All remaining NAs are Animalia
 
 taxa_other <- taxa_all %>%
   filter(small_class) %>%
   select(-small_class) %>%
   left_join(class_to_kingdom,
             by = 'class') %>%
-  mutate(class = paste('other', str_to_title(kingdom), sep = ' ')) %>%
-  select(-kingdom, -phylum) %>%
+  mutate(kingdom = ifelse(is.na(class), 'Animalia', kingdom),
+         class = paste('other', str_to_title(kingdom), sep = ' ')) %>%
+  select(-kingdom) %>%
   group_by(class) %>%
   summarize(n_am_class_all = sum(n_am_class_all),
             p_am_class_all = sum(p_am_class_all),
             n_am_class_solo = sum(n_am_class_solo),
             p_am_class_solo = sum(p_am_class_solo))
+
+# taxa_other$n_am_class_all %>% sum(na.rm = TRUE) ### 968
+# taxa_df$n_am_class_all %>% sum(na.rm = TRUE) ### 21921
+### All AM species accounted for!
 
 write_csv(taxa_df, file.path(dir_data, 'taxa_df.csv'))
 write_csv(taxa_other, file.path(dir_data, 'taxa_other.csv'))
@@ -274,7 +348,7 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
        y = '% of mapped species',
        fill = 'Dataset')
 
-# print(bar_taxa)
+print(bar_taxa)
 ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
        width = 19.05, height = 7, units = 'cm', dpi = 600)
 

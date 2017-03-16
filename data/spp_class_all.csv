@@ -7141,7 +7141,6 @@ Fis-27273,Pythonichthys macrurus,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-27274,Pythonichthys microphthalmus,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-49781,Quassiremus ascensionis,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-24925,Quietula y-cauda,Actinopterygii,NA,NA,NA,Actinopterygii
-Fis-22442,Metapenaeopsis tarawensis,NA,NA,NA,NA,Malacostraca
 Fis-24927,Rachycentron canadum,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-30559,Raconda russeliana,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-32192,Racovitzia glacialis,Actinopterygii,NA,NA,NA,Actinopterygii
@@ -8813,7 +8812,6 @@ Fis-53290,Ventrifossa rhipidodorsalis,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-143997,Ventrifossa saikaiensis,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-141515,Ventrifossa sazonovi,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-31894,Verasper moseri,Actinopterygii,NA,NA,NA,Actinopterygii
-Fis-170350,Oenopota eriopis,NA,NA,NA,NA,Gastropoda
 Fis-144360,Vespicula trachinoides,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-29213,Vincentia conspersa,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-29215,Vincentia punctata,Actinopterygii,NA,NA,NA,Actinopterygii
@@ -8870,7 +8868,6 @@ Fis-25198,Xyrichtys novacula,Actinopterygii,187696,Xyrichtys novacula,Actinopter
 Fis-30093,Xyrichtys splendens,Actinopterygii,187670,Xyrichtys splendens,Actinopterygii,Actinopterygii
 Fis-30908,Xystreurys liolepis,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-141413,Xystreurys rasile,Actinopterygii,NA,NA,NA,Actinopterygii
-Fis-170316,Yarica hyalosoma,NA,NA,NA,NA,Actinopterygii
 Fis-32658,Yarrella blackfordi,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-120428,Yongeichthys criniger,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-27943,Zabidius novemaculeatus,Actinopterygii,NA,NA,NA,Actinopterygii
@@ -12043,10 +12040,6 @@ Fis-161814,Zenopsis stabilispinosa,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-146549,Zesticelus bathybius,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-63280,Zesticelus ochotensis,Actinopterygii,NA,NA,NA,Actinopterygii
 Fis-159561,Zoramia flebila,Actinopterygii,NA,NA,NA,Actinopterygii
-W-Pho-128548,Phoronis hippocrepia,Not assigned,NA,NA,NA,Not assigned
-W-Pho-128547,Phoronis australis,Not assigned,NA,NA,NA,Not assigned
-W-Pho-128553,Phoronopsis albomaculata,Not assigned,NA,NA,NA,Not assigned
-W-Pho-128555,Phoronopsis harmeri,Not assigned,NA,NA,NA,Not assigned
 ITS-552926,Thymopsis nilenta,Malacostraca,170024,Thymopsis nilenta,Malacostraca,Malacostraca
 ITS-563986,Symbion pandora,Eucycliophora,NA,NA,NA,Eucycliophora
 W-Msc-420543,Gastropteron chacmol,Gastropoda,NA,NA,NA,Gastropoda
@@ -14476,8 +14469,6 @@ W-Msc-410348,Cirrothauma magna,Cephalopoda,NA,NA,NA,Cephalopoda
 SLB-71266,Sepia limata,Cephalopoda,NA,NA,NA,Cephalopoda
 W-Msc-342384,Robsonella fontaniana,Cephalopoda,NA,NA,NA,Cephalopoda
 SLB-71104,Octopus minor,Cephalopoda,NA,NA,NA,Cephalopoda
-W-Gtr-114519,Halichaetonotus marivagus,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114520,Halichaetonotus paradoxus,Not assigned,NA,NA,NA,Not assigned
 W-Msc-157022,Illex oxygonius,Cephalopoda,NA,NA,NA,Cephalopoda
 W-Msc-341951,Octopus bimaculatus,Cephalopoda,NA,NA,NA,Cephalopoda
 W-Msc-342017,Octopus penicillifer,Cephalopoda,NA,NA,NA,Cephalopoda
@@ -14511,33 +14502,6 @@ W-Msc-386377,Placiphorella velata,Polyplacophora,NA,NA,NA,Polyplacophora
 W-Msc-386780,Chiton marmoratus,Polyplacophora,NA,NA,NA,Polyplacophora
 W-Msc-152651,Chiton tuberculatus,Polyplacophora,NA,NA,NA,Polyplacophora
 W-Msc-386334,Tonicia schrammi,Polyplacophora,NA,NA,NA,Polyplacophora
-SLB-67871,Chaetonotus lacunosus,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114567,Xenotrichula punctata,Not assigned,NA,NA,NA,Not assigned
-SLB-67776,Chaetonotus aegilonensis,Not assigned,NA,NA,NA,Not assigned
-SLB-67788,Chaetonotus apechochaetus,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-247796,Halichaetonotus decipiens,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-265513,Dactylopodola mesotyphle,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114587,Dolichodasys elongatus,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114593,Mesodasys adenotubulatus,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114615,Urodasys viviparus,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114620,Diplodasys ankeli,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114629,Platydasys maximus,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114630,Platydasys ocellatus,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114636,Pseudostomella etrusca,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114637,Pseudostomella roscovita,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114642,Ptychostomella tyrrhenica,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-247814,Tetranchyroderma cirrophorum,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114650,Tetranchyroderma heterotubulatum,Not assigned,NA,NA,NA,Not assigned
-SLB-68369,Tetranchyroderma hirtum,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-247818,Tetranchyroderma megastomum,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114659,Tetranchyroderma papii,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-265587,Tetranchyroderma polyprobolostomum,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114662,Tetranchyroderma quadritentaculatum,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114667,Tetranchyroderma thysanophorum,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114668,Tetranchyroderma tribolosum,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114674,Thaumastoderma mediterraneum,Not assigned,NA,NA,NA,Not assigned
-W-Gtr-114675,Thaumastoderma ramuliferum,Not assigned,NA,NA,NA,Not assigned
-SLB-68441,Turbanella bocqueti,Not assigned,NA,NA,NA,Not assigned
 W-Sca-344480,Polyschides sutherlandi,Scaphopoda,NA,NA,NA,Scaphopoda
 W-Sca-344592,Omniglypta cerina,Scaphopoda,NA,NA,NA,Scaphopoda
 W-Sca-344233,Laevidentalium erectum,Scaphopoda,NA,NA,NA,Scaphopoda
@@ -14580,13 +14544,6 @@ W-Sca-344379,Gadila watsoni,Scaphopoda,NA,NA,NA,Scaphopoda
 W-Sca-344289,Cadulus obesus,Scaphopoda,NA,NA,NA,Scaphopoda
 W-Sca-344358,Gadila perpusilla,Scaphopoda,NA,NA,NA,Scaphopoda
 W-Sca-344293,Cadulus platensis,Scaphopoda,NA,NA,NA,Scaphopoda
-URM-M-1265,Pliciloricus enigmaticus,Not assigned,NA,NA,NA,Not assigned
-URM-M-1264,Pliciloricus dubius,Not assigned,NA,NA,NA,Not assigned
-URM-M-1269,Pliciloricus orphanus,Not assigned,NA,NA,NA,Not assigned
-W-Kin-265848,Cateria styx,Not assigned,NA,NA,NA,Not assigned
-W-Kin-101115,Echinoderes gerardi,Not assigned,NA,NA,NA,Not assigned
-W-Kin-265080,Echinoderes pilosus,Not assigned,NA,NA,NA,Not assigned
-W-Kin-101122,Echinoderes riedli,Not assigned,NA,NA,NA,Not assigned
 W-Sca-344428,Antalis berryi,Scaphopoda,NA,NA,NA,Scaphopoda
 W-Sca-344446,Antalis pretiosa,Scaphopoda,NA,NA,NA,Scaphopoda
 W-Sca-344444,Antalis pilsbryi,Scaphopoda,NA,NA,NA,Scaphopoda
@@ -14612,44 +14569,14 @@ SLB-88127,Aspidosiphon laevis,Phascolosomatidea,NA,NA,NA,Phascolosomatidea
 SLB-88283,Themiste pyroides,Sipunculidea,NA,NA,NA,Sipunculidea
 W-Bra-235385,Novocrania anomala,Inarticulata,NA,NA,NA,Inarticulata
 W-Bra-104052,Cryptopora gnomon,Articulata,NA,NA,NA,Articulata
-W-Cha-105468,Spadella cephaloptera,Not assigned,NA,NA,NA,Not assigned
-URM-2-1473,Bonellia viridis,Not assigned,NA,NA,NA,Not assigned
-ITS-156736,Loxosoma murmanica,Not assigned,NA,NA,NA,Not assigned
 W-Bra-235615,Terebratalia transversa,Articulata,NA,NA,NA,Articulata
-W-Cha-266812,Paraspadella nana,Not assigned,NA,NA,NA,Not assigned
-W-Cha-266815,Paraspadella schizoptera,Not assigned,NA,NA,NA,Not assigned
 W-Bra-235425,Compsothyris racovitzae,Articulata,NA,NA,NA,Articulata
 W-Bra-235514,Abyssothyris wyvillei,Articulata,NA,NA,NA,Articulata
-URM-2-1519,Sluiterina sibogae,Not assigned,NA,NA,NA,Not assigned
 W-Bra-104060,Gwynia capsula,Articulata,NA,NA,NA,Articulata
-W-Cha-105414,Eukrohnia bathypelagica,Not assigned,NA,NA,NA,Not assigned
-W-Cha-105415,Eukrohnia fowleri,Not assigned,NA,NA,NA,Not assigned
-W-Cha-266705,Aidanosagitta johorensis,Not assigned,NA,NA,NA,Not assigned
-W-Cha-266709,Aidanosagitta oceania,Not assigned,NA,NA,NA,Not assigned
-W-Cha-105431,Caecosagitta macrocephala,Not assigned,NA,NA,NA,Not assigned
-SLB-30821,Parasagitta euneritica,Not assigned,NA,NA,NA,Not assigned
-W-Cha-266255,Parasagitta peruviana,Not assigned,NA,NA,NA,Not assigned
-W-Cha-266256,Parasagitta popovicii,Not assigned,NA,NA,NA,Not assigned
-URM-M-1272,Pliciloricus profundus,Not assigned,NA,NA,NA,Not assigned
-URM-M-1275,Rugiloricus carolinensis,Not assigned,NA,NA,NA,Not assigned
-URM-M-1276,Rugiloricus cauliculus,Not assigned,NA,NA,NA,Not assigned
 URM-M-119,Bathyctena chuni,Tentaculata,NA,NA,NA,Tentaculata
 URM-M-181,Bathocyroe fosteri,Tentaculata,NA,NA,NA,Tentaculata
 URM-M-196,Mnemiopsis leidyi,Tentaculata,NA,NA,NA,Tentaculata
 URM-M-208,Leucothea pulchra,Tentaculata,NA,NA,NA,Tentaculata
-W-Gtd-265620,Austrognatharia pecten,Not assigned,NA,NA,NA,Not assigned
-W-Gtd-265629,Austrognathia nannulifera,Not assigned,NA,NA,NA,Not assigned
-W-Gtd-114734,Gnathostomula axi,Not assigned,NA,NA,NA,Not assigned
-W-Gtd-265643,Gnathostomula peregrina,Not assigned,NA,NA,NA,Not assigned
-W-Gtd-114738,Labidognathia longicollis,Not assigned,NA,NA,NA,Not assigned
-W-Gtd-266026,Tenuignathia rikerae,Not assigned,NA,NA,NA,Not assigned
-SLB-68543,Haplognathia rosacea,Not assigned,NA,NA,NA,Not assigned
-W-Gtd-114745,Haplognathia rosea,Not assigned,NA,NA,NA,Not assigned
-W-Gtd-114746,Haplognathia ruberrima,Not assigned,NA,NA,NA,Not assigned
-W-Gtd-265884,Cosmognathia arcus,Not assigned,NA,NA,NA,Not assigned
-W-Gtd-265886,Cosmognathia manubrium,Not assigned,NA,NA,NA,Not assigned
-W-Gtd-265654,Pterognathia ctenifera,Not assigned,NA,NA,NA,Not assigned
-W-Gtd-265661,Pterognathia ugera,Not assigned,NA,NA,NA,Not assigned
 URM-2-4248,Balanoglossus clavigerus,Enteropneusta,NA,NA,NA,Enteropneusta
 URM-2-4308,Cephalodiscus gracilis,Pterobranchia,NA,NA,NA,Pterobranchia
 URM-2-4316,Cephalodiscus solidus,Pterobranchia,NA,NA,NA,Pterobranchia
@@ -15056,23 +14983,9 @@ W-Hol-174058,Cladodactyla crocea,Holothuroidea,NA,NA,NA,Holothuroidea
 W-Msc-181361,Venerupis dura,Bivalvia,NA,NA,NA,Bivalvia
 SLB-89754,Cassis tessellata,Gastropoda,NA,NA,NA,Gastropoda
 W-Msc-225279,Natica fulminea,Gastropoda,NA,NA,NA,Gastropoda
-ITS-708795,Loxosoma pectinaricola,Not assigned,NA,NA,NA,Not assigned
-ITS-708796,Loxosoma rhodinicola,Not assigned,NA,NA,NA,Not assigned
 SLB-92338,Patella safiana,Gastropoda,NA,NA,NA,Gastropoda
 W-Msc-224255,Strombus latus,Gastropoda,NA,NA,NA,Gastropoda
-ITS-708797,Loxosomella elegans,Not assigned,NA,NA,NA,Not assigned
-ITS-708798,Loxosomella similis,Not assigned,NA,NA,NA,Not assigned
-ITS-708799,Loxosomella polita,Not assigned,NA,NA,NA,Not assigned
 SLB-92367,Apolymetis ephippium,Bivalvia,NA,NA,NA,Bivalvia
-ITS-708754,Loxosomella marsypos,Not assigned,NA,NA,NA,Not assigned
-ITS-708801,Loxosomella harmeri,Not assigned,NA,NA,NA,Not assigned
-ITS-708803,Loxosomella nitschei,Not assigned,NA,NA,NA,Not assigned
-ITS-708805,Loxosomella phascolosomata,Not assigned,NA,NA,NA,Not assigned
-ITS-708806,Loxosomella fauveli,Not assigned,NA,NA,NA,Not assigned
-ITS-708716,Loxosomella compressa,Not assigned,NA,NA,NA,Not assigned
-ITS-708794,Loxosomella nordgaardi,Not assigned,NA,NA,NA,Not assigned
-ITS-708808,Loxosomella discopoda,Not assigned,NA,NA,NA,Not assigned
-ITS-708887,Loxosomella obesa,Not assigned,NA,NA,NA,Not assigned
 SLB-92490,Corymorpha gracilis,Hydrozoa,NA,NA,NA,Hydrozoa
 W-Hyd-291318,Zyzzyzus warreni,Hydrozoa,NA,NA,NA,Hydrozoa
 W-Hyd-117547,Eudendrium fragile,Hydrozoa,NA,NA,NA,Hydrozoa
@@ -15207,11 +15120,9 @@ W-Msc-140249,Scutopus robustus,Aplacophora,NA,NA,NA,Aplacophora
 W-Msc-567558,Cadlina luarna,Gastropoda,NA,NA,NA,Gastropoda
 W-Msc-224346,Tyrinna evelinae,Gastropoda,NA,NA,NA,Gastropoda
 W-Msc-534076,Embletonia gracilis,Gastropoda,NA,NA,NA,Gastropoda
-ITS-708791,Loxosoma significans,Not assigned,NA,NA,NA,Not assigned
 W-Msc-391075,Meiomenia arenicola,Aplacophora,NA,NA,NA,Aplacophora
 SLB-95116,Bathystyeloides magnus,Ascidiacea,NA,NA,NA,Ascidiacea
 SLB-95117,Monandrocarpa abyssa,Ascidiacea,NA,NA,NA,Ascidiacea
-W-Cha-105463,Solidosagitta zetesios,Not assigned,NA,NA,NA,Not assigned
 W-Msc-340759,Ocheyoherpia lituifera,Aplacophora,NA,NA,NA,Aplacophora
 URM-2-2430,Lissoclinum timorense,Ascidiacea,NA,NA,NA,Ascidiacea
 W-Msc-140859,Dorymenia sarsii,Aplacophora,NA,NA,NA,Aplacophora
@@ -15610,7 +15521,6 @@ SLB-100777,Galeomma layardi,Bivalvia,NA,NA,NA,Bivalvia
 W-Bch-440051,Cryptodromia marquesas,Malacostraca,NA,NA,NA,Malacostraca
 W-Bch-440044,Cryptodromia coronata,Malacostraca,NA,NA,NA,Malacostraca
 W-Bch-440069,Dromidiopsis lethrinusae,Malacostraca,NA,NA,NA,Malacostraca
-ITS-708802,Loxosomella atkinsae,Not assigned,NA,NA,NA,Not assigned
 SLB-100801,Pseudogaleomma japonica,Bivalvia,NA,NA,NA,Bivalvia
 SLB-100808,Vexillum coronatum,Gastropoda,NA,NA,NA,Gastropoda
 SLB-100810,Vexillum discolorium,Gastropoda,NA,NA,NA,Gastropoda
@@ -15680,7 +15590,6 @@ SLB-101401,Alachosquilla vicina,Malacostraca,NA,NA,NA,Malacostraca
 SLB-101461,Aplidium stewartense,Ascidiacea,NA,NA,NA,Ascidiacea
 W-Msc-340764,Phyllomenia austrina,Aplacophora,NA,NA,NA,Aplacophora
 W-Msc-340727,Dorymenia tricarinata,Aplacophora,NA,NA,NA,Aplacophora
-W-Cha-266267,Serratosagitta bierii,Not assigned,NA,NA,NA,Not assigned
 SLB-101660,Austrosquilla tsangi,Malacostraca,NA,NA,NA,Malacostraca
 ITS-682579,Pullosquilla litoralis,Malacostraca,NA,NA,NA,Malacostraca
 NZ-5954,Acaenosquilla brazieri,Malacostraca,NA,NA,NA,Malacostraca
@@ -16291,7 +16200,6 @@ SLB-131534,Corallina officinalis,Florideophyceae,NA,NA,NA,Florideophyceae
 SLB-132119,Landsburgia quercifolia,Phaeophyceae,NA,NA,NA,Phaeophyceae
 SLB-145190,Solieria chordalis,Florideophyceae,NA,NA,NA,Florideophyceae
 SLB-132241,Marginariella boryana,Phaeophyceae,NA,NA,NA,Phaeophyceae
-SLB-135170,Symploca hydnoides,Not assigned,NA,NA,NA,Not assigned
 SLB-145880,Caulerpa verticillata,Bryopsidophyceae,NA,NA,NA,Bryopsidophyceae
 SLB-133812,Chondrus crispus,Florideophyceae,NA,NA,NA,Florideophyceae
 SLB-136881,Eucheuma arnoldii,Florideophyceae,NA,NA,NA,Florideophyceae
@@ -16800,7 +16708,7 @@ W-Por-171295,Cinachyrella arenosa,Demospongiae,NA,NA,NA,Demospongiae
 SLB-170315,Nupalirus vericeli,Malacostraca,185025,Nupalirus vericeli,Malacostraca,Malacostraca
 SLB-170322,Protellopsis kergueleni,Malacostraca,NA,NA,NA,Malacostraca
 W-Bch-444780,Hemigrapsus sexdentatus,Malacostraca,NA,NA,NA,Malacostraca
-Kew-308879,Thalassia testudinum,Magnoliopsida,173346,Thalassia testudinum,Liliopsida,Magnoliopsida
+Kew-308879,Thalassia testudinum,Magnoliopsida,173346,Thalassia testudinum,Liliopsida,Liliopsida
 W-Msc-505741,Mulinia edulis,Bivalvia,NA,NA,NA,Bivalvia
 SLB-170979,Valonia ventricosa,Ulvophyceae,NA,NA,NA,Ulvophyceae
 W-Bry-422398,Trematooecia aviculifera,Gymnolaemata,NA,NA,NA,Gymnolaemata
@@ -16808,7 +16716,7 @@ W-Bry-471540,Canda simplex,Gymnolaemata,NA,NA,NA,Gymnolaemata
 W-Bry-470458,Parasmittina areolata,Gymnolaemata,NA,NA,NA,Gymnolaemata
 W-Bry-146857,Trematooecia turrita,Gymnolaemata,NA,NA,NA,Gymnolaemata
 W-Bry-470135,Smittipora acutirostris,Gymnolaemata,NA,NA,NA,Gymnolaemata
-Kew-288211,Syringodium filiforme,Equisetopsida,173378,Syringodium filiforme,Liliopsida,Equisetopsida
+Kew-288211,Syringodium filiforme,Equisetopsida,173378,Syringodium filiforme,Liliopsida,Liliopsida
 W-Oph-243577,Ophiocoma paucigranulata,Ophiuroidea,NA,NA,NA,Ophiuroidea
 W-Pol-130390,Neanthes kerguelensis,Polychaeta,NA,NA,NA,Polychaeta
 W-Msc-507438,Ameghinomya antiqua,Bivalvia,NA,NA,NA,Bivalvia
@@ -16866,7 +16774,7 @@ W-Msc-394955,Anguipecten picturatus,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-393119,Laevichlamys wilhelminae,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-207824,Pascahinnites coruscans,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-585885,Psilaxis radiatus,Gastropoda,NA,NA,NA,Gastropoda
-SLB-173431,Halodule wrightii,Equisetopsida,173372,Halodule wrightii,Liliopsida,Equisetopsida
+SLB-173431,Halodule wrightii,Equisetopsida,173372,Halodule wrightii,Liliopsida,Liliopsida
 W-For-113478,Homotrema rubra,Polythalamea,NA,NA,NA,Polythalamea
 Cil-CILI00022112,Zoothamnium niveum,Oligohymenophorea,NA,NA,NA,Oligohymenophorea
 W-For-112498,Articulina pacifica,Polythalamea,NA,NA,NA,Polythalamea
@@ -17308,7 +17216,7 @@ W-Oph-243154,Astroceras elegans,Ophiuroidea,NA,NA,NA,Ophiuroidea
 SLB-183480,Asteroporpa australiensis,Ophiuroidea,NA,NA,NA,Ophiuroidea
 wp-126817,Rhabdadenia biflora,Magnoliopsida,NA,NA,NA,Magnoliopsida
 W-Msc-387373,Propeamussium alcocki,Bivalvia,NA,NA,NA,Bivalvia
-SLB-183508,Conocarpus erectus,Equisetopsida,178806,Conocarpus erectus,Magnoliopsida,Equisetopsida
+SLB-183508,Conocarpus erectus,Equisetopsida,178806,Conocarpus erectus,Magnoliopsida,Magnoliopsida
 SLB-183538,Valettietta anacantha,Malacostraca,NA,NA,NA,Malacostraca
 W-Msc-393632,Talochlamys pulleineana,Bivalvia,NA,NA,NA,Bivalvia
 W-Ech-513406,Mortonia polyporus,Echinoidea,NA,NA,NA,Echinoidea
@@ -17369,7 +17277,6 @@ SLB-185463,Sclerochilus meridionalis,Ostracoda,NA,NA,NA,Ostracoda
 SLB-186033,Sinezona ferriezi,Gastropoda,NA,NA,NA,Gastropoda
 W-Msc-414596,Trimusculus odhneri,Gastropoda,NA,NA,NA,Gastropoda
 W-Msc-716495,Pilosabia trigona,Gastropoda,NA,NA,NA,Gastropoda
-SLB-188977,Mesodasys brittanica,Not assigned,NA,NA,NA,Not assigned
 SLB-186981,Ischnochiton pusio,Polyplacophora,NA,NA,NA,Polyplacophora
 W-Msc-505416,Acesta patagonica,Bivalvia,NA,NA,NA,Bivalvia
 W-Bch-444444,Discoplax hirtipes,Malacostraca,NA,NA,NA,Malacostraca
@@ -17630,8 +17537,8 @@ Chn-b6aab914-ac7d-46e9-aeeb-e00ab2a64a40,Amphimetra laevipinna,Crinoidea,NA,NA,N
 Chn-fb2dd6bd-a63d-4bf0-9ba2-c98db8474306,Lamprometra palmata,Crinoidea,NA,NA,NA,Crinoidea
 W-Oph-212328,Ophiactis picteti,Ophiuroidea,NA,NA,NA,Ophiuroidea
 SLB-159332,Holothuria fuscocinerea,Holothuroidea,180494,Holothuria fuscocinerea,Holothuroidea,Holothuroidea
-Kew-293259,Thalassodendron ciliatum,Equisetopsida,173375,Thalassodendron ciliatum,Liliopsida,Equisetopsida
-Kew-308090,Halophila spinulosa,Magnoliopsida,173343,Halophila spinulosa,Liliopsida,Magnoliopsida
+Kew-293259,Thalassodendron ciliatum,Equisetopsida,173375,Thalassodendron ciliatum,Liliopsida,Liliopsida
+Kew-308090,Halophila spinulosa,Magnoliopsida,173343,Halophila spinulosa,Liliopsida,Liliopsida
 SLB-159402,Stephanometra indica,Crinoidea,NA,NA,NA,Crinoidea
 W-Ase-368139,Luidia penangensis,Asteroidea,NA,NA,NA,Asteroidea
 W-Ase-213246,Astropecten monacanthus,Asteroidea,NA,NA,NA,Asteroidea
@@ -17648,7 +17555,6 @@ W-Oph-243666,Ophiogymna elegans,Ophiuroidea,NA,NA,NA,Ophiuroidea
 W-Oph-244025,Ophiopteron elegans,Ophiuroidea,NA,NA,NA,Ophiuroidea
 SLB-159635,Prostheceraeus giesbrechtii,Turbellaria,NA,NA,NA,Turbellaria
 SLB-159636,Prostheceraeus roseus,Turbellaria,NA,NA,NA,Turbellaria
-SLB-159698,Lyngbya confervoides,Not assigned,NA,NA,NA,Not assigned
 W-Bch-444133,Epistocavea mururoa,Malacostraca,NA,NA,NA,Malacostraca
 W-Bch-444134,Euxanthus huonii,Malacostraca,NA,NA,NA,Malacostraca
 W-Oph-245456,Ophiothrix plana,Ophiuroidea,NA,NA,NA,Ophiuroidea
@@ -17712,7 +17618,6 @@ SLB-101168,Acanthocardia paucicostata,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-381057,Acanthocardia tuberculata,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-138677,Acanthochitona fascicularis,Polyplacophora,NA,NA,NA,Polyplacophora
 W-Bch-440279,Acanthocyclus albatrossis,Malacostraca,NA,NA,NA,Malacostraca
-W-Gtr-114618,Acanthodasys aculeatus,Not assigned,NA,NA,NA,Not assigned
 W-Msc-140627,Acanthodoris pilosa,Gastropoda,NA,NA,NA,Gastropoda
 ITS-93982,Acanthohaustorius millsi,Malacostraca,NA,NA,NA,Malacostraca
 ITS-93984,Acanthohaustorius shoemakeri,Malacostraca,NA,NA,NA,Malacostraca
@@ -17919,8 +17824,6 @@ SLB-10018,Agononida incerta,Malacostraca,NA,NA,NA,Malacostraca
 ITS-660230,Agononida normani,Malacostraca,NA,NA,NA,Malacostraca
 SLB-113150,Agononida procera,Malacostraca,NA,NA,NA,Malacostraca
 SLB-158002,Agononida squamosa,Malacostraca,NA,NA,NA,Malacostraca
-W-Cha-266708,Aidanosagitta neglecta,Not assigned,NA,NA,NA,Not assigned
-W-Cha-266712,Aidanosagitta regularis,Not assigned,NA,NA,NA,Not assigned
 W-Por-169632,Aiolochroia crassa,Demospongiae,NA,NA,NA,Demospongiae
 Hex-5298,Aiptasia mutabilis,Anthozoa,NA,NA,NA,Anthozoa
 Rep-380,Aipysurus eydouxii,Reptilia,176757,Aipysurus eydouxii,Reptilia,Reptilia
@@ -18277,7 +18180,6 @@ SLB-29409,Ascorhynchus pyrginospinum,Pycnogonida,NA,NA,NA,Pycnogonida
 W-Bch-107310,Ashtoret lunaris,Malacostraca,NA,NA,NA,Malacostraca
 W-Bch-440346,Ashtoret picta,Malacostraca,NA,NA,NA,Malacostraca
 SLB-153360,Asparagopsis taxiformis,Florideophyceae,NA,NA,NA,Florideophyceae
-W-Gtr-154537,Aspidiophorus paramediterraneus,Not assigned,NA,NA,NA,Not assigned
 SLB-88120,Aspidosiphon albus,Phascolosomatidea,NA,NA,NA,Phascolosomatidea
 SLB-88122,Aspidosiphon elegans,Phascolosomatidea,NA,NA,NA,Phascolosomatidea
 SLB-88128,Aspidosiphon mexicanus,Phascolosomatidea,NA,NA,NA,Phascolosomatidea
@@ -18399,7 +18301,6 @@ SLB-62376,Barabattoia amicorum,Anthozoa,133084,Barabattoia amicorum,Anthozoa,Ant
 W-Msc-138793,Barbatia barbata,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-207774,Barbatia foliata,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-207767,Barbatia fusca,Bivalvia,NA,NA,NA,Bivalvia
-ITS-156744,Barentsia gracilis,Not assigned,NA,NA,NA,Not assigned
 W-Msc-216464,Barnea manilensis,Bivalvia,NA,NA,NA,Bivalvia
 SLB-30474,Basiliola beecheri,Articulata,NA,NA,NA,Articulata
 SLB-65075,Bassia bassensis,Hydrozoa,NA,NA,NA,Hydrozoa
@@ -18733,8 +18634,6 @@ W-Msc-139106,Chaetoderma nitidulum,Aplacophora,NA,NA,NA,Aplacophora
 W-Msc-545044,Chaetoderma pacificum,Aplacophora,NA,NA,NA,Aplacophora
 W-Msc-146791,Chaetoderma productum,Aplacophora,NA,NA,NA,Aplacophora
 SLB-134854,Chaetomorpha linum,Ulvophyceae,NA,NA,NA,Ulvophyceae
-SLB-67794,Chaetonotus atrox,Not assigned,NA,NA,NA,Not assigned
-SLB-67830,Chaetonotus dispar,Not assigned,NA,NA,NA,Not assigned
 SLB-80146,Chaetopleura apiculata,Polyplacophora,NA,NA,NA,Polyplacophora
 SLB-3599,Chaetopterus variopedatus,Polychaeta,NA,NA,NA,Polychaeta
 W-Msc-504778,Chama croceata,Bivalvia,NA,NA,NA,Bivalvia
@@ -19191,7 +19090,6 @@ SLB-118047,Dardanus setifer,Malacostraca,NA,NA,NA,Malacostraca
 SLB-155695,Dardanus woodmasoni,Malacostraca,NA,NA,NA,Malacostraca
 W-Msc-394350,Decatopecten amiculum,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-394351,Decatopecten radula,Bivalvia,NA,NA,NA,Bivalvia
-W-Cha-370469,Decipisagitta decipiens,Not assigned,NA,NA,NA,Not assigned
 URM-2-637,Decolopoda australis,Pycnogonida,NA,NA,NA,Pycnogonida
 W-Msc-391793,Delectopecten musorstomi,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-140702,Delectopecten vitreus,Bivalvia,NA,NA,NA,Bivalvia
@@ -19335,7 +19233,6 @@ W-Msc-141911,Dosinia exoleta,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-141912,Dosinia lupinus,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-532765,Doto pita,Gastropoda,NA,NA,NA,Gastropoda
 W-Msc-532767,Doto uva,Gastropoda,NA,NA,NA,Gastropoda
-W-Gtr-114552,Draculiciteria tesselata,Not assigned,NA,NA,NA,Not assigned
 W-Msc-183133,Drilliola loprestiana,Gastropoda,NA,NA,NA,Gastropoda
 URM-2-268,Dromedopycnon acanthus,Pycnogonida,NA,NA,NA,Pycnogonida
 W-Bch-394917,Dromia wilsoni,Malacostraca,NA,NA,NA,Malacostraca
@@ -19509,7 +19406,6 @@ URM-2-2581,Euherdmania claviformis,Ascidiacea,NA,NA,NA,Ascidiacea
 W-Iso-260328,Euidotea halei,Malacostraca,NA,NA,NA,Malacostraca
 W-Iso-260329,Euidotea peronii,Malacostraca,NA,NA,NA,Malacostraca
 W-Iso-260330,Euidotea stricta,Malacostraca,NA,NA,NA,Malacostraca
-W-Cha-105416,Eukrohnia hamata,Not assigned,NA,NA,NA,Not assigned
 W-Msc-139805,Eulima glabra,Gastropoda,NA,NA,NA,Gastropoda
 SLB-172870,Eulithidium adamsi,Gastropoda,NA,NA,NA,Gastropoda
 W-Msc-419484,Eulithidium bellum,Gastropoda,NA,NA,NA,Gastropoda
@@ -19623,9 +19519,6 @@ ITS-551578,Fenneropenaeus chinensis,Malacostraca,NA,NA,NA,Malacostraca
 ITS-551579,Fenneropenaeus indicus,Malacostraca,NA,NA,NA,Malacostraca
 ITS-551581,Fenneropenaeus penicillatus,Malacostraca,NA,NA,NA,Malacostraca
 ITS-Mam-180461,Feresa attenuata,Mammalia,8551,Feresa attenuata,Mammalia,Mammalia
-W-Cha-266247,Ferosagitta ferox,Not assigned,NA,NA,NA,Not assigned
-W-Cha-105432,Ferosagitta hispida,Not assigned,NA,NA,NA,Not assigned
-W-Cha-266249,Ferosagitta robusta,Not assigned,NA,NA,NA,Not assigned
 W-Ech-214477,Fibularia ovulum,Echinoidea,NA,NA,NA,Echinoidea
 W-Msc-214984,Ficus gracilis,Gastropoda,NA,NA,NA,Gastropoda
 SLB-93314,Ficus subintermedia,Gastropoda,NA,NA,NA,Gastropoda
@@ -19649,8 +19542,6 @@ W-Msc-139995,Flabellina rubrolineata,Gastropoda,NA,NA,NA,Gastropoda
 W-Msc-156716,Flabellina salmonacea,Gastropoda,NA,NA,NA,Gastropoda
 W-Msc-153507,Flabellina verrucosa,Gastropoda,NA,NA,NA,Gastropoda
 SLB-129861,Flabellum apertum,Anthozoa,NA,NA,NA,Anthozoa
-W-Cha-105434,Flaccisagitta enflata,Not assigned,NA,NA,NA,Not assigned
-W-Cha-105435,Flaccisagitta hexaptera,Not assigned,NA,NA,NA,Not assigned
 W-Msc-236720,Flexopecten glaber,Bivalvia,NA,NA,NA,Bivalvia
 W-Bch-558029,Forestiana depressa,Malacostraca,NA,NA,NA,Malacostraca
 SLB-65046,Forskalia edwardsi,Hydrozoa,NA,NA,NA,Hydrozoa
@@ -19858,7 +19749,6 @@ W-Hyd-117588,Halecium delicatulum,Hydrozoa,NA,NA,NA,Hydrozoa
 W-Hyd-117606,Halecium tenellum,Hydrozoa,NA,NA,NA,Hydrozoa
 SLB-94042,Halgerda willeyi,Gastropoda,NA,NA,NA,Gastropoda
 W-Bch-441785,Halicarcinus planatus,Malacostraca,NA,NA,NA,Malacostraca
-W-Gtr-114506,Halichaetonotus aculifer,Not assigned,NA,NA,NA,Not assigned
 ITS-Mam-180653,Halichoerus grypus,Mammalia,9660,Halichoerus grypus,Mammalia,Mammalia
 W-Por-132627,Halichondria panicea,Demospongiae,NA,NA,NA,Demospongiae
 SLB-142733,Halimeda macroloba,Bryopsidophyceae,NA,NA,NA,Bryopsidophyceae
@@ -19884,7 +19774,7 @@ URM-2-3563,Halocynthia papillosa,Ascidiacea,NA,NA,NA,Ascidiacea
 URM-2-3564,Halocynthia pyriformis,Ascidiacea,NA,NA,NA,Ascidiacea
 SLB-28459,Halocypris inflata,Ostracoda,NA,NA,NA,Ostracoda
 URM-Cn-5781,Halomitra pileus,Anthozoa,NA,NA,NA,Anthozoa
-SLB-159390,Halophila decipiens,Magnoliopsida,173352,Halophila decipiens,Liliopsida,Magnoliopsida
+SLB-159390,Halophila decipiens,Magnoliopsida,173352,Halophila decipiens,Liliopsida,Liliopsida
 W-Hyd-117633,Halopteris glutinosa,Hydrozoa,NA,NA,NA,Hydrozoa
 SLB-133983,Halymenia durvillei,Florideophyceae,NA,NA,NA,Florideophyceae
 W-Msc-420524,Haminoea antillarum,Gastropoda,NA,NA,NA,Gastropoda
@@ -19969,7 +19859,6 @@ URM-Cn-5428,Heteropsammia cochlea,Anthozoa,133679,Heteropsammia cochlea,Anthozoa
 ITS-682581,Heterosquilloides insignis,Malacostraca,NA,NA,NA,Malacostraca
 W-Msc-141446,Heteroteuthis dispar,Cephalopoda,NA,NA,NA,Cephalopoda
 W-Msc-342190,Heteroteuthis serventyi,Cephalopoda,NA,NA,NA,Cephalopoda
-W-Gtr-114557,Heteroxenotrichula squamosa,Not assigned,NA,NA,NA,Not assigned
 W-Msc-140103,Hiatella arctica,Bivalvia,NA,NA,NA,Bivalvia
 W-Bry-428671,Himantozoum sinuosum,Gymnolaemata,NA,NA,NA,Gymnolaemata
 SLB-92612,Himerometra robustipinna,Crinoidea,NA,NA,NA,Crinoidea
@@ -20143,8 +20032,6 @@ ITS-Mam-180491,Kogia breviceps,Mammalia,NA,NA,NA,Mammalia
 ITS-Mam-180492,Kogia sima,Mammalia,11048,Kogia sima,Mammalia,Mammalia
 W-Oct-128512,Kophobelemnon stelliferum,Anthozoa,NA,NA,NA,Anthozoa
 W-Bch-209579,Kraussia rugulosa,Malacostraca,NA,NA,NA,Malacostraca
-W-Cha-105428,Krohnitta pacifica,Not assigned,NA,NA,NA,Not assigned
-W-Cha-105429,Krohnitta subtilis,Not assigned,NA,NA,NA,Not assigned
 URM-2-3852,Kukenthalia borealis,Ascidiacea,NA,NA,NA,Ascidiacea
 W-Msc-420351,Kurtziella serga,Gastropoda,NA,NA,NA,Gastropoda
 SLB-174636,Labidiaster radiosus,Asteroidea,NA,NA,NA,Asteroidea
@@ -20428,7 +20315,6 @@ W-Msc-152887,Loripes lucinalis,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-419325,Lottia leucopleura,Gastropoda,NA,NA,NA,Gastropoda
 W-Ech-160809,Loxechinus albus,Echinoidea,NA,NA,NA,Echinoidea
 W-Msc-605816,Loxoglypta clathrata,Bivalvia,NA,NA,NA,Bivalvia
-ITS-708717,Loxosomella varians,Not assigned,NA,NA,NA,Not assigned
 W-Msc-419367,Lucapina suffusa,Gastropoda,NA,NA,NA,Gastropoda
 W-Msc-419368,Lucapinella limatula,Gastropoda,NA,NA,NA,Gastropoda
 ITS-551551,Lucifer chacei,Malacostraca,NA,NA,NA,Malacostraca
@@ -20473,7 +20359,6 @@ W-Msc-420944,Macrocallista maculata,Bivalvia,NA,NA,NA,Bivalvia
 W-Msc-419723,Macrocypraea zebra,Gastropoda,NA,NA,NA,Gastropoda
 ITS-84214,Macrocypridina castanea,Ostracoda,NA,NA,NA,Ostracoda
 SLB-145429,Macrocystis pyrifera,Phaeophyceae,NA,NA,NA,Phaeophyceae
-W-Gtr-114607,Macrodasys caudatus,Not assigned,NA,NA,NA,Not assigned
 W-Bch-209082,Macromedaeus nudipes,Malacostraca,NA,NA,NA,Malacostraca
 ITS-174594,Macronectes giganteus,Aves,NA,NA,NA,Aves
 W-Oph-213195,Macrophiothrix longipeda,Ophiuroidea,NA,NA,NA,Ophiuroidea
@@ -20569,7 +20454,6 @@ URM-Cn-5826,Merulina ampliata,Anthozoa,133337,Merulina ampliata,Anthozoa,Anthozo
 URM-Cn-5827,Merulina scabricula,Anthozoa,133024,Merulina scabricula,Anthozoa,Anthozoa
 W-Iso-258334,Mesanthura floridensis,Malacostraca,NA,NA,NA,Malacostraca
 W-Iso-258352,Mesanthura pulchra,Malacostraca,NA,NA,NA,Malacostraca
-W-Gtr-114595,Mesodasys laticaudatus,Not assigned,NA,NA,NA,Not assigned
 ITS-Mam-180515,Mesoplodon bidens,Mammalia,13241,Mesoplodon bidens,Mammalia,Mammalia
 ITS-Mam-180512,Mesoplodon carlhubbsi,Mammalia,13243,Mesoplodon carlhubbsi,Mammalia,Mammalia
 ITS-Mam-180517,Mesoplodon densirostris,Mammalia,NA,NA,NA,Mammalia
@@ -20582,7 +20466,6 @@ ITS-Mam-180508,Mesoplodon mirus,Mammalia,13250,Mesoplodon mirus,Mammalia,Mammali
 ITS-Mam-552772,Mesoplodon peruvianus,Mammalia,13251,Mesoplodon peruvianus,Mammalia,Mammalia
 ITS-Mam-180514,Mesoplodon stejnegeri,Mammalia,13252,Mesoplodon stejnegeri,Mammalia,Mammalia
 ITS-90298,Mesopodopsis slabberi,Malacostraca,NA,NA,NA,Malacostraca
-W-Cha-105437,Mesosagitta minima,Not assigned,NA,NA,NA,Not assigned
 W-Ech-214476,Mespilia globulus,Echinoidea,NA,NA,NA,Echinoidea
 W-Bch-440386,Metacarcinus edwardsii,Malacostraca,NA,NA,NA,Malacostraca
 W-Bch-440388,Metacarcinus magister,Malacostraca,NA,NA,NA,Malacostraca
@@ -21350,13 +21233,9 @@ SLB-166521,Parapontophilus junceus,Malacostraca,NA,NA,NA,Malacostraca
 SLB-190206,Parapontophilus longirostris,Malacostraca,NA,NA,NA,Malacostraca
 W-Pol-131140,Paraprionospio pinnata,Polychaeta,NA,NA,NA,Polychaeta
 SLB-12338,Parapylocheles scorpio,Malacostraca,NA,NA,NA,Malacostraca
-W-Cha-105440,Parasagitta elegans,Not assigned,NA,NA,NA,Not assigned
-W-Cha-105441,Parasagitta friderici,Not assigned,NA,NA,NA,Not assigned
-W-Cha-266257,Parasagitta tenuis,Not assigned,NA,NA,NA,Not assigned
 W-Iso-261921,Paraserolis polita,Malacostraca,NA,NA,NA,Malacostraca
 W-Hol-149898,Parastichopus regalis,Holothuroidea,180298,Parastichopus regalis,Holothuroidea,Holothuroidea
 W-Por-171366,Paratetilla bacca,Demospongiae,NA,NA,NA,Demospongiae
-W-Gtr-114688,Paraturbanella teissieri,Not assigned,NA,NA,NA,Not assigned
 SLB-181658,Parawaldeckia kidderi,Malacostraca,NA,NA,NA,Malacostraca
 W-Bch-444325,Paraxanthias notatus,Malacostraca,NA,NA,NA,Malacostraca
 W-Msc-239393,Pareledone turqueti,Cephalopoda,NA,NA,NA,Cephalopoda
@@ -21567,9 +21446,6 @@ SLB-71543,Pholidoteuthis adami,Cephalopoda,NA,NA,NA,Cephalopoda
 W-Msc-225826,Pholidoteuthis boschmai,Cephalopoda,NA,NA,NA,Cephalopoda
 W-Pol-130603,Pholoe minuta,Polychaeta,NA,NA,NA,Polychaeta
 W-Por-133679,Phorbas fictitius,Demospongiae,NA,NA,NA,Demospongiae
-W-Pho-128549,Phoronis muelleri,Not assigned,NA,NA,NA,Not assigned
-W-Pho-128550,Phoronis ovalis,Not assigned,NA,NA,NA,Not assigned
-W-Pho-128552,Phoronis psammophila,Not assigned,NA,NA,NA,Not assigned
 SLB-117288,Phos textum,Gastropoda,NA,NA,NA,Gastropoda
 URM-2-1165,Phoxichilidium femoratum,Pycnogonida,NA,NA,NA,Pycnogonida
 ITS-95442,Phtisica marina,Malacostraca,NA,NA,NA,Malacostraca
@@ -21845,9 +21721,6 @@ W-Bch-442217,Pseudopalicus pictus,Malacostraca,NA,NA,NA,Malacostraca
 URM-2-547,Pseudopallene circularis,Pycnogonida,NA,NA,NA,Pycnogonida
 W-Tnd-136457,Pseudoparatanais batei,Malacostraca,NA,NA,NA,Malacostraca
 ITS-Mam-180463,Pseudorca crassidens,Mammalia,18596,Pseudorca crassidens,Mammalia,Mammalia
-W-Cha-266258,Pseudosagitta gazellae,Not assigned,NA,NA,NA,Not assigned
-W-Cha-105444,Pseudosagitta lyra,Not assigned,NA,NA,NA,Not assigned
-W-Cha-105445,Pseudosagitta maxima,Not assigned,NA,NA,NA,Not assigned
 W-Msc-420459,Pseudoscilla babylonia,Gastropoda,NA,NA,NA,Gastropoda
 URM-Cn-6144,Pseudosiderastrea tayamai,Anthozoa,NA,NA,NA,Anthozoa
 ITS-99184,Pseudosquilla ciliata,Malacostraca,NA,NA,NA,Malacostraca
@@ -21870,7 +21743,6 @@ W-Msc-420654,Pteroctopus schmidti,Cephalopoda,NA,NA,NA,Cephalopoda
 W-Msc-140606,Pteroctopus tetracirrhus,Cephalopoda,NA,NA,NA,Cephalopoda
 ITS-174588,Pterodroma leucoptera,Aves,NA,NA,NA,Aves
 ITS-174590,Pterodroma mollis,Aves,NA,NA,NA,Aves
-W-Cha-105430,Pterosagitta draco,Not assigned,NA,NA,NA,Not assigned
 W-Msc-139944,Pterotrachea coronata,Gastropoda,NA,NA,NA,Gastropoda
 SLB-71673,Pterygioteuthis giardi,Cephalopoda,NA,NA,NA,Cephalopoda
 W-Iso-157908,Ptilanthura tenuis,Malacostraca,NA,NA,NA,Malacostraca
@@ -22009,7 +21881,6 @@ W-Msc-531566,Sagaminopteron ornatum,Gastropoda,NA,NA,NA,Gastropoda
 Hex-5076,Sagartia elegans,Anthozoa,NA,NA,NA,Anthozoa
 Hex-5872,Sagartia troglodytes,Anthozoa,NA,NA,NA,Anthozoa
 Hex-4654,Sagartiogeton undatus,Anthozoa,NA,NA,NA,Anthozoa
-W-Cha-105448,Sagitta bipunctata,Not assigned,NA,NA,NA,Not assigned
 NZ-7290,Sagmariasus verreauxi,Malacostraca,170017,Sagmariasus verreauxi,Malacostraca,Malacostraca
 SLB-131047,Salmoneus serratidigitus,Malacostraca,NA,NA,NA,Malacostraca
 SLB-190481,Salmoneus tricristatus,Malacostraca,NA,NA,NA,Malacostraca
@@ -22163,8 +22034,6 @@ URM-2-4008,Seriocarpa rhizoides,Ascidiacea,NA,NA,NA,Ascidiacea
 W-Iso-262988,Serolella bouvieri,Malacostraca,NA,NA,NA,Malacostraca
 W-Iso-262989,Serolella pagenstecheri,Malacostraca,NA,NA,NA,Malacostraca
 W-Msc-438935,Serpulorbis colubrinus,Gastropoda,NA,NA,NA,Gastropoda
-W-Cha-266268,Serratosagitta pacifica,Not assigned,NA,NA,NA,Not assigned
-W-Cha-105464,Serratosagitta serratodentata,Not assigned,NA,NA,NA,Not assigned
 W-Hyd-117906,Sertularella polyzonias,Hydrozoa,NA,NA,NA,Hydrozoa
 W-Bch-422195,Sesarma curacaoense,Malacostraca,NA,NA,NA,Malacostraca
 W-Pol-129116,Siboglinum ekmani,Polychaeta,NA,NA,NA,Polychaeta
@@ -22715,7 +22584,6 @@ W-Oct-207409,Tubipora musica,Anthozoa,NA,NA,NA,Anthozoa
 W-Bry-111760,Tubulipora liliacea,Gymnolaemata,NA,NA,NA,Gymnolaemata
 W-Msc-504547,Tucetona pectunculus,Bivalvia,NA,NA,NA,Bivalvia
 W-Bch-440119,Tumidodromia dormia,Malacostraca,NA,NA,NA,Malacostraca
-W-Gtr-114692,Turbanella cornuta,Not assigned,NA,NA,NA,Not assigned
 URM-Cn-5465,Turbinaria bifrons,Anthozoa,132957,Turbinaria bifrons,Anthozoa,Anthozoa
 SLB-146083,Turbinaria conoides,Phaeophyceae,NA,NA,NA,Phaeophyceae
 URM-Cn-5468,Turbinaria frondens,Anthozoa,NA,NA,NA,Anthozoa
@@ -22840,7 +22708,6 @@ W-Iso-258295,Xenanthura brevitelson,Malacostraca,NA,NA,NA,Malacostraca
 SLB-117060,Xenophora corrugata,Gastropoda,NA,NA,NA,Gastropoda
 SLB-77221,Xenophora longleyi,Gastropoda,NA,NA,NA,Gastropoda
 SLB-93130,Xenophora solaris,Gastropoda,NA,NA,NA,Gastropoda
-W-Gtr-114563,Xenotrichula intermedia,Not assigned,NA,NA,NA,Not assigned
 ITS-95750,Xiphopenaeus kroyeri,Malacostraca,NA,NA,NA,Malacostraca
 SLB-157952,Xylocheles macrops,Malacostraca,NA,NA,NA,Malacostraca
 SLB-157950,Xylocheles miersi,Malacostraca,NA,NA,NA,Malacostraca
@@ -22851,7 +22718,6 @@ ITS-Mam-180621,Zalophus californianus,Mammalia,41666,Zalophus californianus,Mamm
 ITS-Mam-622014,Zalophus wollebaeki,Mammalia,41668,Zalophus wollebaeki,Mammalia,Mammalia
 W-Msc-419645,Zebina browniana,Gastropoda,NA,NA,NA,Gastropoda
 ITS-Mam-180498,Ziphius cavirostris,Mammalia,23211,Ziphius cavirostris,Mammalia,Mammalia
-W-Cha-266888,Zonosagitta pulchra,Not assigned,NA,NA,NA,Not assigned
 W-Bch-209076,Zosimus aeneus,Malacostraca,NA,NA,NA,Malacostraca
 W-Bch-444400,Zozymodes pumilus,Malacostraca,NA,NA,NA,Malacostraca
 Fis-29393,Gadus macrocephalus,Actinopterygii,NA,NA,NA,Actinopterygii
@@ -24585,3 +24451,137 @@ NA,NA,NA,61935092,Praealticus semicrenatus,Actinopterygii,Actinopterygii
 NA,NA,NA,61935587,Alticus anjouanae,Actinopterygii,Actinopterygii
 NA,NA,NA,64528661,Pelagocephalus coheni,Actinopterygii,Actinopterygii
 NA,NA,NA,68308968,Stegastes xanthurus,Actinopterygii,Actinopterygii
+Fis-22442,Metapenaeopsis tarawensis,NA,NA,NA,NA,Malacostraca
+Fis-170350,Oenopota eriopis,NA,NA,NA,NA,Gastropoda
+Fis-170316,Yarica hyalosoma,NA,NA,NA,NA,NA
+W-Pho-128548,Phoronis hippocrepia,NA,NA,NA,NA,NA
+W-Pho-128547,Phoronis australis,NA,NA,NA,NA,NA
+W-Pho-128553,Phoronopsis albomaculata,NA,NA,NA,NA,NA
+W-Pho-128555,Phoronopsis harmeri,NA,NA,NA,NA,NA
+W-Gtr-114519,Halichaetonotus marivagus,NA,NA,NA,NA,NA
+W-Gtr-114520,Halichaetonotus paradoxus,NA,NA,NA,NA,NA
+SLB-67871,Chaetonotus lacunosus,NA,NA,NA,NA,NA
+W-Gtr-114567,Xenotrichula punctata,NA,NA,NA,NA,NA
+SLB-67776,Chaetonotus aegilonensis,NA,NA,NA,NA,NA
+SLB-67788,Chaetonotus apechochaetus,NA,NA,NA,NA,NA
+W-Gtr-247796,Halichaetonotus decipiens,NA,NA,NA,NA,NA
+W-Gtr-265513,Dactylopodola mesotyphle,NA,NA,NA,NA,NA
+W-Gtr-114587,Dolichodasys elongatus,NA,NA,NA,NA,NA
+W-Gtr-114593,Mesodasys adenotubulatus,NA,NA,NA,NA,NA
+W-Gtr-114615,Urodasys viviparus,NA,NA,NA,NA,NA
+W-Gtr-114620,Diplodasys ankeli,NA,NA,NA,NA,NA
+W-Gtr-114629,Platydasys maximus,NA,NA,NA,NA,NA
+W-Gtr-114630,Platydasys ocellatus,NA,NA,NA,NA,NA
+W-Gtr-114636,Pseudostomella etrusca,NA,NA,NA,NA,NA
+W-Gtr-114637,Pseudostomella roscovita,NA,NA,NA,NA,NA
+W-Gtr-114642,Ptychostomella tyrrhenica,NA,NA,NA,NA,NA
+W-Gtr-247814,Tetranchyroderma cirrophorum,NA,NA,NA,NA,NA
+W-Gtr-114650,Tetranchyroderma heterotubulatum,NA,NA,NA,NA,NA
+SLB-68369,Tetranchyroderma hirtum,NA,NA,NA,NA,NA
+W-Gtr-247818,Tetranchyroderma megastomum,NA,NA,NA,NA,NA
+W-Gtr-114659,Tetranchyroderma papii,NA,NA,NA,NA,NA
+W-Gtr-265587,Tetranchyroderma polyprobolostomum,NA,NA,NA,NA,NA
+W-Gtr-114662,Tetranchyroderma quadritentaculatum,NA,NA,NA,NA,NA
+W-Gtr-114667,Tetranchyroderma thysanophorum,NA,NA,NA,NA,NA
+W-Gtr-114668,Tetranchyroderma tribolosum,NA,NA,NA,NA,NA
+W-Gtr-114674,Thaumastoderma mediterraneum,NA,NA,NA,NA,NA
+W-Gtr-114675,Thaumastoderma ramuliferum,NA,NA,NA,NA,NA
+SLB-68441,Turbanella bocqueti,NA,NA,NA,NA,NA
+URM-M-1265,Pliciloricus enigmaticus,NA,NA,NA,NA,Loricifera
+URM-M-1264,Pliciloricus dubius,NA,NA,NA,NA,Loricifera
+URM-M-1269,Pliciloricus orphanus,NA,NA,NA,NA,Loricifera
+W-Kin-265848,Cateria styx,NA,NA,NA,NA,Kinorhyncha
+W-Kin-101115,Echinoderes gerardi,NA,NA,NA,NA,Kinorhyncha
+W-Kin-265080,Echinoderes pilosus,NA,NA,NA,NA,Kinorhyncha
+W-Kin-101122,Echinoderes riedli,NA,NA,NA,NA,Kinorhyncha
+W-Cha-105468,Spadella cephaloptera,NA,NA,NA,NA,Sagittoidea
+URM-2-1473,Bonellia viridis,NA,NA,NA,NA,Polychaeta
+ITS-156736,Loxosoma murmanica,NA,NA,NA,NA,NA
+W-Cha-266812,Paraspadella nana,NA,NA,NA,NA,Sagittoidea
+W-Cha-266815,Paraspadella schizoptera,NA,NA,NA,NA,Sagittoidea
+URM-2-1519,Sluiterina sibogae,NA,NA,NA,NA,Polychaeta
+W-Cha-105414,Eukrohnia bathypelagica,NA,NA,NA,NA,Sagittoidea
+W-Cha-105415,Eukrohnia fowleri,NA,NA,NA,NA,Sagittoidea
+W-Cha-266705,Aidanosagitta johorensis,NA,NA,NA,NA,Sagittoidea
+W-Cha-266709,Aidanosagitta oceania,NA,NA,NA,NA,Sagittoidea
+W-Cha-105431,Caecosagitta macrocephala,NA,NA,NA,NA,Sagittoidea
+SLB-30821,Parasagitta euneritica,NA,NA,NA,NA,Sagittoidea
+W-Cha-266255,Parasagitta peruviana,NA,NA,NA,NA,Sagittoidea
+W-Cha-266256,Parasagitta popovicii,NA,NA,NA,NA,Sagittoidea
+URM-M-1272,Pliciloricus profundus,NA,NA,NA,NA,Loricifera
+URM-M-1275,Rugiloricus carolinensis,NA,NA,NA,NA,Loricifera
+URM-M-1276,Rugiloricus cauliculus,NA,NA,NA,NA,Loricifera
+W-Gtd-265620,Austrognatharia pecten,NA,NA,NA,NA,NA
+W-Gtd-265629,Austrognathia nannulifera,NA,NA,NA,NA,NA
+W-Gtd-114734,Gnathostomula axi,NA,NA,NA,NA,NA
+W-Gtd-265643,Gnathostomula peregrina,NA,NA,NA,NA,NA
+W-Gtd-114738,Labidognathia longicollis,NA,NA,NA,NA,NA
+W-Gtd-266026,Tenuignathia rikerae,NA,NA,NA,NA,NA
+SLB-68543,Haplognathia rosacea,NA,NA,NA,NA,NA
+W-Gtd-114745,Haplognathia rosea,NA,NA,NA,NA,NA
+W-Gtd-114746,Haplognathia ruberrima,NA,NA,NA,NA,NA
+W-Gtd-265884,Cosmognathia arcus,NA,NA,NA,NA,NA
+W-Gtd-265886,Cosmognathia manubrium,NA,NA,NA,NA,NA
+W-Gtd-265654,Pterognathia ctenifera,NA,NA,NA,NA,NA
+W-Gtd-265661,Pterognathia ugera,NA,NA,NA,NA,NA
+ITS-708795,Loxosoma pectinaricola,NA,NA,NA,NA,Entoprocta
+ITS-708796,Loxosoma rhodinicola,NA,NA,NA,NA,Entoprocta
+ITS-708797,Loxosomella elegans,NA,NA,NA,NA,Entoprocta
+ITS-708798,Loxosomella similis,NA,NA,NA,NA,Entoprocta
+ITS-708799,Loxosomella polita,NA,NA,NA,NA,Entoprocta
+ITS-708754,Loxosomella marsypos,NA,NA,NA,NA,Entoprocta
+ITS-708801,Loxosomella harmeri,NA,NA,NA,NA,Entoprocta
+ITS-708803,Loxosomella nitschei,NA,NA,NA,NA,Entoprocta
+ITS-708805,Loxosomella phascolosomata,NA,NA,NA,NA,Entoprocta
+ITS-708806,Loxosomella fauveli,NA,NA,NA,NA,Entoprocta
+ITS-708716,Loxosomella compressa,NA,NA,NA,NA,Entoprocta
+ITS-708794,Loxosomella nordgaardi,NA,NA,NA,NA,Entoprocta
+ITS-708808,Loxosomella discopoda,NA,NA,NA,NA,Entoprocta
+ITS-708887,Loxosomella obesa,NA,NA,NA,NA,Entoprocta
+ITS-708791,Loxosoma significans,NA,NA,NA,NA,Entoprocta
+W-Cha-105463,Solidosagitta zetesios,NA,NA,NA,NA,Sagittoidea
+ITS-708802,Loxosomella atkinsae,NA,NA,NA,NA,Entoprocta
+W-Cha-266267,Serratosagitta bierii,NA,NA,NA,NA,Sagittoidea
+SLB-135170,Symploca hydnoides,NA,NA,NA,NA,Cyanophyceae
+SLB-188977,Mesodasys brittanica,NA,NA,NA,NA,NA
+SLB-159698,Lyngbya confervoides,NA,NA,NA,NA,Cyanophyceae
+W-Gtr-114618,Acanthodasys aculeatus,NA,NA,NA,NA,NA
+W-Cha-266708,Aidanosagitta neglecta,NA,NA,NA,NA,Sagittoidea
+W-Cha-266712,Aidanosagitta regularis,NA,NA,NA,NA,Sagittoidea
+W-Gtr-154537,Aspidiophorus paramediterraneus,NA,NA,NA,NA,NA
+ITS-156744,Barentsia gracilis,NA,NA,NA,NA,Entoprocta
+SLB-67794,Chaetonotus atrox,NA,NA,NA,NA,NA
+SLB-67830,Chaetonotus dispar,NA,NA,NA,NA,NA
+W-Cha-370469,Decipisagitta decipiens,NA,NA,NA,NA,Sagittoidea
+W-Gtr-114552,Draculiciteria tesselata,NA,NA,NA,NA,NA
+W-Cha-105416,Eukrohnia hamata,NA,NA,NA,NA,Sagittoidea
+W-Cha-266247,Ferosagitta ferox,NA,NA,NA,NA,Sagittoidea
+W-Cha-105432,Ferosagitta hispida,NA,NA,NA,NA,Sagittoidea
+W-Cha-266249,Ferosagitta robusta,NA,NA,NA,NA,Sagittoidea
+W-Cha-105434,Flaccisagitta enflata,NA,NA,NA,NA,Sagittoidea
+W-Cha-105435,Flaccisagitta hexaptera,NA,NA,NA,NA,Sagittoidea
+W-Gtr-114506,Halichaetonotus aculifer,NA,NA,NA,NA,NA
+W-Gtr-114557,Heteroxenotrichula squamosa,NA,NA,NA,NA,NA
+W-Cha-105428,Krohnitta pacifica,NA,NA,NA,NA,Sagittoidea
+W-Cha-105429,Krohnitta subtilis,NA,NA,NA,NA,Sagittoidea
+ITS-708717,Loxosomella varians,NA,NA,NA,NA,Entoprocta
+W-Gtr-114607,Macrodasys caudatus,NA,NA,NA,NA,NA
+W-Gtr-114595,Mesodasys laticaudatus,NA,NA,NA,NA,NA
+W-Cha-105437,Mesosagitta minima,NA,NA,NA,NA,Sagittoidea
+W-Cha-105440,Parasagitta elegans,NA,NA,NA,NA,Sagittoidea
+W-Cha-105441,Parasagitta friderici,NA,NA,NA,NA,Sagittoidea
+W-Cha-266257,Parasagitta tenuis,NA,NA,NA,NA,Sagittoidea
+W-Gtr-114688,Paraturbanella teissieri,NA,NA,NA,NA,NA
+W-Pho-128549,Phoronis muelleri,NA,NA,NA,NA,NA
+W-Pho-128550,Phoronis ovalis,NA,NA,NA,NA,NA
+W-Pho-128552,Phoronis psammophila,NA,NA,NA,NA,NA
+W-Cha-266258,Pseudosagitta gazellae,NA,NA,NA,NA,Sagittoidea
+W-Cha-105444,Pseudosagitta lyra,NA,NA,NA,NA,Sagittoidea
+W-Cha-105445,Pseudosagitta maxima,NA,NA,NA,NA,Sagittoidea
+W-Cha-105430,Pterosagitta draco,NA,NA,NA,NA,Sagittoidea
+W-Cha-105448,Sagitta bipunctata,NA,NA,NA,NA,Sagittoidea
+W-Cha-266268,Serratosagitta pacifica,NA,NA,NA,NA,Sagittoidea
+W-Cha-105464,Serratosagitta serratodentata,NA,NA,NA,NA,Sagittoidea
+W-Gtr-114692,Turbanella cornuta,NA,NA,NA,NA,NA
+W-Gtr-114563,Xenotrichula intermedia,NA,NA,NA,NA,NA
+W-Cha-266888,Zonosagitta pulchra,NA,NA,NA,NA,Sagittoidea
