@@ -14,10 +14,10 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   tabPanel('Introduction',
     # Abstract of paper; sidebar is authors, publication info, etc
     sidebarPanel(
-      h5('sidebar text')
+      includeMarkdown('pages/author_list.md')
     ),
     mainPanel(
-      includeMarkdown('pages/intro_main.md')
+      includeMarkdown('pages/title_and_abstract.md')
       )
   ),
   
@@ -33,7 +33,19 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
                 'each figure gets its own .html file')
            ),
            mainPanel(
-             includeMarkdown('pages/intro_main.md')
+             h5('Figures from manuscript'),
+             includeMarkdown('pages/fig1.md'),
+             includeMarkdown('pages/fig2.md'),
+             includeMarkdown('pages/fig3.md'),
+             includeMarkdown('pages/fig4.md'),
+             includeMarkdown('pages/fig5.md'),
+             hr(),
+             h5('Supporting figures'),
+             includeMarkdown('pages/s1fig.md'),
+             includeMarkdown('pages/s2fig.md'),
+             includeMarkdown('pages/s3fig.md'),
+             includeMarkdown('pages/s4fig.md'),
+             includeMarkdown('pages/s5fig.md')
            )
   ),
   
