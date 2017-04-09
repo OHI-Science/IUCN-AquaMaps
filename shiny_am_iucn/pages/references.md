@@ -1,4 +1,4 @@
-# References
+### References
 
 1. Kaschner K, Rius-Barile J, Kesner-Reyes K, Garilao C, Kullander S, Rees T, et al. AquaMaps: Predicted range maps for aquatic species. 2015. Available: www.aquamaps.org
 2. IUCN. IUCN red list of threatened species. International union for the conservation of nature. 2015. Available: http://www.iucnredlist.org
@@ -32,17 +32,20 @@
 
 ### S1 Fig and S2 Fig references
 
-28. www.aquamaps.org, version of Aug. 2013. Reviewed distribution maps for Thunnus alalunga (Albacore), with modeled year 2100 native range map based on IPCC A2 emissions scenario. Web. Accessed 11 Sep. 2016.
-29. International Union for Conservation of Nature (IUCN) 2011. Thunnus alalunga. The IUCN Red List of Threatened Species. Version 2016-2.
+<ol start = 28>
+<li>www.aquamaps.org, version of Aug. 2013. Reviewed distribution maps for <i>Thunnus alalunga</i> (Albacore), with modeled year 2100 native range map based on IPCC A2 emissions scenario. Web. Accessed 11 Sep. 2016.</li>
+<li>International Union for Conservation of Nature (IUCN) 2011. <i>Thunnus alalunga</i>. The IUCN Red List of Threatened Species. Version 2016-2.
+</li></ol>
 
 ### S3 Fig references
 
-30. www.aquamaps.org, version of Aug. 2013. Computer generated distribution maps for Conus episcopatus, with modeled year 2100 native range map based on IPCC A2 emissions scenario. Web. Accessed 11 Sep. 2016.
-31. Conch Books, Hackenheim, Germany 2013. Conus episcopatus. The IUCN Red List of Threatened Species. Version 2016-2.
-32. www.aquamaps.org, version of Aug. 2013. Computer generated distribution maps for Kajikia albida (Atlantic white marlin), with modeled year 2100 native range map based on IPCC A2 emissions scenario. Web. Accessed 11 Sep. 2016.
-33. International Union for Conservation of Nature (IUCN) 2011. Kajikia albida. The IUCN Red List of Threatened Species. Version 2016-2.
-34. www.aquamaps.org, version of Aug. 2013. Reviewed distribution maps for Acanthurus nigroris (Bluelined surgeonfish), with modeled year 2100 native range map based on IPCC A2 emissions scenario. Web. Accessed 11 Sep. 2016.
-35. International Union for Conservation of Nature (IUCN) 2012. Acanthurus nigroris. The IUCN Red List of Threatened Species. Version 2016-2.
-36. www.aquamaps.org, version of Aug. 2013. Computer generated distribution maps for Conus magnificus, with modeled year 2100 native range map based on IPCC A2 emissions scenario. Web. Accessed 11 Sep. 2016.
-37. Conch Books, Hackenheim, Germany 2013. Conus magnificus. The IUCN Red List of Threatened Species. Version 2016-2.
-
+<ol start = 30>
+<li>www.aquamaps.org, version of Aug. 2013. Computer generated distribution maps for <i>Conus episcopatus</i>, with modeled year 2100 native range map based on IPCC A2 emissions scenario. Web. Accessed 11 Sep. 2016.</li>
+<li>Conch Books, Hackenheim, Germany 2013. <i>Conus episcopatus</i>. The IUCN Red List of Threatened Species. Version 2016-2.</li>
+<li>www.aquamaps.org, version of Aug. 2013. Computer generated distribution maps for <i>Kajikia albida</i> (Atlantic white marlin), with modeled year 2100 native range map based on IPCC A2 emissions scenario. Web. Accessed 11 Sep. 2016.</li>
+<li>International Union for Conservation of Nature (IUCN) 2011. <i>Kajikia albida</i>. The IUCN Red List of Threatened Species. Version 2016-2.</li>
+<li>www.aquamaps.org, version of Aug. 2013. Reviewed distribution maps for <i>Acanthurus nigroris</i> (Bluelined surgeonfish), with modeled year 2100 native range map based on IPCC A2 emissions scenario. Web. Accessed 11 Sep. 2016.</li>
+<li>International Union for Conservation of Nature (IUCN) 2012. <i>Acanthurus nigroris</i>. The IUCN Red List of Threatened Species. Version 2016-2.</li>
+<li>www.aquamaps.org, version of Aug. 2013. Computer generated distribution maps for <i>Conus magnificus</i>, with modeled year 2100 native range map based on IPCC A2 emissions scenario. Web. Accessed 11 Sep. 2016.</li>
+<li>Conch Books, Hackenheim, Germany 2013. <i>Conus magnificus</i>. The IUCN Red List of Threatened Species. Version 2016-2.
+</li></ol>
