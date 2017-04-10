@@ -92,18 +92,16 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
         h6('Select species group, then
           select species'),
         selectInput('spp_group', 'Choose a taxon:',
-                    choices = unique(spp_list$spp_group_text)),
+                    choices = unique(spp_list$spp_group_text) %>% sort()),
         selectInput('species', 'Choose a species:',
-                    choices = unique(spp_list$sciname)),
+                    choices = unique(spp_list$sciname) %>% sort()),
         radioButtons('show_maps', label = h3('Maps'),
                      choices = list('AquaMaps' = 'am',
                                     'IUCN'     = 'iucn', 
                                     'Both'     = 'both'),
                      selected = 'both'),
-        sliderInput('am_cutoff', 'Probability of Occurrence cutoff (Aquamaps):',
-                    min = 0, max = 1, value = 0, step = 0.1),
         hr(),
-        plotOutput('mini_quad')
+        plotOutput('mini_quad', height = '150px')
       ),
       column(10,
         plotOutput('compare_map')
@@ -119,12 +117,15 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   ### damselfish and butterflyfish? or is that going out on a limb...
   ### if we did that, use the same process as corals to determine depths
     fluidRow(
-      column(2, 
-        h5('controls?'),
-        h6('Toggle for bathymetry poly')
+      column(2,
+        h6('Select coral species'),
+        selectInput('coral_species', 'Choose a species:',
+                    choices = unique(spp_coralmaps$sciname) %>% sort()),
+        hr(),
+        plotOutput('coral_quad', height = '150px')
       ),
       column(10,
-        plotlyOutput('coral_plot'),
+        # plotlyOutput('coral_plot'),
         hr(),
         h5('Bar chart goes here')
       )

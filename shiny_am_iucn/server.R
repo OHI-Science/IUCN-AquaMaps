@@ -19,7 +19,8 @@ server <- shinyServer(function(input, output, session) {
       spp_choices <- spp_list %>%
         filter(spp_group_text == input$spp_group) %>%
         distinct() %>%
-        .$sciname
+        .$sciname %>%
+        sort()
       updateSelectInput(session, inputId = "species",
                         choices = spp_choices)
     }
@@ -64,8 +65,8 @@ server <- shinyServer(function(input, output, session) {
     create_miniquad(input$species)
   })
 
-  output$coral_plot <- renderPlotly({
-    create_coralplot()
+  output$coral_quad <- renderPlot({
+    create_coralquad()
   })
   
 })

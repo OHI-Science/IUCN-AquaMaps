@@ -10,9 +10,8 @@ library(RColorBrewer)
 
 ### read data for raster (used to plot species)
 message('Reading in raster info...\n')
-loiczid_raster_file  <- 'data/loiczid_raster.tif'
-loiczid_raster       <- raster(loiczid_raster_file)
-names(loiczid_raster) <- 'loiczid'
+loiczid_raster       <- raster('data/loiczid_raster.tif') %>%
+  setNames('loiczid')
 
 ### read in spp cell files
 ### this may be slowing down the initial display of the app... load elsewhere?
@@ -25,6 +24,7 @@ quad_list <- read_csv('data/spp_list_quads.csv') %>%
 
 area_align_mean <- mean(quad_list$area_ratio, na.rm = TRUE)
 dist_align_mean <- mean(quad_list$dist_align, na.rm = TRUE)
+
 
 spp_coralmaps <- read_csv('data/coral_spp_areas.csv') %>%
   rename(dist_align_raw = sm_perc_raw, dist_align_clipped = sm_perc_clipped) %>%
@@ -91,7 +91,7 @@ get_spp_map_df <- function(species, am_cutoff = 0) { ### species <- spp_list$sci
 
 get_rast <- function(spp_map_df, type) {
   message('in get_rast()')
-  rast_obj  <-  subs(loiczid_raster, spp_map_df, 
+  rast_obj  <-  raster::subs(loiczid_raster, spp_map_df, 
                      by    = 'loiczid', 
                      which = paste0(type, '_pres'), 
                      subsWithNA = TRUE)
@@ -172,7 +172,8 @@ create_barchart <- function(expt_rev) {
                                       y = pct_quad,
                                       fill = quad, 
                                       weight = pct_quad)) +
-    theme(panel.grid.major.x = element_blank()) +
+    theme(panel.grid.major.x = element_blank(),
+          text = element_text(size = 14)) +
     geom_bar(stat = 'identity', alpha = 1) +
     scale_fill_manual(values = c('q1' = '#4dac26',
                                  'q2' = '#b8e186', 
@@ -188,7 +189,7 @@ create_barchart <- function(expt_rev) {
     geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
     ### add text
     geom_text(aes(label = sprintf('n = %s', n_spp), y = 1.01), hjust = 0, 
-              size = 2.5, 
+              size = 3,
               color = 'grey30') +
     coord_flip() +
     labs(x = 'Taxonomic Group', 
@@ -198,7 +199,6 @@ create_barchart <- function(expt_rev) {
   return(barchart_spp_gp_quads)
   
 }
-
 
 
 create_quadplot <- function(taxa_sel, expt_rev) {
@@ -220,7 +220,8 @@ create_quadplot <- function(taxa_sel, expt_rev) {
                              aes(x = area_ratio, 
                                  y = dist_align,
                                  key = sciname)) +
-  ggtheme_plot + 
+    theme(panel.grid.major = element_line(color = 'grey80'),
+          text = element_text(size = 10)) +
     ### color the quadrant backgrounds:
     annotate("rect", xmin = area_align_mean, xmax = 100, 
              ymin = dist_align_mean, ymax = 100, 
@@ -243,14 +244,13 @@ create_quadplot <- function(taxa_sel, expt_rev) {
   ### Manage scales for color and size 
   scatter_quadplot <- scatter_quadplot +
     scale_x_continuous(expand = c(0, 0), 
-                       limits = c(0, 102),
+                       limits = c(-1, 101),
                        breaks = c(seq(0, 100, 25)),
                        labels = c('0%', '25%', '50%', '75%', '100%')) +
     scale_y_continuous(expand = c(0, 0),
-                       limits = c(0, 103),
+                       limits = c(-1, 101),
                        breaks = c(seq(0, 100, 25)),
                        labels = c('0%', '25%', '50%', '75%', '100%'))
-  
   
   ### here are mean labels:
   scatter_quadplot <- scatter_quadplot +
@@ -269,10 +269,9 @@ create_quadplot <- function(taxa_sel, expt_rev) {
              fontface = 'bold.italic', angle = 0,
              label = sprintf('Mean = %s%%', round(dist_align_mean, 1)))
   
-  
   scatter_quadplot <- scatter_quadplot +
-    labs(x = bquote('Area ratio (%)'), 
-         y = bquote('Distribution alignment (%)'))
+    labs(x = bquote('Area ratio'), 
+         y = bquote('Distribution alignment'))
   
   return(scatter_quadplot)
 }
@@ -280,14 +279,11 @@ create_quadplot <- function(taxa_sel, expt_rev) {
 
 create_miniquad <- function(spp_sel) {
 
-  ### mongo plot time
   scatter_miniquad <- ggplot(quad_list %>% 
                                filter(sciname == spp_sel),
                              aes(x = area_ratio, 
                                  y = dist_align)) +
-    ggtheme_plot + 
-    theme(panel.grid.major = element_blank(),
-          axis.title = element_blank(),
+    theme(panel.grid.major = element_line(color = 'grey80'), # element_blank(),
           axis.text  = element_blank()) +
     ### color the quadrant backgrounds:
     annotate("rect", xmin = area_align_mean, xmax = 100, 
@@ -306,25 +302,72 @@ create_miniquad <- function(spp_sel) {
              ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
              fill= "#d01c8b") + 
-    geom_point(color = 'red3', size = 2, alpha = .8)
+    geom_point(data = quad_list, 
+               aes(x = area_ratio, y = dist_align),
+               # color = '#4d4dac', alpha = .2) +
+               color = 'grey50', alpha = .1) +
+  geom_point(color = 'red3', size = 3, alpha = .8) +
+    
+    labs(x = bquote('Area ratio'), 
+         y = bquote('Dist. align')) +
+    
+    coord_cartesian(xlim = c(0, 100), ylim = c(0, 100), expand = FALSE)
   
   return(scatter_miniquad)
 }
 
 
-create_coralplot <- function() {
-
-  clipped_quads <- ggplot(spp_coralmaps %>%
-                            filter(!iucn_sid %in% (iucn_coral_fixed %>% 
-                                                     filter(perc > 100) %>% 
-                                                     .$iucn_sid)),
-                          aes(x = ratio, y = perc, group = iucn_sid)) +
-    ggtheme_plot + 
-    geom_line(color = 'grey50', size = .5, alpha = .3) +
-    geom_point(aes(color = method), size = 2, alpha = .8) +
-    labs(x = 'Area ratio (%)',
-         y = 'Distribtion (%)',
-         title = 'Coral species alignment, IUCN full range vs depth-clipped')
+create_coralquad <- function(coral_spp) {
+  ### basically a mini-quad showing the before and after of the coral species
+  # coral_spp <- spp_coralmaps$sciname[1]
   
-  return(clipped_quads)
+  spp_coralmap <- spp_coralmaps %>%
+    filter(sciname == coral_spp & method == 'all depth') %>%
+    select(sciname, ratio, perc) %>%
+    left_join(spp_coralmaps %>%
+                filter(sciname == coral_spp & method != 'all depth') %>%
+                select(sciname, ratio_clip = ratio, perc_clip = perc),
+              by = 'sciname')
+                
+  coral_quad <- ggplot(spp_coralmap,
+                          aes(x = ratio, y = perc)) +
+    theme(panel.grid.major = element_line(color = 'grey80'), # element_blank(),
+          axis.text  = element_blank()) +
+    ### color the quadrant backgrounds:
+    annotate("rect", xmin = area_align_mean, xmax = 100, 
+             ymin = dist_align_mean, ymax = 100, 
+             alpha = .3, 
+             fill= "#4dac26")  + 
+    annotate("rect", xmax = area_align_mean, xmin =   0, 
+             ymin = dist_align_mean, ymax = 100, 
+             alpha = .3, 
+             fill= "#b8e186") + 
+    annotate("rect", xmin = area_align_mean, xmax = 100, 
+             ymax = dist_align_mean, ymin =   0, 
+             alpha = .3, 
+             fill= "#f1b6da") + 
+    annotate("rect", xmax = area_align_mean, xmin =   0, 
+             ymax = dist_align_mean, ymin =   0, 
+             alpha = .3, 
+             fill= "#d01c8b") + 
+    geom_point(data = quad_list, 
+               aes(x = area_ratio, y = dist_align),
+               # color = '#4d4dac', alpha = .2) +
+               color = 'grey50', alpha = .1) +
+    geom_point(data = spp_coralmaps %>%
+                 filter(method == 'all depth'), 
+               aes(x = ratio, y = perc, group = iucn_sid),
+               color = 'grey60', alpha = .1) +
+    ### plot start point, then end point, then segment
+    geom_segment(aes(xend = ratio_clip, yend = perc_clip),
+                 color = 'grey50', size = 1, alpha = .8,
+                 arrow = arrow(length = unit(0.03, "npc"))) +
+    geom_point(color = 'grey40', size = 3, show.legend = FALSE) +
+    geom_point(aes(x = ratio_clip, y = perc_clip), color = 'red3', size = 3, show.legend = FALSE) +
+    labs(x = bquote('Area ratio'), 
+         y = bquote('Dist. align')) +
+    
+    coord_cartesian(xlim = c(0, 100), ylim = c(0, 100), expand = FALSE)
+  
+  return(coral_quad)
 }
