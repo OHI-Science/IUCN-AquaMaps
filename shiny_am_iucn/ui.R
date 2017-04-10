@@ -20,6 +20,7 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
       )
   ),
   
+
   tabPanel('Figures',
     # Abstract of paper; sidebar is authors, publication info, etc
     fluidRow(

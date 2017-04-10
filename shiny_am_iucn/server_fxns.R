@@ -2,6 +2,7 @@
 
 library(raster)
 library(maps)
+library(leaflet)
 library(tmap)
 data(World)
 library(RColorBrewer)
@@ -98,6 +99,21 @@ get_rast <- function(spp_map_df, type) {
   return(rast_obj)
 }
 
+#function to use leaflet for species maps (we tested this but are not using it due to weird zoom issues)
+assemble_map_leaflet <- function(map_rast,spp){
+  message('in assemble_map_leaflet()')
+  pal <- colorFactor(c("#FFAEB9", "#41B6C4","#0C2C84"), values(rast),
+                      na.color = "transparent")
+  
+  leaflet() %>% addTiles() %>%
+    addRasterImage(rast, colors = pal,opacity = 1) %>%
+    addLegend(colors = c("#FFAEB9", "#41B6C4","#0C2C84"), 
+              labels = c("Aquamaps","IUCN","Both"),
+              title = "Dataset",
+              opacity = 1)
+}
+
+
 assemble_map <- function(map_rast, spp) {
   message('in assemble_map()')
   map_obj <- tm_shape(map_rast) +
@@ -187,7 +203,7 @@ create_barchart <- function(expt_rev) {
 
 create_quadplot <- function(taxa_sel, expt_rev) {
   ### mongo plot time
-  
+
   if(taxa_sel == 'all') {
     quad_list_tmp <- quad_list
   } else {
@@ -297,6 +313,7 @@ create_miniquad <- function(spp_sel) {
 
 
 create_coralplot <- function() {
+
   clipped_quads <- ggplot(spp_coralmaps %>%
                             filter(!iucn_sid %in% (iucn_coral_fixed %>% 
                                                      filter(perc > 100) %>% 
