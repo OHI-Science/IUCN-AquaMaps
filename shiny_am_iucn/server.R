@@ -42,7 +42,7 @@ server <- shinyServer(function(input, output, session) {
     {
       message('observed change in spp_map$df or input$show_maps; creating map')
       map_rast <- get_rast(spp_map$df, type = input$show_maps)
-      map_obj  <- assemble_map(map_rast, spp = input$species)
+      map_obj  <- assemble_map_base(map_rast, spp = input$species)
       
       spp_map$map <- map_obj
     }

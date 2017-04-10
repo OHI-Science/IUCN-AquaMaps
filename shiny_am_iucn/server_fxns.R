@@ -1,17 +1,44 @@
 ### server_fxns.R
-
+library(stringr)
 library(raster)
 library(maps)
-library(leaflet)
 library(tmap)
 data(World)
 library(RColorBrewer)
+library(rgdal)
+library(ggplot2)
+
 
 
 ### read data for raster (used to plot species)
 message('Reading in raster info...\n')
 loiczid_raster       <- raster('data/loiczid_raster.tif') %>%
   setNames('loiczid')
+
+land <- readOGR(dsn = 'data', layer = "ne_110m_land")
+
+# convert to dataframe
+land_df <- fortify(land)
+
+# create a blank ggplot theme
+theme_opts <- list(theme(panel.grid.minor = element_blank(),
+                         panel.grid.major = element_blank(),
+                         panel.background = element_blank(),
+                         plot.background = element_rect(fill="#e6e8ed"),
+                         panel.border = element_blank(),
+                         axis.line = element_blank(),
+                         axis.text.x = element_blank(),
+                         axis.text.y = element_blank(),
+                         axis.ticks = element_blank(),
+                         axis.title.x = element_blank(),
+                         axis.title.y = element_blank(),
+                         plot.title = element_text(size=22)))
+
+# plot map
+ggplot(land_df, aes(long,lat, group=group)) + 
+  geom_polygon()  + 
+  coord_equal() + 
+  theme_opts
 
 ### read in spp cell files
 ### this may be slowing down the initial display of the app... load elsewhere?
@@ -113,6 +140,15 @@ assemble_map_leaflet <- function(map_rast,spp){
               opacity = 1)
 }
 
+assemble_map_base <- function(map_rast,spp){
+  
+  plot(land,col='darkgray')
+  plot(map_rast,axes=F,col = c("#FFAEB9", "#41B6C4","#0C2C84"),
+       title = spp, add=T,box=F,legend=F)
+  legend("topright", inset=c(0,-.05),legend=c("Aquamaps","IUCN","Both"),
+                      col=c("#FFAEB9","#41B6C4","#0C2C84"),pch = 15,cex=0.7,bty='n')
+  
+}
 
 assemble_map <- function(map_rast, spp) {
   message('in assemble_map()')
