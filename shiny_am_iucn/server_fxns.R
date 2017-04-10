@@ -119,7 +119,7 @@ create_quadplot <- function() {
           panel.grid.major = element_line(colour = 'grey90'),
           axis.line = element_line(colour = "grey30"))
   
-  quad_list <- read_csv('data/quad_list.csv')
+  quad_list <- read_csv('shiny_am_iucn/data/quad_list.csv')
   ### define 25%, 50%, and 75% quartiles for both x and y axes
   
   area_align_mean <- mean(quad_list$area_ratio, na.rm = TRUE)
@@ -207,7 +207,7 @@ create_quadplot <- function() {
 
 
 create_coralplot <- function() {
-  spp_coralmaps <- read_csv('data/coral_spp_areas.csv')
+  spp_coralmaps <- read_csv('shiny_am_iucn/data/coral_spp_areas.csv')
   
   ggtheme_basic <- theme(axis.ticks = element_blank(),
                          text = element_text(family = 'Helvetica', color = 'gray30', size = 8),
