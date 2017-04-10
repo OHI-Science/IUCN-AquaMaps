@@ -14,7 +14,8 @@ server <- shinyServer(function(input, output, session) {
   ### This function takes a single species scientific name as input, then grabs 
   ### all occurrence cells and associated probability per cell
   
-  observeEvent(input$spp_group, ### select a group, then update species list choices
+  ### for Species Map tab: upon selecting a group, update species list choices
+  observeEvent(input$spp_group, 
     {
       spp_choices <- spp_list %>%
         filter(spp_group_text == input$spp_group) %>%
@@ -26,15 +27,18 @@ server <- shinyServer(function(input, output, session) {
     }
   )
   
+  ### For Species map tab:  upon selecting a species, get map cells
   observeEvent(
-    {input$species; input$am_cutoff}, ### change in species selector regenerates both maps
+    {input$species}, 
     {
-      message('observed change in input$species or input$am_cutoff; getting spp_map dataframe')
-      spp_map$df <- get_spp_map_df(input$species, input$am_cutoff)
+      message('observed change in input$species; getting spp_map dataframe')
+      spp_map$df <- get_spp_map_df(input$species)
       print(head(spp_map$df))
     }
   )
   
+  ### For Species map tab:  upon a change in the spp_map$df OR the input$show_maps,
+  ### create the map to show AM, IUCN, or Both
   create_map <- observeEvent(
     {spp_map$df; input$show_maps}, 
       ### triggered by change in spp_map$am_rast (which may also include 
@@ -52,6 +56,7 @@ server <- shinyServer(function(input, output, session) {
     spp_map$map
   }, width = 800, height = 600) 
   
+  ### For Map Alignment tab
   output$quad_plot <- renderPlotly({
     create_quadplot(input$taxa_quad, input$expert_rev)
   })
@@ -60,13 +65,13 @@ server <- shinyServer(function(input, output, session) {
     create_barchart(input$expert_rev)
   })
   
-  
   output$mini_quad <- renderPlot({
     create_miniquad(input$species)
   })
 
+  ### For Coral Depth tab
   output$coral_quad <- renderPlot({
-    create_coralquad()
+    create_coralquad(input$coral_species)
   })
   
 })

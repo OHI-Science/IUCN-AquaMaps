@@ -1,18 +1,13 @@
 ### server_fxns.R
-library(stringr)
-library(raster)
 library(maps)
 library(tmap)
 data(World)
 library(RColorBrewer)
 library(rgdal)
-library(ggplot2)
-
-
 
 ### read data for raster (used to plot species)
 message('Reading in raster info...\n')
-loiczid_raster       <- raster('data/loiczid_raster.tif') %>%
+loiczid_raster <- raster('data/loiczid_raster.tif') %>%
   setNames('loiczid')
 
 land <- readOGR(dsn = 'data', layer = "ne_110m_land")
@@ -35,10 +30,10 @@ theme_opts <- list(theme(panel.grid.minor = element_blank(),
                          plot.title = element_text(size=22)))
 
 # plot map
-ggplot(land_df, aes(long,lat, group=group)) + 
-  geom_polygon()  + 
-  coord_equal() + 
-  theme_opts
+# ggplot(land_df, aes(long,lat, group=group)) + 
+#   geom_polygon()  + 
+#   coord_equal() + 
+#   theme_opts
 
 ### read in spp cell files
 ### this may be slowing down the initial display of the app... load elsewhere?
@@ -49,9 +44,14 @@ am_spp_cells   <- read_csv('data/am_cells.csv')
 quad_list <- read_csv('data/spp_list_quads.csv') %>%
   rename(dist_align = sm_perc)
 
+# spp_list_edit <- quad_list %>%
+#   select(iucn_sid, am_sid, sciname, spp_group_text) %>%
+#   filter(iucn_sid %in% iucn_spp_cells$iucn_sid & am_sid %in% am_spp_cells$am_sid) %>%
+#   distinct()
+# write_csv(spp_list_edit, 'data/spp_list.csv')
+
 area_align_mean <- mean(quad_list$area_ratio, na.rm = TRUE)
 dist_align_mean <- mean(quad_list$dist_align, na.rm = TRUE)
-
 
 spp_coralmaps <- read_csv('data/coral_spp_areas.csv') %>%
   rename(dist_align_raw = sm_perc_raw, dist_align_clipped = sm_perc_clipped) %>%
@@ -67,18 +67,18 @@ quad_gp_list <- read_csv('data/spp_gp_quads.csv') %>%
               mutate(expert = TRUE))
   
 ### generic theme for all plots
-theme_set(theme_bw())
-ggtheme_plot <- theme_update(axis.ticks = element_blank(),
-  text = element_text(family = 'Helvetica', color = 'gray30', size = 9),
-  plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
-  panel.background = element_blank(),
-  legend.position = 'right',
-  panel.border     = element_blank(),
-  panel.grid.minor = element_blank(), 
-  # panel.grid.major = element_line(colour = 'grey90', size = .25),
-  panel.grid.major = element_blank(),
-  legend.key = element_rect(colour = NA, fill = NA),
-  axis.line = element_blank()) # element_line(colour = "grey30", size = .5))
+# theme_set(theme_bw())
+# ggtheme_plot <- theme_update(axis.ticks = element_blank(),
+#   text = element_text(family = 'Helvetica', color = 'gray30', size = 9),
+#   plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
+#   panel.background = element_blank(),
+#   legend.position = 'right',
+#   panel.border     = element_blank(),
+#   panel.grid.minor = element_blank(), 
+#   # panel.grid.major = element_line(colour = 'grey90', size = .25),
+#   panel.grid.major = element_blank(),
+#   legend.key = element_rect(colour = NA, fill = NA),
+#   axis.line = element_blank()) # element_line(colour = "grey30", size = .5))
 
 
 
@@ -86,14 +86,15 @@ ggtheme_plot <- theme_update(axis.ticks = element_blank(),
 # This function takes a single species scientific name as input, then grabs all 
 # occurrence cells and associated Aquamaps probability and/or IUCN proportional area
 # per cell
-get_spp_map_df <- function(species, am_cutoff = 0) { ### species <- spp_list$sciname[1]
-  message('in get_spp_map_df()')
-  ### am_cutoff is currently ignored
-  
+get_spp_map_df <- function(species) { ### species <- spp_list$sciname[1]
+  message('in get_spp_map_df(), looking for species: ', species)
+
   spp_id <- spp_list %>%
     filter(sciname == species) %>%
     dplyr::select(am_sid, iucn_sid, sciname) %>%
     distinct()
+  
+  print(spp_id)
   
   iucn_spp_map <- iucn_spp_cells %>%
     filter(iucn_sid %in% spp_id$iucn_sid) %>%
@@ -117,7 +118,8 @@ get_spp_map_df <- function(species, am_cutoff = 0) { ### species <- spp_list$sci
 }
 
 get_rast <- function(spp_map_df, type) {
-  message('in get_rast()')
+  message('in get_rast(), spp_map_df is of class ', class(spp_map_df))
+  print(head(spp_map_df))
   rast_obj  <-  raster::subs(loiczid_raster, spp_map_df, 
                      by    = 'loiczid', 
                      which = paste0(type, '_pres'), 
@@ -198,6 +200,14 @@ create_barchart <- function(expt_rev) {
     spp_gp_quadrants <- quad_gp_list %>%
       filter(!expert)
   }
+  
+  quad_names <- data.frame('quad' = c('q4', 'q3', 'q2', 'q1'),
+                           'quad_name' = factor(c('poorly aligned', 
+                                                  'area-aligned', 
+                                                  'dist-aligned',
+                                                  'well-aligned'),
+                                                ordered = TRUE))
+  break_nums <- seq(0, 100, 20)
   
   spp_gp_quadrants <- spp_gp_quadrants %>% 
     mutate(quad = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'))) %>%

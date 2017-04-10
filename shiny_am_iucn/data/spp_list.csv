@@ -1,201 +1,169 @@
-am_sid,am_cat,sciname,iucn_sid,pop_trend,pop_cat,spp_group,id_no,iucn_subpop,spatial_source,cat_score,trend_score,spp_group_text
-URM-Cn-6038,LC,Porites astreoides,133680,Increasing,LC,CORALS_Part3,133680,NA,iucn,0,0.5,Corals
-Fis-25637,LC,Labroides dimidiatus,187396,Unknown,LC,WRASSE,187396,NA,iucn,0,NA,Wrasses
-Fis-32641,NA,Antennablennius australis,46079217,Stable,LC,COMBTOOTHBLENNIES,46079217,NA,iucn,0,0,Combtooth Blennies
-W-Hol-208952,DD,Actinopyga lecanora,180266,Unknown,DD,SEACUCUMBERS,180266,NA,iucn,NA,NA,Sea Cucumbers
-W-Msc-428195,DD,Conus luteus,192370,Unknown,LC,CONESNAILS,192370,NA,iucn,0,NA,Cone snails
-Fis-150314,NA,Hypleurochilus pseudoaequipinnis,47141104,Unknown,LC,COMBTOOTHBLENNIES,47141104,NA,iucn,0,NA,Combtooth Blennies
-ITS-660118,LC,Scyllarides squammosus,170008,Unknown,LC,LOBSTERS,170008,NA,iucn,0,NA,Lobsters
-Fis-26244,LC,Epinephelus hexagonatus,132799,Decreasing,LC,GROUPERS,132799,NA,iucn,0,-0.5,Groupers
-Fis-61807,NA,Istiblennius muelleri,48342271,Stable,LC,COMBTOOTHBLENNIES,48342271,NA,iucn,0,0,Combtooth Blennies
-W-Msc-430457,LC,Conus chaldaeus,192580,Unknown,LC,CONESNAILS,192580,NA,iucn,0,NA,Cone snails
-SLB-184850,LC,Acantharctus ornatus,185031,Unknown,LC,LOBSTERS,185031,NA,iucn,0,NA,Lobsters
-SLB-66022,EN,Holothuria scabra,180257,Decreasing,EN,SEACUCUMBERS,180257,NA,iucn,0.6,-0.5,Sea Cucumbers
-Fis-35467,NA,Arothron caeruleopunctatus,193599,Unknown,LC,PUFFERFISH,193599,NA,iucn,0,NA,Pufferfish
-Fis-28768,NA,Takifugu pardalis,193693,Unknown,LC,PUFFERFISH,193693,NA,iucn,0,NA,Pufferfish
-Fis-26249,NA,Canthigaster rivulata,193705,Unknown,LC,PUFFERFISH,193705,NA,iucn,0,NA,Pufferfish
-Fis-35297,LC,Chaetodon smithi,165675,Stable,LC,BUTTERFLYFISH,165675,NA,iucn,0,0,Butterflyfish
-ITS-552916,LC,Nephropsis acanthura,169985,Unknown,LC,LOBSTERS,169985,NA,iucn,0,NA,Lobsters
-Fis-29260,LC,Acanthurus bahianus,177985,Stable,LC,SURGEONFISH_TANGS_UNICORNFISH,177985,NA,iucn,0,0,Surgeons/Tangs/Unicornfish
-ITS-Mam-180442,LC,Lagenorhynchus albirostris,11142,Unknown,LC,MARINE_MAMMALS_update,11142,NA,iucn,0,NA,Marine Mammals
-Fis-25727,LC,Hologymnosus annulatus,187698,Unknown,LC,WRASSE,187698,NA,iucn,0,NA,Wrasses
-W-Msc-215559,LC,Conus eburneus,192700,Unknown,LC,CONESNAILS,192700,NA,iucn,0,NA,Cone snails
-Fis-26113,NT,Epinephelus malabaricus,61338,Decreasing,NT,GROUPERS,61338,NA,iucn,0.2,-0.5,Groupers
-Fis-61995,NA,Ecsenius tessera,48342512,Stable,LC,COMBTOOTHBLENNIES,48342512,NA,iucn,0,0,Combtooth Blennies
-Fis-21693,LC,Halichoeres prosopeion,187438,Unknown,LC,WRASSE,187438,NA,iucn,0,NA,Wrasses
-Fis-55125,DD,Takifugu poecilonotus,21342,Unknown,LC,PUFFERFISH,21342,NA,iucn,0,NA,Pufferfish
-Fis-33881,LC,Chaetodon decussatus,165648,Stable,LC,BUTTERFLYFISH,165648,NA,iucn,0,0,Butterflyfish
-URM-Cn-6136,LC,Psammocora explanulata,133589,Unknown,LC,CORALS_Part3,133589,NA,iucn,0,NA,Corals
-Fis-61874,NA,Paralticus amboinensis,48342437,Stable,LC,COMBTOOTHBLENNIES,48342437,NA,iucn,0,0,Combtooth Blennies
-ITS-552997,LC,Arctides antipodarum,170034,Unknown,LC,LOBSTERS,170034,NA,iucn,0,NA,Lobsters
-URM-Cn-4736,VU,Acropora derawanensis,132984,Decreasing,VU,CORALS_Part1,132984,NA,iucn,0.4,-0.5,Corals
-ITS-554453,NT,Thalassarche melanophris,22698375,Decreasing,NT,BOTW,22698375,NA,iucn-bli,0.2,-0.5,Birds
-URM-Cn-5528,LC,Echinopora lamellosa,133088,Decreasing,LC,CORALS_Part3,133088,NA,iucn,0,-0.5,Corals
-Fis-31908,LC,Chaetodon auripes,165693,Stable,LC,BUTTERFLYFISH,165693,NA,iucn,0,0,Butterflyfish
-Fis-31079,LC,Acanthurus nigroris,177999,Stable,LC,SURGEONFISH_TANGS_UNICORNFISH,177999,NA,iucn,0,0,Surgeons/Tangs/Unicornfish
-Fis-145446,NA,Dodekablennos fraseri,48342448,Stable,LC,COMBTOOTHBLENNIES,48342448,NA,iucn,0,0,Combtooth Blennies
-ITS-176830,LC,Larus delawarensis,22694317,Increasing,LC,BOTW,22694317,NA,iucn-bli,0,0.5,Birds
-SLB-173560,LC,Stereomastis galil,185069,Unknown,LC,LOBSTERS,185069,NA,iucn,0,NA,Lobsters
-Fis-26899,NA,Takifugu rubripes,193612,Decreasing,NT,PUFFERFISH,193612,NA,iucn,0.2,-0.5,Pufferfish
-Fis-35803,LC,Chaetodon lunulatus,165651,Stable,LC,BUTTERFLYFISH,165651,NA,iucn,0,0,Butterflyfish
-ITS-824131,LC,Sternula saundersi,22694666,Decreasing,LC,BOTW,22694666,NA,iucn-bli,0,-0.5,Birds
-ITS-174684,LC,Pelecanus erythrorhynchos,22697611,Increasing,LC,BOTW,22697611,NA,iucn-bli,0,0.5,Birds
-URM-Cn-5572,LC,Goniastrea australensis,132883,Decreasing,LC,CORALS_Part3,132883,NA,iucn,0,-0.5,Corals
-Fis-161183,LC,Cirrhilabrus cenderawasih,187543,Unknown,LC,WRASSE,187543,NA,iucn,0,NA,Wrasses
-SLB-130695,VU,Phalacrocorax chalconotus,22696853,Decreasing,VU,BOTW,22696853,NA,iucn-bli,0.4,-0.5,Birds
-W-Msc-215478,LC,Conus sanguinolentus,192370,Unknown,LC,CONESNAILS,192370,NA,iucn,0,NA,Cone snails
-Fis-58548,NA,Entomacrodus vermiculatus,172447,Stable,LC,COMBTOOTHBLENNIES,172447,NA,iucn,0,0,Combtooth Blennies
-URM-Cn-4832,VU,Acropora spicifera,133432,Decreasing,VU,CORALS_Part1,133432,NA,iucn,0.4,-0.5,Corals
-URM-Cn-5574,LC,Goniastrea edwardsi,133365,Decreasing,LC,CORALS_Part1,133365,NA,iucn,0,-0.5,Corals
-Fis-32318,DD,Epinephelus timorensis,64406,Unknown,DD,GROUPERS,64406,NA,iucn,NA,NA,Groupers
-Fis-22832,NT,Thunnus alalunga,21856,Decreasing,NT,TUNAS_BILLFISHES,21856,NA,iucn,0.2,-0.5,Tunas/Billfish
-Fis-22199,LC,Doratonotus megalepis,187456,Unknown,LC,WRASSE,187456,NA,iucn,0,NA,Wrasses
-Fis-26772,NA,Crenidens crenidens,170216,Unknown,LC,SEABREAMS_PORGIES,170216,NA,iucn,0,NA,Seabreams/Porgies
-URM-Cn-4959,LC,Helioseris cucullata,133522,Stable,LC,CORALS_Part3,133522,NA,iucn,0,0,Corals
-ITS-174628,LC,Oceanodroma leucorhoa,22698511,Stable,LC,BOTW,22698511,NA,iucn-bli,0,0,Birds
-Fis-27817,LC,Chaetodontoplus melanosoma,165850,Stable,LC,ANGELFISH,165850,NA,iucn,0,0,Angelfish
-Fis-31440,LC,Chaetodon punctatofasciatus,165632,Stable,LC,BUTTERFLYFISH,165632,NA,iucn,0,0,Butterflyfish
-Fis-33082,LC,Chaetodon mitratus,165666,Stable,LC,BUTTERFLYFISH,165666,NA,iucn,0,0,Butterflyfish
-ITS-824103,LC,Onychoprion aleuticus,22694716,Stable,LC,BOTW,22694716,NA,iucn-bli,0,0,Birds
-Fis-23820,NA,Sphoeroides testudineus,193813,Unknown,LC,PUFFERFISH,193813,NA,iucn,0,NA,Pufferfish
-SLB-184834,LC,Stereomastis polita,185003,Unknown,LC,LOBSTERS,185003,NA,iucn,0,NA,Lobsters
-Fis-33074,LC,Chaetodon dolosus,165654,Stable,LC,BUTTERFLYFISH,165654,NA,iucn,0,0,Butterflyfish
-ITS-Mam-180547,EN,Enhydra lutris,7750,Decreasing,EN,TERRESTRIAL_MAMMALS,7750,NA,iucn,0.6,-0.5,Terr. Mammals
-Fis-113466,NA,Meiacanthus crinitus,48342398,Stable,LC,COMBTOOTHBLENNIES,48342398,NA,iucn,0,0,Combtooth Blennies
-Fis-22168,LC,Centropyge argi,165837,Unknown,LC,ANGELFISH,165837,NA,iucn,0,NA,Angelfish
-Fis-24847,NA,Parablennius marmoreus,46104109,Unknown,LC,COMBTOOTHBLENNIES,46104109,NA,iucn,0,NA,Combtooth Blennies
-SLB-93466,VU,Acropora globiceps,133387,Decreasing,VU,CORALS_Part3,133387,NA,iucn,0.4,-0.5,Corals
-Fis-26680,NA,Andamia reyi,48342407,Unknown,DD,COMBTOOTHBLENNIES,48342407,NA,iucn,NA,NA,Combtooth Blennies
-Fis-31444,LC,Chaetodon semeion,165725,Stable,LC,BUTTERFLYFISH,165725,NA,iucn,0,0,Butterflyfish
-Fis-22721,NT,Epinephelus morio,44681,Decreasing,NT,GROUPERS,44681,NA,iucn,0.2,-0.5,Groupers
-Fis-28996,LC,Halichoeres melanotis,183731,Stable,LC,WRASSE,183731,NA,iucn,0,0,Wrasses
-Fis-25987,NA,Rhabdoblennius snowi,48342471,Stable,LC,COMBTOOTHBLENNIES,48342471,NA,iucn,0,0,Combtooth Blennies
-Fis-29129,LC,Chlorurus genazonatus,190758,Unknown,LC,WRASSE,190758,NA,iucn,0,NA,Wrasses
-Fis-26714,NA,Plagiotremus goslinei,48342392,Stable,LC,COMBTOOTHBLENNIES,48342392,NA,iucn,0,0,Combtooth Blennies
-Fis-62061,LC,Naso caeruleacauda,177968,Stable,LC,SURGEONFISH_TANGS_UNICORNFISH,177968,NA,iucn,0,0,Surgeons/Tangs/Unicornfish
-Fis-29364,NA,Dentex angolensis,170158,Unknown,NT,SEABREAMS_PORGIES,170158,NA,iucn,0.2,NA,Seabreams/Porgies
-URM-Cn-4819,EN,Acropora roseni,133206,Decreasing,EN,CORALS_Part3,133206,NA,iucn,0.6,-0.5,Corals
-Fis-145447,NA,Enchelyurus flavipes,48342232,Stable,LC,COMBTOOTHBLENNIES,48342232,NA,iucn,0,0,Combtooth Blennies
-Fis-26120,NT,Cephalopholis hemistiktos,132759,Decreasing,NT,GROUPERS,132759,NA,iucn,0.2,-0.5,Groupers
-W-Msc-428256,LC,Conus pusio,192715,NA,VU,CONESNAILS,192715,NA,iucn,0.4,NA,Cone snails
-ITS-176998,CR,Brachyramphus brevirostris,22694875,Decreasing,NT,BOTW,22694875,NA,iucn-bli,0.2,-0.5,Birds
-SLB-184838,LC,Stereomastis surda,185023,Unknown,LC,LOBSTERS,185023,NA,iucn,0,NA,Lobsters
-ITS-Mam-180653,LC,Halichoerus grypus,9660,Increasing,LC,MARINE_MAMMALS_update,9660,NA,iucn,0,0.5,Marine Mammals
-URM-Cn-5849,NT,Acanthastrea hillae,133106,Unknown,NT,CORALS_Part1,133106,NA,iucn,0.2,NA,Corals
-Fis-23176,LR/cd,Lithognathus lithognathus,12137,Decreasing,EN,SEABREAMS_PORGIES,12137,NA,iucn,0.6,-0.5,Seabreams/Porgies
-SLB-62668,NA,Sandalolitha africana,133538,Unknown,LC,CORALS_Part3,133538,NA,iucn,0,NA,Corals
-URM-Cn-6137,LC,Psammocora haimeana,133406,Unknown,LC,CORALS_Part1,133406,NA,iucn,0,NA,Corals
-Fis-25991,NA,Aspidontus dussumieri,48342525,Stable,LC,COMBTOOTHBLENNIES,48342525,NA,iucn,0,0,Combtooth Blennies
-Fis-59608,NA,Pereulixia kosiensis,46080027,Stable,LC,COMBTOOTHBLENNIES,46080027,NA,iucn,0,0,Combtooth Blennies
-Fis-32511,LC,Gomphosus caeruleus,187569,Unknown,LC,WRASSE,187569,NA,iucn,0,NA,Wrasses
-ITS-174746,LC,Phalacrocorax melanoleucos,22696743,Unknown,LC,BOTW,22696743,NA,iucn-bli,0,NA,Birds
-Fis-163776,LC,Hyporthodus ergastularius,132795,Unknown,LC,GROUPERS,132795,NA,iucn,0,NA,Groupers
-Fis-30954,NA,Cirripectes springeri,48342425,Stable,LC,COMBTOOTHBLENNIES,48342425,NA,iucn,0,0,Combtooth Blennies
-URM-Cn-5791,NT,Polyphyllia novaehiberniae,133372,Unknown,NT,CORALS_Part3,133372,NA,iucn,0.2,NA,Corals
-Fis-25281,LC,Acanthurus nubilus,177961,Unknown,LC,SURGEONFISH_TANGS_UNICORNFISH,177961,NA,iucn,0,NA,Surgeons/Tangs/Unicornfish
-Fis-35756,LC,Sphoeroides sechurae,184034,Unknown,LC,PUFFERFISH,184034,NA,iucn,0,NA,Pufferfish
-Fis-145088,LC,Halichoeres kallochroma,187766,Unknown,LC,WRASSE,187766,NA,iucn,0,NA,Wrasses
-Fis-133976,NA,Omegophora cyanopunctata,193803,Unknown,LC,PUFFERFISH,193803,NA,iucn,0,NA,Pufferfish
-URM-Cn-5542,NT,Favia lacuna,133151,Decreasing,NT,CORALS_Part1,133151,NA,iucn,0.2,-0.5,Corals
-Fis-22813,DD,Rastrelliger kanagurta,170328,Unknown,DD,TUNAS_BILLFISHES,170328,NA,iucn,NA,NA,Tunas/Billfish
-SLB-61883,DD,Madracis asperula,133476,Unknown,DD,CORALS_Part1,133476,NA,iucn,NA,NA,Corals
-W-Msc-426447,LC,Conus centurio,192831,Unknown,LC,CONESNAILS,192831,NA,iucn,0,NA,Cone snails
-Fis-31626,NA,Ecsenius sellifer,48342162,Stable,LC,COMBTOOTHBLENNIES,48342162,NA,iucn,0,0,Combtooth Blennies
-Fis-58059,LC,Apolemichthys kingi,154809,Unknown,LC,ANGELFISH,154809,NA,iucn,0,NA,Angelfish
-Fis-32088,LC,Naso maculatus,178020,Unknown,LC,SURGEONFISH_TANGS_UNICORNFISH,178020,NA,iucn,0,NA,Surgeons/Tangs/Unicornfish
-Fis-26687,LC,Thalassoma duperrey,187711,Stable,LC,WRASSE,187711,NA,iucn,0,0,Wrasses
-Fis-26337,LC,Choerodon robustus,187747,Unknown,LC,WRASSE,187747,NA,iucn,0,NA,Wrasses
-Fis-16392,NA,Diplodus holbrookii,170264,Unknown,LC,SEABREAMS_PORGIES,170264,NA,iucn,0,NA,Seabreams/Porgies
-Fis-58702,LC,Bodianus opercularis,187378,Unknown,LC,WRASSE,187378,NA,iucn,0,NA,Wrasses
-SLB-40234,LC,Larus scopulinus,62021891,Increasing,LC,BOTW,62021891,NA,iucn-bli,0,0.5,Birds
-ITS-176982,LC,Alle alle,22694837,Decreasing,LC,BOTW,22694837,NA,iucn-bli,0,-0.5,Birds
-Fis-149838,NA,Stegastes adustus,188551,Stable,LC,DAMSELFISH,188551,NA,iucn,0,0,Damselfish
-Fis-32315,DD,Epinephelus retouti,132794,Unknown,DD,GROUPERS,132794,NA,iucn,NA,NA,Groupers
-Fis-25724,LC,Halichoeres trimaculatus,187474,Unknown,LC,WRASSE,187474,NA,iucn,0,NA,Wrasses
-URM-Cn-5892,LC,Symphyllia erythraea,132962,Unknown,LC,CORALS_Part1,132962,NA,iucn,0,NA,Corals
-Fis-35341,NA,Meiacanthus mossambicus,48342164,Stable,LC,COMBTOOTHBLENNIES,48342164,NA,iucn,0,0,Combtooth Blennies
-W-Hol-732226,LC,Holothuria difficilis,180246,Unknown,LC,SEACUCUMBERS,180246,NA,iucn,0,NA,Sea Cucumbers
-Fis-59453,LC,Centropyge vrolikii,165860,Stable,LC,ANGELFISH,165860,NA,iucn,0,0,Angelfish
-Fis-146038,NA,Ophioblennius macclurei,46104090,Unknown,LC,COMBTOOTHBLENNIES,46104090,NA,iucn,0,NA,Combtooth Blennies
-Fis-26856,NA,Acanthopagrus palmaris,170181,Unknown,LC,SEABREAMS_PORGIES,170181,NA,iucn,0,NA,Seabreams/Porgies
-URM-Cn-5481,NT,Euphyllia glabrescens,133256,Unknown,NT,CORALS_Part1,133256,NA,iucn,0.2,NA,Corals
-URM-Cn-5873,LC,Lobophyllia robusta,133076,Unknown,LC,CORALS_Part1,133076,NA,iucn,0,NA,Corals
-SLB-184619,LC,Pelamis platura,176738,Stable,LC,SEASNAKES,176738,NA,iucn,0,0,Sea Snakes
-Fis-61136,NA,Istiblennius pox,46079816,Stable,LC,COMBTOOTHBLENNIES,46079816,NA,iucn,0,0,Combtooth Blennies
-URM-Cn-6062,LC,Porites lichen,133023,Unknown,LC,CORALS_Part3,133023,NA,iucn,0,NA,Corals
-Fis-61706,LC,Sphoeroides lispus,183607,Unknown,LC,PUFFERFISH,183607,NA,iucn,0,NA,Pufferfish
-Fis-31448,LC,Chaetodon trifasciatus,165673,Unknown,LC,BUTTERFLYFISH,165673,NA,iucn,0,NA,Butterflyfish
-Fis-6123,NA,Sparus aurata,170253,Stable,LC,SEABREAMS_PORGIES,170253,NA,iucn,0,0,Seabreams/Porgies
-Fis-50534,NA,Omobranchus banditus,48342381,Stable,LC,COMBTOOTHBLENNIES,48342381,NA,iucn,0,0,Combtooth Blennies
-SLB-170329,LC,Stereomastis aculeata,185073,Unknown,LC,LOBSTERS,185073,NA,iucn,0,NA,Lobsters
-ITS-552998,LC,Arctides guineensis,170052,Unknown,LC,LOBSTERS,170052,NA,iucn,0,NA,Lobsters
-Fis-138816,LC,Halichoeres papilionaceus,155221,Unknown,LC,WRASSE,155221,NA,iucn,0,NA,Wrasses
-ITS-Mam-180679,VU,Dugong dugon,6909,Unknown,VU,MARINE_MAMMALS_update,6909,NA,iucn,0.4,NA,Marine Mammals
-ITS-Mam-180452,EN,Cephalorhynchus hectori,4162,Decreasing,EN,MARINE_MAMMALS_update,4162,NA,iucn,0.6,-0.5,Marine Mammals
-Fis-25730,LC,Stethojulis bandanensis,187424,Unknown,LC,WRASSE,187424,NA,iucn,0,NA,Wrasses
-SLB-184836,LC,Stereomastis suhmi,185036,Unknown,LC,LOBSTERS,185036,NA,iucn,0,NA,Lobsters
-Fis-30945,NA,Cirripectes chelomatus,48342303,Stable,LC,COMBTOOTHBLENNIES,48342303,NA,iucn,0,0,Combtooth Blennies
-W-Hol-208947,VU,Actinopyga echinites,180518,Decreasing,VU,SEACUCUMBERS,180518,NA,iucn,0.4,-0.5,Sea Cucumbers
-URM-Cn-5546,NT,Favia maritima,133638,Decreasing,NT,CORALS_Part1,133638,NA,iucn,0.2,-0.5,Corals
-Fis-28573,NA,Ecsenius gravieri,48342285,Stable,LC,COMBTOOTHBLENNIES,48342285,NA,iucn,0,0,Combtooth Blennies
-URM-Cn-5860,NT,Blastomussa wellsi,133253,Unknown,NT,CORALS_Part1,133253,NA,iucn,0.2,NA,Corals
-URM-Cn-4786,DD,Acropora minuta,133018,Decreasing,DD,CORALS_Part1,133018,NA,iucn,NA,-0.5,Corals
-ITS-553064,LC,Thaumastocheles japonicus,170096,Unknown,LC,LOBSTERS,170096,NA,iucn,0,NA,Lobsters
-Fis-31145,LC,Anampses lennardi,187567,Stable,LC,WRASSE,187567,NA,iucn,0,0,Wrasses
-ITS-552906,DD,Neoglyphea inopinata,170068,Unknown,DD,LOBSTERS,170068,NA,iucn,NA,NA,Lobsters
-Fis-32459,LC,Naso fageni,177962,Unknown,LC,SURGEONFISH_TANGS_UNICORNFISH,177962,NA,iucn,0,NA,Surgeons/Tangs/Unicornfish
-Fis-61558,NA,Blenniella paula,48342126,Stable,LC,COMBTOOTHBLENNIES,48342126,NA,iucn,0,0,Combtooth Blennies
-Fis-35286,NA,Ecsenius aequalis,48342307,Stable,LC,COMBTOOTHBLENNIES,48342307,NA,iucn,0,0,Combtooth Blennies
-ITS-552914,LC,Acanthacaris tenuimana,169962,Unknown,LC,LOBSTERS,169962,NA,iucn,0,NA,Lobsters
-SLB-189630,NA,Conus vicweei,192585,Unknown,LC,CONESNAILS,192585,NA,iucn,0,NA,Cone snails
-Fis-22836,VU,Thunnus obesus,21859,Decreasing,VU,TUNAS_BILLFISHES,21859,NA,iucn,0.4,-0.5,Tunas/Billfish
-Fis-139219,LC,Ophthalmolepis lineolata,187409,Unknown,LC,WRASSE,187409,NA,iucn,0,NA,Wrasses
-ITS-552962,LC,Linuparus trigonus,170054,Unknown,LC,LOBSTERS,170054,NA,iucn,0,NA,Lobsters
-Fis-138294,NA,Parablennius cyclops,48342258,Stable,LC,COMBTOOTHBLENNIES,48342258,NA,iucn,0,0,Combtooth Blennies
-Fis-23649,LC,Mycteroperca microlepis,14050,Decreasing,LC,GROUPERS,14050,NA,iucn,0,-0.5,Groupers
-ITS-552964,LC,Palinurus delagoae,170010,Unknown,LC,LOBSTERS,170010,NA,iucn,0,NA,Lobsters
-W-Msc-420217,LC,Conus patae,192798,Unknown,LC,CONESNAILS,192798,NA,iucn,0,NA,Cone snails
-Fis-165595,LC,Cetoscarus ocellatus,190691,Unknown,LC,WRASSE,190691,NA,iucn,0,NA,Wrasses
-Fis-58115,NA,Ecsenius nalolo,48342458,Stable,LC,COMBTOOTHBLENNIES,48342458,NA,iucn,0,0,Combtooth Blennies
-URM-Cn-4737,VU,Acropora desalwii,133396,Decreasing,VU,CORALS_Part3,133396,NA,iucn,0.4,-0.5,Corals
-Fis-5681,LC,Chlorurus gibbus,190753,Unknown,LC,WRASSE,190753,NA,iucn,0,NA,Wrasses
-Fis-126141,LC,Choerodon zosterophorus,187499,Unknown,LC,WRASSE,187499,NA,iucn,0,NA,Wrasses
-Fis-25723,LC,Halichoeres scapularis,187454,Unknown,LC,WRASSE,187454,NA,iucn,0,NA,Wrasses
-Fis-22828,LC,Scomberomorus semifasciatus,170337,Unknown,LC,TUNAS_BILLFISHES,170337,NA,iucn,0,NA,Tunas/Billfish
-SLB-170297,DD,Galearctus rapanus,184986,Unknown,DD,LOBSTERS,184986,NA,iucn,NA,NA,Lobsters
-Fis-150326,NA,Nannosalarias nativitatis,48342505,Stable,LC,COMBTOOTHBLENNIES,48342505,NA,iucn,0,0,Combtooth Blennies
-SLB-66024,LC,Holothuria tubulosa,180455,Unknown,LC,SEACUCUMBERS,180455,NA,iucn,0,NA,Sea Cucumbers
-Fis-26116,DD,Cephalopholis aurantia,132725,Unknown,DD,GROUPERS,132725,NA,iucn,NA,NA,Groupers
-SLB-66013,DD,Holothuria impatiens,180512,Unknown,DD,SEACUCUMBERS,180512,NA,iucn,NA,NA,Sea Cucumbers
-Fis-58823,NA,Atrosalarias fuscus,48342246,Stable,LC,COMBTOOTHBLENNIES,48342246,NA,iucn,0,0,Combtooth Blennies
-Fis-25684,NA,Cymatoceps nasutus,170204,Decreasing,VU,SEABREAMS_PORGIES,170204,NA,iucn,0.4,-0.5,Seabreams/Porgies
-ITS-726047,LC,Sula granti,22728990,Decreasing,LC,BOTW,22728990,NA,iucn-bli,0,-0.5,Birds
-URM-Cn-5930,LC,Echinophyllia echinata,133058,Unknown,LC,CORALS_Part3,133058,NA,iucn,0,NA,Corals
-Fis-127204,NT,Bodianus frenchii,187506,Decreasing,NT,WRASSE,187506,NA,iucn,0.2,-0.5,Wrasses
-Fis-160362,DD,Scarus maculipinna,190735,Unknown,DD,WRASSE,190735,NA,iucn,NA,NA,Wrasses
-Fis-21695,LC,Halichoeres podostigma,187515,Unknown,LC,WRASSE,187515,NA,iucn,0,NA,Wrasses
-W-Hol-210905,NA,Stichopus variegatus,180488,Unknown,DD,SEACUCUMBERS,180488,NA,iucn,NA,NA,Sea Cucumbers
-Fis-27944,LC,Chaetodontoplus conspicillatus,165870,Stable,LC,ANGELFISH,165870,NA,iucn,0,0,Angelfish
-ITS-176794,LC,Stercorarius longicaudus,22694251,Stable,LC,BOTW,22694251,NA,iucn-bli,0,0,Birds
-Fis-25681,NA,Chrysoblephus anglicus,170194,Decreasing,NT,SEABREAMS_PORGIES,170194,NA,iucn,0.2,-0.5,Seabreams/Porgies
-Fis-59414,LC,Chaetodon zanzibarensis,165612,Stable,LC,BUTTERFLYFISH,165612,NA,iucn,0,0,Butterflyfish
-Fis-50553,NA,Parablennius pilicornis,198774,Stable,LC,COMBTOOTHBLENNIES,198774,NA,iucn,0,0,Combtooth Blennies
-URM-Cn-5473,VU,Turbinaria peltata,133498,Unknown,VU,CORALS_Part3,133498,NA,iucn,0.4,NA,Corals
-URM-Cn-5510,LC,Cyphastrea chalcidicum,133325,Decreasing,LC,CORALS_Part3,133325,NA,iucn,0,-0.5,Corals
-Fis-145200,DD,Sparisoma axillare,190751,Unknown,DD,WRASSE,190751,NA,iucn,NA,NA,Wrasses
-SLB-117467,LC,Coscinaraea exesa,133176,Stable,LC,CORALS_Part1,133176,NA,iucn,0,0,Corals
-Fis-153188,LC,Paracheilinus rubricaudalis,187791,Unknown,LC,WRASSE,187791,NA,iucn,0,NA,Wrasses
-Fis-145583,LC,Choerodon sugillatum,187720,Unknown,LC,WRASSE,187720,NA,iucn,0,NA,Wrasses
-Fis-132105,LC,Cirrhilabrus pylei,187580,Unknown,LC,WRASSE,187580,NA,iucn,0,NA,Wrasses
-Fis-26703,LC,Centropyge fisheri,165828,Stable,LC,ANGELFISH,165828,NA,iucn,0,0,Angelfish
-W-Msc-420220,LC,Conus regius,192869,Unknown,LC,CONESNAILS,192869,NA,iucn,0,NA,Cone snails
-Fis-161246,LC,Paracheilinus walton,187421,Unknown,LC,WRASSE,187421,NA,iucn,0,NA,Wrasses
-URM-Cn-5947,LC,Oxypora glabra,133192,Unknown,LC,CORALS_Part3,133192,NA,iucn,0,NA,Corals
-ITS-Mam-180632,LC,Arctocephalus tropicalis,2062,Increasing,LC,MARINE_MAMMALS_update,2062,NA,iucn,0,0.5,Marine Mammals
-SLB-184808,VU,Isopora brueggemanni,133182,Decreasing,VU,CORALS_Part3,133182,NA,iucn,0.4,-0.5,Corals
-Fis-58117,NA,Istiblennius unicolor,48342337,Stable,LC,COMBTOOTHBLENNIES,48342337,NA,iucn,0,0,Combtooth Blennies
-Fis-143223,LC,Centropyge venusta,165900,Stable,LC,ANGELFISH,165900,NA,iucn,0,0,Angelfish
-Fis-30136,NA,Hypleurochilus springeri,46104061,Unknown,LC,COMBTOOTHBLENNIES,46104061,NA,iucn,0,NA,Combtooth Blennies
-Fis-32554,LC,Coris venusta,187785,Unknown,LC,WRASSE,187785,NA,iucn,0,NA,Wrasses
-Fis-113731,LC,Dotalabrus alleni,154841,Unknown,LC,WRASSE,154841,NA,iucn,0,NA,Wrasses
-ITS-552961,LC,Linuparus sordidus,170070,Unknown,LC,LOBSTERS,170070,NA,iucn,0,NA,Lobsters
+iucn_sid,am_sid,sciname,spp_group_text
+2062,ITS-Mam-180632,Arctocephalus tropicalis,Marine Mammals
+4162,ITS-Mam-180452,Cephalorhynchus hectori,Marine Mammals
+6909,ITS-Mam-180679,Dugong dugon,Marine Mammals
+7750,ITS-Mam-180547,Enhydra lutris,Terr. Mammals
+9660,ITS-Mam-180653,Halichoerus grypus,Marine Mammals
+11142,ITS-Mam-180442,Lagenorhynchus albirostris,Marine Mammals
+12137,Fis-23176,Lithognathus lithognathus,Seabreams/Porgies
+14050,Fis-23649,Mycteroperca microlepis,Groupers
+21342,Fis-55125,Takifugu poecilonotus,Pufferfish
+21856,Fis-22832,Thunnus alalunga,Tunas/Billfish
+21859,Fis-22836,Thunnus obesus,Tunas/Billfish
+44681,Fis-22721,Epinephelus morio,Groupers
+61338,Fis-26113,Epinephelus malabaricus,Groupers
+132725,Fis-26116,Cephalopholis aurantia,Groupers
+132759,Fis-26120,Cephalopholis hemistiktos,Groupers
+132795,Fis-163776,Hyporthodus ergastularius,Groupers
+132883,URM-Cn-5572,Goniastrea australensis,Corals
+132962,URM-Cn-5892,Symphyllia erythraea,Corals
+132984,URM-Cn-4736,Acropora derawanensis,Corals
+133023,URM-Cn-6062,Porites lichen,Corals
+133058,URM-Cn-5930,Echinophyllia echinata,Corals
+133076,URM-Cn-5873,Lobophyllia robusta,Corals
+133088,URM-Cn-5528,Echinopora lamellosa,Corals
+133106,URM-Cn-5849,Acanthastrea hillae,Corals
+133151,URM-Cn-5542,Favia lacuna,Corals
+133176,SLB-117467,Coscinaraea exesa,Corals
+133182,SLB-184808,Isopora brueggemanni,Corals
+133192,URM-Cn-5947,Oxypora glabra,Corals
+133206,URM-Cn-4819,Acropora roseni,Corals
+133253,URM-Cn-5860,Blastomussa wellsi,Corals
+133256,URM-Cn-5481,Euphyllia glabrescens,Corals
+133325,URM-Cn-5510,Cyphastrea chalcidicum,Corals
+133365,URM-Cn-5574,Goniastrea edwardsi,Corals
+133372,URM-Cn-5791,Polyphyllia novaehiberniae,Corals
+133387,SLB-93466,Acropora globiceps,Corals
+133396,URM-Cn-4737,Acropora desalwii,Corals
+133406,URM-Cn-6137,Psammocora haimeana,Corals
+133432,URM-Cn-4832,Acropora spicifera,Corals
+133498,URM-Cn-5473,Turbinaria peltata,Corals
+133522,URM-Cn-4959,Helioseris cucullata,Corals
+133589,URM-Cn-6136,Psammocora explanulata,Corals
+133638,URM-Cn-5546,Favia maritima,Corals
+133680,URM-Cn-6038,Porites astreoides,Corals
+154809,Fis-58059,Apolemichthys kingi,Angelfish
+154841,Fis-113731,Dotalabrus alleni,Wrasses
+155221,Fis-138816,Halichoeres papilionaceus,Wrasses
+165612,Fis-59414,Chaetodon zanzibarensis,Butterflyfish
+165632,Fis-31440,Chaetodon punctatofasciatus,Butterflyfish
+165648,Fis-33881,Chaetodon decussatus,Butterflyfish
+165654,Fis-33074,Chaetodon dolosus,Butterflyfish
+165666,Fis-33082,Chaetodon mitratus,Butterflyfish
+165673,Fis-31448,Chaetodon trifasciatus,Butterflyfish
+165675,Fis-35297,Chaetodon smithi,Butterflyfish
+165693,Fis-31908,Chaetodon auripes,Butterflyfish
+165725,Fis-31444,Chaetodon semeion,Butterflyfish
+165828,Fis-26703,Centropyge fisheri,Angelfish
+165837,Fis-22168,Centropyge argi,Angelfish
+165850,Fis-27817,Chaetodontoplus melanosoma,Angelfish
+165860,Fis-59453,Centropyge vrolikii,Angelfish
+165870,Fis-27944,Chaetodontoplus conspicillatus,Angelfish
+165900,Fis-143223,Centropyge venusta,Angelfish
+169962,ITS-552914,Acanthacaris tenuimana,Lobsters
+169985,ITS-552916,Nephropsis acanthura,Lobsters
+170008,ITS-660118,Scyllarides squammosus,Lobsters
+170010,ITS-552964,Palinurus delagoae,Lobsters
+170034,ITS-552997,Arctides antipodarum,Lobsters
+170052,ITS-552998,Arctides guineensis,Lobsters
+170054,ITS-552962,Linuparus trigonus,Lobsters
+170070,ITS-552961,Linuparus sordidus,Lobsters
+170096,ITS-553064,Thaumastocheles japonicus,Lobsters
+170337,Fis-22828,Scomberomorus semifasciatus,Tunas/Billfish
+176738,SLB-184619,Pelamis platura,Reptiles
+177961,Fis-25281,Acanthurus nubilus,Surgeons/Tangs/Unicornfish
+177962,Fis-32459,Naso fageni,Surgeons/Tangs/Unicornfish
+177968,Fis-62061,Naso caeruleacauda,Surgeons/Tangs/Unicornfish
+177985,Fis-29260,Acanthurus bahianus,Surgeons/Tangs/Unicornfish
+177999,Fis-31079,Acanthurus nigroris,Surgeons/Tangs/Unicornfish
+178020,Fis-32088,Naso maculatus,Surgeons/Tangs/Unicornfish
+180246,W-Hol-732226,Holothuria difficilis,Sea Cucumbers
+180257,SLB-66022,Holothuria scabra,Sea Cucumbers
+180455,SLB-66024,Holothuria tubulosa,Sea Cucumbers
+180518,W-Hol-208947,Actinopyga echinites,Sea Cucumbers
+183607,Fis-61706,Sphoeroides lispus,Pufferfish
+183731,Fis-28996,Halichoeres melanotis,Wrasses
+184034,Fis-35756,Sphoeroides sechurae,Pufferfish
+185003,SLB-184834,Stereomastis polita,Lobsters
+185023,SLB-184838,Stereomastis surda,Lobsters
+185031,SLB-184850,Acantharctus ornatus,Lobsters
+185036,SLB-184836,Stereomastis suhmi,Lobsters
+185069,SLB-173560,Stereomastis galil,Lobsters
+185073,SLB-170329,Stereomastis aculeata,Lobsters
+187378,Fis-58702,Bodianus opercularis,Wrasses
+187396,Fis-25637,Labroides dimidiatus,Wrasses
+187409,Fis-139219,Ophthalmolepis lineolata,Wrasses
+187421,Fis-161246,Paracheilinus walton,Wrasses
+187424,Fis-25730,Stethojulis bandanensis,Wrasses
+187438,Fis-21693,Halichoeres prosopeion,Wrasses
+187454,Fis-25723,Halichoeres scapularis,Wrasses
+187456,Fis-22199,Doratonotus megalepis,Wrasses
+187474,Fis-25724,Halichoeres trimaculatus,Wrasses
+187499,Fis-126141,Choerodon zosterophorus,Wrasses
+187506,Fis-127204,Bodianus frenchii,Wrasses
+187515,Fis-21695,Halichoeres podostigma,Wrasses
+187543,Fis-161183,Cirrhilabrus cenderawasih,Wrasses
+187567,Fis-31145,Anampses lennardi,Wrasses
+187569,Fis-32511,Gomphosus caeruleus,Wrasses
+187580,Fis-132105,Cirrhilabrus pylei,Wrasses
+187698,Fis-25727,Hologymnosus annulatus,Wrasses
+187711,Fis-26687,Thalassoma duperrey,Wrasses
+187720,Fis-145583,Choerodon sugillatum,Wrasses
+187747,Fis-26337,Choerodon robustus,Wrasses
+187766,Fis-145088,Halichoeres kallochroma,Wrasses
+187785,Fis-32554,Coris venusta,Wrasses
+187791,Fis-153188,Paracheilinus rubricaudalis,Wrasses
+190691,Fis-165595,Cetoscarus ocellatus,Wrasses
+190753,Fis-5681,Chlorurus gibbus,Wrasses
+190758,Fis-29129,Chlorurus genazonatus,Wrasses
+192580,W-Msc-430457,Conus chaldaeus,Cone snails
+192700,W-Msc-215559,Conus eburneus,Cone snails
+192798,W-Msc-420217,Conus patae,Cone snails
+192831,W-Msc-426447,Conus centurio,Cone snails
+192869,W-Msc-420220,Conus regius,Cone snails
+170158,Fis-29364,Dentex angolensis,Seabreams/Porgies
+170181,Fis-26856,Acanthopagrus palmaris,Seabreams/Porgies
+170194,Fis-25681,Chrysoblephus anglicus,Seabreams/Porgies
+170204,Fis-25684,Cymatoceps nasutus,Seabreams/Porgies
+170216,Fis-26772,Crenidens crenidens,Seabreams/Porgies
+170253,Fis-6123,Sparus aurata,Seabreams/Porgies
+170264,Fis-16392,Diplodus holbrookii,Seabreams/Porgies
+172447,Fis-58548,Entomacrodus vermiculatus,Combtooth Blennies
+188551,Fis-149838,Stegastes adustus,Damselfish
+192585,SLB-189630,Conus vicweei,Cone snails
+193599,Fis-35467,Arothron caeruleopunctatus,Pufferfish
+193612,Fis-26899,Takifugu rubripes,Pufferfish
+193693,Fis-28768,Takifugu pardalis,Pufferfish
+193705,Fis-26249,Canthigaster rivulata,Pufferfish
+193803,Fis-133976,Omegophora cyanopunctata,Pufferfish
+193813,Fis-23820,Sphoeroides testudineus,Pufferfish
+198774,Fis-50553,Parablennius pilicornis,Combtooth Blennies
+46079217,Fis-32641,Antennablennius australis,Combtooth Blennies
+46079816,Fis-61136,Istiblennius pox,Combtooth Blennies
+46080027,Fis-59608,Pereulixia kosiensis,Combtooth Blennies
+46104061,Fis-30136,Hypleurochilus springeri,Combtooth Blennies
+46104090,Fis-146038,Ophioblennius macclurei,Combtooth Blennies
+46104109,Fis-24847,Parablennius marmoreus,Combtooth Blennies
+47141104,Fis-150314,Hypleurochilus pseudoaequipinnis,Combtooth Blennies
+48342126,Fis-61558,Blenniella paula,Combtooth Blennies
+48342162,Fis-31626,Ecsenius sellifer,Combtooth Blennies
+48342164,Fis-35341,Meiacanthus mossambicus,Combtooth Blennies
+48342232,Fis-145447,Enchelyurus flavipes,Combtooth Blennies
+48342246,Fis-58823,Atrosalarias fuscus,Combtooth Blennies
+48342258,Fis-138294,Parablennius cyclops,Combtooth Blennies
+48342271,Fis-61807,Istiblennius muelleri,Combtooth Blennies
+48342285,Fis-28573,Ecsenius gravieri,Combtooth Blennies
+48342303,Fis-30945,Cirripectes chelomatus,Combtooth Blennies
+48342307,Fis-35286,Ecsenius aequalis,Combtooth Blennies
+48342337,Fis-58117,Istiblennius unicolor,Combtooth Blennies
+48342381,Fis-50534,Omobranchus banditus,Combtooth Blennies
+48342392,Fis-26714,Plagiotremus goslinei,Combtooth Blennies
+48342398,Fis-113466,Meiacanthus crinitus,Combtooth Blennies
+48342425,Fis-30954,Cirripectes springeri,Combtooth Blennies
+48342437,Fis-61874,Paralticus amboinensis,Combtooth Blennies
+48342448,Fis-145446,Dodekablennos fraseri,Combtooth Blennies
+48342458,Fis-58115,Ecsenius nalolo,Combtooth Blennies
+48342471,Fis-25987,Rhabdoblennius snowi,Combtooth Blennies
+48342505,Fis-150326,Nannosalarias nativitatis,Combtooth Blennies
+48342512,Fis-61995,Ecsenius tessera,Combtooth Blennies
+48342525,Fis-25991,Aspidontus dussumieri,Combtooth Blennies

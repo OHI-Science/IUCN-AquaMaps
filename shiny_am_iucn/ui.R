@@ -17,7 +17,7 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
     ),
     mainPanel(
       includeMarkdown('pages/abstract.md')
-      )
+    )
   ),
   
 
@@ -63,7 +63,7 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
     fluidRow(
       column(2, 
         selectInput('taxa_quad', 'Choose a taxon:',
-                    choices = c('all', unique(spp_list$spp_group_text)),
+                    choices = c('all', unique(spp_list$spp_group_text) %>% sort()),
                     selected = 'all'),
         radioButtons('expert_rev', label = 'AquaMaps review status',
                      choices = list('All'           = 'all',
@@ -120,7 +120,10 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
       column(2,
         h6('Select coral species'),
         selectInput('coral_species', 'Choose a species:',
-                    choices = unique(spp_coralmaps$sciname) %>% sort()),
+                    choices = unique(spp_list %>% 
+                                       filter(spp_group_text == 'Corals') %>% 
+                                       .$sciname %>% 
+                                       sort())),
         hr(),
         plotOutput('coral_quad', height = '150px')
       ),
