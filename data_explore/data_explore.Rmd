@@ -562,8 +562,8 @@ barchart_spp_gp_quads <- ggplot(spp_gp_quadrants,
 print(barchart_spp_gp_quads)
 
 # ggsave(plot = barchart_spp_gp_quads,
-       filename = file.path(dir_fig, 'barchart_spp_gp_quads.png'),
-       width = 19.05, height = 7, units = 'cm', dpi = 600)
+       # filename = file.path(dir_fig, 'barchart_spp_gp_quads.png'),
+       # width = 19.05, height = 7, units = 'cm', dpi = 600)
 
 write_csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads.csv'))
 
@@ -799,10 +799,10 @@ bar_spp_gp_quads_ex <- ggplot(spp_gp_quads_ex,
 print(bar_spp_gp_quads_ex)
 
 # ggsave(plot = bar_spp_gp_quads_ex,
-       filename = file.path(dir_fig, 'barchart_spp_gp_quads_ex.png'),
-       width = 19.05, height = 7, units = 'cm', dpi = 600)
+       # filename = file.path(dir_fig, 'barchart_spp_gp_quads_ex.png'),
+       # width = 19.05, height = 7, units = 'cm', dpi = 600)
 
-write_csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads_ex.csv'))
+write_csv(spp_gp_quads_ex, file.path(dir_data, 'spp_gp_quads_ex.csv'))
 
 ```
 

@@ -55,6 +55,11 @@ server <- shinyServer(function(input, output, session) {
     create_quadplot(input$taxa_quad, input$expert_rev)
   })
   
+  output$barchart <- renderPlot({
+    create_barchart(input$expert_rev)
+  })
+  
+  
   output$mini_quad <- renderPlot({
     create_miniquad(input$species)
   })

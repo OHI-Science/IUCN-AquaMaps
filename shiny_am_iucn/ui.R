@@ -59,10 +59,6 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   ),
   
   tabPanel('Map alignment',
-  ### This tab shows side bar with controls: expert-reviewed vs. all.
-  ### The main panel shows the quadrant plot with all vs expert-reviewed
-  ### map pairs, and the bar chart below it to show the membership in various quads.
-  ### Could there be a selection menu to select by taxa? yes, there could.
     fluidRow(
       column(2, 
         selectInput('taxa_quad', 'Choose a taxon:',
@@ -76,7 +72,7 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
       column(10,
         plotlyOutput('quad_plot'),
         hr(),
-        h5('Bar chart goes here')
+        plotOutput('barchart')
       )
     )
   ),
@@ -87,7 +83,7 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   ### species falls relative to all the others (this species is a red dot).
   ### There will be buttons to show only IUCN, only AM, or both;
   ### there will also be a slider for AquaMaps threshold?
-  ### And a toggle to turn on/off the FAO boundaries on the main map.
+  ### Include FAO boundaries on the main map - no need for toggle on/off.
   ### The main panel will show the species map for the given species,
   ### with the given parameters.
     fluidRow(
@@ -105,7 +101,6 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
                      selected = 'both'),
         sliderInput('am_cutoff', 'Probability of Occurrence cutoff (Aquamaps):',
                     min = 0, max = 1, value = 0, step = 0.1),
-        checkboxInput('show_fao', 'Show FAO boundaries?', value = TRUE),
         hr(),
         plotOutput('mini_quad')
       ),

@@ -14,6 +14,7 @@ loiczid_raster       <- raster(loiczid_raster_file)
 names(loiczid_raster) <- 'loiczid'
 
 ### read in spp cell files
+### this may be slowing down the initial display of the app... load elsewhere?
 iucn_spp_cells <- read_csv('data/iucn_cells.csv', col_types = 'dd')
 am_spp_cells   <- read_csv('data/am_cells.csv')
 
@@ -32,6 +33,11 @@ spp_coralmaps <- read_csv('data/coral_spp_areas.csv') %>%
   filter(!(str_detect(dist, 'clip') & !(str_detect(area, 'clip')))) %>%
   mutate(method = ifelse(str_detect(dist, 'clip'), '200m clip', 'all depth'))
 
+quad_gp_list <- read_csv('data/spp_gp_quads.csv') %>%
+  mutate(expert = FALSE) %>%
+  bind_rows(read_csv('data/spp_gp_quads_ex.csv') %>%
+              mutate(expert = TRUE))
+  
 ### generic theme for all plots
 theme_set(theme_bw())
 ggtheme_plot <- theme_update(axis.ticks = element_blank(),
@@ -130,6 +136,53 @@ assemble_map <- function(map_rast, spp) {
 
   return(map_obj)
 }
+
+create_barchart <- function(expt_rev) {
+  
+  if(expt_rev != 'all') {
+    spp_gp_quadrants <- quad_gp_list %>%
+      filter(expert)
+  } else {
+    spp_gp_quadrants <- quad_gp_list %>%
+      filter(!expert)
+  }
+  
+  spp_gp_quadrants <- spp_gp_quadrants %>% 
+    mutate(quad = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'))) %>%
+    transform(spp_group_text = reorder(spp_group_text, pct_q1))
+  
+  barchart_spp_gp_quads <- ggplot(spp_gp_quadrants, 
+                                  aes(x = spp_group_text, 
+                                      y = pct_quad,
+                                      fill = quad, 
+                                      weight = pct_quad)) +
+    theme(panel.grid.major.x = element_blank()) +
+    geom_bar(stat = 'identity', alpha = 1) +
+    scale_fill_manual(values = c('q1' = '#4dac26',
+                                 'q2' = '#b8e186', 
+                                 'q3' = '#f1b6da',
+                                 'q4' = '#d01c8b'),
+                      labels = quad_names$quad_name,
+                      guide = guide_legend(reverse = TRUE)) +
+    scale_y_continuous(expand = c(0, 0), 
+                       limits = c(0, 1.1),
+                       breaks = break_nums/100,
+                       labels = sprintf('%s%%', break_nums)) + 
+    ### add grid lines; horizontal but then get flipped
+    geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
+    ### add text
+    geom_text(aes(label = sprintf('n = %s', n_spp), y = 1.01), hjust = 0, 
+              size = 2.5, 
+              color = 'grey30') +
+    coord_flip() +
+    labs(x = 'Taxonomic Group', 
+         y = 'Percent of species by quadrant', 
+         fill = 'Alignment')
+  
+  return(barchart_spp_gp_quads)
+  
+}
+
 
 
 create_quadplot <- function(taxa_sel, expt_rev) {
