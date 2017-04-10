@@ -93,15 +93,18 @@ get_rast <- function(spp_map_df, type) {
   return(rast_obj)
 }
 
-#function to use leaflet for species maps
+#function to use leaflet for species maps (we tested this but are not using it due to weird zoom issues)
 assemble_map_leaflet <- function(map_rast,spp){
   message('in assemble_map_leaflet()')
-  pal <- colorFactor(c("#0C2C84", "#41B6C4","#FFFFCC"), values(rast),
+  pal <- colorFactor(c("#FFAEB9", "#41B6C4","#0C2C84"), values(rast),
                       na.color = "transparent")
   
   leaflet() %>% addTiles() %>%
-    addRasterImage(resampleBy(rast, 2), colors = pal,opacity = 1) %>%
-    addLegend(pal = 'Spectral', values = values(rast))
+    addRasterImage(rast, colors = pal,opacity = 1) %>%
+    addLegend(colors = c("#FFAEB9", "#41B6C4","#0C2C84"), 
+              labels = c("Aquamaps","IUCN","Both"),
+              title = "Dataset",
+              opacity = 1)
 }
 
 
