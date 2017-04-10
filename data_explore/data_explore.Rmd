@@ -365,7 +365,7 @@ ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'),
 
 ``` {r pct_overlap_vs_ratio_of_area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
-### define 25%, 50%, and 75% quartiles for both x and y axes
+### define means for both x and y axes
 area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
 dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
 

@@ -45,8 +45,9 @@ server <- shinyServer(function(input, output, session) {
       ### change in iucn_rast) or a change in the selected maps to display
     {
       message('observed change in spp_map$df or input$show_maps; creating map')
+      message('input$show_maps = ', input$show_maps, '; input$species = ', input$species)
       map_rast <- get_rast(spp_map$df, type = input$show_maps)
-      map_obj  <- assemble_map_base(map_rast, spp = input$species)
+      map_obj  <- assemble_map_tmap(map_rast, spp = input$species)
       
       spp_map$map <- map_obj
     }
@@ -54,7 +55,7 @@ server <- shinyServer(function(input, output, session) {
   
   output$compare_map <- renderPlot({
     spp_map$map
-  }, width = 800, height = 600) 
+  }) 
   
   ### For Map Alignment tab
   output$quad_plot <- renderPlotly({

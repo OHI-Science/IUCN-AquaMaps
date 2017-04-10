@@ -10,7 +10,8 @@ message('Reading in raster info...\n')
 loiczid_raster <- raster('data/loiczid_raster.tif') %>%
   setNames('loiczid')
 
-land <- readOGR(dsn = 'data', layer = "ne_110m_land")
+land <- readOGR(dsn = 'data', layer = "ne_110m_land") %>%
+  crop(extent(-180, 180, -84, 85))
 
 # convert to dataframe
 land_df <- fortify(land)
@@ -120,7 +121,7 @@ get_spp_map_df <- function(species) { ### species <- spp_list$sciname[1]
 get_rast <- function(spp_map_df, type) {
   message('in get_rast(), spp_map_df is of class ', class(spp_map_df))
   print(head(spp_map_df))
-  rast_obj  <-  raster::subs(loiczid_raster, spp_map_df, 
+  rast_obj <- raster::subs(loiczid_raster, spp_map_df, 
                      by    = 'loiczid', 
                      which = paste0(type, '_pres'), 
                      subsWithNA = TRUE)
@@ -129,39 +130,68 @@ get_rast <- function(spp_map_df, type) {
 }
 
 #function to use leaflet for species maps (we tested this but are not using it due to weird zoom issues)
-assemble_map_leaflet <- function(map_rast,spp){
-  message('in assemble_map_leaflet()')
-  pal <- colorFactor(c("#FFAEB9", "#41B6C4","#0C2C84"), values(rast),
-                      na.color = "transparent")
-  
-  leaflet() %>% addTiles() %>%
-    addRasterImage(rast, colors = pal,opacity = 1) %>%
-    addLegend(colors = c("#FFAEB9", "#41B6C4","#0C2C84"), 
-              labels = c("Aquamaps","IUCN","Both"),
-              title = "Dataset",
-              opacity = 1)
-}
+# assemble_map_leaflet <- function(map_rast,spp) {
+#   message('in assemble_map_leaflet()')
+#   pal <- colorFactor(c("#FFAEB9", "#41B6C4","#0C2C84"), values(rast),
+#                       na.color = "transparent")
+#   
+#   leaflet() %>% addTiles() %>%
+#     addRasterImage(rast, colors = pal,opacity = 1) %>%
+#     addLegend(colors = c("#FFAEB9", "#41B6C4","#0C2C84"), 
+#               labels = c("Aquamaps","IUCN","Both"),
+#               title = "Dataset",
+#               opacity = 1)
+# }
 
-assemble_map_base <- function(map_rast,spp){
-  
-  plot(land,col='darkgray')
-  plot(map_rast,axes=F,col = c("#FFAEB9", "#41B6C4","#0C2C84"),
-       title = spp, add=T,box=F,legend=F)
-  legend("topright", inset=c(0,-.05),legend=c("Aquamaps","IUCN","Both"),
-                      col=c("#FFAEB9","#41B6C4","#0C2C84"),pch = 15,cex=0.7,bty='n')
-  
-}
 
-assemble_map <- function(map_rast, spp) {
-  message('in assemble_map()')
-  map_obj <- tm_shape(map_rast) +
-    tm_raster(palette = 'Spectral',
-              colorNA = NULL,
-              title = spp,
-              alpha = 1) +
-    tm_shape(World) +
+# assemble_map_ggmap <- function(map_rast, spp) {
+#   
+#   library(ggmap)
+#   library(mapproj)
+#   
+#   map<- get_map(location = c(lon = 0, lat = 0), zoom = 1)
+#   
+#   TC <-ggmap(map)+geom_point(data=mapdata,alpha = .7, aes(x=longitude, y=latitude,size =Home.Insurance),color='red')+ggtitle("Average Home Insurance By City($)")
+#   message('in assemble_map_ggmap()')
+#   pal <- colorFactor(c("#FFAEB9", "#41B6C4","#0C2C84"), values(rast),
+#                      na.color = "transparent")
+#   
+#   leaflet() %>% addTiles() %>%
+#     addRasterImage(rast, colors = pal,opacity = 1) %>%
+#     addLegend(colors = c("#FFAEB9", "#41B6C4","#0C2C84"), 
+#               labels = c("Aquamaps","IUCN","Both"),
+#               title = "Dataset",
+#               opacity = 1)
+#   
+# }
+
+# assemble_map_base <- function(map_rast, spp) {
+#   
+#   
+#   plot(land, col = 'darkgray')
+#   plot(map_rast, axes = FALSE,
+#        col = c("#FFAEB9", "#41B6C4","#0C2C84"),
+#        title = spp, box = FALSE, legend = FALSE, add = TRUE)
+#   legend("topright", inset = c(0,-.05),
+#          legend = c("Aquamaps", "IUCN", "Both"),
+#          col = c("#FFAEB9", "#41B6C4", "#0C2C84"),
+#          pch = 15, cex = 0.7, bty = 'n')
+# 
+# }
+
+assemble_map_tmap <- function(map_rast, spp) {
+  message('in assemble_map_tmap()')
+  map_obj <- tm_shape(land, is.master = TRUE) +
       tm_polygons() + 
-    tm_layout(basemaps = "Esri.WorldTopoMap", legend.outside = TRUE, attr.outside = TRUE)
+    tm_shape(map_rast) +
+      tm_raster(palette = c("#FFAEB9", "#41B6C4", "#0C2C84"),
+                labels  = c("Aquamaps",   "IUCN",    "Both"),
+                colorNA = NULL,
+                title = spp,
+                alpha = 1) +
+    tm_layout(legend.outside = TRUE, 
+              attr.outside = TRUE,
+              outer.margins = 0, inner.margins = 0, asp = 2.1)
         
   
   # if(show_maps %in% c('am', 'both')) {
@@ -191,6 +221,7 @@ assemble_map <- function(map_rast, spp) {
   return(map_obj)
 }
 
+### Functions for quadplots and barcharts tab
 create_barchart <- function(expt_rev) {
   
   if(expt_rev != 'all') {
@@ -262,7 +293,24 @@ create_quadplot <- function(taxa_sel, expt_rev) {
       filter(!is.na(reviewed))
   }
   
-  scatter_quadplot <- ggplot(quad_list_tmp,
+  ### define windows for labels
+  q1 <- c('x1' = 84, 'x2' = 98, 'y1' = 92.5, 'y2' = 97.5)
+  q2 <- c('x1' =  2, 'x2' = 22, 'y1' = 92.5, 'y2' = 97.5)
+  q3 <- c('x1' = 84, 'x2' = 98, 'y1' =  2.5, 'y2' = 7.5)
+  q4 <- c('x1' =  2, 'x2' = 18, 'y1' =  2.5, 'y2' = 7.5)
+  
+  quad_list_labs <- quad_list_tmp %>%
+    rename(x = area_ratio, y = dist_align) %>%
+    mutate(fade = FALSE,
+           fade = ifelse((x > q1[1] & x < q1[2] & y > q1[3] & y < q1[4]), TRUE, fade),
+           fade = ifelse((x > q2[1] & x < q2[2] & y > q2[3] & y < q2[4]), TRUE, fade),
+           fade = ifelse((x > q3[1] & x < q3[2] & y > q3[3] & y < q3[4]), TRUE, fade),
+           fade = ifelse((x > q4[1] & x < q4[2] & y > q4[3] & y < q4[4]), TRUE, fade)) %>%
+    rename(area_ratio = x, dist_align = y)
+    
+  
+  
+  scatter_quadplot <- ggplot(quad_list_labs,
                              aes(x = area_ratio, 
                                  y = dist_align,
                                  key = sciname)) +
@@ -285,7 +333,8 @@ create_quadplot <- function(taxa_sel, expt_rev) {
              ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
              fill= "#d01c8b") + 
-    geom_point(color = '#4d4dac', alpha = .6)
+    geom_point(aes(alpha = fade), color = '#4d4dac', show.legend = FALSE) + 
+    scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = .6))
   
   ### Manage scales for color and size 
   scatter_quadplot <- scatter_quadplot +
@@ -298,8 +347,17 @@ create_quadplot <- function(taxa_sel, expt_rev) {
                        breaks = c(seq(0, 100, 25)),
                        labels = c('0%', '25%', '50%', '75%', '100%'))
   
-  ### here are mean labels:
+  ### here are quadrant and mean labels:
   scatter_quadplot <- scatter_quadplot +
+    annotate("text", x = 91, y = 95, hjust = 1, vjust = .5, size = 3, color = 'grey20', 
+             fontface = 'bold', label = "Well-aligned") + 
+    annotate("text", x =  12, y = 95, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+             fontface = 'bold', label = "Distribution-aligned") + 
+    annotate("text", x = 91, y =  5, hjust = 1, vjust = .5, size = 3, color = 'grey20',
+             fontface = 'bold', label = "Area-aligned") + 
+    annotate("text", x =  10, y =  5, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+             fontface = 'bold', label = "Poorly aligned") +
+  
     annotate(geom = 'text',
              x = area_align_mean, y = 5,
              hjust = 0, vjust = 0,
@@ -362,7 +420,7 @@ create_miniquad <- function(spp_sel) {
   return(scatter_miniquad)
 }
 
-
+### functions for coral maps tab
 create_coralquad <- function(coral_spp) {
   ### basically a mini-quad showing the before and after of the coral species
   # coral_spp <- spp_coralmaps$sciname[1]
