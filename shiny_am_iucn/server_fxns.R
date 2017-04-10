@@ -2,6 +2,7 @@
 
 library(raster)
 library(maps)
+library(leaflet)
 library(tmap)
 data(World)
 library(RColorBrewer)
@@ -91,6 +92,18 @@ get_rast <- function(spp_map_df, type) {
   
   return(rast_obj)
 }
+
+#function to use leaflet for species maps
+assemble_map_leaflet <- function(map_rast,spp){
+  message('in assemble_map_leaflet()')
+  pal <- colorFactor(c("#0C2C84", "#41B6C4","#FFFFCC"), values(rast),
+                      na.color = "transparent")
+  
+  leaflet() %>% addTiles() %>%
+    addRasterImage(resampleBy(rast, 2), colors = pal,opacity = 1) %>%
+    addLegend(pal = 'Spectral', values = values(rast))
+}
+
 
 assemble_map <- function(map_rast, spp) {
   message('in assemble_map()')
