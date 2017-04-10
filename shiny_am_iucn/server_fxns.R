@@ -1,4 +1,4 @@
-#server_fxns.R
+### server_fxns.R
 
 library(raster)
 library(maps)
@@ -17,12 +17,42 @@ names(loiczid_raster) <- 'loiczid'
 iucn_spp_cells <- read_csv('data/iucn_cells.csv', col_types = 'dd')
 am_spp_cells   <- read_csv('data/am_cells.csv')
 
+### read in quad plot files and establish means
+quad_list <- read_csv('data/spp_list_quads.csv') %>%
+  rename(dist_align = sm_perc)
+
+area_align_mean <- mean(quad_list$area_ratio, na.rm = TRUE)
+dist_align_mean <- mean(quad_list$dist_align, na.rm = TRUE)
+
+spp_coralmaps <- read_csv('data/coral_spp_areas.csv') %>%
+  rename(dist_align_raw = sm_perc_raw, dist_align_clipped = sm_perc_clipped) %>%
+  gather(dist, perc, c(dist_align_raw, dist_align_clipped)) %>%
+  gather(area, ratio, c(area_ratio_raw, area_ratio_clipped)) %>%
+  filter(!(str_detect(dist, 'raw') & !(str_detect(area, 'raw')))) %>%
+  filter(!(str_detect(dist, 'clip') & !(str_detect(area, 'clip')))) %>%
+  mutate(method = ifelse(str_detect(dist, 'clip'), '200m clip', 'all depth'))
+
+### generic theme for all plots
+theme_set(theme_bw())
+ggtheme_plot <- theme_update(axis.ticks = element_blank(),
+  text = element_text(family = 'Helvetica', color = 'gray30', size = 9),
+  plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
+  panel.background = element_blank(),
+  legend.position = 'right',
+  panel.border     = element_blank(),
+  panel.grid.minor = element_blank(), 
+  # panel.grid.major = element_line(colour = 'grey90', size = .25),
+  panel.grid.major = element_blank(),
+  legend.key = element_rect(colour = NA, fill = NA),
+  axis.line = element_blank()) # element_line(colour = "grey30", size = .5))
+
+
 
 ### Species Map Function ###
 # This function takes a single species scientific name as input, then grabs all 
 # occurrence cells and associated Aquamaps probability and/or IUCN proportional area
 # per cell
-get_spp_map_df <- function(species, am_cutoff = 0){ ### species <- spp_list$sciname[1]
+get_spp_map_df <- function(species, am_cutoff = 0) { ### species <- spp_list$sciname[1]
   message('in get_spp_map_df()')
   ### am_cutoff is currently ignored
   
@@ -71,7 +101,7 @@ assemble_map <- function(map_rast, spp) {
               alpha = 1) +
     tm_shape(World) +
       tm_polygons() + 
-    tm_layout(basemaps = "Esri.WorldTopoMap", title.position = 'TOP', legend.outside = TRUE, attr.outside = TRUE)
+    tm_layout(basemaps = "Esri.WorldTopoMap", legend.outside = TRUE, attr.outside = TRUE)
         
   
   # if(show_maps %in% c('am', 'both')) {
@@ -102,39 +132,26 @@ assemble_map <- function(map_rast, spp) {
 }
 
 
-
-
-create_quadplot <- function() {
-  library(ggplot2)
-  
-  ggtheme_basic <- theme(axis.ticks = element_blank(),
-    text = element_text(family = 'Helvetica', color = 'gray30', size = 8),
-    plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
-    panel.background = element_blank(),
-    legend.position = 'right')
-  
-  ggtheme_plot <- ggtheme_basic + 
-    theme(panel.border     = element_blank(),
-          panel.grid.minor = element_blank(), 
-          panel.grid.major = element_line(colour = 'grey90'),
-          axis.line = element_line(colour = "grey30"))
-  
-  quad_list <- read_csv('shiny_am_iucn/data/quad_list.csv')
-  ### define 25%, 50%, and 75% quartiles for both x and y axes
-  
-  area_align_mean <- mean(quad_list$area_ratio, na.rm = TRUE)
-  dist_align_mean <- mean(quad_list$sm_perc, na.rm = TRUE)
-  
+create_quadplot <- function(taxa_sel, expt_rev) {
   ### mongo plot time
-  scatter_quadplot <- ggplot(quad_list %>% 
-                               rename(dist_align = sm_perc) %>%
-                               transform(popn_category = reorder(popn_category, category_score)),
+
+  if(taxa_sel == 'all') {
+    quad_list_tmp <- quad_list
+  } else {
+    quad_list_tmp <- quad_list %>%
+      filter(spp_group_text == taxa_sel)
+  }
+  
+  if(expt_rev != 'all') {
+    quad_list_tmp <- quad_list_tmp %>%
+      filter(!is.na(reviewed))
+  }
+  
+  scatter_quadplot <- ggplot(quad_list_tmp,
                              aes(x = area_ratio, 
                                  y = dist_align,
-                                 key = sciname)) + #, 
-    #                               size = lg_area_pct,
-    #                              color = popn_category)) + 
-    ggtheme_plot + 
+                                 key = sciname)) +
+  ggtheme_plot + 
     ### color the quadrant backgrounds:
     annotate("rect", xmin = area_align_mean, xmax = 100, 
              ymin = dist_align_mean, ymax = 100, 
@@ -156,15 +173,6 @@ create_quadplot <- function() {
   
   ### Manage scales for color and size 
   scatter_quadplot <- scatter_quadplot +
-    #   scale_colour_manual(values = c('LC' = 'green4', 
-    #                                  'NT' = 'greenyellow', 
-    #                                  'VU' = 'yellow', 
-    #                                  'EN' = 'orange', 
-    #                                  'CR' = 'orangered2',
-    #                                  'DD' = 'grey30')) + 
-    #   scale_size_continuous(limits = c(0, 100),
-    #                         breaks = c( 0,    25,    50,    75,    100), 
-    #                         labels = c('0%', '25%', '50%', '75%', '100%')) + 
     scale_x_continuous(expand = c(0, 0), 
                        limits = c(0, 102),
                        breaks = c(seq(0, 100, 25)),
@@ -195,41 +203,49 @@ create_quadplot <- function() {
   
   scatter_quadplot <- scatter_quadplot +
     labs(x = bquote('Area ratio (%)'), 
-         y = bquote('Distribution alignment (%)')) #, 
-  #       title = 'Distribution alignment vs Extent alignment',
-  #       size = '% ocean range',
-  #      color = 'Extinction\nRisk') 
+         y = bquote('Distribution alignment (%)'))
   
   return(scatter_quadplot)
 }
 
 
+create_miniquad <- function(spp_sel) {
+
+  ### mongo plot time
+  scatter_miniquad <- ggplot(quad_list %>% 
+                               filter(sciname == spp_sel),
+                             aes(x = area_ratio, 
+                                 y = dist_align)) +
+    ggtheme_plot + 
+    theme(panel.grid.major = element_blank(),
+          axis.title = element_blank(),
+          axis.text  = element_blank()) +
+    ### color the quadrant backgrounds:
+    annotate("rect", xmin = area_align_mean, xmax = 100, 
+             ymin = dist_align_mean, ymax = 100, 
+             alpha = .3, 
+             fill= "#4dac26")  + 
+    annotate("rect", xmax = area_align_mean, xmin =   0, 
+             ymin = dist_align_mean, ymax = 100, 
+             alpha = .3, 
+             fill= "#b8e186") + 
+    annotate("rect", xmin = area_align_mean, xmax = 100, 
+             ymax = dist_align_mean, ymin =   0, 
+             alpha = .3, 
+             fill= "#f1b6da") + 
+    annotate("rect", xmax = area_align_mean, xmin =   0, 
+             ymax = dist_align_mean, ymin =   0, 
+             alpha = .3, 
+             fill= "#d01c8b") + 
+    geom_point(color = 'red3', size = 2, alpha = .8)
+  
+  return(scatter_miniquad)
+}
 
 
 create_coralplot <- function() {
-  spp_coralmaps <- read_csv('shiny_am_iucn/data/coral_spp_areas.csv')
-  
-  ggtheme_basic <- theme(axis.ticks = element_blank(),
-                         text = element_text(family = 'Helvetica', color = 'gray30', size = 8),
-                         plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
-                         panel.background = element_blank(),
-                         legend.position = 'right')
-  
-  ggtheme_plot <- ggtheme_basic + 
-    theme(panel.border     = element_blank(),
-          panel.grid.minor = element_blank(), 
-          panel.grid.major = element_line(colour = 'grey90'),
-          axis.line = element_line(colour = "grey30"))
-  
-  iucn_coral_fixed <- spp_coralmaps %>%
-    rename(dist_align_raw = sm_perc_raw, dist_align_clipped = sm_perc_clipped) %>%
-    gather(dist, perc, c(dist_align_raw, dist_align_clipped)) %>%
-    gather(area, ratio, c(area_ratio_raw, area_ratio_clipped)) %>%
-    filter(!(str_detect(dist, 'raw') & !(str_detect(area, 'raw')))) %>%
-    filter(!(str_detect(dist, 'clip') & !(str_detect(area, 'clip')))) %>%
-    mutate(method = ifelse(str_detect(dist, 'clip'), '200m clip', 'all depth'))
-  
-  clipped_quads <- ggplot(iucn_coral_fixed %>%
+
+  clipped_quads <- ggplot(spp_coralmaps %>%
                             filter(!iucn_sid %in% (iucn_coral_fixed %>% 
                                                      filter(perc > 100) %>% 
                                                      .$iucn_sid)),

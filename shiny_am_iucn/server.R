@@ -2,9 +2,9 @@
 
 source('server_fxns.R')
 
-am_prob_cols <- rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
-am_pres_cols <- colorRampPalette(brewer.pal(9, 'Oranges'))(255) # orange color scheme
-iucn_cols    <- colorRampPalette(brewer.pal(9, 'Purples'))(255) # purple color scheme
+# am_prob_cols <- rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
+# am_pres_cols <- colorRampPalette(brewer.pal(9, 'Oranges'))(255) # orange color scheme
+# iucn_cols    <- colorRampPalette(brewer.pal(9, 'Purples'))(255) # purple color scheme
 
 server <- shinyServer(function(input, output, session) {
   
@@ -41,8 +41,7 @@ server <- shinyServer(function(input, output, session) {
     {
       message('observed change in spp_map$df or input$show_maps; creating map')
       map_rast <- get_rast(spp_map$df, type = input$show_maps)
-
-      map_obj <- assemble_map(map_rast, spp = input$species)
+      map_obj  <- assemble_map(map_rast, spp = input$species)
       
       spp_map$map <- map_obj
     }
@@ -53,9 +52,13 @@ server <- shinyServer(function(input, output, session) {
   }, width = 800, height = 600) 
   
   output$quad_plot <- renderPlotly({
-    create_quadplot()
+    create_quadplot(input$taxa_quad, input$expert_rev)
   })
   
+  output$mini_quad <- renderPlot({
+    create_miniquad(input$species)
+  })
+
   output$coral_plot <- renderPlotly({
     create_coralplot()
   })
