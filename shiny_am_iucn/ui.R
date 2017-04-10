@@ -25,7 +25,13 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
     fluidRow(column(2, 
       includeMarkdown('pages/quad_plot_methods.md')
     ),
-      column(10,
+    sidebarPanel(
+      h5('sidebar text'),
+      radioButtons("dist", "Distribution type:",
+                   c("All" = "all",
+                     "Expert Reviewed" = "expert"))
+    ),
+    column(10,
         plotlyOutput('quad_plot')
       )
     )
