@@ -1,0 +1,789 @@
+iucn_sid,am_sid,sciname,dist_align,area_ratio,method
+132859,URM-Cn-5604,Oulastrea crispata,76.653,43.68,all depth
+132860,SLB-62998,Psammocora stellata,52.481,53.436,all depth
+132863,SLB-93516,Acropora prostrata,71.494,64.446,all depth
+132866,URM-Cn-4877,Montipora angulata,77.061,65.399,all depth
+132869,URM-Cn-4750,Acropora florida,89.616,43.673,all depth
+132871,URM-Cn-5952,Pectinia elongata,88.473,16.313,all depth
+132874,URM-Cn-5888,Scolymia lacera,19.524,66.822,all depth
+132875,URM-Cn-5982,Pocillopora kelleheri,44.441,82.769,all depth
+132876,URM-Cn-4973,Leptoseris tubulifera,69.612,37.703,all depth
+132877,URM-Cn-5759,Fungia fralinae,90.521,29.487,all depth
+132878,URM-Cn-5549,Favia maxima,90.768,28.016,all depth
+132880,URM-Cn-4995,Pavona venosa,85.842,47.441,all depth
+132883,URM-Cn-5572,Goniastrea australensis,85.632,24.195,all depth
+132884,URM-Cn-5508,Colpophyllia natans,95.37,38.024,all depth
+132885,URM-Cn-4965,Leptoseris hawaiiensis,78.477,52.444,all depth
+132886,SLB-93397,Acropora seriata,72.876,51.365,all depth
+132892,URM-Cn-4910,Montipora hodgsoni,73.974,68.303,all depth
+132894,URM-Cn-5557,Favia veroni,89.774,27.24,all depth
+132900,URM-Cn-5894,Symphyllia radians,80.671,59.714,all depth
+132902,SLB-62642,Fungia puishani,78.508,40.244,all depth
+132903,URM-Cn-4970,Leptoseris solida,61.567,44.787,all depth
+132906,SLB-93376,Acropora irregularis,61.565,66.843,all depth
+132908,URM-Cn-4818,Acropora rosaria,68.137,59.595,all depth
+132909,URM-Cn-4848,Acropora turaki,72.324,65.812,all depth
+132911,URM-Cn-4992,Pavona maldivensis,82.525,51.55,all depth
+132915,SLB-158712,Siderastrea stellata,67.788,22.895,all depth
+132916,URM-Cn-5470,Turbinaria irregularis,91,15.909,all depth
+132917,URM-Cn-4958,Gardineroseris planulata,80.806,53.977,all depth
+132922,URM-Cn-5595,Montastrea curta,79.357,53.438,all depth
+132923,URM-Cn-5985,Pocillopora woodjonesi,87.635,48.117,all depth
+132927,SLB-61850,Leptoseris striata,86.247,21.813,all depth
+132928,URM-Cn-5953,Pectinia lactuca,88.024,39.934,all depth
+132931,URM-Cn-4854,Acropora willisae,75.724,51.828,all depth
+132933,URM-Cn-4723,Acropora carduus,52.103,82.408,all depth
+132935,URM-Cn-4807,Acropora plumosa,79.233,59.11,all depth
+132936,SLB-190543,Favia pallida,87.186,56.175,all depth
+132940,URM-Cn-4710,Acropora acuminata,89.711,36.051,all depth
+132941,URM-Cn-5862,Indophyllia macassarensis,67.213,6.328,all depth
+132942,SLB-93057,Montipora patula,100,10.838,all depth
+132945,URM-Cn-6043,Porites colonensis,53.536,7.244,all depth
+132946,SLB-93732,Acropora lianae,76.345,67.089,all depth
+132950,SLB-158633,Acropora macrostoma,39.24,75.699,all depth
+132957,URM-Cn-5465,Turbinaria bifrons,62.04,37.017,all depth
+132962,URM-Cn-5892,Symphyllia erythraea,73.222,32.362,all depth
+132963,URM-Cn-5591,Manicina areolata,83.956,63.423,all depth
+132967,URM-Cn-5485,Euphyllia yaeyamaensis,69.75,58.085,all depth
+132968,URM-Cn-5779,Halomitra clavator,25.94,67.177,all depth
+132969,URM-Cn-4774,Acropora listeri,82.189,44.698,all depth
+132970,URM-Cn-4954,Agaricia lamarcki,95.16,42.55,all depth
+132972,URM-Cn-4800,Acropora paniculata,76.533,48.887,all depth
+132974,SLB-62368,Plerogyra discus,77.574,51.766,all depth
+132977,URM-Cn-4937,Montipora stilosa,66.751,56.703,all depth
+132980,URM-Cn-5590,Leptoria phrygia,90.667,29.484,all depth
+132983,URM-Cn-5584,Leptastrea bottae,57.158,51.889,all depth
+132984,URM-Cn-4736,Acropora derawanensis,78.609,65.357,all depth
+132987,URM-Cn-5524,Echinopora gemmacea,81.952,44.975,all depth
+132988,URM-Cn-4777,Acropora longicyathus,80.522,47.648,all depth
+132990,URM-Cn-4790,Acropora multiacuta,70.353,67.645,all depth
+132991,URM-Cn-6123,Coscinaraea crassa,71.208,44.525,all depth
+132992,URM-Cn-4761,Acropora humilis,83.148,44.927,all depth
+132996,URM-Cn-5772,Fungia seychellensis,50.964,54.257,all depth
+133000,URM-Cn-4796,Acropora ocellata,33.092,46.851,all depth
+133002,SLB-117497,Seriatopora stellata,66.126,57.343,all depth
+133003,URM-Cn-5583,Leptastrea bewickensis,50.538,45.089,all depth
+133004,SLB-62804,Simplastrea vesicularis,87.381,39.044,all depth
+133006,URM-Cn-4798,Acropora palmata,95.622,41.77,all depth
+133007,URM-Cn-4917,Montipora malampaya,74.438,57.318,all depth
+133008,URM-Cn-5775,Fungia spinifer,90.686,24.691,all depth
+133011,SLB-117488,Pocillopora ankeli,79.09,59.322,all depth
+133013,URM-Cn-4755,Acropora grandis,80.832,49.089,all depth
+133018,URM-Cn-4786,Acropora minuta,87.606,43.321,all depth
+133020,URM-Cn-4841,Acropora tenuis,84.663,46.461,all depth
+133023,URM-Cn-6062,Porites lichen,90.164,23.288,all depth
+133024,URM-Cn-5827,Merulina scabricula,92.142,23.942,all depth
+133025,URM-Cn-4850,Acropora vaughani,88.606,42.604,all depth
+133026,SLB-117486,Mycedium mancaoi,85.06,13.591,all depth
+133029,URM-Cn-5552,Favia rotumana,91.766,14.743,all depth
+133031,URM-Cn-4897,Montipora effusa,56.342,70.188,all depth
+133032,URM-Cn-5869,Lobophyllia flabelliformis,63.474,88.113,all depth
+133033,URM-Cn-4813,Acropora pulchra,83.085,46.63,all depth
+133034,SLB-189121,Fungia fragilis,97.487,10.582,all depth
+133037,URM-Cn-5885,Mycetophyllia reesi,89.157,43.267,all depth
+133038,URM-Cn-6069,Porites nigrescens,99.66,7.383,all depth
+133043,URM-Cn-6135,Psammocora digitata,83.1,51.166,all depth
+133045,SLB-158820,Pocillopora ligulata,14.519,98.856,all depth
+133046,URM-Cn-4861,Anacropora spinosa,68.916,58.603,all depth
+133053,URM-Cn-5887,Scolymia cubensis,88.049,57.107,all depth
+133055,URM-Cn-5564,Favites halicora,92.136,27.413,all depth
+133057,URM-Cn-5482,Euphyllia paradivisa,85.065,44.042,all depth
+133058,URM-Cn-5930,Echinophyllia echinata,78.647,26.404,all depth
+133059,URM-Cn-5617,Platygyra verweyi,83.203,54.816,all depth
+133064,URM-Cn-4899,Montipora florida,82.968,48.393,all depth
+133066,URM-Cn-4913,Montipora informis,86.47,51.7,all depth
+133070,URM-Cn-5601,Montastrea colemani,66.871,69.479,all depth
+133071,URM-Cn-4901,Montipora foliosa,83.076,49.41,all depth
+133076,URM-Cn-5873,Lobophyllia robusta,66.079,62.743,all depth
+133081,URM-Cn-4770,Acropora kirstyae,73.896,37.598,all depth
+133082,URM-Cn-6064,Porites lutea,94.769,21.861,all depth
+133084,SLB-62376,Barabattoia amicorum,91.855,28.161,all depth
+133087,URM-Cn-4836,Acropora subglabra,89.707,50.101,all depth
+133088,URM-Cn-5528,Echinopora lamellosa,88.797,34.483,all depth
+133089,URM-Cn-5935,Echinophyllia patula,92.622,15.906,all depth
+133090,URM-Cn-5587,Leptastrea purpurea,90,35.026,all depth
+133092,URM-Cn-4866,Astreopora incrustans,55.732,87.121,all depth
+133094,URM-Cn-6138,Psammocora nierstraszi,78.62,46.932,all depth
+133096,SLB-158798,Porites columnaris,48.355,94.963,all depth
+133097,SLB-117490,Pocillopora danae,65.602,70.527,all depth
+133099,URM-Cn-5977,Pocillopora elegans,53.607,65.637,all depth
+133100,URM-Cn-4956,Agaricia undata,68.178,66.742,all depth
+133102,URM-Cn-5814,Dichocoenia stokesii,81.903,64.713,all depth
+133106,URM-Cn-5849,Acanthastrea hillae,87.127,42.889,all depth
+133109,URM-Cn-5901,Galaxea acrhelia,63.025,46.744,all depth
+133110,URM-Cn-5750,Ctenactis crassa,89.259,31.462,all depth
+133111,SLB-61810,Montipora saudii,95.981,45.793,all depth
+133112,URM-Cn-4724,Acropora caroliniana,57.366,71.415,all depth
+133113,URM-Cn-4880,Montipora cactus,73.508,53.914,all depth
+133115,SLB-93474,Acropora retusa,48.426,73.587,all depth
+133120,SLB-61654,Acropora latistella,76.898,49.125,all depth
+133121,URM-Cn-6145,Siderastrea glynni,0,36.262,all depth
+133122,SLB-93687,Acropora plantaginea,51.503,73.491,all depth
+133124,SLB-158750,Dendrogyra cylindrus,79.505,73.492,all depth
+133125,URM-Cn-4748,Acropora fenneri,84.304,49.568,all depth
+133127,URM-Cn-5896,Symphyllia valenciennesii,82.803,54.799,all depth
+133128,URM-Cn-4812,Acropora pruinosa,82.92,18.058,all depth
+133129,URM-Cn-4872,Astreopora ocellata,78.775,52.106,all depth
+133131,URM-Cn-4903,Montipora friabilis,58.053,74.259,all depth
+133132,URM-Cn-4714,Acropora aspera,80.825,59.839,all depth
+133133,URM-Cn-4708,Acropora abrolhosensis,50.221,77.702,all depth
+133134,URM-Cn-5592,Montastraea annularis,69.863,95.765,all depth
+133139,SLB-184813,Isopora palifera,84.763,47.702,all depth
+133142,URM-Cn-5096,Cladocora caespitosa,75.624,86.094,all depth
+133144,W-Hyd-210726,Millepora alcicornis,31.728,95.338,all depth
+133145,URM-Cn-5008,Stylocoeniella cocosensis,67.435,76.587,all depth
+133148,URM-Cn-5751,Ctenactis echinata,90.268,45.563,all depth
+133151,URM-Cn-5542,Favia lacuna,97.019,29.974,all depth
+133152,URM-Cn-5872,Lobophyllia pachysepta,81.228,55.609,all depth
+133157,URM-Cn-5889,Scolymia vitiensis,67.14,61.699,all depth
+133158,URM-Cn-5787,Podabacia crustacea,82.869,47.009,all depth
+133160,URM-Cn-4715,Acropora austera,77.705,48.533,all depth
+133161,URM-Cn-5610,Platygyra contorta,78.165,25.895,all depth
+133165,URM-Cn-5921,Oculina varicosa,91.743,42.522,all depth
+133169,URM-Cn-5993,Stylophora mamillata,74.079,63.828,all depth
+133172,SLB-62815,Echinophyllia aspera,91.119,34.326,all depth
+133175,URM-Cn-4896,Montipora efflorescens,82.066,49.91,all depth
+133176,SLB-117467,Coscinaraea exesa,85.65,36.139,all depth
+133177,URM-Cn-5472,Turbinaria patula,91.166,37.844,all depth
+133178,URM-Cn-5593,Montastrea annuligera,69.253,57.195,all depth
+133182,SLB-184808,Isopora brueggemanni,63.407,69.028,all depth
+133183,URM-Cn-5761,Fungia granulosa,90.544,24.222,all depth
+133184,SLB-62757,Mussismilia hispida,93.434,53.116,all depth
+133186,URM-Cn-4900,Montipora floweri,76.796,53.811,all depth
+133192,URM-Cn-5947,Oxypora glabra,89.305,19.689,all depth
+133193,W-Oct-210725,Heliopora coerulea,79.459,32.184,all depth
+133194,URM-Cn-4893,Montipora digitata,82.032,54.272,all depth
+133195,SLB-93690,Acropora appressa,86.001,39.762,all depth
+133197,URM-Cn-5984,Pocillopora verrucosa,88.099,49.932,all depth
+133200,URM-Cn-5606,Oulophyllia crispa,90.721,25.172,all depth
+133201,SLB-190518,Fungia scutaria,86.802,23.78,all depth
+133203,URM-Cn-4840,Acropora tenella,47.837,86.212,all depth
+133206,URM-Cn-4819,Acropora roseni,55.054,35.11,all depth
+133209,URM-Cn-5567,Favites pentagona,89.392,33.864,all depth
+133210,URM-Cn-5554,Favia speciosa,87.478,48.652,all depth
+133212,URM-Cn-5915,Oculina diffusa,73.881,61.748,all depth
+133213,URM-Cn-5786,Lithophyllon undulatum,91.578,23.534,all depth
+133215,URM-Cn-5777,Fungia tenuis,65.675,42.17,all depth
+133216,URM-Cn-6063,Porites lobata,85.522,19.428,all depth
+133217,SLB-158789,Meandrina danae,68.463,71.71,all depth
+133218,URM-Cn-4975,Pachyseris foliosa,61.382,70.501,all depth
+133219,URM-Cn-5486,Nemenzophyllia turbida,81.07,48.439,all depth
+133220,URM-Cn-4882,Montipora caliculata,84.164,53.291,all depth
+133222,URM-Cn-5975,Pocillopora damicornis,70.338,38.077,all depth
+133223,URM-Cn-4740,Acropora donei,90.152,43.729,all depth
+133227,SLB-93757,Astreopora expansa,78.43,51.501,all depth
+133231,URM-Cn-5517,Diploastrea heliopora,85.329,44.838,all depth
+133233,URM-Cn-4769,Acropora kimbeensis,67.093,69.419,all depth
+133236,URM-Cn-5907,Galaxea paucisepta,92.886,21.613,all depth
+133237,SLB-62474,Montastraea cavernosa,77.08,82.772,all depth
+133238,URM-Cn-4909,Montipora hispida,80.343,53.93,all depth
+133239,URM-Cn-4792,Acropora nasuta,84,46.329,all depth
+133240,URM-Cn-4982,Pavona clavus,82.383,54.142,all depth
+133242,URM-Cn-4989,Pavona frondifera,58.774,64.869,all depth
+133244,URM-Cn-5563,Favites flexuosa,94.821,19.032,all depth
+133246,URM-Cn-5846,Acanthastrea echinata,83.86,53.711,all depth
+133248,URM-Cn-4816,Acropora robusta,83.206,45.756,all depth
+133250,URM-Cn-4738,Acropora digitifera,82.686,45.926,all depth
+133251,URM-Cn-5996,Stylophora wellsi,51.113,91.443,all depth
+133252,URM-Cn-4846,Acropora tortuosa,80.1,26.329,all depth
+133253,URM-Cn-5860,Blastomussa wellsi,70.639,68.69,all depth
+133255,URM-Cn-4953,Agaricia humilis,93.822,55.446,all depth
+133256,URM-Cn-5481,Euphyllia glabrescens,86.904,54.351,all depth
+133258,URM-Cn-5495,Plerogyra sinuosa,86.827,34.468,all depth
+133260,URM-Cn-6149,Trachyphyllia geoffroyi,69.401,96.948,all depth
+133261,URM-Cn-4983,Pavona danai,64.912,76.025,all depth
+133267,URM-Cn-4868,Astreopora listeri,77.275,50.337,all depth
+133268,URM-Cn-5875,Micromussa diminuta,75.779,61.157,all depth
+133269,URM-Cn-5782,Heliofungia actiniformis,67.705,60.766,all depth
+133271,URM-Cn-4824,Acropora sarmentosa,85.01,46.419,all depth
+133272,URM-Cn-5954,Pectinia paeonia,91.443,32.367,all depth
+133277,URM-Cn-6040,Porites australiensis,80.971,19.992,all depth
+133281,URM-Cn-5963,Madracis formosa,92.229,54.666,all depth
+133283,URM-Cn-4718,Acropora batunai,78.671,59.455,all depth
+133284,URM-Cn-5620,Plesiastrea versipora,83.229,50.635,all depth
+133289,SLB-117478,Euphyllia paraancora,73.019,51.791,all depth
+133290,URM-Cn-5560,Favites abdita,93.874,22.517,all depth
+133291,URM-Cn-4835,Acropora striata,43.245,80.276,all depth
+133292,URM-Cn-4871,Astreopora myriophthalma,85.103,45.28,all depth
+133298,URM-Cn-4942,Montipora turgescens,84.639,53.34,all depth
+133302,URM-Cn-4865,Astreopora gracilis,71.073,59.193,all depth
+133304,URM-Cn-5870,Lobophyllia hataii,78.991,59.591,all depth
+133305,URM-Cn-4946,Montipora verrilli,89.081,7.074,all depth
+133307,URM-Cn-5553,Favia rotundata,80.191,47.74,all depth
+133308,SLB-190516,Fungia scruposa,85.387,29.948,all depth
+133309,URM-Cn-5981,Pocillopora inflata,34.113,98.856,all depth
+133311,URM-Cn-4757,Acropora halmaherae,38.863,41.386,all depth
+133313,URM-Cn-4733,Acropora cytherea,82.084,48.745,all depth
+133315,URM-Cn-4788,Acropora monticulosa,79.543,46.83,all depth
+133319,URM-Cn-4760,Acropora horrida,83.246,47.641,all depth
+133320,URM-Cn-4830,Acropora solitaryensis,83.053,53.241,all depth
+133324,URM-Cn-4752,Acropora gemmifera,78.578,53.062,all depth
+133325,URM-Cn-5510,Cyphastrea chalcidicum,90.945,31.801,all depth
+133327,URM-Cn-4779,Acropora lovelli,58.906,44.792,all depth
+133329,URM-Cn-6079,Porites stephensoni,59.269,56.92,all depth
+133333,URM-Cn-5605,Oulophyllia bennettae,90.261,30.687,all depth
+133334,URM-Cn-4719,Acropora branchi,43.892,78.33,all depth
+133337,URM-Cn-5826,Merulina ampliata,82.83,50.241,all depth
+133340,URM-Cn-5897,Symphyllia wilsoni,95.712,48.881,all depth
+133343,URM-Cn-5569,Favites russelli,92.62,17.742,all depth
+133344,URM-Cn-5790,Podabacia sinai,97.019,45.774,all depth
+133345,URM-Cn-4941,Montipora tuberculosa,85.491,51.568,all depth
+133348,SLB-93322,Acropora variolosa,52.703,75.607,all depth
+133349,URM-Cn-6044,Porites compressa,27.063,7.257,all depth
+133351,URM-Cn-4967,Leptoseris mycetoseroides,82.283,52.031,all depth
+133352,URM-Cn-4754,Acropora gomezi,89.439,37.525,all depth
+133359,URM-Cn-4783,Acropora microclados,69.694,58.714,all depth
+133360,URM-Cn-4979,Pavona bipartita,71.696,38.831,all depth
+133365,URM-Cn-5574,Goniastrea edwardsi,91.212,25.36,all depth
+133366,URM-Cn-5851,Acanthastrea lordhowensis,69.705,72.85,all depth
+133370,SLB-158808,Porites profundus,35.51,70.025,all depth
+133371,URM-Cn-5757,Fungia distorta,88.651,31.562,all depth
+133372,URM-Cn-5791,Polyphyllia novaehiberniae,51.913,39.346,all depth
+133375,URM-Cn-4888,Montipora corbettensis,74.426,56.17,all depth
+133376,URM-Cn-5850,Acanthastrea ishigakiensis,59.379,67.837,all depth
+133377,URM-Cn-5518,Diploria clivosa,86.187,56.373,all depth
+133379,SLB-93515,Acropora convexa,81.768,55.112,all depth
+133381,URM-Cn-4726,Acropora cervicornis,95.035,44.064,all depth
+133386,SLB-62731,Acanthastrea rotundoflora,62.003,74.643,all depth
+133387,SLB-93466,Acropora globiceps,68.621,45.533,all depth
+133392,URM-Cn-5543,Favia laxa,78.204,58.837,all depth
+133393,URM-Cn-4842,Acropora teres,53.963,75.087,all depth
+133395,URM-Cn-6073,Porites porites,62.898,61.569,all depth
+133396,URM-Cn-4737,Acropora desalwii,91.509,35.346,all depth
+133398,URM-Cn-4994,Pavona varians,84.184,54.758,all depth
+133400,URM-Cn-5815,Eusmilia fastigiata,80.642,62.463,all depth
+133401,URM-Cn-4759,Acropora hoeksemai,79.649,50.697,all depth
+133402,URM-Cn-4833,Acropora squarrosa,71.854,54.806,all depth
+133403,URM-Cn-5476,Turbinaria stellulata,91.401,26.047,all depth
+133405,SLB-62382,Caulastrea tumida,84.953,50.678,all depth
+133406,URM-Cn-6137,Psammocora haimeana,86.36,44.868,all depth
+133407,SLB-189370,Pocillopora eydouxi,95.727,22.315,all depth
+133408,URM-Cn-6130,Coscinaraea wellsi,77.552,38.993,all depth
+133409,URM-Cn-4948,Montipora verruculosus,84.338,43.606,all depth
+133410,URM-Cn-4978,Pachyseris speciosa,83.689,49.909,all depth
+133412,URM-Cn-5816,Gyrosmilia interrupta,51.078,79.386,all depth
+133414,URM-Cn-5578,Goniastrea pectinata,92.118,22.767,all depth
+133415,URM-Cn-4859,Anacropora puertogalerae,72.258,53.343,all depth
+133416,URM-Cn-4886,Montipora circumvallata,76.967,54.8,all depth
+133417,SLB-62381,Caulastrea furcata,66.807,60.899,all depth
+133419,URM-Cn-5871,Lobophyllia hemprichii,83.274,48.51,all depth
+133420,URM-Cn-4906,Montipora grisea,73.567,53.557,all depth
+133422,URM-Cn-4884,Montipora capricornis,57.864,74.625,all depth
+133423,URM-Cn-5764,Fungia horrida,89.418,20.972,all depth
+133428,URM-Cn-6122,Coscinaraea columna,83.356,52.493,all depth
+133429,URM-Cn-5526,Echinopora horrida,82.868,35.755,all depth
+133432,URM-Cn-4832,Acropora spicifera,69.313,61.297,all depth
+133433,URM-Cn-4889,Montipora crassituberculata,81.707,52.551,all depth
+133435,URM-Cn-5988,Seriatopora dendritica,78.002,48.402,all depth
+133437,URM-Cn-5765,Fungia moluccensis,72.03,35.546,all depth
+133439,SLB-61834,Agaricia tenuifolia,74.438,77.457,all depth
+133440,URM-Cn-5614,Platygyra pini,95.264,24.805,all depth
+133442,URM-Cn-5948,Oxypora lacera,87.313,26.516,all depth
+133443,URM-Cn-4879,Montipora australiensis,61.173,68.713,all depth
+133444,URM-Cn-5920,Oculina valenciennesi,27.834,54.95,all depth
+133450,URM-Cn-4943,Montipora turtlensis,74.785,65.998,all depth
+133451,URM-Cn-4891,Montipora danae,80.473,53.575,all depth
+133457,URM-Cn-5877,Mussa angulosa,87.581,49.787,all depth
+133458,URM-Cn-5823,Hydnophora microconos,87.73,37.048,all depth
+133460,SLB-93100,Montipora cocosensis,49.827,79.974,all depth
+133468,URM-Cn-5612,Platygyra daedalea,89.035,45.674,all depth
+133470,SLB-158790,Micromussa amakusensis,61.298,67.573,all depth
+133474,URM-Cn-5891,Symphyllia agaricia,83.155,56.64,all depth
+133476,SLB-61883,Madracis asperula,19.375,60.739,all depth
+133478,URM-Cn-5821,Hydnophora exesa,92.557,36.837,all depth
+133479,URM-Cn-4762,Acropora hyacinthus,82.46,45.977,all depth
+133481,URM-Cn-4727,Acropora chesterfieldensis,78.527,33.965,all depth
+133483,URM-Cn-4787,Acropora mirabilis,57.275,81.88,all depth
+133484,SLB-158735,Anomastraea irregularis,78.868,51.526,all depth
+133485,SLB-93759,Astreopora randalli,66.631,53.098,all depth
+133488,SLB-62813,Pectinia africanus,89.149,35.025,all depth
+133489,URM-Cn-4892,Montipora delicatula,83.882,45.67,all depth
+133492,URM-Cn-6075,Porites rus,75.502,64.758,all depth
+133493,SLB-62496,Platygyra ryukyuensis,83.462,32.075,all depth
+133494,SLB-93535,Acropora papillare,86.855,42.547,all depth
+133495,SLB-117483,Galaxea horrescens,83.712,48.659,all depth
+133497,SLB-62380,Caulastrea echinulata,69.921,70.724,all depth
+133498,URM-Cn-5473,Turbinaria peltata,88.175,39.141,all depth
+133500,URM-Cn-4771,Acropora kosurini,45.349,72.434,all depth
+133502,URM-Cn-6142,Psammocora superficialis,81.143,51.232,all depth
+133504,URM-Cn-6055,Porites furcata,75.835,60.361,all depth
+133509,URM-Cn-5789,Podabacia motuporensis,90.688,27.704,all depth
+133511,URM-Cn-5916,Oculina patagonica,97.897,54.695,all depth
+133513,URM-Cn-4712,Acropora anthocercis,73.641,57.042,all depth
+133516,URM-Cn-5556,Favia truncatus,78.787,60.358,all depth
+133521,URM-Cn-5006,Stephanocoenia intersepta,52.927,63.476,all depth
+133522,URM-Cn-4959,Helioseris cucullata,71.073,67.587,all depth
+133525,URM-Cn-4920,Montipora monasteriata,84.65,56.912,all depth
+133527,URM-Cn-5879,Mussismilia harttii,90.787,37.856,all depth
+133528,URM-Cn-5859,Blastomussa merleti,81.281,65.174,all depth
+133530,SLB-117551,Stylophora subseriata,58.534,74.914,all depth
+133532,URM-Cn-4851,Acropora verweyi,80.396,56.919,all depth
+133534,URM-Cn-5986,Pocillopora zelli,61.838,39.406,all depth
+133535,URM-Cn-4950,Agaricia agaricites,79.527,88.294,all depth
+133538,SLB-62658,Herpolitha limax,87.695,23.721,all depth
+133543,SLB-158796,Porites brighami,68.855,26.058,all depth
+133545,SLB-62704,Paraclavarina triangularis,72.086,38.742,all depth
+133547,URM-Cn-4855,Acropora yongei,74.361,54.838,all depth
+133548,URM-Cn-5007,Stylocoeniella armata,75.326,61.77,all depth
+133551,URM-Cn-5865,Lobophyllia corymbosa,83.364,50.313,all depth
+133556,URM-Cn-4935,Montipora spumosa,81.313,49.96,all depth
+133557,SLB-158238,Acanthastrea brevis,63.162,67.15,all depth
+133560,URM-Cn-5577,Goniastrea palauensis,81.426,52.929,all depth
+133563,URM-Cn-4927,Montipora peltiformis,79.322,61.291,all depth
+133564,URM-Cn-5863,Isophyllastrea rigida,86.097,36.686,all depth
+133566,URM-Cn-5886,Scolymia australis,58.297,52.358,all depth
+133569,URM-Cn-5538,Favia favus,88.43,52.989,all depth
+133570,URM-Cn-6140,Psammocora profundacella,82.493,52.495,all depth
+133571,URM-Cn-5609,Platygyra carnosus,75.676,36.984,all depth
+133574,SLB-158797,Porites pukoensis,39.968,0.489,all depth
+133575,SLB-61985,Cladocora arbuscula,70.37,74.395,all depth
+133581,URM-Cn-4985,Pavona diffluens,92.948,50.231,all depth
+133582,SLB-62826,Oxypora crassispinosa,92.629,15.069,all depth
+133584,SLB-158799,Porites divaricata,69.484,50.403,all depth
+133587,URM-Cn-5794,Sandalolitha dentata,79.567,30.198,all depth
+133589,URM-Cn-6136,Psammocora explanulata,73.958,50.779,all depth
+133590,URM-Cn-6147,Siderastrea savignyana,55.301,72.284,all depth
+133591,URM-Cn-5864,Isophyllia sinuosa,86.324,36.752,all depth
+133592,URM-Cn-4747,Acropora exquisita,85.725,45.075,all depth
+133595,W-Hyd-210730,Millepora platyphylla,75.17,46.109,all depth
+133597,URM-Cn-5746,Cantharellus doederleini,43.807,68.218,all depth
+133599,URM-Cn-4944,Montipora undata,79.64,54.123,all depth
+133604,URM-Cn-4713,Acropora arabensis,56.816,31.354,all depth
+133606,URM-Cn-5895,Symphyllia recta,85.989,52.429,all depth
+133607,URM-Cn-6020,Goniopora minor,99.682,7.406,all depth
+133611,URM-Cn-5972,Madracis senaria,87.689,38.402,all depth
+133613,URM-Cn-6077,Porites solida,77.842,62.87,all depth
+133614,SLB-62852,Seriatopora guttatus,58.035,82.295,all depth
+133619,URM-Cn-5868,Lobophyllia diminuta,54.662,70.742,all depth
+133621,URM-Cn-4849,Acropora valenciennesi,87.966,47.907,all depth
+133622,URM-Cn-4883,Montipora capitata,53.651,79.653,all depth
+133631,URM-Cn-5534,Erythrastrea flabellata,60.582,71.062,all depth
+133633,URM-Cn-5471,Turbinaria mesenterina,92.962,35.767,all depth
+133634,URM-Cn-5580,Goniastrea retiformis,90.189,30.659,all depth
+133636,URM-Cn-4964,Leptoseris gardineri,70.971,62.003,all depth
+133637,URM-Cn-5980,Pocillopora indiania,76.399,41.228,all depth
+133638,URM-Cn-5546,Favia maritima,86.374,29.731,all depth
+133639,URM-Cn-4806,Acropora pichoni,54.593,88.691,all depth
+133642,URM-Cn-5848,Acanthastrea hemprichii,69.746,67.094,all depth
+133645,SLB-184819,Porites somaliensis,34.557,16.897,all depth
+133646,URM-Cn-4947,Montipora verrucosa,79.089,69.35,all depth
+133647,URM-Cn-4809,Acropora polystoma,79.138,46.377,all depth
+133648,URM-Cn-5514,Cyphastrea microphthalma,91.326,34.357,all depth
+133649,SLB-93391,Acropora abrotanoides,80.491,56.258,all depth
+133651,URM-Cn-5613,Platygyra lamellina,90.795,21.985,all depth
+133653,URM-Cn-4732,Isopora cylindrica,25.677,66.631,all depth
+133654,URM-Cn-5561,Favites chinensis,88.68,31.301,all depth
+133658,SLB-93454,Acropora bifurcata,59.242,73.772,all depth
+133659,URM-Cn-5991,Stylophora kuehlmanni,74.079,63.828,all depth
+133660,SLB-184810,Isopora cuneata,74.713,52.145,all depth
+133662,URM-Cn-5905,Galaxea fascicularis,89.066,35.212,all depth
+133665,URM-Cn-5581,Goniastrea thecata,97.019,27.869,all depth
+133666,URM-Cn-4785,Acropora millepora,90.162,39.006,all depth
+133668,URM-Cn-6030,Goniopora stokesi,92.137,21.143,all depth
+133672,SLB-158629,Acropora efflorescens,57.184,40.556,all depth
+133673,URM-Cn-5766,Fungia paumotensis,87.801,44.968,all depth
+133674,URM-Cn-4919,Montipora mollis,80.088,60.517,all depth
+133676,URM-Cn-6143,Psammocora vaughani,22.641,66.928,all depth
+133679,URM-Cn-5428,Heteropsammia cochlea,85.437,47.104,all depth
+133680,URM-Cn-6038,Porites astreoides,48.295,61.347,all depth
+133682,SLB-93593,Acropora subulata,79.898,47.879,all depth
+133685,URM-Cn-5995,Stylophora pistillata,83.017,52.235,all depth
+133686,URM-Cn-4961,Leptoseris cailleti,95.367,38.774,all depth
+133690,URM-Cn-5513,Cyphastrea japonica,97.641,16.472,all depth
+133693,URM-Cn-5795,Sandalolitha robusta,82.091,47.928,all depth
+133697,URM-Cn-5475,Turbinaria reniformis,89.891,23.267,all depth
+133702,URM-Cn-4987,Pavona duerdeni,81.868,47.793,all depth
+132859,URM-Cn-5604,Oulastrea crispata,74.731,63.921,200 m clip
+132860,SLB-62998,Psammocora stellata,61.891,80.619,200 m clip
+132863,SLB-93516,Acropora prostrata,77.402,90.072,200 m clip
+132866,URM-Cn-4877,Montipora angulata,80.735,93.628,200 m clip
+132869,URM-Cn-4750,Acropora florida,87.508,79.922,200 m clip
+132871,URM-Cn-5952,Pectinia elongata,85.77,32.664,200 m clip
+132874,URM-Cn-5888,Scolymia lacera,21.44,91.065,200 m clip
+132875,URM-Cn-5982,Pocillopora kelleheri,66.817,52.965,200 m clip
+132876,URM-Cn-4973,Leptoseris tubulifera,66.465,61.303,200 m clip
+132877,URM-Cn-5759,Fungia fralinae,88.089,51.362,200 m clip
+132878,URM-Cn-5549,Favia maxima,88.067,43.252,200 m clip
+132880,URM-Cn-4995,Pavona venosa,83.971,83.522,200 m clip
+132883,URM-Cn-5572,Goniastrea australensis,82.088,46.287,200 m clip
+132884,URM-Cn-5508,Colpophyllia natans,93.624,61.821,200 m clip
+132885,URM-Cn-4965,Leptoseris hawaiiensis,76.603,97.04,200 m clip
+132886,SLB-93397,Acropora seriata,71.938,76.471,200 m clip
+132892,URM-Cn-4910,Montipora hodgsoni,76.791,94.26,200 m clip
+132894,URM-Cn-5557,Favia veroni,86.4,46.271,200 m clip
+132900,URM-Cn-5894,Symphyllia radians,78.998,99.939,200 m clip
+132902,SLB-62642,Fungia puishani,78.508,91.755,200 m clip
+132903,URM-Cn-4970,Leptoseris solida,59.163,92.183,200 m clip
+132906,SLB-93376,Acropora irregularis,70.521,86.179,200 m clip
+132908,URM-Cn-4818,Acropora rosaria,76.081,87.19,200 m clip
+132909,URM-Cn-4848,Acropora turaki,70.977,98.252,200 m clip
+132911,URM-Cn-4992,Pavona maldivensis,80.525,99.019,200 m clip
+132915,SLB-158712,Siderastrea stellata,85.632,17.647,200 m clip
+132916,URM-Cn-5470,Turbinaria irregularis,88.833,28.264,200 m clip
+132917,URM-Cn-4958,Gardineroseris planulata,80.635,97.866,200 m clip
+132922,URM-Cn-5595,Montastrea curta,79.841,96.78,200 m clip
+132923,URM-Cn-5985,Pocillopora woodjonesi,85.194,89.217,200 m clip
+132927,SLB-61850,Leptoseris striata,83.916,31.99,200 m clip
+132928,URM-Cn-5953,Pectinia lactuca,86.023,70.21,200 m clip
+132931,URM-Cn-4854,Acropora willisae,74.21,79.285,200 m clip
+132933,URM-Cn-4723,Acropora carduus,85.79,58.724,200 m clip
+132935,URM-Cn-4807,Acropora plumosa,77.609,95.346,200 m clip
+132936,SLB-190543,Favia pallida,88.036,96.698,200 m clip
+132940,URM-Cn-4710,Acropora acuminata,87.751,65.496,200 m clip
+132941,URM-Cn-5862,Indophyllia macassarensis,93.483,4.549,200 m clip
+132942,SLB-93057,Montipora patula,100,39.97,200 m clip
+132945,URM-Cn-6043,Porites colonensis,91.998,4.215,200 m clip
+132946,SLB-93732,Acropora lianae,75.351,99.295,200 m clip
+132950,SLB-158633,Acropora macrostoma,48.167,79.88,200 m clip
+132957,URM-Cn-5465,Turbinaria bifrons,60.512,52.135,200 m clip
+132962,URM-Cn-5892,Symphyllia erythraea,72.048,58.838,200 m clip
+132963,URM-Cn-5591,Manicina areolata,85.767,96.44,200 m clip
+132967,URM-Cn-5485,Euphyllia yaeyamaensis,74.396,90.587,200 m clip
+132968,URM-Cn-5779,Halomitra clavator,40.926,40.594,200 m clip
+132969,URM-Cn-4774,Acropora listeri,80.145,79.843,200 m clip
+132970,URM-Cn-4954,Agaricia lamarcki,93.5,70.232,200 m clip
+132972,URM-Cn-4800,Acropora paniculata,74.256,96.996,200 m clip
+132974,SLB-62368,Plerogyra discus,75.048,82.992,200 m clip
+132977,URM-Cn-4937,Montipora stilosa,67.861,96.765,200 m clip
+132980,URM-Cn-5590,Leptoria phrygia,88.103,54.724,200 m clip
+132983,URM-Cn-5584,Leptastrea bottae,55.628,99.221,200 m clip
+132984,URM-Cn-4736,Acropora derawanensis,76.953,99.835,200 m clip
+132987,URM-Cn-5524,Echinopora gemmacea,79.929,82.323,200 m clip
+132988,URM-Cn-4777,Acropora longicyathus,78.515,91.035,200 m clip
+132990,URM-Cn-4790,Acropora multiacuta,73.973,93.045,200 m clip
+132991,URM-Cn-6123,Coscinaraea crassa,69.002,76.669,200 m clip
+132992,URM-Cn-4761,Acropora humilis,81.231,85.473,200 m clip
+132996,URM-Cn-5772,Fungia seychellensis,74.406,67.074,200 m clip
+133000,URM-Cn-4796,Acropora ocellata,59.115,25.58,200 m clip
+133002,SLB-117497,Seriatopora stellata,69.259,93.937,200 m clip
+133003,URM-Cn-5583,Leptastrea bewickensis,49.366,72.273,200 m clip
+133004,SLB-62804,Simplastrea vesicularis,85.393,58.86,200 m clip
+133006,URM-Cn-4798,Acropora palmata,94.583,69.134,200 m clip
+133007,URM-Cn-4917,Montipora malampaya,73.401,89.447,200 m clip
+133008,URM-Cn-5775,Fungia spinifer,88.415,47.382,200 m clip
+133011,SLB-117488,Pocillopora ankeli,78.476,89.1,200 m clip
+133013,URM-Cn-4755,Acropora grandis,78.88,90.217,200 m clip
+133018,URM-Cn-4786,Acropora minuta,86.34,63.766,200 m clip
+133020,URM-Cn-4841,Acropora tenuis,82.681,87.512,200 m clip
+133023,URM-Cn-6062,Porites lichen,86.603,45.693,200 m clip
+133024,URM-Cn-5827,Merulina scabricula,88.495,42.903,200 m clip
+133025,URM-Cn-4850,Acropora vaughani,86.393,80.461,200 m clip
+133026,SLB-117486,Mycedium mancaoi,82.221,27.164,200 m clip
+133029,URM-Cn-5552,Favia rotumana,90.481,26.905,200 m clip
+133031,URM-Cn-4897,Montipora effusa,77.662,70.817,200 m clip
+133032,URM-Cn-5869,Lobophyllia flabelliformis,86.086,71.877,200 m clip
+133033,URM-Cn-4813,Acropora pulchra,81.064,89.223,200 m clip
+133034,SLB-189121,Fungia fragilis,95.903,18.622,200 m clip
+133037,URM-Cn-5885,Mycetophyllia reesi,88.045,73.819,200 m clip
+133038,URM-Cn-6069,Porites nigrescens,97.951,13.546,200 m clip
+133043,URM-Cn-6135,Psammocora digitata,80.94,97.089,200 m clip
+133045,SLB-158820,Pocillopora ligulata,54.418,24.077,200 m clip
+133046,URM-Cn-4861,Anacropora spinosa,67.779,98.907,200 m clip
+133053,URM-Cn-5887,Scolymia cubensis,87.09,89.933,200 m clip
+133055,URM-Cn-5564,Favites halicora,89.151,49.148,200 m clip
+133057,URM-Cn-5482,Euphyllia paradivisa,83.409,65.963,200 m clip
+133058,URM-Cn-5930,Echinophyllia echinata,75.598,53.335,200 m clip
+133059,URM-Cn-5617,Platygyra verweyi,81.745,78.98,200 m clip
+133064,URM-Cn-4899,Montipora florida,82.397,70.884,200 m clip
+133066,URM-Cn-4913,Montipora informis,84.349,96.685,200 m clip
+133070,URM-Cn-5601,Montastrea colemani,73.712,88.844,200 m clip
+133071,URM-Cn-4901,Montipora foliosa,81.147,91.014,200 m clip
+133076,URM-Cn-5873,Lobophyllia robusta,70.086,92.167,200 m clip
+133081,URM-Cn-4770,Acropora kirstyae,72.125,73.386,200 m clip
+133082,URM-Cn-6064,Porites lutea,91.297,40.635,200 m clip
+133084,SLB-62376,Barabattoia amicorum,88.779,51.785,200 m clip
+133087,URM-Cn-4836,Acropora subglabra,87.609,86.676,200 m clip
+133088,URM-Cn-5528,Echinopora lamellosa,86.511,64.375,200 m clip
+133089,URM-Cn-5935,Echinophyllia patula,90.191,25.202,200 m clip
+133090,URM-Cn-5587,Leptastrea purpurea,87.703,65.264,200 m clip
+133092,URM-Cn-4866,Astreopora incrustans,72.73,75.556,200 m clip
+133094,URM-Cn-6138,Psammocora nierstraszi,76.485,87.263,200 m clip
+133096,SLB-158798,Porites columnaris,74.91,60.738,200 m clip
+133097,SLB-117490,Pocillopora danae,75.6,84.745,200 m clip
+133099,URM-Cn-5977,Pocillopora elegans,72.68,71.682,200 m clip
+133100,URM-Cn-4956,Agaricia undata,70.169,95.569,200 m clip
+133102,URM-Cn-5814,Dichocoenia stokesii,85.626,94.344,200 m clip
+133106,URM-Cn-5849,Acanthastrea hillae,85.14,75.854,200 m clip
+133109,URM-Cn-5901,Galaxea acrhelia,61.063,83.639,200 m clip
+133110,URM-Cn-5750,Ctenactis crassa,86.202,53.615,200 m clip
+133111,SLB-61810,Montipora saudii,93.96,58.582,200 m clip
+133112,URM-Cn-4724,Acropora caroliniana,70.555,78.846,200 m clip
+133113,URM-Cn-4880,Montipora cactus,72.542,83.568,200 m clip
+133115,SLB-93474,Acropora retusa,72.533,65.218,200 m clip
+133120,SLB-61654,Acropora latistella,75.064,93.242,200 m clip
+133121,URM-Cn-6145,Siderastrea glynni,0,36.262,200 m clip
+133122,SLB-93687,Acropora plantaginea,77.578,65.157,200 m clip
+133124,SLB-158750,Dendrogyra cylindrus,62.803,83.761,200 m clip
+133125,URM-Cn-4748,Acropora fenneri,83.713,72.869,200 m clip
+133127,URM-Cn-5896,Symphyllia valenciennesii,81.021,99.051,200 m clip
+133128,URM-Cn-4812,Acropora pruinosa,82.92,21.523,200 m clip
+133129,URM-Cn-4872,Astreopora ocellata,76.902,91.507,200 m clip
+133131,URM-Cn-4903,Montipora friabilis,69.009,82.476,200 m clip
+133132,URM-Cn-4714,Acropora aspera,85.92,91.583,200 m clip
+133133,URM-Cn-4708,Acropora abrolhosensis,70.736,69.059,200 m clip
+133134,URM-Cn-5592,Montastraea annularis,80.112,64.022,200 m clip
+133139,SLB-184813,Isopora palifera,82.932,86.024,200 m clip
+133142,URM-Cn-5096,Cladocora caespitosa,83.641,77.398,200 m clip
+133144,W-Hyd-210726,Millepora alcicornis,50.297,62.709,200 m clip
+133145,URM-Cn-5008,Stylocoeniella cocosensis,77.986,84.751,200 m clip
+133148,URM-Cn-5751,Ctenactis echinata,87.995,80.332,200 m clip
+133151,URM-Cn-5542,Favia lacuna,93.988,45.915,200 m clip
+133152,URM-Cn-5872,Lobophyllia pachysepta,79.361,95.546,200 m clip
+133157,URM-Cn-5889,Scolymia vitiensis,85.345,76.314,200 m clip
+133158,URM-Cn-5787,Podabacia crustacea,77.71,83.193,200 m clip
+133160,URM-Cn-4715,Acropora austera,75.812,92.424,200 m clip
+133161,URM-Cn-5610,Platygyra contorta,74.212,51.049,200 m clip
+133165,URM-Cn-5921,Oculina varicosa,90.859,66.142,200 m clip
+133169,URM-Cn-5993,Stylophora mamillata,73.038,99.794,200 m clip
+133172,SLB-62815,Echinophyllia aspera,88.537,62.928,200 m clip
+133175,URM-Cn-4896,Montipora efflorescens,80.044,93.644,200 m clip
+133176,SLB-117467,Coscinaraea exesa,82.791,67.99,200 m clip
+133177,URM-Cn-5472,Turbinaria patula,88.608,62.853,200 m clip
+133178,URM-Cn-5593,Montastrea annuligera,72.851,92.522,200 m clip
+133182,SLB-184808,Isopora brueggemanni,63.896,97.392,200 m clip
+133183,URM-Cn-5761,Fungia granulosa,87.325,46.455,200 m clip
+133184,SLB-62757,Mussismilia hispida,93.434,68.448,200 m clip
+133186,URM-Cn-4900,Montipora floweri,75.505,99.21,200 m clip
+133192,URM-Cn-5947,Oxypora glabra,85.842,30.825,200 m clip
+133193,W-Oct-210725,Heliopora coerulea,77.639,56.628,200 m clip
+133194,URM-Cn-4893,Montipora digitata,80.241,95.992,200 m clip
+133195,SLB-93690,Acropora appressa,85.289,89.774,200 m clip
+133197,URM-Cn-5984,Pocillopora verrucosa,85.969,96.735,200 m clip
+133200,URM-Cn-5606,Oulophyllia crispa,87.538,45.754,200 m clip
+133201,SLB-190518,Fungia scutaria,82.939,46.726,200 m clip
+133203,URM-Cn-4840,Acropora tenella,86.725,45.829,200 m clip
+133206,URM-Cn-4819,Acropora roseni,52.897,92.87,200 m clip
+133209,URM-Cn-5567,Favites pentagona,86.906,60.65,200 m clip
+133210,URM-Cn-5554,Favia speciosa,85.658,87.069,200 m clip
+133212,URM-Cn-5915,Oculina diffusa,75.191,97.31,200 m clip
+133213,URM-Cn-5786,Lithophyllon undulatum,89.412,34.838,200 m clip
+133215,URM-Cn-5777,Fungia tenuis,63.961,83.711,200 m clip
+133216,URM-Cn-6063,Porites lobata,81.25,36.122,200 m clip
+133217,SLB-158789,Meandrina danae,79.719,84.955,200 m clip
+133218,URM-Cn-4975,Pachyseris foliosa,71.679,82.821,200 m clip
+133219,URM-Cn-5486,Nemenzophyllia turbida,78.622,78.115,200 m clip
+133220,URM-Cn-4882,Montipora caliculata,83.504,98.232,200 m clip
+133222,URM-Cn-5975,Pocillopora damicornis,68.173,72.306,200 m clip
+133223,URM-Cn-4740,Acropora donei,88.095,74.625,200 m clip
+133227,SLB-93757,Astreopora expansa,76.71,91.154,200 m clip
+133231,URM-Cn-5517,Diploastrea heliopora,83.471,80.387,200 m clip
+133233,URM-Cn-4769,Acropora kimbeensis,72.596,90.095,200 m clip
+133236,URM-Cn-5907,Galaxea paucisepta,88.626,39.59,200 m clip
+133237,SLB-62474,Montastraea cavernosa,92.558,51.88,200 m clip
+133238,URM-Cn-4909,Montipora hispida,78.376,98.864,200 m clip
+133239,URM-Cn-4792,Acropora nasuta,82.156,87.548,200 m clip
+133240,URM-Cn-4982,Pavona clavus,82.102,97.839,200 m clip
+133242,URM-Cn-4989,Pavona frondifera,73.05,78.466,200 m clip
+133244,URM-Cn-5563,Favites flexuosa,91.092,35.06,200 m clip
+133246,URM-Cn-5846,Acanthastrea echinata,81.985,99.422,200 m clip
+133248,URM-Cn-4816,Acropora robusta,81.273,87.515,200 m clip
+133250,URM-Cn-4738,Acropora digitifera,80.813,87.892,200 m clip
+133251,URM-Cn-5996,Stylophora wellsi,75.226,66.873,200 m clip
+133252,URM-Cn-4846,Acropora tortuosa,76.883,57.696,200 m clip
+133253,URM-Cn-5860,Blastomussa wellsi,79.328,86.882,200 m clip
+133255,URM-Cn-4953,Agaricia humilis,92.41,90.276,200 m clip
+133256,URM-Cn-5481,Euphyllia glabrescens,85.066,95.922,200 m clip
+133258,URM-Cn-5495,Plerogyra sinuosa,83.685,65.399,200 m clip
+133260,URM-Cn-6149,Trachyphyllia geoffroyi,94.774,66.272,200 m clip
+133261,URM-Cn-4983,Pavona danai,70.376,90.74,200 m clip
+133267,URM-Cn-4868,Astreopora listeri,75.346,99.887,200 m clip
+133268,URM-Cn-5875,Micromussa diminuta,74.873,91.229,200 m clip
+133269,URM-Cn-5782,Heliofungia actiniformis,61.563,94.937,200 m clip
+133271,URM-Cn-4824,Acropora sarmentosa,82.808,86.308,200 m clip
+133272,URM-Cn-5954,Pectinia paeonia,88.391,56.178,200 m clip
+133277,URM-Cn-6040,Porites australiensis,76.309,37.677,200 m clip
+133281,URM-Cn-5963,Madracis formosa,91.005,90.219,200 m clip
+133283,URM-Cn-4718,Acropora batunai,77.014,94.65,200 m clip
+133284,URM-Cn-5620,Plesiastrea versipora,81.345,92.418,200 m clip
+133289,SLB-117478,Euphyllia paraancora,70.692,90.427,200 m clip
+133290,URM-Cn-5560,Favites abdita,91.002,40.539,200 m clip
+133291,URM-Cn-4835,Acropora striata,63.109,67.571,200 m clip
+133292,URM-Cn-4871,Astreopora myriophthalma,83.121,87.149,200 m clip
+133298,URM-Cn-4942,Montipora turgescens,82.578,99.858,200 m clip
+133302,URM-Cn-4865,Astreopora gracilis,71.53,97.002,200 m clip
+133304,URM-Cn-5870,Lobophyllia hataii,78.862,98.007,200 m clip
+133305,URM-Cn-4946,Montipora verrilli,81.223,31.348,200 m clip
+133307,URM-Cn-5553,Favia rotundata,77.885,80.796,200 m clip
+133308,SLB-190516,Fungia scruposa,81.995,59.882,200 m clip
+133309,URM-Cn-5981,Pocillopora inflata,74.162,45.472,200 m clip
+133311,URM-Cn-4757,Acropora halmaherae,78.068,19.913,200 m clip
+133313,URM-Cn-4733,Acropora cytherea,80.136,92.478,200 m clip
+133315,URM-Cn-4788,Acropora monticulosa,77.771,87.179,200 m clip
+133319,URM-Cn-4760,Acropora horrida,81.321,89.516,200 m clip
+133320,URM-Cn-4830,Acropora solitaryensis,81.13,91.831,200 m clip
+133324,URM-Cn-4752,Acropora gemmifera,76.783,92.113,200 m clip
+133325,URM-Cn-5510,Cyphastrea chalcidicum,88.503,59.913,200 m clip
+133327,URM-Cn-4779,Acropora lovelli,56.581,89.026,200 m clip
+133329,URM-Cn-6079,Porites stephensoni,57.644,95.633,200 m clip
+133333,URM-Cn-5605,Oulophyllia bennettae,87.135,52.442,200 m clip
+133334,URM-Cn-4719,Acropora branchi,60.766,72.231,200 m clip
+133337,URM-Cn-5826,Merulina ampliata,80.782,94.794,200 m clip
+133340,URM-Cn-5897,Symphyllia wilsoni,95.712,57.056,200 m clip
+133343,URM-Cn-5569,Favites russelli,88.79,33.57,200 m clip
+133344,URM-Cn-5790,Podabacia sinai,93.988,58.558,200 m clip
+133345,URM-Cn-4941,Montipora tuberculosa,83.723,99.603,200 m clip
+133348,SLB-93322,Acropora variolosa,62.785,82.744,200 m clip
+133349,URM-Cn-6044,Porites compressa,86.788,2.063,200 m clip
+133351,URM-Cn-4967,Leptoseris mycetoseroides,80.292,97.683,200 m clip
+133352,URM-Cn-4754,Acropora gomezi,88.222,57.195,200 m clip
+133359,URM-Cn-4783,Acropora microclados,68.91,98.675,200 m clip
+133360,URM-Cn-4979,Pavona bipartita,68.864,78.211,200 m clip
+133365,URM-Cn-5574,Goniastrea edwardsi,88.068,46.161,200 m clip
+133366,URM-Cn-5851,Acanthastrea lordhowensis,78.095,87.921,200 m clip
+133370,SLB-158808,Porites profundus,53.934,64.13,200 m clip
+133371,URM-Cn-5757,Fungia distorta,86.164,61.976,200 m clip
+133372,URM-Cn-5791,Polyphyllia novaehiberniae,62.325,78.092,200 m clip
+133375,URM-Cn-4888,Montipora corbettensis,78.705,91.995,200 m clip
+133376,URM-Cn-5850,Acanthastrea ishigakiensis,82.19,70.099,200 m clip
+133377,URM-Cn-5518,Diploria clivosa,84.94,94.039,200 m clip
+133379,SLB-93515,Acropora convexa,81.314,81.123,200 m clip
+133381,URM-Cn-4726,Acropora cervicornis,94.04,72.747,200 m clip
+133386,SLB-62731,Acanthastrea rotundoflora,74.991,80.75,200 m clip
+133387,SLB-93466,Acropora globiceps,68.442,96.678,200 m clip
+133392,URM-Cn-5543,Favia laxa,76.739,91.782,200 m clip
+133393,URM-Cn-4842,Acropora teres,72.051,73.207,200 m clip
+133395,URM-Cn-6073,Porites porites,64.236,96.992,200 m clip
+133396,URM-Cn-4737,Acropora desalwii,89.443,56.27,200 m clip
+133398,URM-Cn-4994,Pavona varians,84.571,96.816,200 m clip
+133400,URM-Cn-5815,Eusmilia fastigiata,82.536,96.356,200 m clip
+133401,URM-Cn-4759,Acropora hoeksemai,78.601,77.86,200 m clip
+133402,URM-Cn-4833,Acropora squarrosa,79.663,89.017,200 m clip
+133403,URM-Cn-5476,Turbinaria stellulata,88.257,46.123,200 m clip
+133405,SLB-62382,Caulastrea tumida,83.288,78.716,200 m clip
+133406,URM-Cn-6137,Psammocora haimeana,84.486,84.183,200 m clip
+133407,SLB-189370,Pocillopora eydouxi,95.752,11.593,200 m clip
+133408,URM-Cn-6130,Coscinaraea wellsi,75.142,75.258,200 m clip
+133409,URM-Cn-4948,Montipora verruculosus,83.35,67.359,200 m clip
+133410,URM-Cn-4978,Pachyseris speciosa,81.675,95.566,200 m clip
+133412,URM-Cn-5816,Gyrosmilia interrupta,81.313,61.807,200 m clip
+133414,URM-Cn-5578,Goniastrea pectinata,89.239,42.818,200 m clip
+133415,URM-Cn-4859,Anacropora puertogalerae,75.504,92.762,200 m clip
+133416,URM-Cn-4886,Montipora circumvallata,76.258,88.513,200 m clip
+133417,SLB-62381,Caulastrea furcata,81.323,79.692,200 m clip
+133419,URM-Cn-5871,Lobophyllia hemprichii,81.274,91.661,200 m clip
+133420,URM-Cn-4906,Montipora grisea,72.173,99.35,200 m clip
+133422,URM-Cn-4884,Montipora capricornis,74.411,75.688,200 m clip
+133423,URM-Cn-5764,Fungia horrida,86.115,40.027,200 m clip
+133428,URM-Cn-6122,Coscinaraea columna,81.466,98.099,200 m clip
+133429,URM-Cn-5526,Echinopora horrida,80.249,61.304,200 m clip
+133432,URM-Cn-4832,Acropora spicifera,76.046,88.56,200 m clip
+133433,URM-Cn-4889,Montipora crassituberculata,79.919,89.76,200 m clip
+133435,URM-Cn-5988,Seriatopora dendritica,76.934,80.216,200 m clip
+133437,URM-Cn-5765,Fungia moluccensis,69.607,66.373,200 m clip
+133439,SLB-61834,Agaricia tenuifolia,85.661,44.998,200 m clip
+133440,URM-Cn-5614,Platygyra pini,92.033,46.176,200 m clip
+133442,URM-Cn-5948,Oxypora lacera,84.524,47.444,200 m clip
+133443,URM-Cn-4879,Montipora australiensis,75.963,78.819,200 m clip
+133444,URM-Cn-5920,Oculina valenciennesi,53.845,28.406,200 m clip
+133450,URM-Cn-4943,Montipora turtlensis,73.732,94.093,200 m clip
+133451,URM-Cn-4891,Montipora danae,79.716,98.424,200 m clip
+133457,URM-Cn-5877,Mussa angulosa,86.687,82.366,200 m clip
+133458,URM-Cn-5823,Hydnophora microconos,85.229,68.689,200 m clip
+133460,SLB-93100,Montipora cocosensis,77.025,50.783,200 m clip
+133468,URM-Cn-5612,Platygyra daedalea,87.125,83.146,200 m clip
+133470,SLB-158790,Micromussa amakusensis,76.078,78.632,200 m clip
+133474,URM-Cn-5891,Symphyllia agaricia,81.356,98.472,200 m clip
+133476,SLB-61883,Madracis asperula,34.162,33.493,200 m clip
+133478,URM-Cn-5821,Hydnophora exesa,90.298,65.069,200 m clip
+133479,URM-Cn-4762,Acropora hyacinthus,80.467,86.64,200 m clip
+133481,URM-Cn-4727,Acropora chesterfieldensis,74.484,96.223,200 m clip
+133483,URM-Cn-4787,Acropora mirabilis,75.681,74.044,200 m clip
+133484,SLB-158735,Anomastraea irregularis,78.477,96.447,200 m clip
+133485,SLB-93759,Astreopora randalli,76.77,83.958,200 m clip
+133488,SLB-62813,Pectinia africanus,87.883,83.407,200 m clip
+133489,URM-Cn-4892,Montipora delicatula,83.33,68.771,200 m clip
+133492,URM-Cn-6075,Porites rus,87.478,83.857,200 m clip
+133493,SLB-62496,Platygyra ryukyuensis,80.59,58.051,200 m clip
+133494,SLB-93535,Acropora papillare,86.458,59.74,200 m clip
+133495,SLB-117483,Galaxea horrescens,81.18,89.769,200 m clip
+133497,SLB-62380,Caulastrea echinulata,76.835,88.992,200 m clip
+133498,URM-Cn-5473,Turbinaria peltata,85.913,69.316,200 m clip
+133500,URM-Cn-4771,Acropora kosurini,48.853,92.358,200 m clip
+133502,URM-Cn-6142,Psammocora superficialis,79.31,97.925,200 m clip
+133504,URM-Cn-6055,Porites furcata,75.135,98.897,200 m clip
+133509,URM-Cn-5789,Podabacia motuporensis,87.211,51.053,200 m clip
+133511,URM-Cn-5916,Oculina patagonica,96.636,85.058,200 m clip
+133513,URM-Cn-4712,Acropora anthocercis,72,95.907,200 m clip
+133516,URM-Cn-5556,Favia truncatus,77.222,97.611,200 m clip
+133521,URM-Cn-5006,Stephanocoenia intersepta,86.445,38.321,200 m clip
+133522,URM-Cn-4959,Helioseris cucullata,77.96,90.213,200 m clip
+133525,URM-Cn-4920,Montipora monasteriata,83.914,98.734,200 m clip
+133527,URM-Cn-5879,Mussismilia harttii,90.787,48.783,200 m clip
+133528,URM-Cn-5859,Blastomussa merleti,81.483,97.887,200 m clip
+133530,SLB-117551,Stylophora subseriata,82.794,69.068,200 m clip
+133532,URM-Cn-4851,Acropora verweyi,80.72,97.321,200 m clip
+133534,URM-Cn-5986,Pocillopora zelli,66.76,85.83,200 m clip
+133535,URM-Cn-4950,Agaricia agaricites,79.448,72.19,200 m clip
+133538,SLB-62658,Herpolitha limax,84.058,44.828,200 m clip
+133543,SLB-158796,Porites brighami,68.855,91.67,200 m clip
+133545,SLB-62704,Paraclavarina triangularis,69.259,76.101,200 m clip
+133547,URM-Cn-4855,Acropora yongei,72.597,96.072,200 m clip
+133548,URM-Cn-5007,Stylocoeniella armata,82.22,89.19,200 m clip
+133551,URM-Cn-5865,Lobophyllia corymbosa,81.313,93.99,200 m clip
+133556,URM-Cn-4935,Montipora spumosa,79.348,94.229,200 m clip
+133557,SLB-158238,Acanthastrea brevis,74.812,82.531,200 m clip
+133560,URM-Cn-5577,Goniastrea palauensis,79.66,97.485,200 m clip
+133563,URM-Cn-4927,Montipora peltiformis,84.438,91.75,200 m clip
+133564,URM-Cn-5863,Isophyllastrea rigida,85.619,61.206,200 m clip
+133566,URM-Cn-5886,Scolymia australis,56.501,83.936,200 m clip
+133569,URM-Cn-5538,Favia favus,86.419,96.889,200 m clip
+133570,URM-Cn-6140,Psammocora profundacella,80.589,97.18,200 m clip
+133571,URM-Cn-5609,Platygyra carnosus,74.249,60.324,200 m clip
+133574,SLB-158797,Porites pukoensis,66.611,0.293,200 m clip
+133575,SLB-61985,Cladocora arbuscula,82.213,84.533,200 m clip
+133581,URM-Cn-4985,Pavona diffluens,92.292,81.607,200 m clip
+133582,SLB-62826,Oxypora crassispinosa,90.357,25.259,200 m clip
+133584,SLB-158799,Porites divaricata,69.131,82.834,200 m clip
+133587,URM-Cn-5794,Sandalolitha dentata,76.177,63.511,200 m clip
+133589,URM-Cn-6136,Psammocora explanulata,71.885,98.062,200 m clip
+133590,URM-Cn-6147,Siderastrea savignyana,74.603,73.018,200 m clip
+133591,URM-Cn-5864,Isophyllia sinuosa,85.846,61.3,200 m clip
+133592,URM-Cn-4747,Acropora exquisita,83.222,78.062,200 m clip
+133595,W-Hyd-210730,Millepora platyphylla,73.501,87.508,200 m clip
+133597,URM-Cn-5746,Cantharellus doederleini,63.978,45.318,200 m clip
+133599,URM-Cn-4944,Montipora undata,77.895,95.863,200 m clip
+133604,URM-Cn-4713,Acropora arabensis,70.792,25.164,200 m clip
+133606,URM-Cn-5895,Symphyllia recta,84.163,94.463,200 m clip
+133607,URM-Cn-6020,Goniopora minor,96.808,14.009,200 m clip
+133611,URM-Cn-5972,Madracis senaria,86.94,65.285,200 m clip
+133613,URM-Cn-6077,Porites solida,89.263,84.697,200 m clip
+133614,SLB-62852,Seriatopora guttatus,78.285,72.485,200 m clip
+133619,URM-Cn-5868,Lobophyllia diminuta,67.761,78.524,200 m clip
+133621,URM-Cn-4849,Acropora valenciennesi,86.071,84.859,200 m clip
+133622,URM-Cn-4883,Montipora capitata,86.696,59.355,200 m clip
+133631,URM-Cn-5534,Erythrastrea flabellata,72.884,57.921,200 m clip
+133633,URM-Cn-5471,Turbinaria mesenterina,90.753,64.989,200 m clip
+133634,URM-Cn-5580,Goniastrea retiformis,87.764,55.381,200 m clip
+133636,URM-Cn-4964,Leptoseris gardineri,84.062,81.483,200 m clip
+133637,URM-Cn-5980,Pocillopora indiania,77.07,97.442,200 m clip
+133638,URM-Cn-5546,Favia maritima,83.059,56.224,200 m clip
+133639,URM-Cn-4806,Acropora pichoni,79.191,67.266,200 m clip
+133642,URM-Cn-5848,Acanthastrea hemprichii,74.021,92.781,200 m clip
+133645,SLB-184819,Porites somaliensis,84.43,6.794,200 m clip
+133646,URM-Cn-4947,Montipora verrucosa,95.728,75.44,200 m clip
+133647,URM-Cn-4809,Acropora polystoma,77.258,82.283,200 m clip
+133648,URM-Cn-5514,Cyphastrea microphthalma,89.136,64.028,200 m clip
+133649,SLB-93391,Acropora abrotanoides,84.296,93.089,200 m clip
+133651,URM-Cn-5613,Platygyra lamellina,87.82,38.622,200 m clip
+133653,URM-Cn-4732,Isopora cylindrica,51.054,31.662,200 m clip
+133654,URM-Cn-5561,Favites chinensis,85.957,54.578,200 m clip
+133658,SLB-93454,Acropora bifurcata,72.479,80.2,200 m clip
+133659,URM-Cn-5991,Stylophora kuehlmanni,73.038,99.794,200 m clip
+133660,SLB-184810,Isopora cuneata,73.576,99.003,200 m clip
+133662,URM-Cn-5905,Galaxea fascicularis,86.462,65.079,200 m clip
+133665,URM-Cn-5581,Goniastrea thecata,93.988,41.152,200 m clip
+133666,URM-Cn-4785,Acropora millepora,88.006,68.136,200 m clip
+133668,URM-Cn-6030,Goniopora stokesi,89.485,36.446,200 m clip
+133672,SLB-158629,Acropora efflorescens,55.452,69.193,200 m clip
+133673,URM-Cn-5766,Fungia paumotensis,85.546,83.03,200 m clip
+133674,URM-Cn-4919,Montipora mollis,81.507,96.187,200 m clip
+133676,URM-Cn-6143,Psammocora vaughani,51.286,41.258,200 m clip
+133679,URM-Cn-5428,Heteropsammia cochlea,83.404,79.684,200 m clip
+133680,URM-Cn-6038,Porites astreoides,47.959,97.734,200 m clip
+133682,SLB-93593,Acropora subulata,78.014,82.827,200 m clip
+133685,URM-Cn-5995,Stylophora pistillata,81.059,97.606,200 m clip
+133686,URM-Cn-4961,Leptoseris cailleti,93.531,63.685,200 m clip
+133690,URM-Cn-5513,Cyphastrea japonica,95.45,25.619,200 m clip
+133693,URM-Cn-5795,Sandalolitha robusta,79.907,76.898,200 m clip
+133697,URM-Cn-5475,Turbinaria reniformis,86.634,42.925,200 m clip
+133702,URM-Cn-4987,Pavona duerdeni,79.847,90.288,200 m clip

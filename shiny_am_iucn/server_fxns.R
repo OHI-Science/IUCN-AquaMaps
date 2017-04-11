@@ -1,92 +1,60 @@
 ### server_fxns.R
-library(maps)
+library(raster)
+library(stringr)
+# library(maps)
 library(tmap)
-data(World)
+# data(World)
 library(RColorBrewer)
 library(rgdal)
 
 ### read data for raster (used to plot species)
-message('Reading in raster info...\n')
+message('Reading in raster info...')
 loiczid_raster <- raster('data/loiczid_raster.tif') %>%
   setNames('loiczid')
 
 land <- readOGR(dsn = 'data', layer = "ne_110m_land") %>%
   crop(extent(-180, 180, -84, 85))
 
-# convert to dataframe
-land_df <- fortify(land)
-
 # create a blank ggplot theme
-theme_opts <- list(theme(panel.grid.minor = element_blank(),
-                         panel.grid.major = element_blank(),
-                         panel.background = element_blank(),
-                         plot.background = element_rect(fill="#e6e8ed"),
-                         panel.border = element_blank(),
-                         axis.line = element_blank(),
-                         axis.text.x = element_blank(),
-                         axis.text.y = element_blank(),
-                         axis.ticks = element_blank(),
-                         axis.title.x = element_blank(),
-                         axis.title.y = element_blank(),
-                         plot.title = element_text(size=22)))
-
-# plot map
-# ggplot(land_df, aes(long,lat, group=group)) + 
-#   geom_polygon()  + 
-#   coord_equal() + 
-#   theme_opts
+ggtheme_basic <- function(textsize = 10) {
+  theme_bw() +
+  theme_update(panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.background = element_blank(),
+          plot.background = element_blank(),
+          panel.border = element_blank(),
+          axis.line = element_blank(),
+          axis.ticks = element_blank(),
+          text = element_text(size = textsize),
+          plot.title = element_text(size = textsize * 1.5))
+}
 
 ### read in spp cell files
 ### this may be slowing down the initial display of the app... load elsewhere?
-iucn_spp_cells <- read_csv('data/iucn_cells.csv', col_types = 'dd')
-am_spp_cells   <- read_csv('data/am_cells.csv')
+iucn_spp_cells <- read_csv('data/iucn_cells_app.csv', col_types = 'dd')
+am_spp_cells   <- read_csv('data/am_cells_app.csv',   col_types = 'cd')
 
 ### read in quad plot files and establish means
-quad_list <- read_csv('data/spp_list_quads.csv') %>%
-  rename(dist_align = sm_perc)
-
-# spp_list_edit <- quad_list %>%
-#   select(iucn_sid, am_sid, sciname, spp_group_text) %>%
-#   filter(iucn_sid %in% iucn_spp_cells$iucn_sid & am_sid %in% am_spp_cells$am_sid) %>%
-#   distinct()
-# write_csv(spp_list_edit, 'data/spp_list.csv')
+quad_list <- read_csv('data/spp_list_quads_app.csv')
 
 area_align_mean <- mean(quad_list$area_ratio, na.rm = TRUE)
 dist_align_mean <- mean(quad_list$dist_align, na.rm = TRUE)
 
-spp_coralmaps <- read_csv('data/coral_spp_areas.csv') %>%
-  rename(dist_align_raw = sm_perc_raw, dist_align_clipped = sm_perc_clipped) %>%
-  gather(dist, perc, c(dist_align_raw, dist_align_clipped)) %>%
-  gather(area, ratio, c(area_ratio_raw, area_ratio_clipped)) %>%
-  filter(!(str_detect(dist, 'raw') & !(str_detect(area, 'raw')))) %>%
-  filter(!(str_detect(dist, 'clip') & !(str_detect(area, 'clip')))) %>%
-  mutate(method = ifelse(str_detect(dist, 'clip'), '200m clip', 'all depth'))
+### read in coral species pre- and post-clipping
+spp_coralmaps <- read_csv('data/coral_spp_areas_app.csv')
 
-quad_gp_list <- read_csv('data/spp_gp_quads.csv') %>%
+quad_gp_list <- read_csv('data/spp_gp_quads_app.csv') %>%
   mutate(expert = FALSE) %>%
-  bind_rows(read_csv('data/spp_gp_quads_ex.csv') %>%
+  bind_rows(read_csv('data/spp_gp_quads_ex_app.csv') %>%
               mutate(expert = TRUE))
   
-### generic theme for all plots
-# theme_set(theme_bw())
-# ggtheme_plot <- theme_update(axis.ticks = element_blank(),
-#   text = element_text(family = 'Helvetica', color = 'gray30', size = 9),
-#   plot.title = element_text(size = rel(1.25), hjust = 0, face = 'bold'),
-#   panel.background = element_blank(),
-#   legend.position = 'right',
-#   panel.border     = element_blank(),
-#   panel.grid.minor = element_blank(), 
-#   # panel.grid.major = element_line(colour = 'grey90', size = .25),
-#   panel.grid.major = element_blank(),
-#   legend.key = element_rect(colour = NA, fill = NA),
-#   axis.line = element_blank()) # element_line(colour = "grey30", size = .5))
-
-
-
-### Species Map Function ###
-# This function takes a single species scientific name as input, then grabs all 
+#################################.
+##### Species Map Functions #####
+#################################.
+# These functions take a single species scientific name as input, then grab all 
 # occurrence cells and associated Aquamaps probability and/or IUCN proportional area
 # per cell
+
 get_spp_map_df <- function(species) { ### species <- spp_list$sciname[1]
   message('in get_spp_map_df(), looking for species: ', species)
 
@@ -94,8 +62,6 @@ get_spp_map_df <- function(species) { ### species <- spp_list$sciname[1]
     filter(sciname == species) %>%
     dplyr::select(am_sid, iucn_sid, sciname) %>%
     distinct()
-  
-  print(spp_id)
   
   iucn_spp_map <- iucn_spp_cells %>%
     filter(iucn_sid %in% spp_id$iucn_sid) %>%
@@ -108,76 +74,34 @@ get_spp_map_df <- function(species) { ### species <- spp_list$sciname[1]
     filter(am_sid == spp_id$am_sid)
   
   spp_map_df <- full_join(iucn_spp_map, am_spp_map, by = 'loiczid') %>%
-    mutate(am_pres = ifelse(is.na(am_sid), NA, 1),
-           iucn_pres = ifelse(is.na(iucn_sid), NA, 1)) %>%
-    dplyr::select(loiczid, am_pres, iucn_pres) %>%
-    mutate(both_pres = ifelse(!is.na(iucn_pres), ### IUCN presence, so...
-                              ifelse(is.na(am_pres), 2, 3), ### if no AM, assign 2; if AM, assign 3. 
-                              am_pres))          ### no IUCN, so assign 1 for AM and NA for none
+    mutate(am   = ifelse(is.na(am_sid), NA, 1),
+           iucn = ifelse(is.na(iucn_sid), NA, 2)) %>%
+    dplyr::select(loiczid, am, iucn) %>%
+    mutate(both = ifelse(!is.na(iucn), ### IUCN presence, so...
+                              ifelse(is.na(am), 2, 3), ### if no AM, assign 2; if AM, assign 3. 
+                              am))          ### no IUCN, so assign 1 for AM and NA for none
   
   return(spp_map_df)
 }
 
 get_rast <- function(spp_map_df, type) {
-  message('in get_rast(), spp_map_df is of class ', class(spp_map_df))
-  print(head(spp_map_df))
-  rast_obj <- raster::subs(loiczid_raster, spp_map_df, 
+  message('in get_rast()')
+  message('... rasterizing to type = ', type)
+
+  force_legend <- data.frame(loiczid = c(1, 2, 3))
+  force_legend[type] <- c(1, 2, 3)
+      ### annoying but adding back in one of each value, to force the legend
+
+  spp_map_type <- spp_map_df %>%
+    bind_rows(force_legend)
+  rast_obj <- raster::subs(loiczid_raster, spp_map_type, 
                      by    = 'loiczid', 
-                     which = paste0(type, '_pres'), 
-                     subsWithNA = TRUE)
+                     which = type, 
+                     subsWithNA = TRUE) %>%
+    setNames('presence')
   
   return(rast_obj)
 }
-
-#function to use leaflet for species maps (we tested this but are not using it due to weird zoom issues)
-# assemble_map_leaflet <- function(map_rast,spp) {
-#   message('in assemble_map_leaflet()')
-#   pal <- colorFactor(c("#FFAEB9", "#41B6C4","#0C2C84"), values(rast),
-#                       na.color = "transparent")
-#   
-#   leaflet() %>% addTiles() %>%
-#     addRasterImage(rast, colors = pal,opacity = 1) %>%
-#     addLegend(colors = c("#FFAEB9", "#41B6C4","#0C2C84"), 
-#               labels = c("Aquamaps","IUCN","Both"),
-#               title = "Dataset",
-#               opacity = 1)
-# }
-
-
-# assemble_map_ggmap <- function(map_rast, spp) {
-#   
-#   library(ggmap)
-#   library(mapproj)
-#   
-#   map<- get_map(location = c(lon = 0, lat = 0), zoom = 1)
-#   
-#   TC <-ggmap(map)+geom_point(data=mapdata,alpha = .7, aes(x=longitude, y=latitude,size =Home.Insurance),color='red')+ggtitle("Average Home Insurance By City($)")
-#   message('in assemble_map_ggmap()')
-#   pal <- colorFactor(c("#FFAEB9", "#41B6C4","#0C2C84"), values(rast),
-#                      na.color = "transparent")
-#   
-#   leaflet() %>% addTiles() %>%
-#     addRasterImage(rast, colors = pal,opacity = 1) %>%
-#     addLegend(colors = c("#FFAEB9", "#41B6C4","#0C2C84"), 
-#               labels = c("Aquamaps","IUCN","Both"),
-#               title = "Dataset",
-#               opacity = 1)
-#   
-# }
-
-# assemble_map_base <- function(map_rast, spp) {
-#   
-#   
-#   plot(land, col = 'darkgray')
-#   plot(map_rast, axes = FALSE,
-#        col = c("#FFAEB9", "#41B6C4","#0C2C84"),
-#        title = spp, box = FALSE, legend = FALSE, add = TRUE)
-#   legend("topright", inset = c(0,-.05),
-#          legend = c("Aquamaps", "IUCN", "Both"),
-#          col = c("#FFAEB9", "#41B6C4", "#0C2C84"),
-#          pch = 15, cex = 0.7, bty = 'n')
-# 
-# }
 
 assemble_map_tmap <- function(map_rast, spp) {
   message('in assemble_map_tmap()')
@@ -185,43 +109,31 @@ assemble_map_tmap <- function(map_rast, spp) {
       tm_polygons() + 
     tm_shape(map_rast) +
       tm_raster(palette = c("#FFAEB9", "#41B6C4", "#0C2C84"),
+                style   = 'cat',
+                breaks  = c(1, 2, 3),
                 labels  = c("Aquamaps",   "IUCN",    "Both"),
+                auto.palette.mapping = FALSE,
                 colorNA = NULL,
+                showNA  = TRUE,
                 title = spp,
                 alpha = 1) +
-    tm_layout(legend.outside = TRUE, 
+    tm_layout(legend.text.size = 1,
+              legend.title.size = 1.2,
+              # title.position = 'TOP', 
+              legend.outside = FALSE, 
+              legend.position = c('left', 'bottom'),
+              legend.bg.color = 'white',
+              legend.bg.alpha = .7,
               attr.outside = TRUE,
               outer.margins = 0, inner.margins = 0, asp = 2.1)
         
-  
-  # if(show_maps %in% c('am', 'both')) {
-  #   message('loading AquaMaps raster')
-  #   am_map <- tm_shape(am_rast) +
-  #     tm_raster(palette = 'Oranges',
-  #               colorNA = NULL,
-  #               title = 'AquaMaps',
-  #               alpha = .6)
-  # }
-  # if(show_maps %in% c('iucn', 'both')) {
-  #   message('loading IUCN raster')
-  #   iucn_map <- tm_shape(iucn_rast) +
-  #     tm_raster(palette = 'Purples',
-  #               colorNA = NULL,
-  #               title = 'IUCN',
-  #               alpha = .6)
-  # }
-  # 
-  # map_obj <- switch(show_maps,
-  #                   'am'   = am_map,
-  #                   'iucn' = iucn_map,
-  #                   'both' = am_map + iucn_map) +
-  #   tm_shape(World) +
-  #     tm_polygons()
-
   return(map_obj)
 }
 
-### Functions for quadplots and barcharts tab
+#####################################################.
+##### Functions for quadplots and barcharts tab #####
+#####################################################.
+
 create_barchart <- function(expt_rev) {
   
   if(expt_rev != 'all') {
@@ -249,8 +161,7 @@ create_barchart <- function(expt_rev) {
                                       y = pct_quad,
                                       fill = quad, 
                                       weight = pct_quad)) +
-    theme(panel.grid.major.x = element_blank(),
-          text = element_text(size = 14)) +
+    ggtheme_basic(textsize = 12) +
     geom_bar(stat = 'identity', alpha = 1) +
     scale_fill_manual(values = c('q1' = '#4dac26',
                                  'q2' = '#b8e186', 
@@ -277,7 +188,6 @@ create_barchart <- function(expt_rev) {
   
 }
 
-
 create_quadplot <- function(taxa_sel, expt_rev) {
   ### mongo plot time
 
@@ -290,7 +200,7 @@ create_quadplot <- function(taxa_sel, expt_rev) {
   
   if(expt_rev != 'all') {
     quad_list_tmp <- quad_list_tmp %>%
-      filter(!is.na(reviewed))
+      filter(reviewed)
   }
   
   ### define windows for labels
@@ -313,9 +223,9 @@ create_quadplot <- function(taxa_sel, expt_rev) {
   scatter_quadplot <- ggplot(quad_list_labs,
                              aes(x = area_ratio, 
                                  y = dist_align,
-                                 key = sciname)) +
-    theme(panel.grid.major = element_line(color = 'grey80'),
-          text = element_text(size = 10)) +
+                                 key = sciname,
+                                 key2 = reviewed)) +
+    ggtheme_basic(textsize = 12) +
     ### color the quadrant backgrounds:
     annotate("rect", xmin = area_align_mean, xmax = 100, 
              ymin = dist_align_mean, ymax = 100, 
@@ -333,8 +243,10 @@ create_quadplot <- function(taxa_sel, expt_rev) {
              ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
              fill= "#d01c8b") + 
-    geom_point(aes(alpha = fade), color = '#4d4dac', show.legend = FALSE) + 
-    scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = .6))
+    geom_point(data = quad_list_labs %>% filter(!fade),
+               color = '#4d4dac', alpha = .6) + 
+    geom_point(data = quad_list_labs %>% filter(fade),
+               color = '#4d4dac', alpha = .15)
   
   ### Manage scales for color and size 
   scatter_quadplot <- scatter_quadplot +
@@ -374,8 +286,8 @@ create_quadplot <- function(taxa_sel, expt_rev) {
              label = sprintf('Mean = %s%%', round(dist_align_mean, 1)))
   
   scatter_quadplot <- scatter_quadplot +
-    labs(x = bquote('Area ratio'), 
-         y = bquote('Distribution alignment'))
+    labs(x = 'Area ratio', 
+         y = 'Distribution alignment')
   
   return(scatter_quadplot)
 }
@@ -387,7 +299,8 @@ create_miniquad <- function(spp_sel) {
                                filter(sciname == spp_sel),
                              aes(x = area_ratio, 
                                  y = dist_align)) +
-    theme(panel.grid.major = element_line(color = 'grey80'), # element_blank(),
+    ggtheme_basic(textsize = 8) +
+    theme(panel.grid.major = element_line(color = 'grey80'),
           axis.text  = element_blank()) +
     ### color the quadrant backgrounds:
     annotate("rect", xmin = area_align_mean, xmax = 100, 
@@ -410,32 +323,35 @@ create_miniquad <- function(spp_sel) {
                aes(x = area_ratio, y = dist_align),
                # color = '#4d4dac', alpha = .2) +
                color = 'grey50', alpha = .1) +
-  geom_point(color = 'red3', size = 3, alpha = .8) +
-    
-    labs(x = bquote('Area ratio'), 
-         y = bquote('Dist. align')) +
+    geom_point(color = 'red3', size = 3, alpha = .8) +
+    labs(x = 'Area ratio', 
+         y = 'Dist. align') +
     
     coord_cartesian(xlim = c(0, 100), ylim = c(0, 100), expand = FALSE)
   
   return(scatter_miniquad)
 }
 
-### functions for coral maps tab
+########################################.
+##### functions for coral maps tab #####
+########################################.
+
 create_coralquad <- function(coral_spp) {
   ### basically a mini-quad showing the before and after of the coral species
   # coral_spp <- spp_coralmaps$sciname[1]
   
   spp_coralmap <- spp_coralmaps %>%
     filter(sciname == coral_spp & method == 'all depth') %>%
-    select(sciname, ratio, perc) %>%
+    dplyr::select(sciname, area_ratio, dist_align) %>%
     left_join(spp_coralmaps %>%
                 filter(sciname == coral_spp & method != 'all depth') %>%
-                select(sciname, ratio_clip = ratio, perc_clip = perc),
+                dplyr::select(sciname, area_ratio_clip = area_ratio, dist_align_clip = dist_align),
               by = 'sciname')
                 
   coral_quad <- ggplot(spp_coralmap,
-                          aes(x = ratio, y = perc)) +
-    theme(panel.grid.major = element_line(color = 'grey80'), # element_blank(),
+                          aes(x = area_ratio, y = dist_align)) +
+    ggtheme_basic(textsize = 8) +
+    theme(panel.grid.major = element_line(color = 'grey80'),
           axis.text  = element_blank()) +
     ### color the quadrant backgrounds:
     annotate("rect", xmin = area_align_mean, xmax = 100, 
@@ -460,16 +376,17 @@ create_coralquad <- function(coral_spp) {
                color = 'grey50', alpha = .1) +
     geom_point(data = spp_coralmaps %>%
                  filter(method == 'all depth'), 
-               aes(x = ratio, y = perc, group = iucn_sid),
+               aes(x = area_ratio, y = dist_align, group = iucn_sid),
                color = 'grey60', alpha = .1) +
     ### plot start point, then end point, then segment
-    geom_segment(aes(xend = ratio_clip, yend = perc_clip),
-                 color = 'grey50', size = 1, alpha = .8,
-                 arrow = arrow(length = unit(0.03, "npc"))) +
+    geom_segment(aes(xend = area_ratio_clip, yend = dist_align_clip),
+                 color = 'grey30', size = .6,
+                 arrow = arrow(angle = 15, type = 'closed', length = unit(.16, 'inches'))) +
     geom_point(color = 'grey40', size = 3, show.legend = FALSE) +
-    geom_point(aes(x = ratio_clip, y = perc_clip), color = 'red3', size = 3, show.legend = FALSE) +
-    labs(x = bquote('Area ratio'), 
-         y = bquote('Dist. align')) +
+    geom_point(aes(x = area_ratio_clip, y = dist_align_clip), 
+               color = 'red3', size = 3, show.legend = FALSE) +
+    labs(x = 'Area ratio', 
+         y = 'Dist. align') +
     
     coord_cartesian(xlim = c(0, 100), ylim = c(0, 100), expand = FALSE)
   

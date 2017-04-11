@@ -328,6 +328,7 @@ break_nums <- seq(0, 100, 20)
 dodge <- position_dodge(width = 0.1)
 
 bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
+  ggtheme_basic() +
   theme(panel.grid.major.x = element_blank(),
         axis.text.x  = element_text(angle = 75, hjust = 1),
         axis.title.y = element_text(hjust = 0)) +
@@ -349,8 +350,8 @@ bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
        fill = 'Dataset')
 
 print(bar_taxa)
-ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
-       width = 19.05, height = 7, units = 'cm', dpi = 600)
+# ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
+#        width = 19.05, height = 7, units = 'cm', dpi = 600)
 
 ```
 

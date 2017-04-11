@@ -2,10 +2,6 @@
 
 source('server_fxns.R')
 
-# am_prob_cols <- rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
-# am_pres_cols <- colorRampPalette(brewer.pal(9, 'Oranges'))(255) # orange color scheme
-# iucn_cols    <- colorRampPalette(brewer.pal(9, 'Purples'))(255) # purple color scheme
-
 server <- shinyServer(function(input, output, session) {
   
   ### Species Map Function ###
