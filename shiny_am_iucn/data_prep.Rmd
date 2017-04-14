@@ -28,7 +28,7 @@ dir_M <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
            'Darwin'  = '/Volumes/ohi',    ### connect (cmd-K) to smb://mazu/ohi
            'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
 
-dir_git   <- '~/github/IUCN-AquaMaps'
+dir_git   <- '~/github/IUCN-AquaMaps' %>% path.expand()
 dir_shiny <- file.path(dir_git, 'shiny_am_iucn')
 
 dir_anx <- file.path(dir_M, 'git-annex/globalprep/spp_ico/v2016')
@@ -141,9 +141,25 @@ write_csv(am_cells_map, file.path(dir_shiny, 'data', 'am_cells_app.csv'))
 ```
 
 
+
+## Get FAO regions
+
+``` {r copy_fao_rgns}
+
+# fao_files <- list.files(file.path(dir_git, 'clip_fao/fao_rgns'), pattern = 'fao_rgns')
+# 
+# file.copy(from = file.path(dir_git, 'clip_fao/fao_rgns', fao_files),
+#           to   = file.path(dir_shiny, 'data', fao_files %>%
+#                              str_replace('\\.', '_app.')))
+# fao_rgn <- rgdal::readOGR(dsn = 'data', layer = "fao_rgns2_app") %>%
+#   crop(extent(-180, 180, -90, 90))
+# rgdal::writeOGR(fao_rgn, dsn = 'data', layer = "fao_rgns2_app", driver = 'ESRI Shapefile', overwrite.layer = TRUE)
+
+```
+
 ## Coral species
 
-Get coral species file and bring it over here; clean it up a bit for easier processing.
+Get coral species alignment file and bring it over here; clean it up a bit for easier processing.
 
 ``` {r get_coral_spp_info}
 spp_coralmaps <- read_csv(file.path(dir_git, 'clip_depth', 'coral_spp_areas.csv'))
@@ -158,7 +174,104 @@ iucn_coral_fixed <- spp_coralmaps %>%
   select(iucn_sid, am_sid, sciname, dist_align, area_ratio, method) %>%
   distinct()
 
-write_csv(iucn_coral_fixed, file.path(dir_shiny, 'data', 'coral_spp_areas_app.csv'))
+write_csv(iucn_coral_fixed, file.path(dir_shiny, 'data', 'coral_align_app.csv'))
+
+```
+
+### Get coral cells and info for mapping
+
+``` {r get_coral_info}
+
+### load iucn spp_cells from main analysis; clip to just those in app
+spp_list <- read_csv(file.path(dir_shiny, 'data', 'spp_list_app_stable.csv'))
+
+coral_cells_app <- read_csv(file.path(dir_git, 'clip_depth', 'coral_cells_iucn.csv')) %>%
+  filter(iucn_sid %in% spp_list$iucn_sid)
+# length(unique(coral_cells_app$iucn_sid))
+write_csv(coral_cells_app, file.path(dir_shiny, 'data', 'coral_cells_app.csv'))
+
+coral_spp_list  <- spp_list %>%
+  select(iucn_sid, sciname) %>%
+  filter(iucn_sid %in% coral_cells_app$iucn_sid) %>%
+  distinct()
+write_csv(spp_coral_maps, file.path(dir_shiny, 'data', 'coral_spp_list.csv'))
+
+coral_quad_sum <- read_csv(file.path(dir_git, 'clip_depth', 'iucn_coral_quad_sum.csv'))
+write_csv(coral_quad_sum, file.path(dir_shiny, 'data', 'coral_quads_app.csv'))
+
+```
+
+
+``` {r simplify_bathymetry}
+library(maptools)
+library(tmap)
+
+bathy_shp_orig <- rgdal::readOGR(dsn = file.path(dir_git, 'clip_depth/ne_10m_bathymetry_K_200'),
+                            layer = 'ne_10m_bathymetry_K_200') %>%
+  rgeos::gUnaryUnion()
+
+keep_df <- data.frame(
+  id   = 1:length(bathy_shp_orig@polygons[[1]]@Polygons),
+  area = lapply(bathy_shp_orig@polygons, function(x) sapply(x@Polygons, function(y) y@area)) %>%
+    unlist(),
+  hole = lapply(bathy_shp_orig@polygons, function(x) sapply(x@Polygons, function(y) y@hole)) %>%
+    unlist()
+)
+quantile(keep_df$area)
+#           0%          25%          50%          75%         100% 
+# 2.319330e-10 2.026033e-02 3.717621e-02 9.453268e-02 4.108813e+04 
+
+### ditch the small polys.  Tolerance? 6e-2 (.06) is .25° x .25°; can go bigger,
+### perhaps up to a single .5° cell, or .25?
+hole_thresh <- .0625
+feat_thresh <- 2
+
+keep_df1 <- keep_df %>%
+  mutate(keep = TRUE,
+         # keep = ifelse(area < hole_thresh, FALSE, keep))
+         keep = ifelse(hole == TRUE  & area < hole_thresh, FALSE, keep),
+         keep = ifelse(hole == FALSE & area < feat_thresh, FALSE, keep))
+
+keep_ids <- keep_df1$id[keep_df1$keep]
+
+bathy_shp <- bathy_shp_orig
+
+bathy_shp@polygons[[1]]@Polygons <- bathy_shp@polygons[[1]]@Polygons[keep_ids]
+bathy_shp@polygons[[1]]@plotOrder <- 1:length(bathy_shp@polygons[[1]]@Polygons)
+bathy_shp@plotOrder <- 1:length(bathy_shp@polygons)
+
+### need to repair comments... ugh
+slot(bathy_shp, "polygons") <- lapply(slot(bathy_shp, "polygons"), checkPolygonsHoles) 
+
+# # will assign comments, seen by: 
+# lapply(slot(bathy_shp, "polygons"), comment) 
+# 
+# # or remove them by: 
+# slot(bathy_shp, "polygons") <- lapply(slot(bathy_shp, "polygons"), 
+#    "comment<-", NULL) 
+
+### convert to spatial polygons dataframe
+bathy_shp1 <- bathy_shp %>%
+  SpatialPolygonsDataFrame(data = data.frame('depth' = 200))
+
+### check new map against original map
+tm_shape(bathy_shp_orig) + 
+  tm_polygons(col = 'blue', lwd = 0) + 
+  tm_shape(bathy_shp1) + 
+  tm_polygons(col = 'red', 
+              border.col = 'red3', 
+              lwd = 0, alpha = .8)
+
+writePolyShape(bathy_shp1,
+               file.path(dir_shiny, 'data/ne_10m_bathymetry_K_200/bathy_app_simple'))
+file.copy(from = file.path(dir_git, 'clip_depth/ne_10m_bathymetry_K_200/ne_10m_bathymetry_K_200.prj'),
+          to   = file.path(dir_shiny, 'data/ne_10m_bathymetry_K_200/bathy_app_simple.prj'),
+          overwrite = FALSE)
+# rgdal::writeOGR(bathy_shp,
+#                 dsn    = path.expand(file.path(dir_shiny, 'data/ne_10m_bathymetry_K_200')),
+#                 layer  = 'bathy_app_simple',
+#                 driver = 'ESRI Shapefile',
+#                 overwrite_layer = TRUE)
 
 ```
 

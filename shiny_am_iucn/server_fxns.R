@@ -5,15 +5,26 @@ library(stringr)
 library(tmap)
 # data(World)
 library(RColorBrewer)
-library(rgdal)
 
 ### read data for raster (used to plot species)
 message('Reading in raster info...')
 loiczid_raster <- raster('data/loiczid_raster.tif') %>%
   setNames('loiczid')
 
-land <- readOGR(dsn = 'data', layer = "ne_110m_land") %>%
-  crop(extent(-180, 180, -84, 85))
+display_extents <- extent(-180, 180, -84, 85)
+
+land <- rgdal::readOGR(dsn   = 'data/ne_110m_land', 
+                       layer = 'ne_110m_land') %>%
+  crop(display_extents)
+
+bathy_rast <- subs(loiczid_raster, 
+                   read_csv('data/bathy_cells.csv'),
+                   by = 'loiczid', which = 'deep') %>%
+  crop(display_extents)
+
+fao_rgn <- rgdal::readOGR(dsn   = 'data/fao_rgns', 
+                          layer = 'fao_rgns_app') %>%
+  crop(display_extents)
 
 # create a blank ggplot theme
 ggtheme_basic <- function(textsize = 10) {
@@ -41,7 +52,8 @@ area_align_mean <- mean(quad_list$area_ratio, na.rm = TRUE)
 dist_align_mean <- mean(quad_list$dist_align, na.rm = TRUE)
 
 ### read in coral species pre- and post-clipping
-spp_coralmaps <- read_csv('data/coral_spp_areas_app.csv')
+spp_coral_align <- read_csv('data/coral_align_app.csv')
+spp_coral_cells <- read_csv(file.path('data', 'coral_cells_app.csv'))
 
 quad_gp_list <- read_csv('data/spp_gp_quads_app.csv') %>%
   mutate(expert = FALSE) %>%
@@ -84,12 +96,15 @@ get_spp_map_df <- function(species) { ### species <- spp_list$sciname[1]
   return(spp_map_df)
 }
 
-get_rast <- function(spp_map_df, type) {
+get_rast <- function(spp_map_df, type, legend_classes = c(1, 2, 3)) {
+  ### legend classes is to force the legend to include all, even if
+  ### some classes are missing. 
+  ### e.g. c(1, 2, 3) for AM/IUCN/Both, c(1, 2) for shallow/deep corals
   message('in get_rast()')
   message('... rasterizing to type = ', type)
 
-  force_legend <- data.frame(loiczid = c(1, 2, 3))
-  force_legend[type] <- c(1, 2, 3)
+  force_legend <- data.frame(loiczid = legend_classes)
+  force_legend[type] <- legend_classes
       ### annoying but adding back in one of each value, to force the legend
 
   spp_map_type <- spp_map_df %>%
@@ -105,13 +120,20 @@ get_rast <- function(spp_map_df, type) {
 
 assemble_map_tmap <- function(map_rast, spp) {
   message('in assemble_map_tmap()')
-  map_obj <- tm_shape(land, is.master = TRUE) +
-      tm_polygons() + 
+  map_obj <- tm_shape(fao_rgn) +
+    tm_polygons(border.col = 'grey40',
+                col = '#f6f8ff',
+                lwd = .25) +
+    tm_shape(land, is.master = TRUE) +
+      tm_polygons(border.col = 'grey25', 
+                  col = 'grey80', 
+                  lwd = 0.25) + 
     tm_shape(map_rast) +
-      tm_raster(palette = c("#FFAEB9", "#41B6C4", "#0C2C84"),
+      tm_raster(# palette = c('#FFAEB9', '#41B6C4', '#0C2C84'),
+                palette = c('#1b9e77', '#d95f02', '#7520b3'),
                 style   = 'cat',
                 breaks  = c(1, 2, 3),
-                labels  = c("Aquamaps",   "IUCN",    "Both"),
+                labels  = c('Aquamaps',   'IUCN',    'Both'),
                 auto.palette.mapping = FALSE,
                 colorNA = NULL,
                 showNA  = TRUE,
@@ -122,8 +144,8 @@ assemble_map_tmap <- function(map_rast, spp) {
               # title.position = 'TOP', 
               legend.outside = FALSE, 
               legend.position = c('left', 'bottom'),
-              legend.bg.color = 'white',
-              legend.bg.alpha = .7,
+              legend.bg.color = '#f6f8ff',
+              legend.bg.alpha = .9,
               attr.outside = TRUE,
               outer.margins = 0, inner.margins = 0, asp = 2.1)
         
@@ -135,6 +157,7 @@ assemble_map_tmap <- function(map_rast, spp) {
 #####################################################.
 
 create_barchart <- function(expt_rev) {
+  message('in create_barchart()')
   
   if(expt_rev != 'all') {
     spp_gp_quadrants <- quad_gp_list %>%
@@ -189,8 +212,8 @@ create_barchart <- function(expt_rev) {
 }
 
 create_quadplot <- function(taxa_sel, expt_rev) {
-  ### mongo plot time
-
+  message('in create_quadplot()')
+  
   if(taxa_sel == 'all') {
     quad_list_tmp <- quad_list
   } else {
@@ -227,22 +250,22 @@ create_quadplot <- function(taxa_sel, expt_rev) {
                                  key2 = reviewed)) +
     ggtheme_basic(textsize = 12) +
     ### color the quadrant backgrounds:
-    annotate("rect", xmin = area_align_mean, xmax = 100, 
+    annotate('rect', xmin = area_align_mean, xmax = 100, 
              ymin = dist_align_mean, ymax = 100, 
              alpha = .3, 
-             fill= "#4dac26")  + 
-    annotate("rect", xmax = area_align_mean, xmin =   0, 
+             fill= '#4dac26')  + 
+    annotate('rect', xmax = area_align_mean, xmin =   0, 
              ymin = dist_align_mean, ymax = 100, 
              alpha = .3, 
-             fill= "#b8e186") + 
-    annotate("rect", xmin = area_align_mean, xmax = 100, 
+             fill= '#b8e186') + 
+    annotate('rect', xmin = area_align_mean, xmax = 100, 
              ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
-             fill= "#f1b6da") + 
-    annotate("rect", xmax = area_align_mean, xmin =   0, 
+             fill= '#f1b6da') + 
+    annotate('rect', xmax = area_align_mean, xmin =   0, 
              ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
-             fill= "#d01c8b") + 
+             fill= '#d01c8b') + 
     geom_point(data = quad_list_labs %>% filter(!fade),
                color = '#4d4dac', alpha = .6) + 
     geom_point(data = quad_list_labs %>% filter(fade),
@@ -261,14 +284,14 @@ create_quadplot <- function(taxa_sel, expt_rev) {
   
   ### here are quadrant and mean labels:
   scatter_quadplot <- scatter_quadplot +
-    annotate("text", x = 91, y = 95, hjust = 1, vjust = .5, size = 3, color = 'grey20', 
-             fontface = 'bold', label = "Well-aligned") + 
-    annotate("text", x =  12, y = 95, hjust = 0, vjust = .5, size = 3, color = 'grey20',
-             fontface = 'bold', label = "Distribution-aligned") + 
-    annotate("text", x = 91, y =  5, hjust = 1, vjust = .5, size = 3, color = 'grey20',
-             fontface = 'bold', label = "Area-aligned") + 
-    annotate("text", x =  10, y =  5, hjust = 0, vjust = .5, size = 3, color = 'grey20',
-             fontface = 'bold', label = "Poorly aligned") +
+    annotate('text', x = 91, y = 95, hjust = 1, vjust = .5, size = 3, color = 'grey20', 
+             fontface = 'bold', label = 'Well-aligned') + 
+    annotate('text', x =  12, y = 95, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+             fontface = 'bold', label = 'Distribution-aligned') + 
+    annotate('text', x = 91, y =  5, hjust = 1, vjust = .5, size = 3, color = 'grey20',
+             fontface = 'bold', label = 'Area-aligned') + 
+    annotate('text', x =  10, y =  5, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+             fontface = 'bold', label = 'Poorly aligned') +
   
     annotate(geom = 'text',
              x = area_align_mean, y = 5,
@@ -292,9 +315,9 @@ create_quadplot <- function(taxa_sel, expt_rev) {
   return(scatter_quadplot)
 }
 
-
 create_miniquad <- function(spp_sel) {
-
+  message('in create_miniquad()')
+  
   scatter_miniquad <- ggplot(quad_list %>% 
                                filter(sciname == spp_sel),
                              aes(x = area_ratio, 
@@ -303,22 +326,22 @@ create_miniquad <- function(spp_sel) {
     theme(panel.grid.major = element_line(color = 'grey80'),
           axis.text  = element_blank()) +
     ### color the quadrant backgrounds:
-    annotate("rect", xmin = area_align_mean, xmax = 100, 
+    annotate('rect', xmin = area_align_mean, xmax = 100, 
              ymin = dist_align_mean, ymax = 100, 
              alpha = .3, 
-             fill= "#4dac26")  + 
-    annotate("rect", xmax = area_align_mean, xmin =   0, 
+             fill= '#4dac26')  + 
+    annotate('rect', xmax = area_align_mean, xmin =   0, 
              ymin = dist_align_mean, ymax = 100, 
              alpha = .3, 
-             fill= "#b8e186") + 
-    annotate("rect", xmin = area_align_mean, xmax = 100, 
+             fill= '#b8e186') + 
+    annotate('rect', xmin = area_align_mean, xmax = 100, 
              ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
-             fill= "#f1b6da") + 
-    annotate("rect", xmax = area_align_mean, xmin =   0, 
+             fill= '#f1b6da') + 
+    annotate('rect', xmax = area_align_mean, xmin =   0, 
              ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
-             fill= "#d01c8b") + 
+             fill= '#d01c8b') + 
     geom_point(data = quad_list, 
                aes(x = area_ratio, y = dist_align),
                # color = '#4d4dac', alpha = .2) +
@@ -337,13 +360,14 @@ create_miniquad <- function(spp_sel) {
 ########################################.
 
 create_coralquad <- function(coral_spp) {
+  message('in create_coralquad()')
   ### basically a mini-quad showing the before and after of the coral species
-  # coral_spp <- spp_coralmaps$sciname[1]
+  # coral_spp <- spp_coral_align$sciname[1]
   
-  spp_coralmap <- spp_coralmaps %>%
+  spp_coralmap <- spp_coral_align %>%
     filter(sciname == coral_spp & method == 'all depth') %>%
     dplyr::select(sciname, area_ratio, dist_align) %>%
-    left_join(spp_coralmaps %>%
+    left_join(spp_coral_align %>%
                 filter(sciname == coral_spp & method != 'all depth') %>%
                 dplyr::select(sciname, area_ratio_clip = area_ratio, dist_align_clip = dist_align),
               by = 'sciname')
@@ -354,27 +378,27 @@ create_coralquad <- function(coral_spp) {
     theme(panel.grid.major = element_line(color = 'grey80'),
           axis.text  = element_blank()) +
     ### color the quadrant backgrounds:
-    annotate("rect", xmin = area_align_mean, xmax = 100, 
+    annotate('rect', xmin = area_align_mean, xmax = 100, 
              ymin = dist_align_mean, ymax = 100, 
              alpha = .3, 
-             fill= "#4dac26")  + 
-    annotate("rect", xmax = area_align_mean, xmin =   0, 
+             fill= '#4dac26')  + 
+    annotate('rect', xmax = area_align_mean, xmin =   0, 
              ymin = dist_align_mean, ymax = 100, 
              alpha = .3, 
-             fill= "#b8e186") + 
-    annotate("rect", xmin = area_align_mean, xmax = 100, 
+             fill= '#b8e186') + 
+    annotate('rect', xmin = area_align_mean, xmax = 100, 
              ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
-             fill= "#f1b6da") + 
-    annotate("rect", xmax = area_align_mean, xmin =   0, 
+             fill= '#f1b6da') + 
+    annotate('rect', xmax = area_align_mean, xmin =   0, 
              ymax = dist_align_mean, ymin =   0, 
              alpha = .3, 
-             fill= "#d01c8b") + 
+             fill= '#d01c8b') + 
     geom_point(data = quad_list, 
                aes(x = area_ratio, y = dist_align),
                # color = '#4d4dac', alpha = .2) +
                color = 'grey50', alpha = .1) +
-    geom_point(data = spp_coralmaps %>%
+    geom_point(data = spp_coral_align %>%
                  filter(method == 'all depth'), 
                aes(x = area_ratio, y = dist_align, group = iucn_sid),
                color = 'grey60', alpha = .1) +
@@ -391,4 +415,105 @@ create_coralquad <- function(coral_spp) {
     coord_cartesian(xlim = c(0, 100), ylim = c(0, 100), expand = FALSE)
   
   return(coral_quad)
+}
+
+create_coral_map <- function(coral_spp) {
+  message('in create_coral_map()')
+  
+  coral_spp_id <- coral_spp_list %>%
+    filter(sciname == coral_spp)
+  
+  coral_cells <- spp_coral_cells %>%
+    filter(iucn_sid == coral_spp_id$iucn_sid) %>%
+    distinct()
+  
+  rast_coral_depth <- raster::subs(x = loiczid_raster, 
+                                  y = coral_cells %>% dplyr::select(loiczid, deep), 
+                                  by = 'loiczid', which = 'deep', 
+                                  subsWithNA = TRUE) %>%
+    crop(extent(c(-180, 180, -63, 85)))
+  
+  map_coral_depth <- 
+    tm_shape(bathy_rast) +
+    tm_raster(breaks = c(0, 1, Inf),
+              palette = c('#f6faff', '#d6daee'),
+              auto.palette.mapping = FALSE,
+              labels  = c('< 200 m', '> 200 m'),
+              colorNA = NULL,
+              title = 'Ocean depth',
+              alpha = 1) +
+    tm_shape(rast_coral_depth) +
+      tm_raster(breaks = c(0, 1),
+                style   = 'cat',
+                palette = c('coral1', 'coral4'),
+                auto.palette.mapping = FALSE,
+                labels  = c('< 200 m', '> 200 m'),
+                colorNA = NULL,
+                title = 'IUCN coral presence',
+                alpha = 1) +
+    tm_shape(land, is.master = TRUE) +
+      tm_polygons(border.col = 'grey25', 
+                  col = 'grey80', 
+                  lwd = 0.25)
+  
+  map_coral_depth <- map_coral_depth +
+    tm_layout(bg.color = '#f6faff',
+              legend.text.size = 1,
+              legend.title.size = 1.2,
+              # title.position = 'TOP', 
+              legend.outside = FALSE, 
+              legend.position = c('left', 'bottom'),
+              legend.bg.color = 'white',
+              legend.bg.alpha = .5,
+              attr.outside = TRUE,
+              outer.margins = 0, inner.margins = 0, asp = 2.1)
+  
+  return(map_coral_depth)
+}
+
+create_coral_barchart <- function() {
+  message('in create_coral_barchart()')
+  
+  coral_quads <- read_csv('data/coral_quads_app.csv')
+
+  coral_quads <- coral_quads %>%
+    mutate(quad_name = factor(quad_name, 
+                              levels = c('poorly aligned', 
+                                         'area-aligned', 
+                                         'dist-aligned',
+                                         'well-aligned'),
+                              ordered = TRUE),
+           quad      = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'), 
+                              ordered = TRUE))
+
+  quad_names <- c('poorly aligned', 'area-aligned', 
+                  'dist-aligned',   'well-aligned')
+  break_nums <- seq(0, 100, 20)
+  
+  ### Plot the bar chart
+  barchart_coral_quads <- ggplot(coral_quads, 
+                                 aes(x = method, fill = quad, weight = pct_quad)) +
+    ggtheme_basic(textsize = 12) +
+    geom_bar(stat = 'count', alpha = 1) +
+    scale_fill_manual(values = c('q4' = '#d01c8b', 
+                                 'q3' = '#f1b6da', 
+                                 'q2' = '#b8e186',
+                                 'q1' = '#4dac26'),
+                      labels = quad_names,
+                      guide = guide_legend(reverse = TRUE)) +
+    scale_y_continuous(expand = c(0, 0), 
+                       limits = c(0, 1),
+                       breaks = break_nums/100,
+                       labels = sprintf('%s%%', break_nums)) + 
+    ### add grid lines; horizontal but then get flipped
+    geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
+    coord_flip() +
+    labs(x = 'Depth limit', 
+         y = 'Percent of corals by quadrant', 
+         fill = 'Alignment')
+  
+  # barchart_coral_quads
+  
+  return(barchart_coral_quads)
+  
 }

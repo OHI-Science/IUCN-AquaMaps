@@ -20,92 +20,73 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
     )
   ),
   
-
   tabPanel('Figures',
     # Abstract of paper; sidebar is authors, publication info, etc
-    fluidRow(
-      column(2, 
-        h5('sidebar text'),
-        h6('This panel could be a table of contents of figures, ',
-           'with each a link to the figure that would navigate the ',
-           'main panel to the appropriate figure.'),
-        h6('OR: Thumbnails of figures in side bar, which pull up ',
-           'the full figure with caption in the main window - ',
-           'each figure gets its own .html file')
-      ),
-      column(10,
-        h4('Figures from manuscript'),
-        includeMarkdown('pages/fig1.md'),
-        hr(),
-        includeMarkdown('pages/fig2.md'),
-        hr(),
-        includeMarkdown('pages/fig3.md'),
-        hr(),
-        includeMarkdown('pages/fig4.md'),
-        hr(),
-        includeMarkdown('pages/fig5.md'),
-        hr(),
-        h4('Supporting figures'),
-        includeMarkdown('pages/s1fig.md'),
-        hr(),
-        includeMarkdown('pages/s2fig.md'),
-        hr(),
-        includeMarkdown('pages/s3fig.md'),
-        hr(),
-        includeMarkdown('pages/s4fig.md'),
-        hr(),
-        includeMarkdown('pages/s5fig.md')
-      )
+    sidebarPanel(
+      includeMarkdown('pages/author_list.md')
+    ),
+    mainPanel(
+      h4('Figures from manuscript'),
+      h5('Figure 1:'),
+      includeMarkdown('pages/fig1.md'),
+      hr(),
+      h5('Figure 2:'),
+      includeMarkdown('pages/fig2.md'),
+      hr(),
+      h5('Figure 3:'),
+      includeMarkdown('pages/fig3.md'),
+      hr(),
+      h5('Figure 4:'),
+      includeMarkdown('pages/fig4.md'),
+      hr(),
+      h5('Figure 5:'),
+      includeMarkdown('pages/fig5.md')
     )
   ),
   
   tabPanel('Map alignment',
-    fluidRow(
-      column(2, 
-        selectInput('taxa_quad', 'Choose a taxon:',
-                    choices = c('all', unique(spp_list$spp_group_text) %>% sort()),
-                    selected = 'all'),
-        radioButtons('expert_rev', label = 'AquaMaps review status',
-                     choices = list('All'           = 'all',
-                                    'Expert rev\'d' = 'expert'),
-                     selected = 'all')
-      ),
-      column(10,
-        plotlyOutput('quad_plot'),
-        hr(),
-        plotOutput('barchart')
-      )
+    sidebarPanel(
+      includeMarkdown('pages/align_tab_side1.md'),
+      selectInput('taxa_quad', 'Choose a taxon:',
+                  choices = c('all', unique(spp_list$spp_group_text) %>% sort()),
+                  selected = 'all'),
+      radioButtons('expert_rev', label = 'AquaMaps review status',
+                   choices = list('All'             = 'all',
+                                  'Expert reviewed' = 'expert'),
+                   selected = 'all'),
+      includeMarkdown('pages/footer_sidebar.md')
+    ),
+    mainPanel(
+      includeMarkdown('pages/align_tab_main1.md'),
+      plotlyOutput('quad_plot', height = '300px'),
+      hr(),
+      includeMarkdown('pages/align_tab_main2.md'),
+      plotOutput('barchart', height = '300px')
     )
   ),
   
   tabPanel('Species maps',
-  ### This tab will have a side bar to select taxa, then species;
-  ### at the bottom of the side bar will be a mini-quadmap to show where this
-  ### species falls relative to all the others (this species is a red dot).
-  ### There will be buttons to show only IUCN, only AM, or both;
-  ### there will also be a slider for AquaMaps threshold?
   ### Include FAO boundaries on the main map - no need for toggle on/off.
   ### The main panel will show the species map for the given species,
   ### with the given parameters.
-    fluidRow(
-      column(2,
-        h6('Select species group, then
-          select species'),
-        selectInput('spp_group', 'Choose a taxon:',
-                    choices = unique(spp_list$spp_group_text) %>% sort()),
-        selectInput('species', 'Choose a species:',
-                    choices = unique(spp_list$sciname) %>% sort()),
-        radioButtons('show_maps', label = h3('Maps'),
-                     choices = list('AquaMaps' = 'am',
-                                    'IUCN'     = 'iucn', 
-                                    'Both'     = 'both'),
-                     selected = 'both'),
-        hr(),
-        plotOutput('mini_quad', height = '150px')
-      ),
-      column(10,
-        plotOutput('compare_map')
-      )
+    sidebarPanel(
+      includeMarkdown('pages/map_tab_side1.md'),
+      selectInput('spp_group', 'Select a taxonomic group:',
+                  choices = unique(spp_list$spp_group_text) %>% sort()),
+      selectInput('species', 'Then select a species:',
+                  choices = unique(spp_list$sciname) %>% sort()),
+      radioButtons('show_maps', label = 'Data source',
+                   choices = list('AquaMaps' = 'am',
+                                  'IUCN'     = 'iucn', 
+                                  'Both'     = 'both'),
+                   selected = 'both'),
+      includeMarkdown('pages/map_tab_side2.md'),
+      plotOutput('mini_quad', height = '150px'),
+      includeMarkdown('pages/footer_sidebar.md')
+    ),
+    mainPanel(
+      includeMarkdown('pages/map_tab_main1.md'),
+      plotOutput('compare_map', width = '100%')
     )
   ),
   
@@ -116,33 +97,55 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   ### Should we include option for other taxa that might be limited to 200 m, e.g. 
   ### damselfish and butterflyfish? or is that going out on a limb...
   ### if we did that, use the same process as corals to determine depths
-    fluidRow(
-      column(2,
-        h6('Select coral species'),
-        selectInput('coral_species', 'Choose a species:',
-                    choices = unique(spp_list %>% 
-                                       filter(spp_group_text == 'Corals') %>% 
-                                       .$sciname %>% 
-                                       sort())),
-        hr(),
-        plotOutput('coral_quad', height = '150px')
-      ),
-      column(10,
-        # plotlyOutput('coral_plot'),
-        hr(),
-        h5('Bar chart goes here')
-      )
+    sidebarPanel(
+      includeMarkdown('pages/coral_tab_side1.md'),
+      selectInput('coral_spp', 'Select a coral species:',
+                  choices = coral_spp_list$sciname %>% 
+                                     sort()),
+      includeMarkdown('pages/coral_tab_side2.md'),
+      plotOutput('coral_quad', height = '150px'),
+      includeMarkdown('pages/footer_sidebar.md')
+    ),
+    mainPanel(
+      includeMarkdown('pages/coral_tab_main1.md'),
+      plotOutput('coral_map'),
+      includeMarkdown('pages/coral_tab_main2.md'),
+      plotOutput('coral_barchart', height = '250px')
     )
   ),
   
   tabPanel('References',
-    fluidRow(
-      column(2,
-        includeMarkdown('pages/citation.md')
-      ),
-      column(10,
-        includeMarkdown('pages/references.md')
-      )
+    sidebarPanel(
+      includeMarkdown('pages/citation.md')
+    ),
+    mainPanel(
+      includeMarkdown('pages/references.md')
+    )
+  ),
+  
+  tabPanel('SI',
+    # Abstract of paper; sidebar is authors, publication info, etc
+    sidebarPanel(
+      includeMarkdown('pages/author_list.md')
+    ),
+    mainPanel(
+      h4('Supporting figures'),
+      h5('Figure S1:'),
+      includeMarkdown('pages/s1fig.md'),
+      hr(),
+      h5('Figure S2:'),
+      includeMarkdown('pages/s2fig.md'),
+      hr(),
+      h5('Figure S3:'),
+      includeMarkdown('pages/s3fig.md'),
+      hr(),
+      h5('Figure S4:'),
+      includeMarkdown('pages/s4fig.md'),
+      hr(),
+      h5('Figure S5:'),
+      includeMarkdown('pages/s5fig.md'),
+      hr(),
+      includeMarkdown('pages/si_refs.md')
     )
   )
 )

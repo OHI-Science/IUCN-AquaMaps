@@ -68,7 +68,16 @@ server <- shinyServer(function(input, output, session) {
 
   ### For Coral Depth tab
   output$coral_quad <- renderPlot({
-    create_coralquad(input$coral_species)
+    create_coralquad(input$coral_spp)
   })
+  
+  output$coral_map <- renderPlot({
+    create_coral_map(input$coral_spp)
+  })
+  
+  output$coral_barchart <- renderPlot({
+    create_coral_barchart()
+  })
+  
   
 })
