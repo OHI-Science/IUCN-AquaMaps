@@ -13,10 +13,11 @@ server <- shinyServer(function(input, output, session) {
   ### for Species Map tab: upon selecting a group, update species list choices
   observeEvent(input$spp_group, 
     {
+      message('Observed change in spp_group; updating select input')
       spp_choices <- spp_list %>%
         filter(spp_group_text == input$spp_group) %>%
         distinct() %>%
-        .$sciname %>%
+        .$name %>%
         sort()
       updateSelectInput(session, inputId = "species",
                         choices = spp_choices)

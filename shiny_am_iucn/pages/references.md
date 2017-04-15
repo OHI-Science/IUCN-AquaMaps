@@ -4,10 +4,10 @@
 2. IUCN. IUCN red list of threatened species. International union for the conservation of nature. 2015. Available: http://www.iucnredlist.org
 3. Gaston KJ, Fuller RA. The sizes of species’ geographic ranges. Journal of Applied Ecology. 2009;46: 1–9. doi:10.1111/j.1365-2664.2008.01596.x
 4. Halpern BS, Longo C, Hardy D, McLeod KL, Samhouri JF, Katona SK, et al. An index to assess the health and benefits of the global ocean. Nature. 2012; doi:10.1038/nature11397
-5. Halpern BS, Longo C, Lowndes JSS, Best BD, Frazier M, Katona SK, et al. Patterns and emerging trends in global ocean health. PLoS ONE. 2015;10: e0117863. doi:10.1371/journal.pone.0117863
-6. Selig ER, Longo C, Halpern BS, Best BD, Hardy D, Elfes CT, et al. Assessing global marine biodiversity status within a coupled socio-ecological perspective. PLoS ONE. 2013;8: e60284. doi:10.1371/journal.pone.0060284
-7. Coll M, Piroddi C, Steenbeek J, Kaschner K, Ben Rais Lasram F, Aguzzi J, et al. The biodiversity of the mediterranean sea: Estimates, patterns, and threats. Bograd SJ, editor. PLoS ONE. 2010;5: e11842. doi:10.1371/journal.pone.0011842
-8. Kaschner K, Tittensor DP, Ready J, Gerrodette T, Worm B. Current and future patterns of global marine mammal biodiversity. Bograd SJ, editor. PLoS ONE. 2011;6: e19653. doi:10.1371/journal.pone.0019653
+5. Halpern BS, Longo C, Lowndes JSS, Best BD, Frazier M, Katona SK, et al. Patterns and emerging trends in global ocean health. PLOS ONE. 2015;10: e0117863. doi:10.1371/journal.pone.0117863
+6. Selig ER, Longo C, Halpern BS, Best BD, Hardy D, Elfes CT, et al. Assessing global marine biodiversity status within a coupled socio-ecological perspective. PLOS ONE. 2013;8: e60284. doi:10.1371/journal.pone.0060284
+7. Coll M, Piroddi C, Steenbeek J, Kaschner K, Ben Rais Lasram F, Aguzzi J, et al. The biodiversity of the mediterranean sea: Estimates, patterns, and threats. Bograd SJ, editor. PLOS ONE. 2010;5: e11842. doi:10.1371/journal.pone.0011842
+8. Kaschner K, Tittensor DP, Ready J, Gerrodette T, Worm B. Current and future patterns of global marine mammal biodiversity. Bograd SJ, editor. PLOS ONE. 2011;6: e19653. doi:10.1371/journal.pone.0019653
 9. Martin C, Fletcher R, Jones M, Kaschner K, Sullivan E, Tittensor DP, et al. Manual of marine and coastal datasets of biodiversity importance. United Nations Environment Programme; 2014 May. 
 10. Pimm SL, Jenkins CN, Abell R, Brooks TM, Gittleman JL, Joppa LN, et al. The biodiversity of species and their rates of extinction, distribution, and protection. Science. 2014;344: 1246752–1–1246752–10. doi:10.1126/science.1246752
 11. Ramírez F, Afán I, Davis LS, Chiaradia A. Climate impacts on global hot spots of marine biodiversity. Science Advances. 2017;3: e1601198. Available: http://advances.sciencemag.org/content/3/2/e1601198.abstract

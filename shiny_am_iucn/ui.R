@@ -2,12 +2,6 @@
 
 source('ui_setup.R')
 
-### Tab 1: intro/explanation/link to published paper
-### Tab 2: sample maps showing AM/IUCN/both; to select a species, can it be 
-###   tied to the mouseovers on the quad plot? somehow link quad plot to maps
-### Tab 3: sample coral maps showing depth overreach; can this be tied to the
-###   modified quad plot?
-
 ui <- navbarPage('Aligning marine species range data to better serve science and conservation',
                  theme = shinytheme('cerulean'),
                  
@@ -21,7 +15,6 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   ),
   
   tabPanel('Figures',
-    # Abstract of paper; sidebar is authors, publication info, etc
     sidebarPanel(
       includeMarkdown('pages/author_list.md')
     ),
@@ -66,15 +59,12 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   ),
   
   tabPanel('Species maps',
-  ### Include FAO boundaries on the main map - no need for toggle on/off.
-  ### The main panel will show the species map for the given species,
-  ### with the given parameters.
     sidebarPanel(
       includeMarkdown('pages/map_tab_side1.md'),
       selectInput('spp_group', 'Select a taxonomic group:',
                   choices = unique(spp_list$spp_group_text) %>% sort()),
       selectInput('species', 'Then select a species:',
-                  choices = unique(spp_list$sciname) %>% sort()),
+                  choices = unique(spp_list$name) %>% sort()),
       radioButtons('show_maps', label = 'Data source',
                    choices = list('AquaMaps' = 'am',
                                   'IUCN'     = 'iucn', 
@@ -91,16 +81,10 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   ),
   
   tabPanel('Coral depth',
-  ### This page will have a sidebar to select specific coral species or all;
-  ### there will be a toggle for a 200 m bathymetry polygon.
-  ### Or will this page focus on the coral-only quad map and bar chart?
-  ### Should we include option for other taxa that might be limited to 200 m, e.g. 
-  ### damselfish and butterflyfish? or is that going out on a limb...
-  ### if we did that, use the same process as corals to determine depths
     sidebarPanel(
       includeMarkdown('pages/coral_tab_side1.md'),
       selectInput('coral_spp', 'Select a coral species:',
-                  choices = coral_spp_list$sciname %>% 
+                  choices = coral_spp_list$name %>% 
                                      sort()),
       includeMarkdown('pages/coral_tab_side2.md'),
       plotOutput('coral_quad', height = '150px'),
@@ -124,12 +108,11 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   ),
   
   tabPanel('SI',
-    # Abstract of paper; sidebar is authors, publication info, etc
     sidebarPanel(
       includeMarkdown('pages/author_list.md')
     ),
     mainPanel(
-      h4('Supporting figures'),
+      h4('Supporting Information for manuscript'),
       h5('Figure S1:'),
       includeMarkdown('pages/s1fig.md'),
       hr(),

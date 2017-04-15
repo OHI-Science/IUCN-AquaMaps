@@ -52,6 +52,8 @@ Things to consider when choosing species to include in the app:
 ``` {r choose_species_to_map}
 
 ### copy and trim the list of overlapping species
+comnames <- read_csv(file.path(dir_shiny, 'data/sci_to_common.csv'))
+
 spp_list_quads <- read_csv(file.path(dir_git, 'data', 'spp_list_quads.csv')) %>%
   select(sciname, iucn_sid, am_sid, 
          area_iucn, area_am,
@@ -59,7 +61,10 @@ spp_list_quads <- read_csv(file.path(dir_git, 'data', 'spp_list_quads.csv')) %>%
          spp_group_text, 
          reviewed, occurcells, 
          n_spp, quad) %>%
-  mutate(reviewed = ifelse(!is.na(reviewed), TRUE, FALSE))
+  left_join(comnames, by = 'sciname') %>%
+  mutate(reviewed = ifelse(!is.na(reviewed), TRUE, FALSE),
+         name = ifelse(is.na(common) | common == 'Null', sciname, common)) %>%
+  select(-fbname)
 write_csv(spp_list_quads, file.path(dir_shiny, 'data', 'spp_list_quads_app.csv'))
 
 ### copy the barchart files too
@@ -164,6 +169,10 @@ Get coral species alignment file and bring it over here; clean it up a bit for e
 ``` {r get_coral_spp_info}
 spp_coralmaps <- read_csv(file.path(dir_git, 'clip_depth', 'coral_spp_areas.csv'))
 
+comnames <- read_csv(file.path(dir_shiny, 'data', 'spp_list_quads_app.csv')) %>%
+  dplyr::select(iucn_sid, sciname, name)
+
+
 ### recalc areas and overlaps
 iucn_coral_fixed <- spp_coralmaps %>%
   gather(dist, dist_align, c(sm_perc_raw, sm_perc_shallow)) %>%
@@ -172,7 +181,8 @@ iucn_coral_fixed <- spp_coralmaps %>%
   filter(!(str_detect(dist, 'shallow') & !(str_detect(area, 'shallow')))) %>%
   mutate(method = ifelse(str_detect(dist, 'shallow'), '200 m clip', 'all depth')) %>%
   select(iucn_sid, am_sid, sciname, dist_align, area_ratio, method) %>%
-  distinct()
+  distinct() %>%
+  left_join(comnames, by = c('iucn_sid', 'sciname'))
 
 write_csv(iucn_coral_fixed, file.path(dir_shiny, 'data', 'coral_align_app.csv'))
 
@@ -191,10 +201,10 @@ coral_cells_app <- read_csv(file.path(dir_git, 'clip_depth', 'coral_cells_iucn.c
 write_csv(coral_cells_app, file.path(dir_shiny, 'data', 'coral_cells_app.csv'))
 
 coral_spp_list  <- spp_list %>%
-  select(iucn_sid, sciname) %>%
+  select(iucn_sid, sciname, name) %>%
   filter(iucn_sid %in% coral_cells_app$iucn_sid) %>%
   distinct()
-write_csv(spp_coral_maps, file.path(dir_shiny, 'data', 'coral_spp_list.csv'))
+write_csv(coral_spp_list, file.path(dir_shiny, 'data', 'coral_spp_list.csv'))
 
 coral_quad_sum <- read_csv(file.path(dir_git, 'clip_depth', 'iucn_coral_quad_sum.csv'))
 write_csv(coral_quad_sum, file.path(dir_shiny, 'data', 'coral_quads_app.csv'))

@@ -2,6 +2,6 @@ name: shiny_am_iucn
 account: oharascience
 server: shinyapps.io
 appId: 117923
-bundleId: 789649
+bundleId: 790565
 url: https://oharascience.shinyapps.io/shiny_am_iucn/
-when: 1492190619.93698
+when: 1492295486.75989

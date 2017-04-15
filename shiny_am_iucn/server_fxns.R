@@ -67,12 +67,12 @@ quad_gp_list <- read_csv('data/spp_gp_quads_app.csv') %>%
 # occurrence cells and associated Aquamaps probability and/or IUCN proportional area
 # per cell
 
-get_spp_map_df <- function(species) { ### species <- spp_list$sciname[1]
+get_spp_map_df <- function(species) { ### species <- spp_list$name[1]
   message('in get_spp_map_df(), looking for species: ', species)
 
   spp_id <- spp_list %>%
-    filter(sciname == species) %>%
-    dplyr::select(am_sid, iucn_sid, sciname) %>%
+    filter(name == species) %>%
+    dplyr::select(am_sid, iucn_sid, name) %>%
     distinct()
   
   iucn_spp_map <- iucn_spp_cells %>%
@@ -246,7 +246,7 @@ create_quadplot <- function(taxa_sel, expt_rev) {
   scatter_quadplot <- ggplot(quad_list_labs,
                              aes(x = area_ratio, 
                                  y = dist_align,
-                                 key = sciname,
+                                 key = name,
                                  key2 = reviewed)) +
     ggtheme_basic(textsize = 12) +
     ### color the quadrant backgrounds:
@@ -319,7 +319,7 @@ create_miniquad <- function(spp_sel) {
   message('in create_miniquad()')
   
   scatter_miniquad <- ggplot(quad_list %>% 
-                               filter(sciname == spp_sel),
+                               filter(name == spp_sel),
                              aes(x = area_ratio, 
                                  y = dist_align)) +
     ggtheme_basic(textsize = 8) +
@@ -362,15 +362,15 @@ create_miniquad <- function(spp_sel) {
 create_coralquad <- function(coral_spp) {
   message('in create_coralquad()')
   ### basically a mini-quad showing the before and after of the coral species
-  # coral_spp <- spp_coral_align$sciname[1]
+  # coral_spp <- spp_coral_align$name[1]
   
   spp_coralmap <- spp_coral_align %>%
-    filter(sciname == coral_spp & method == 'all depth') %>%
-    dplyr::select(sciname, area_ratio, dist_align) %>%
+    filter(name == coral_spp & method == 'all depth') %>%
+    dplyr::select(name, area_ratio, dist_align) %>%
     left_join(spp_coral_align %>%
-                filter(sciname == coral_spp & method != 'all depth') %>%
-                dplyr::select(sciname, area_ratio_clip = area_ratio, dist_align_clip = dist_align),
-              by = 'sciname')
+                filter(name == coral_spp & method != 'all depth') %>%
+                dplyr::select(name, area_ratio_clip = area_ratio, dist_align_clip = dist_align),
+              by = 'name')
                 
   coral_quad <- ggplot(spp_coralmap,
                           aes(x = area_ratio, y = dist_align)) +
@@ -421,7 +421,7 @@ create_coral_map <- function(coral_spp) {
   message('in create_coral_map()')
   
   coral_spp_id <- coral_spp_list %>%
-    filter(sciname == coral_spp)
+    filter(name == coral_spp)
   
   coral_cells <- spp_coral_cells %>%
     filter(iucn_sid == coral_spp_id$iucn_sid) %>%
