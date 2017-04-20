@@ -2,12 +2,12 @@
 
 source('ui_setup.R')
 
-ui <- navbarPage('Aligning marine species range data to better serve science and conservation',
+ui <- navbarPage(title = '',
                  theme = shinytheme('cerulean'),
                  
   tabPanel('Abstract',
     sidebarPanel(
-      includeMarkdown('pages/author_list.md')
+      includeMarkdown('pages/article_info.md')
     ),
     mainPanel(
       includeMarkdown('pages/abstract.md')
@@ -16,7 +16,7 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   
   tabPanel('Figures',
     sidebarPanel(
-      includeMarkdown('pages/author_list.md')
+      includeMarkdown('pages/article_info.md')
     ),
     mainPanel(
       h4('Figures from manuscript'),
@@ -100,7 +100,7 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   
   tabPanel('References',
     sidebarPanel(
-      includeMarkdown('pages/citation.md')
+      includeMarkdown('pages/article_info.md')
     ),
     mainPanel(
       includeMarkdown('pages/references.md')
@@ -109,7 +109,7 @@ ui <- navbarPage('Aligning marine species range data to better serve science and
   
   tabPanel('SI',
     sidebarPanel(
-      includeMarkdown('pages/author_list.md')
+      includeMarkdown('pages/article_info.md')
     ),
     mainPanel(
       h4('Supporting Information for manuscript'),

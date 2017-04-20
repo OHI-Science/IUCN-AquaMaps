@@ -1,6 +1,4 @@
-[Published in PLOS ONE 3 May 2017](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0175739)
-
-### Abstract
+#### Abstract
 
 Species distribution data provide the foundation for a wide range of ecological research studies and conservation management decisions. Two major efforts to provide marine species distributions at a global scale are the International Union for Conservation of Nature (IUCN), which provides expert-generated range maps that outline the complete extent of a species' distribution; and AquaMaps, which provides model-generated species distribution maps that predict areas occupied by the species. Together these databases represent 24,586 species (93.1% within AquaMaps, 16.4% within IUCN), with only 2,330 shared species. 
 
