@@ -1,5 +1,8 @@
 .Rproj.user
 .Rhistory
 .RData
-old.zip
-case_study_ohi.zip
+rsconnect
+.DS_Store
+IUCN-AquaMaps_master
+IUCN-AquaMaps_shiny_am_iucn.Rdata
+IUCN-AquaMaps_master_remote_sha.txt

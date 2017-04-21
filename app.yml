@@ -1,0 +1,13 @@
+gh_repo: IUCN-AquaMaps
+study_area: IUCN-AquaMaps
+scenario_dirs: shiny_am_iucn
+gh_owner: OHI-Science
+gh_branch_data: master
+gh_branch_app: dummy
+app_url: http://ohi-science.nceas.ucsb.edu/IUCN-AquaMaps
+projection: Mercator
+map_shrink_pct: 10.0
+debug: no
+ohirepos_commit: 0.1.0
+gh_data_commit: ~
+last_updated: 17277.0
