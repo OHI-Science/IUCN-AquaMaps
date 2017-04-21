@@ -1,0 +1,302 @@
+---
+title: 'OHI: Species: ingest IUCN shapefiles'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(rgdal)
+library(maptools)
+library(raster)
+library(tidyverse)
+library(stringr)
+
+dir_M <- c('Windows' = '//mazu.nceas.ucsb.edu/data_edit',
+           'Darwin'  = '/Volumes/ohi',
+           'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_M, 'git-annex/globalprep/spp_ico/vAM_IUCN')
+dir_data_remote <- file.path(dir_M, 'git-annex/globalprep/_raw_data')
+
+source(file.path(dir_git, 'data_explore/data_explore_fxns.R'))
+
+```
+
+# Methods
+
+## Ingest shapefiles from IUCN into half-degree cells
+
+``` {r define_paths}
+
+iucn_shp_dir <- file.path(dir_data_remote, 'iucn_spp', 'd2015', 'iucn_shp')
+
+cache_dir <- (file.path(dir_anx, 'iucn_intersections'))
+
+rast_file <- file.path(dir_anx, '../rgns/loiczid_raster.tif')
+```
+
+``` {r define_functions}
+
+extract_from_shp <- function(shp, cache_dir, rast, 
+                             fn_tag   = NULL,
+                             reload   = FALSE) {
+  ### will extract a shapefile to a raster, and save the .csv as a
+  ### file in cache_dir with a matching name (e.g. BOTW.shp -> BOTW.csv).
+  ### NOTE: any filtering of shapefiles should be done before passing them
+  ### to this function; e.g. filter TERRESTRIAL_MAMMALS.shp to just those
+  ### that occur in marine habitats.
+  ### * shp must include .shp extension and must include full path name.
+  
+  if(!file.exists(shp)) {
+    message('Shapefile ', shp, ' does not exist.  shp argument must contain ',
+            'the full path name, including .shp extension.')
+    
+    return(data.frame(msg = 'pathname error'))
+  }
+
+  ### determine species group (the shapefile base name without extension)
+  spp_gp <- basename(shp) %>% str_replace('.shp', '')
+  
+  cache_file <- file.path(cache_dir, 
+                          paste0(spp_gp, 
+                                 ifelse(is.null(fn_tag), '', fn_tag),
+                                 '.csv'))
+  
+  ### if reload == FALSE, and the file exists, don't waste your friggin' time here, move on to next group.
+  if(file.exists(cache_file) & reload == FALSE) {
+    message(sprintf('IUCN <-< LOICZID lookup file already exists for species group %s;',
+                    ' file location:\n  %s', spp_gp, cache_file))
+    return(data.frame(msg = paste(cache_file, ' already exists, not reprocessed')))
+  } else {
+    ptm <- proc.time()
+    fsize <- round(file.size(shp)/1e6, 2)
+    message(sprintf('Reading species group shapefile %s, %.2f MB\n  %s', spp_gp, fsize, shp))
+
+    ### Because the IUCN metadata states that shapefiles are unprojected lat-long with WGS84,
+    ### use readShapePoly (rather than readOGR) and manually tell it the projection...
+    spp_shp <- maptools::readShapePoly(fn = shp,
+                                       proj4string = CRS('+init=epsg:4326'),
+                                       delete_null_obj = TRUE)
+    # spp_shp <- rgdal::readOGR(dsn = dirname(shp),
+    #                           layer = basename(shp) %>% str_replace('.shp', ''),
+    #                           stringsAsFactors = FALSE)
+    message(sprintf('Elapsed read time: %.2f seconds', (proc.time() - ptm)[3]))
+
+    ### standardize some variable names; this is mostly for BOTW
+    names(spp_shp@data) <- tolower(names(spp_shp@data))
+    names(spp_shp@data)[names(spp_shp@data) %in% c('id_no', 'sisid')] <- 'iucn_sid'
+    names(spp_shp@data)[names(spp_shp@data) %in% c('binomial')]       <- 'sciname'
+    names(spp_shp@data)[names(spp_shp@data) %in% c('presenc')]        <- 'presence'
+    ### corals 1 (and others?) doesn't have subpop variable; add NAs
+    if(!'subpop' %in% names(spp_shp@data))
+      spp_shp@data$subpop <- NA
+
+
+    message(sprintf('... processing %s species',
+                    length(unique(spp_shp@data$iucn_sid))))
+
+    message('Extracting polygons to LOICZID cells...')
+    ptm <- proc.time()
+    spp_shp_prop <- raster::extract(rast, spp_shp, 
+                                    weights = TRUE, normalizeWeights = FALSE, 
+                                    progress = 'text')
+    message(sprintf('Elapsed process time: %.2f minutes', (proc.time() - ptm)[3]/60))
+
+    
+    ### combine sciname, iucn_sid, presence, and subpop code for a single unique identifier
+    shp_id <- data.frame('sciname'  = spp_shp@data$sciname,
+                         'iucn_sid' = spp_shp@data$iucn_sid,
+                         'presence' = spp_shp@data$presence,
+                         'subpop'   = spp_shp@data$subpop) %>%
+      unite(name_id, sciname, iucn_sid, presence, subpop, sep = '_')
+
+    names(spp_shp_prop) <- shp_id$name_id
+
+    ### convert list to data frame.
+    spp_shp_prop_df <- plyr::ldply(spp_shp_prop, rbind)
+    spp_shp_prop_df <- spp_shp_prop_df %>%
+      rename(name_id   = .id,
+             LOICZID   = value,
+             prop_area = weight) %>%
+      separate(name_id, c('sciname', 'iucn_sid', 'presence', 'subpop'), sep = '_') %>%
+      distinct()
+
+    ### save .csv for this species group
+    message(sprintf('%s: %s species maps, %s total cells in output file',
+                    spp_gp, length(unique(spp_shp_prop_df$iucn_sid)),
+                    nrow(spp_shp_prop_df)))
+    message(sprintf('Writing IUCN<->LOICZID intersection file for %s to:\n  %s', spp_gp, cache_file))
+    write_csv(spp_shp_prop_df, cache_file)
+  }
+  
+  return(invisible(spp_shp_prop_df))
+}
+
+```
+
+
+### Extract IUCN shapefiles to csvs.
+
+All shapefiles within the IUCN shapefile folder are extracted against the LOICZID raster from AquaMaps.  The resulting dataframes are saved as a CSV for each species group (each shapefile).
+
+NOTE: reload is disabled.  To re-extract a shapefile, simply delete the existing .csv extracted from .shp
+
+### available shape files:
+
+``` {r display_shps, results = 'asis'}
+
+shp_files <- c(list.files(iucn_shp_dir,
+                        pattern = '.shp$',
+                        full.names = TRUE))
+
+csv_files <- list.files(file.path(dir_anx, 'iucn_intersections'),
+                        pattern = '.csv$') %>%
+  str_replace('.csv$', '')
+
+shp_files_to_do <- shp_files[!(basename(shp_files) %>% str_replace('.shp$', '') %in% csv_files)]
+
+shp_info <- lapply(shp_files, file.info) %>%
+  bind_rows() %>%
+  mutate(shp_file = shp_files %>% str_replace('/home/shares/ohi/git-annex/globalprep/', ''),
+         size_mb  = round(size / 1e6, 2)) %>%
+  dplyr::select(shp_file, size_mb, mod_time = mtime, user = uname, group = grname) %>%
+  mutate(to_process = basename(shp_file) %in% basename(shp_files_to_do))
+
+DT::datatable(shp_info)
+
+```
+
+
+``` {r extract_shps_to_csv_series}
+
+spp_list <- read_csv(file.path(dir_git, 'data/spp_iucn_maps_verified.csv'))
+
+rast <- raster(rast_file)
+
+reload <- FALSE
+
+shps_done <- list.files(cache_dir) %>%
+  str_replace('.csv', '.shp') %>%
+  paste(collapse = '|') ### converts multiple strings into single regex pattern
+
+if(shps_done == '') {
+  shps_remain <- shp_files
+} else {
+  shps_remain <- shp_files[!str_detect(shp_files, shps_done)]
+}
+
+for (shp in shps_remain) {
+  # shp <- shps_remain[1]
+  shp_csv <- extract_from_shp (shp,
+                               cache_dir = cache_dir,
+                               rast = rast,
+                               reload = reload)
+}
+
+```
+
+
+``` {r check_that_all_files_processed}
+### run this bit to check whether all files processed properly.  Errors
+### seem to typically knock a few out of the running for some reason.
+shps_done <- list.files(cache_dir) %>%
+  str_replace('.csv', '.shp') %>%
+  paste(collapse = '|') 
+    ### converts multiple strings into single regex pattern so str_detect can
+    ### test for patternA OR patternB OR patternC etc at one swoop
+shps_remain <- shp_files[!str_detect(shp_files, shps_done)]
+
+if (length(shps_remain > 0)) {
+  message('Shapefiles not processed: \n  ', paste(shps_remain, collapse = '\n  '))
+  message('... Reprocessing these files!')
+  shp_df_list <- mclapply(shps_remain, 
+                            FUN = extract_from_shp,
+                                    cache_dir = cache_dir,
+                                    rast = rast,
+                                    reload = reload,
+                          mc.cores = 12) 
+  
+} else {
+  message('All shapefiles processed! yay!')
+}
+```
+
+### available CSV files:
+
+``` {r display_csvs, results = 'asis'}
+
+csv_files <- list.files(cache_dir, pattern = '.csv$', full.names = TRUE)
+
+cat('All .csv files located in ', cache_dir, '\n')
+
+csv_info <- lapply(csv_files, file.info) %>%
+  bind_rows() %>%
+  mutate(basename = basename(csv_files),
+         size_mb  = round(size / 1e6, 2)) %>%
+  dplyr::select(basename, size_mb, mod_time = mtime, user = uname, group = grname)
+
+DT::datatable(csv_info)
+
+```
+
+## Combine all extracted CSVs
+
+``` {r combine_all_extracted_csvs}
+
+spp_list <- read_csv(file.path(dir_git, 'data/spp_iucn_maps_verified.csv'))
+
+csv_list <- list.files(cache_dir, pattern = '.csv$', full.names = TRUE)
+
+spp_cells_df <- lapply(csv_list, read_csv) %>%
+  bind_rows()
+
+names(spp_cells_df) <- tolower(names(spp_cells_df))
+
+spp_missing <- spp_list %>%
+  filter(!iucn_sid %in% spp_cells_df$iucn_sid) %>%
+  distinct()
+### none missing!
+
+spp_extra <- spp_cells_df %>%
+  filter(!iucn_sid %in% spp_list$iucn_sid) %>%
+  dplyr::select(-loiczid, -prop_area, -presence) %>%
+  distinct()
+### no extras!
+
+spp_cells_file <- file.path(dir_anx, 'int', 'iucn_spp_cells_d2015.csv')
+write_csv(spp_cells_df, spp_cells_file)
+
+spp_cell_file_info <- file.info(spp_cells_file) %>% 
+  mutate(size_mb = size / 1e6 %>% round(2)) %>%
+  dplyr::select(size_mb, mod_time = mtime, user = uname, group = grname)
+
+```
+
+File saved at: `r spp_cells_file`
+
+`r knitr::kable(spp_cell_file_info)`
+
+Extra species?  `r nrow(spp_extra)`
+
+Missing species?  `r nrow(spp_missing)`
+
+-----
+

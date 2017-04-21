@@ -1,0 +1,967 @@
+---
+title: 'Data Exploration: IUCN and AquaMaps'
+output: html_document
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Libraries and Paths
+
+library(ggplot2)
+library(maps)
+library(readr)
+library(data.table)
+library(raster)
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+dir_M             <- c('Windows' = '//mazu.nceas.ucsb.edu/ohi',
+                       'Darwin'  = '/Volumes/ohi',    ### connect (cmd-K) to smb://mazu/ohi
+                       'Linux'   = '/home/shares/ohi')[[ Sys.info()[['sysname']] ]]
+
+
+dir_git <- '~/github/IUCN-AquaMaps'
+  
+dir_anx <- file.path(dir_M, 'git-annex/globalprep/spp_ico')
+dir_fig <- file.path(dir_git, 'figures')
+dir_data <- file.path(dir_git, 'data')
+
+# if(basename(getwd()) != 'data_explore') setwd('data_explore')
+source(file.path(dir_git, 'data_explore', 'data_explore_fxns.R'))
+### When knitting this, it automatically sets WD to be this directory...
+### the 'setwd()' is there for running by chunk
+```
+
+
+```{r get_spp_list, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+### this file created in data_prep
+spp_list <- read_csv(file.path(dir_data, 'spp_list_w_area_trimmed.csv'))
+
+```
+
+
+# Figures 1 a b c
+
+
+``` {r load data, echo = FALSE, warning = FALSE, message = FALSE}
+### use data_prep.Rmd to create this file, if it does not yet exist.
+
+data_file <- file.path(dir_data, 'spp_list_w_area_trimmed.csv')
+spp_map_pairs <- read_csv(data_file)
+
+### generate other lists
+
+spp_all_file <- file.path(dir_data, 'spp_all.csv')
+spp_all <- read_csv(spp_all_file) 
+
+iucn_file <- file.path(dir_data, 'spp_iucn.csv')
+spp_iucn <- read_csv(iucn_file) 
+
+message('Getting IUCN maps list')
+iucn_maps_file <- file.path(dir_data, 'spp_iucn_maps_verified.csv')
+spp_iucn_maps <- read_csv(iucn_maps_file)
+
+```
+
+``` {r breakdown by taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
+
+spp_match_key <- spp_map_pairs %>%
+  select(iucn_sid, am_sid)
+
+am_maps_class <- read_csv(file.path(dir_data, 'spp_am.csv')) %>%
+  select(am_sid, sciname) %>%
+  left_join(read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2015/csv/speciesoccursum.csv')) %>% 
+              dplyr::select(am_sid = speciesid, am_class = class) %>%
+              unique(), 
+            by = 'am_sid') %>%
+  left_join(spp_match_key, by = 'am_sid')
+### nrow(spp_am %>% filter(paired_map)) ### 2330 spp
+
+iucn_maps_class <- spp_iucn_maps %>% 
+  select(iucn_sid, sciname_iucn = sciname, iucn_class = class) %>%
+  distinct() %>%
+  mutate(iucn_class = str_to_title(iucn_class))
+### nrow(iucn_maps_class %>% filter(paired_map)) ### 2330 spp
+
+spp_class_all <- am_maps_class %>%
+  full_join(iucn_maps_class, by = 'iucn_sid') %>%
+  mutate(am_class = ifelse(tolower(am_class) %in% c('null', 'not assigned'), NA, am_class),
+         class    = ifelse(identical(iucn_class, am_class), am_class, NA),
+         class    = ifelse(is.na(class & !is.na(iucn_class)), iucn_class, am_class))
+
+### NAs due to null or not assigned Aquamaps species.
+# spp_class_na <- spp_class_all %>%
+#   filter(is.na(class)) %>%
+#   select(am_sid, sciname)
+# 
+# spp_class_from_worrms <- data.table()
+# for (i in seq_along(spp_class_na$sciname)) { ## i <- 1
+#   am_sid  = spp_class_na$am_sid[i]
+#   sciname = spp_class_na$sciname[i]
+#   print(paste(i, sciname, sep = ' '))
+#   x <- try(worrms::wm_records_taxamatch(name = spp_class_na$sciname[i]))
+#   if(class(x) == 'try-error') {
+#     x <- data.frame('am_sid'  = am_sid,
+#                     'sciname' = sciname,
+#                     'result'  = 'try-error')
+#   } else {
+#     x <- x %>%
+#       as.data.frame() %>%
+#       select(scientificname, valid_name, class, phylum, kingdom) %>%
+#       mutate(sciname = sciname,
+#              am_sid  = am_sid)
+#   }
+#   spp_class_from_worrms <- bind_rows(spp_class_from_worrms, x)
+# }
+# 
+# ### still a few NAs:
+# spp_class_from_worrms %>% filter(result == 'try-error') %>% select(am_sid, sciname)
+# # Fis-170350	Oenopota eriopis			
+# # Fis-170316	Yarica hyalosoma			
+# # ITS-156736	Loxosoma murmanica
+# spp_class_from_worrms1 <- spp_class_from_worrms %>%
+#   mutate(class = case_when(
+#     is.na(.$class) & .$am_sid == 'Fis-170350' ~ 'Gastropoda', ### from ITIS
+#     is.na(.$class) & .$am_sid == 'Fis-170316' ~ 'Actinopterygii', ### from FishBase: cardinalfish
+#     is.na(.$class) & .$am_sid == 'ITS-156736' ~ 'Entoprocta', ### from ITIS; Loxosomella murmanica
+#     TRUE ~ .$class))
+# write_csv(spp_class_from_worrms, file.path(dir_data, 'sciname_lookups/spp_class_from_worrms.csv'))
+
+# spp_class_from_itis <- data.table()
+# for (i in seq_along(spp_class_na$sciname)) { ## i <- 3
+#   am_sid  = spp_class_na$am_sid[i]
+#   sciname = spp_class_na$sciname[i]
+#   print(paste(i, sciname, sep = ' '))
+#   x <- taxize::classification(spp_class_na$sciname[i], 'itis')[[1]]
+#   if(is.na(x)) {
+#     y <- data.frame(am_sid  = am_sid,
+#                   sciname = sciname,
+#                   result = 'error')
+#   } else {
+#     class <- x$name[x$rank == 'class']
+#     phylum <- x$name[x$rank == 'phylum']
+#     kingdom <- x$name[x$rank == 'kingdom']
+#     y <- data.frame(am_sid  = am_sid,
+#                     sciname = sciname,
+#                     class_itis = ifelse(length(class > 0), x$name[x$rank == 'class'], NA),
+#                     phylum_itis = ifelse(length(phylum > 0), x$name[x$rank == 'phylum'], NA),
+#                     kingdom_itis = ifelse(length(kingdom > 0), x$name[x$rank == 'kingdom'], NA))
+#   }
+#   spp_class_from_itis <- bind_rows(spp_class_from_itis, y)
+# }
+# write_csv(spp_class_from_itis, file.path(dir_data, 'sciname_lookups/spp_class_from_itis.csv'))
+
+spp_class_fill <- read_csv(file.path(dir_data, 'sciname_lookups/spp_class_from_worrms.csv')) %>%
+  select(-result) %>%
+  full_join(read_csv(file.path(dir_data, 'sciname_lookups/spp_class_from_itis.csv')) %>%
+                       select(-result),
+            by = c('sciname', 'am_sid')) %>%
+  mutate(class = ifelse(!is.na(class_worrms), class_worrms, class_itis)) %>%
+  select(am_sid, sciname, class)
+### NOTE: still some NAs; these are all class Animalia
+
+spp_class_all <- spp_class_all %>%
+  filter(!is.na(class)) %>%
+  bind_rows(spp_class_fill)
+  
+write_csv(spp_class_all, file.path(dir_data, 'spp_class_all.csv'))
+
+```
+
+``` {r break down by taxa and data source}
+
+spp_class_all <- read_csv(file.path(dir_data, 'spp_class_all.csv'))
+
+taxa_iucn_all <- spp_class_all %>%
+  filter(!is.na(iucn_sid)) %>%
+  mutate(n_iucn_tot = n()) %>%        ### length of whole maps list
+  group_by(class) %>%
+  summarize(n_iucn_class_all  = n(),
+            p_iucn_class_all  = round((n_iucn_class_all/first(n_iucn_tot) * 100), 2))
+
+taxa_iucn_solo <- spp_class_all %>%
+  filter(!is.na(iucn_sid) & is.na(am_sid)) %>%  ### filter list to IUCN only
+  mutate(n_iucn_solo = n()) %>%             ### length of IUCN only list
+  group_by(class) %>%
+  summarize(n_iucn_class_solo = n(),
+            p_iucn_class_solo = round((n_iucn_class_solo/first(n_iucn_solo) * 100), 2))
+
+taxa_am_all <- spp_class_all %>%
+  filter(!is.na(am_sid)) %>%
+  mutate(n_am_tot = n()) %>%        ### length of whole AM maps list
+  group_by(class) %>%
+  summarize(n_am_class_all  = n(),
+            p_am_class_all  = round((n_am_class_all/first(n_am_tot) * 100), 2))
+
+taxa_am_solo <- spp_class_all %>%
+  filter(!is.na(am_sid) & is.na(iucn_sid)) %>%
+  mutate(n_am_solo = n()) %>%       ### length of AM only list
+  group_by(class) %>%
+  summarize(n_am_class_solo = n(),
+            p_am_class_solo = round((n_am_class_solo/first(n_am_solo) * 100), 2))
+
+taxa_both <- spp_class_all %>%
+  filter(!is.na(am_sid) & !is.na(iucn_sid)) %>%
+  mutate(n_both_tot = n()) %>%
+  group_by(class) %>%
+  summarize(n_class_both = n(),
+            p_class_both = round(n_class_both/first(n_both_tot) * 100, 2))
+
+taxa_all <- taxa_am_all %>%
+  full_join(taxa_am_solo,   by = 'class') %>%
+  full_join(taxa_iucn_all,  by = 'class') %>%
+  full_join(taxa_iucn_solo, by = 'class') %>%
+  full_join(taxa_both,      by = 'class') %>%
+  mutate(small_class = (is.na(n_iucn_class_all) & p_am_class_all < 0.5) | is.na(class))
+
+taxa_df <- taxa_all %>%
+  filter(!small_class) %>%
+  select(-small_class)
+
+class_to_kingdom <- read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data',
+                                       'aquamaps/d2015/csv/speciesoccursum.csv')) %>%
+  select(class, kingdom, phylum) %>%
+  bind_rows(read_csv(file.path(dir_data, 'sciname_lookups/spp_class_from_worrms.csv')) %>%
+              select(class = class_worrms, kingdom = kingdom_worrms, phylum = phylum_worrms)) %>%
+  bind_rows(read_csv(file.path(dir_data, 'sciname_lookups/spp_class_from_itis.csv')) %>%
+              select(class = class_itis, kingdom = kingdom_itis, phylum = phylum_itis)) %>%
+  mutate(class = str_to_title(class)) %>%
+  select(-phylum) %>% ### avoid duplicates
+  filter(!is.na(kingdom)) %>% ### NA class doesn't match with kingdom or phylum
+  distinct() ### All remaining NAs are Animalia
+
+taxa_other <- taxa_all %>%
+  filter(small_class) %>%
+  select(-small_class) %>%
+  left_join(class_to_kingdom,
+            by = 'class') %>%
+  mutate(kingdom = ifelse(is.na(class), 'Animalia', kingdom),
+         class = paste('other', str_to_title(kingdom), sep = ' ')) %>%
+  select(-kingdom) %>%
+  group_by(class) %>%
+  summarize(n_am_class_all = sum(n_am_class_all),
+            p_am_class_all = sum(p_am_class_all),
+            n_am_class_solo = sum(n_am_class_solo),
+            p_am_class_solo = sum(p_am_class_solo))
+
+# taxa_other$n_am_class_all %>% sum(na.rm = TRUE) ### 968
+# taxa_df$n_am_class_all %>% sum(na.rm = TRUE) ### 21921
+### All AM species accounted for!
+
+write_csv(taxa_df, file.path(dir_data, 'taxa_df.csv'))
+write_csv(taxa_other, file.path(dir_data, 'taxa_other.csv'))
+
+```
+
+``` {r plot_barline_charts_by_taxa, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
+### bar charts comparing number of species in each class for each data set
+
+taxa_df <- read_csv(file.path(dir_data, 'taxa_df.csv'))
+taxa_other <- read_csv(file.path(dir_data, 'taxa_other.csv'))
+
+n_spp_other <- taxa_other$n_am_class_all %>% sum()
+
+taxa_df1 <- taxa_df %>%
+  dplyr::select(class, AquaMaps = n_am_class_solo, IUCN = n_iucn_class_solo, Paired = n_class_both) %>%
+  mutate(AquaMaps = ifelse(is.na(AquaMaps), 0, AquaMaps),
+         IUCN     = ifelse(is.na(IUCN),     0, IUCN),
+         Paired   = ifelse(is.na(Paired),   0, Paired),
+         n_total  = AquaMaps + IUCN + Paired,
+         IUCN_end = 100 * (IUCN + Paired)/n_total,
+         IUCN_start = 0,
+         AquaMaps_end   = 100,
+         AquaMaps_start = 100 * (n_total - AquaMaps - Paired)/n_total,
+         Paired_end = AquaMaps_start,
+         Paired_start = IUCN_end) %>%
+  gather(key = dataset,  value = start, ends_with('start')) %>%
+  gather(key = dataset2, value = end, ends_with('end')) %>%
+  mutate(dataset = str_replace(dataset, '_start', ''),
+         dataset2 = str_replace(dataset2, '_end', '')) %>%
+  filter(dataset == dataset2) %>%
+  select(-dataset2)
+
+taxa_total_df <- taxa_df1 %>%
+  group_by(dataset) %>%
+  summarize(class = 'Total',
+            AquaMaps_total = sum(AquaMaps)  + n_spp_other + sum(Paired),
+            IUCN_total = sum(IUCN) + sum(Paired),
+            n_total  = sum(AquaMaps) + sum(IUCN) + n_spp_other + sum(Paired),
+            IUCN_end = 100 * IUCN_total/n_total,
+            IUCN_start = 0,
+            AquaMaps_end   = 100,
+            AquaMaps_start = 100 * (n_total - AquaMaps_total)/n_total,
+            Paired_end = AquaMaps_start,
+            Paired_start = IUCN_end) %>%
+  select(-dataset) %>% distinct() %>%
+  gather(key = dataset,  value = start, ends_with('start')) %>%
+  gather(key = dataset2, value = end, ends_with('end')) %>%
+  mutate(dataset = str_replace(dataset, '_start', ''),
+         dataset2 = str_replace(dataset2, '_end', '')) %>%
+  filter(dataset == dataset2) %>%
+  select(-dataset2, -AquaMaps_total, -IUCN_total)
+
+taxa_df2 <- taxa_total_df %>%
+  bind_rows(taxa_total_df %>%
+              mutate(class = '',
+                     start = 0,
+                     end   = 0,
+                     n_total = 0)) %>%
+  bind_rows(taxa_df1 %>%
+              select(-IUCN, -AquaMaps, -Paired) %>%
+              arrange(desc(n_total))) %>%
+  bind_rows(taxa_other %>%
+              group_by(class) %>%
+              summarize(n_total = sum(n_am_class_all),
+                        dataset = 'AquaMaps',
+                        start = 0,
+                        end = 100)) %>%
+  mutate(class = factor(class, levels = unique(.$class), ordered = TRUE),
+         n_label = ifelse(n_total > 0, paste0('n = ', n_total), ''),
+         dataset = factor(dataset, levels = c('AquaMaps', 'Paired', 'IUCN'), ordered = TRUE))
+
+### cut the labels for all but the first instance
+taxa_df2$n_label[duplicated(taxa_df2$class)] <- ''
+
+break_nums <- seq(0, 100, 20)
+
+dodge <- position_dodge(width = 0.1)
+
+bar_taxa <- ggplot(taxa_df2, aes(x = class, color = dataset)) +
+  ggtheme_basic() +
+  theme(panel.grid.major.x = element_blank(),
+        axis.text.x  = element_text(angle = 75, hjust = 1),
+        axis.title.y = element_text(hjust = 0)) +
+  geom_linerange(aes(ymin = start, ymax = end, size = dataset),
+                 position = position_dodge(width = 0.5)) +
+  scale_size_manual(values = c('IUCN' = .5, 'AquaMaps' = .5, 'Paired' = 2.6)) +
+  scale_color_manual(values = c('IUCN' = 'black', 'AquaMaps' = 'grey70', 'Paired' = 'black')) +
+  geom_text(aes(label = n_label, y = 102),
+            size = 2.4,
+            angle = 90,
+            hjust = 0,
+            color = 'grey30') +
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(0, 140),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums)) +
+  labs(x = 'Class (in order of decreasing number of included species)',
+       y = '% of mapped species',
+       fill = 'Dataset')
+
+print(bar_taxa)
+# ggsave(filename = file.path(dir_fig, 'bar_by_taxa_all.png'), 
+#        width = 19.05, height = 7, units = 'cm', dpi = 600)
+
+```
+
+![](../figures/bar_by_taxa_all.png)
+
+``` {r, child = 'data_explore_global_maps.Rmd', echo = FALSE, message = FALSE, eval = TRUE}
+```
+
+# Figure 2a b
+
+## Quadrant map
+
+``` {r pct_overlap_vs_ratio_of_area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+### define means for both x and y axes
+area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
+dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
+
+### define windows for labels
+q1 <- c('x1' = 84, 'x2' = 98, 'y1' = 92.5, 'y2' = 97.5)
+q2 <- c('x1' =  2, 'x2' = 22, 'y1' = 92.5, 'y2' = 97.5)
+q3 <- c('x1' = 84, 'x2' = 98, 'y1' =  2.5, 'y2' = 7.5)
+q4 <- c('x1' =  2, 'x2' = 18, 'y1' =  2.5, 'y2' = 7.5)
+
+spp_list_labs <- spp_list %>%
+  rename(x = area_ratio, y = sm_perc) %>%
+  mutate(fade = FALSE,
+         fade = ifelse((x > q1[1] & x < q1[2] & y > q1[3] & y < q1[4]), TRUE, fade),
+         fade = ifelse((x > q2[1] & x < q2[2] & y > q2[3] & y < q2[4]), TRUE, fade),
+         fade = ifelse((x > q3[1] & x < q3[2] & y > q3[3] & y < q3[4]), TRUE, fade),
+         fade = ifelse((x > q4[1] & x < q4[2] & y > q4[3] & y < q4[4]), TRUE, fade))
+
+break_nums <- seq(0, 100, 20)
+
+### mongo plot time
+scatter_quadplot <- ggplot(spp_list_labs, aes(x = x, y = y)) +
+  theme(panel.grid.major.x = element_blank()) +
+        ### color the quadrant backgrounds:
+  annotate("rect", xmin = area_align_mean, xmax = 100, ymin = dist_align_mean, ymax = 100, 
+           alpha = .3, fill= "#4dac26")  + 
+  annotate("rect", xmax = area_align_mean, xmin =   0, ymin = dist_align_mean, ymax = 100, 
+           alpha = .3, fill= "#b8e186") + 
+  annotate("rect", xmin = area_align_mean, xmax = 100, ymax = dist_align_mean, ymin =   0, 
+           alpha = .3, fill= "#f1b6da") + 
+  annotate("rect", xmax = area_align_mean, xmin =   0, ymax = dist_align_mean, ymin =   0, 
+           alpha = .3, fill= "#d01c8b") +
+  ### add grid lines
+  geom_vline(xintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
+  geom_hline(yintercept = break_nums, size = 0.25, color = 'white', alpha = .5)
+
+
+
+### plot the data points!
+scatter_quadplot <- scatter_quadplot +
+  # geom_point(color = '#4d4dac', aes(alpha = fade), show.legend = FALSE) +
+  # geom_point(data = spp_list_labs %>%
+  #              filter(str_detect(spp_group_text, 'Corals')),
+  #            color = 'red', aes(alpha = fade), 
+  #            shape = 4, stroke = .5, 
+  #            size = 1, show.legend = FALSE) +
+  # scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = 1)) +
+  geom_point(color = 'black', aes(alpha = fade), size = .1, show.legend = FALSE) +
+  scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = 1))
+
+### label the quadrants:
+scatter_quadplot <- scatter_quadplot +
+  annotate("text", x = 97, y = 95, hjust = 1, vjust = .5, size = 3, color = 'grey20', 
+           fontface = 'bold.italic', label = "Well-aligned") + 
+  annotate("text", x =  3, y = 95, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Distribution-aligned") + 
+  annotate("text", x = 97, y =  5, hjust = 1, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Area-aligned") + 
+  annotate("text", x =  3, y =  5, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Poorly aligned")
+
+### Manage axis scales 
+scatter_quadplot <- scatter_quadplot +
+  scale_x_continuous(expand = c(0, 0), limits = c(-1, 101),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(-1, 101),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums))
+
+### here are mean labels:
+scatter_quadplot <- scatter_quadplot +
+  annotate(geom = 'text', x = area_align_mean, y = 5,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 90,
+           label = sprintf('Mean = %s%%', round(area_align_mean, 1))) +
+  annotate(geom = 'text', x = 5, y = dist_align_mean,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 0,
+           label = sprintf('Mean = %s%%', round(dist_align_mean, 1)))
+  
+scatter_quadplot <- scatter_quadplot +
+  labs(x = bquote('Area ratio '*alpha['ext']*' (%)'), 
+       y = bquote('Distribution alignment '*alpha['dist']*' (%)'))
+
+# print(scatter_quadplot)
+
+# ggsave(file.path(dir_fig, 'scatter_quadmap.png'),
+#        width = 19.05, height = 9, units = 'cm', dpi = 600)
+
+```
+
+![](../figures/scatter_quadmap.png)
+
+## Break down quads by species group
+
+``` {r examine_spp_gp_quartiles, echo = FALSE, eval = TRUE}
+
+spp_list1 <- spp_list %>%
+  group_by(spp_group_text) %>%
+  mutate(n_spp = n()) %>%
+  ungroup()
+
+### Create species lists by quadrant
+spp_list_q1 <- spp_list1 %>%
+  filter(area_ratio >= mean(area_ratio) & sm_perc >= mean(sm_perc))
+spp_list_q2 <- spp_list1 %>%
+  filter(area_ratio < mean(area_ratio) & sm_perc >= mean(sm_perc))
+spp_list_q3 <- spp_list1 %>%
+  filter(area_ratio >= mean(area_ratio) & sm_perc < mean(sm_perc))
+spp_list_q4 <- spp_list1 %>%
+  filter(area_ratio < mean(area_ratio) & sm_perc < mean(sm_perc))
+
+spp_list_quads <- spp_list1 %>%
+  mutate(quad = NA,
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q1$sciname, 'q1', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q2$sciname, 'q2', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q3$sciname, 'q3', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_q4$sciname, 'q4', quad))
+write_csv(spp_list_quads, file.path(dir_data, 'spp_list_quads.csv'))
+
+### Summarize quadrant species list by species group (e.g. CORALS1)
+spp_gp_q1 <- spp_list_q1 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q1 = n())
+spp_gp_q2 <- spp_list_q2 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q2 = n())
+spp_gp_q3 <- spp_list_q3 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q3 = n())
+spp_gp_q4 <- spp_list_q4 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q4 = n())
+
+### Join species group by quadrant into a single dataframe
+spp_gp_quadrants <- spp_gp_q1 %>%
+  full_join(spp_gp_q2, by = c('spp_group_text', 'n_spp')) %>%
+  full_join(spp_gp_q3, by = c('spp_group_text', 'n_spp')) %>%
+  full_join(spp_gp_q4, by = c('spp_group_text', 'n_spp')) %>%
+  gather(quad, n_quad, n_spp_q1, n_spp_q2, n_spp_q3, n_spp_q4) %>% 
+  mutate(quad = str_replace(quad, 'n_spp_', ''),
+         pct_quad = n_quad/n_spp,
+         n_quad   = ifelse(is.na(n_quad),   0, n_quad),
+         pct_quad = ifelse(is.na(pct_quad), 0, pct_quad))
+
+
+quad_names <- data.frame('quad' = c('q4', 'q3', 'q2', 'q1'),
+                         'quad_name' = factor(c('poorly aligned', 
+                                                'area-aligned', 
+                                                'dist-aligned',
+                                                'well-aligned'),
+                                             ordered = TRUE))
+
+spp_gp_quadrants <- spp_gp_quadrants %>%
+  left_join(spp_gp_quadrants %>% 
+              filter(quad == 'q1') %>%
+              dplyr::select(spp_group_text, pct_q1 = pct_quad),
+            by = 'spp_group_text') %>%
+  left_join(quad_names, by = 'quad') %>% 
+  mutate(quad = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'), ordered = TRUE)) %>%
+  transform(spp_group_text = reorder(spp_group_text, pct_q1))
+
+break_nums <- seq(0, 100, 20)
+
+### Plot the bar chart
+barchart_spp_gp_quads <- ggplot(spp_gp_quadrants, 
+                                aes(x = spp_group_text, 
+                                    y = pct_quad,
+                                    fill = quad, 
+                                    weight = pct_quad)) +
+  theme(panel.grid.major.x = element_blank()) +
+  geom_bar(stat = 'identity', alpha = 1) +
+  scale_fill_manual(values = c('q1' = '#4dac26',
+                               'q2' = '#b8e186', 
+                               'q3' = '#f1b6da',
+                               'q4' = '#d01c8b'),
+                    labels = quad_names$quad_name,
+                    guide = guide_legend(reverse = TRUE)) +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 1.1),
+                     breaks = break_nums/100,
+                     labels = sprintf('%s%%', break_nums)) + 
+  ### add grid lines; horizontal but then get flipped
+  geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
+  ### add text
+  geom_text(aes(label = sprintf('n = %s', n_spp), y = 1.01), hjust = 0, 
+            size = 2.5, 
+            color = 'grey30') +
+  coord_flip() +
+  labs(x = 'Taxonomic Group', 
+       y = 'Percent of species by quadrant', 
+       fill = 'Alignment')
+
+print(barchart_spp_gp_quads)
+
+# ggsave(plot = barchart_spp_gp_quads,
+       # filename = file.path(dir_fig, 'barchart_spp_gp_quads.png'),
+       # width = 19.05, height = 7, units = 'cm', dpi = 600)
+
+write_csv(spp_gp_quadrants, file.path(dir_data, 'spp_gp_quads.csv'))
+
+```
+
+![](../figures/barchart_spp_gp_quads.png)
+
+# Plots for SI
+
+## quad plot experts only
+
+``` {r pct_overlap_vs_ratio_of_area, echo = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+spp_list_experts <- spp_list %>%
+  filter(reviewed == 1)
+
+### means for both x and y axes - use original means
+area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
+dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
+
+area_align_mean_ex <- mean(spp_list_experts$area_ratio, na.rm = TRUE)
+dist_align_mean_ex <- mean(spp_list_experts$sm_perc, na.rm = TRUE)
+
+### define windows for labels
+q1 <- c('x1' = 84, 'x2' = 98, 'y1' = 92.5, 'y2' = 97.5)
+q2 <- c('x1' =  2, 'x2' = 22, 'y1' = 92.5, 'y2' = 97.5)
+q3 <- c('x1' = 84, 'x2' = 98, 'y1' =  2.5, 'y2' = 7.5)
+q4 <- c('x1' =  2, 'x2' = 18, 'y1' =  2.5, 'y2' = 7.5)
+
+spp_list_experts_labs <- spp_list_experts %>%
+  rename(x = area_ratio, y = sm_perc) %>%
+  mutate(fade = FALSE,
+         fade = ifelse((x > q1[1] & x < q1[2] & y > q1[3] & y < q1[4]), TRUE, fade),
+         fade = ifelse((x > q2[1] & x < q2[2] & y > q2[3] & y < q2[4]), TRUE, fade),
+         fade = ifelse((x > q3[1] & x < q3[2] & y > q3[3] & y < q3[4]), TRUE, fade),
+         fade = ifelse((x > q4[1] & x < q4[2] & y > q4[3] & y < q4[4]), TRUE, fade))
+
+break_nums <- seq(0, 100, 20)
+
+### mongo plot time
+scatter_quadplot_ex <- ggplot(spp_list_experts_labs, aes(x = x, y = y)) +
+  theme(panel.grid.major.x = element_blank()) +
+  ### color the quadrant backgrounds:
+  annotate("rect", xmin = area_align_mean, xmax = 100, ymin = dist_align_mean, ymax = 100, 
+           alpha = .3, fill= "#4dac26")  + 
+  annotate("rect", xmax = area_align_mean, xmin =   0, ymin = dist_align_mean, ymax = 100, 
+           alpha = .3, fill= "#b8e186") + 
+  annotate("rect", xmin = area_align_mean, xmax = 100, ymax = dist_align_mean, ymin =   0, 
+           alpha = .3, fill= "#f1b6da") + 
+  annotate("rect", xmax = area_align_mean, xmin =   0, ymax = dist_align_mean, ymin =   0, 
+           alpha = .3, fill= "#d01c8b") +
+  ### add grid lines
+  geom_vline(xintercept = break_nums, size = 0.25, color = 'white', alpha = .5) +
+  geom_hline(yintercept = break_nums, size = 0.25, color = 'white', alpha = .5)
+
+
+
+### plot the data points!
+scatter_quadplot_ex <- scatter_quadplot_ex +
+  # geom_point(color = '#4d4dac', aes(alpha = fade), show.legend = FALSE) +
+  # geom_point(data = spp_list_experts_labs %>%
+  #              filter(str_detect(spp_group_text, 'Corals')),
+  #            color = 'red', aes(alpha = fade), 
+  #            shape = 4, stroke = .5, 
+  #            size = 1, show.legend = FALSE) +
+  # scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = 1)) +
+  geom_point(data = spp_list, aes(x = area_ratio, y = sm_perc), 
+             color = 'black', alpha = .15, size = .1, show.legend = FALSE) +
+  geom_point(color = 'black', aes(alpha = fade), size = .25, show.legend = FALSE) +
+  scale_alpha_manual(values = c('TRUE' = .15, 'FALSE' = 1))
+
+### label the quadrants:
+scatter_quadplot_ex <- scatter_quadplot_ex +
+  annotate("text", x = 97, y = 95, hjust = 1, vjust = .5, size = 3, color = 'grey20', 
+           fontface = 'bold.italic', label = "Well-aligned") + 
+  annotate("text", x =  3, y = 95, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Distribution-aligned") + 
+  annotate("text", x = 97, y =  5, hjust = 1, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Area-aligned") + 
+  annotate("text", x =  3, y =  5, hjust = 0, vjust = .5, size = 3, color = 'grey20',
+           fontface = 'bold.italic', label = "Poorly aligned")
+
+### Manage axis scales 
+scatter_quadplot_ex <- scatter_quadplot_ex +
+  scale_x_continuous(expand = c(0, 0), limits = c(-1, 101),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(-1, 101),
+                     breaks = break_nums,
+                     labels = sprintf('%s%%', break_nums))
+
+### here are mean labels:
+scatter_quadplot_ex <- scatter_quadplot_ex +
+  annotate(geom = 'text', x = area_align_mean, y = 5,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 90,
+           label = sprintf('Mean (all) = %s%%', round(area_align_mean, 1))) +
+  annotate(geom = 'text', x = 5, y = dist_align_mean,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 0,
+           label = sprintf('Mean (all) = %s%%', round(dist_align_mean, 1))) +
+  geom_hline(yintercept = dist_align_mean_ex, color = 'grey40', linetype = 2, size = 0.25) + 
+  geom_vline(xintercept = area_align_mean_ex, color = 'grey40', linetype = 2, size = 0.25) + 
+  annotate(geom = 'text', x = area_align_mean_ex - .25, y = 5,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 90,
+           label = sprintf('Mean (reviewed) = %s%%', round(area_align_mean_ex, 1))) +
+  annotate(geom = 'text', x = 5, y = dist_align_mean_ex + .25,
+           hjust = 0, vjust = 0, color = 'grey30', size = 2,
+           fontface = 'bold.italic', angle = 0,
+           label = sprintf('Mean (reviewed) = %s%%', round(dist_align_mean_ex, 1)))
+
+scatter_quadplot_ex <- scatter_quadplot_ex +
+  labs(x = bquote('Area ratio '*alpha['ext']*' (%)'), 
+       y = bquote('Distribution alignment '*alpha['dist']*' (%)'))
+
+# print(scatter_quadplot_ex)
+
+# ggsave(file.path(dir_fig, 'scatter_quadmap_expert.png'),
+#        width = 19.05, height = 9, units = 'cm', dpi = 600)
+
+```
+
+![](../figures/scatter_quadmap_expert.png)
+
+## Break down quads by species group for expert reviewed maps
+
+``` {r examine_spp_gp_quartiles, echo = FALSE, eval = TRUE}
+
+### means for both x and y axes - use original means
+area_align_mean <- mean(spp_list$area_ratio, na.rm = TRUE)
+dist_align_mean <- mean(spp_list$sm_perc, na.rm = TRUE)
+
+spp_list_experts <- spp_list %>%
+  filter(reviewed == 1)
+
+spp_list_experts1 <- spp_list_experts %>%
+  group_by(spp_group_text) %>%
+  mutate(n_spp = n()) %>%
+  ungroup()
+
+### Create species lists by quadrant
+spp_list_experts_q1 <- spp_list_experts1 %>%
+  filter(area_ratio >= area_align_mean & sm_perc >= dist_align_mean)
+spp_list_experts_q2 <- spp_list_experts1 %>%
+  filter(area_ratio <  area_align_mean & sm_perc >= dist_align_mean)
+spp_list_experts_q3 <- spp_list_experts1 %>%
+  filter(area_ratio >= area_align_mean & sm_perc < dist_align_mean)
+spp_list_experts_q4 <- spp_list_experts1 %>%
+  filter(area_ratio <  area_align_mean & sm_perc < dist_align_mean)
+
+spp_list_experts_quads <- spp_list_experts1 %>%
+  mutate(quad = NA,
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_experts_q1$sciname, 'q1', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_experts_q2$sciname, 'q2', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_experts_q3$sciname, 'q3', quad),
+         quad = ifelse(is.na(quad) & sciname %in% spp_list_experts_q4$sciname, 'q4', quad))
+write_csv(spp_list_experts_quads, file.path(dir_data, 'spp_list_experts_quads.csv'))
+
+### Summarize quadrant species list by species group (e.g. CORALS1)
+spp_gp_q1_ex <- spp_list_experts_q1 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q1 = n())
+spp_gp_q2_ex <- spp_list_experts_q2 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q2 = n())
+spp_gp_q3_ex <- spp_list_experts_q3 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q3 = n())
+spp_gp_q4_ex <- spp_list_experts_q4 %>%
+  group_by(spp_group_text) %>%
+  summarize(n_spp = first(n_spp), n_spp_q4 = n())
+
+### Join species group by quadrant into a single dataframe
+spp_gp_quads_ex <- spp_gp_q1_ex %>%
+  full_join(spp_gp_q2_ex, by = c('spp_group_text', 'n_spp')) %>%
+  full_join(spp_gp_q3_ex, by = c('spp_group_text', 'n_spp')) %>%
+  full_join(spp_gp_q4_ex, by = c('spp_group_text', 'n_spp')) %>%
+  gather(quad, n_quad, n_spp_q1, n_spp_q2, n_spp_q3, n_spp_q4) %>% 
+  mutate(quad = str_replace(quad, 'n_spp_', ''),
+         pct_quad = n_quad/n_spp,
+         n_quad   = ifelse(is.na(n_quad),   0, n_quad),
+         pct_quad = ifelse(is.na(pct_quad), 0, pct_quad))
+
+
+quad_names <- data.frame('quad' = c('q4', 'q3', 'q2', 'q1'),
+                         'quad_name' = factor(c('poorly aligned', 
+                                                'area-aligned', 
+                                                'dist-aligned',
+                                                'well-aligned'),
+                                             ordered = TRUE))
+
+spp_gp_quads_ex <- spp_gp_quads_ex %>%
+  left_join(spp_gp_quads_ex %>% 
+              filter(quad == 'q1') %>%
+              dplyr::select(spp_group_text, pct_q1 = pct_quad),
+            by = 'spp_group_text') %>%
+  left_join(quad_names, by = 'quad') %>% 
+  mutate(quad = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'))) %>%
+  transform(spp_group_text = reorder(spp_group_text, pct_q1))
+
+break_nums <- seq(0, 100, 20)
+
+### Plot the bar chart
+bar_spp_gp_quads_ex <- ggplot(spp_gp_quads_ex, 
+                                aes(x = spp_group_text, fill = quad, weight = pct_quad)) +
+  theme(panel.grid.major.x = element_blank()) +
+  geom_bar(stat = 'count', alpha = 1) +
+  scale_fill_manual(values = c('q1' = '#4dac26', 
+                               'q2' = '#b8e186', 
+                               'q3' = '#f1b6da',
+                               'q4' = '#d01c8b'),
+                    labels = quad_names$quad_name,
+                    guide = guide_legend(reverse = TRUE)) +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 1.1),
+                     breaks = break_nums/100,
+                     labels = sprintf('%s%%', break_nums)) + 
+  ### add grid lines; horizontal but then get flipped
+  geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
+  ### add text
+  geom_text(# data = spp_gp_quadrants %>%
+              # select(spp_group_text, n_spp) %>%
+              # distinct(),
+            aes(label = sprintf('n = %s', n_spp), y = 1.01), hjust = 0, 
+            size = 2.5, 
+            color = 'grey30') +
+  coord_flip() +
+  labs(x = 'Taxonomic Group', 
+       y = 'Percent of species by quadrant', 
+       fill = 'Alignment')
+
+print(bar_spp_gp_quads_ex)
+
+# ggsave(plot = bar_spp_gp_quads_ex,
+       # filename = file.path(dir_fig, 'barchart_spp_gp_quads_ex.png'),
+       # width = 19.05, height = 7, units = 'cm', dpi = 600)
+
+write_csv(spp_gp_quads_ex, file.path(dir_data, 'spp_gp_quads_ex.csv'))
+
+```
+
+![](../figures/barchart_spp_gp_quads.png)
+
+## Break down quadrants by risk category
+
+``` {r examine_risk_quartiles, echo = FALSE, eval = FALSE}
+
+### Summarize quadrant species list by species group (e.g. CORALS1)
+spp_risk_q1 <- spp_list_q1 %>%
+  group_by(popn_category) %>%
+  summarize(n_spp_q1 = n())
+spp_risk_q2 <- spp_list_q2 %>%
+  group_by(popn_category) %>%
+  summarize(n_spp_q2 = n())
+spp_risk_q3 <- spp_list_q3 %>%
+  group_by(popn_category) %>%
+  summarize(n_spp_q3 = n())
+spp_risk_q4 <- spp_list_q4 %>%
+  group_by(popn_category) %>%
+  summarize(n_spp_q4 = n())
+
+### Join species group by quadrant into a single dataframe
+spp_risk_quadrants <- spp_risk_q1 %>%
+  full_join(spp_risk_q2, by = c('popn_category')) %>%
+  full_join(spp_risk_q3, by = c('popn_category')) %>%
+  full_join(spp_risk_q4, by = c('popn_category')) %>%
+  gather(quad, n_spp_quad, n_spp_q1, n_spp_q2, n_spp_q3, n_spp_q4) %>% 
+  group_by(popn_category) %>%
+  mutate(n_tot_cat = sum(n_spp_quad)) %>%
+  ungroup() %>%
+  mutate(quad = str_replace(quad, 'n_spp_', ''),
+         pct_quad   = n_spp_quad/n_tot_cat,
+         pct_quad   = ifelse(is.na(pct_quad),   0, pct_quad))
+
+
+spp_risk_quadrants1 <- spp_risk_quadrants %>%
+  left_join(spp_risk_quadrants %>% 
+              filter(quad == 'q1') %>%
+              dplyr::select(popn_category, pct_q1 = pct_quad),
+            by = 'popn_category') %>%
+  mutate(quad = str_replace(quad, 'q1', 'q1 well-aligned'),
+         quad = str_replace(quad, 'q2', 'q2 dist-aligned'),
+         quad = str_replace(quad, 'q3', 'q3 area-aligned'),
+         quad = str_replace(quad, 'q4', 'q4 poorly aligned')) %>%
+  left_join(spp_list %>%
+              dplyr::select(popn_category, cat_rank = category_score) %>%
+              unique() %>%
+              mutate(cat_rank = ifelse(popn_category %in% c('DD', 'NE'), -1, cat_rank)),
+            by = 'popn_category')
+
+### Plot the bar chart
+barchart_spp_risk_quads <- ggplot(spp_risk_quadrants1 %>% 
+                                  transform(popn_category = reorder(popn_category, cat_rank)), 
+                                aes(x = popn_category, fill = quad, weight = pct_quad)) +
+  ggtheme_plot + 
+  theme(panel.grid.major.y = element_blank()) +
+  geom_bar(stat = 'count', alpha = 1) +
+  scale_fill_manual(values = c('q1 well-aligned'   = '#4dac26', 
+                               'q2 dist-aligned'   = '#b8e186', 
+                               'q3 area-aligned'   = '#f1b6da', 
+                               'q4 poorly aligned' = '#d01c8b')) +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 1.1),
+                     breaks = break_nums/100,
+                     labels = sprintf('%s%%', break_nums)) + 
+  ### add grid lines
+  geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
+  ### add text
+  geom_text(aes(label = sprintf('n = %s', n_tot_cat), y = 1.01), hjust = 0, 
+            size = 2, 
+            color = 'grey30') +
+  coord_flip() +
+  labs(x = 'Risk category', 
+       y = 'Percent of species by quadrant', 
+#       title = 'Risk category by quadrant',
+       fill = 'Alignment')
+
+# print(barchart_spp_risk_quads)
+ggsave(plot = barchart_spp_risk_quads,
+       filename = file.path(dir_fig, 'si_barchart_spp_risk_quads.tif'), device = 'tiff',
+       width = 17.8, height = 4.5, units = 'cm', dpi = 600)
+ggsave(plot = barchart_spp_risk_quads,
+       filename = file.path(dir_fig, 'si_barchart_spp_risk_quads.png'),
+       width = 17.8, height = 4.5, units = 'cm', dpi = 600)
+
+```
+
+![](../figures/si_barchart_spp_risk_quads.png)
+
+``` {r risk quads linear model}
+
+spp_risk_df <- spp_list_quads %>%
+  select(iucn_sid, spp_group = spp_group_text, popn_category, category_score, quad) %>%
+  mutate(quad_good = ifelse(quad == 'q1', 1, 0))
+
+risk_mdl1 <- glm(as.factor(quad_good) ~ category_score + spp_group, 
+                 family = binomial,
+                 data = spp_risk_df)
+
+risk_mdl2 <- glm(as.factor(quad_good) ~ category_score, 
+                 family = binomial,
+                 data = spp_risk_df)
+
+risk_mdl3 <- glm(as.factor(quad_good) ~ spp_group, 
+                 family = binomial,
+                 data = spp_risk_df)
+
+BIC(risk_mdl1, risk_mdl2, risk_mdl3)
+summary(risk_mdl1)
+summary(risk_mdl2)
+summary(risk_mdl1)
+
+binomial logistic regression model 
+
+# hist(spp_risk_df$category_score[spp_risk_df$quad == 'q1'])
+# hist(spp_risk_df$category_score[spp_risk_df$quad == 'q2'])
+# hist(spp_risk_df$category_score[spp_risk_df$quad == 'q3'])
+# hist(spp_risk_df$category_score[spp_risk_df$quad == 'q4'])
+
+```
+
+-----
+
+## AquaMaps threshold exploration
+
+``` {r, child = 'data_explore_am_thresh.Rmd', echo = FALSE, message = FALSE, eval = TRUE}
+```
+
+-----
+
+## Count species occurrences as proxy for data poverty
+
+``` {r count_occurrences_by_quad, echo = FALSE, warning = FALSE}
+
+spp_list_quads <- read_csv(file.path(dir_data, 'spp_list_quads.csv'))
+
+gbif_occur <- read_csv(file.path(dir_data, 'gbif_occurrence.csv'))
+obis_occur <- read_csv(file.path(dir_data, 'obis_occurrence.csv'))
+
+totes_occur <- obis_occur %>%
+  left_join(gbif_occur) %>%
+  rowwise() %>%
+  mutate(mean_occ = mean(c(gbif_occ, obis_occ), na.rm = TRUE)) %>%
+  group_by(iucn_sid) %>%
+  summarize(mean_occ = mean(mean_occ, na.rm = TRUE),
+            tots_occ = sum(mean_occ, na.rm = TRUE))
+
+spp_quads_occ <- spp_list_quads %>%
+  left_join(totes_occur %>%
+              dplyr::select(iucn_sid, mean_occ),
+            by = 'iucn_sid')
+
+write_csv(spp_quads_occ, file.path(dir_data, 'spp_quads_occ.csv'))
+
+
+```
+  
+-----
+

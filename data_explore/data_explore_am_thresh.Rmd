@@ -1,0 +1,275 @@
+###(6) Looking at how many and what type (threat category) of species we are losing by setting a threshold of 0.4 on the aquamaps species
+
+This looks at the full 2014 Aquamaps dataset... should it be limited to species with valid categories?
+
+```{r aquamaps_load_data, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE, eval = TRUE}
+
+# get spp_cells raw data for aquamaps
+dir_aquamaps <- file.path(dir_M, 'git-annex/globalprep/_raw_data/aquamaps/d2015')
+
+spp_cells <- read_csv(file.path(dir_aquamaps, 'csv/hcaf_sp_native_trunc.csv'),
+                      progress = TRUE)
+
+spp <- fread(input = file.path(dir_aquamaps, 'csv/speciesoccursum.csv'), 
+             verbose = FALSE, header = TRUE) %>%
+  mutate(sciname = paste(genus, species, sep = ' '),
+         iucn_code = str_replace(toupper(iucn_code), 'LR/', ''),
+         iucn_code = str_replace(iucn_code, 'N.E.', 'NE'))
+spp <- as.data.frame(spp)
+
+```
+
+``` {r inspect_extrapolation_ratios}
+spp_list <- read_csv(file.path(dir_git, 'data/spp_list_w_area_trimmed.csv'))
+hcaf <- read_csv(file.path(dir_aquamaps, 'csv/hcaf_truncated.csv'))
+
+spp_cell_matches <- spp_cells %>%
+  rename(am_sid = speciesid) %>%
+  filter(am_sid %in% spp_list$am_sid | am_sid %in% c('Fis-131802', 'W-Oph-245456')) %>%
+  left_join(hcaf, by = 'loiczid') %>%
+  mutate(probability = as.numeric(probability)) %>%
+  select(-csquarecode, -contains('limit'), -contains('center'))
+
+spp_cell_sums <- spp_cell_matches %>%
+  group_by(am_sid) %>%
+  summarize(n_cells = n(),
+            area    = sum(oceanarea, na.rm = TRUE),
+            area_wt = sum(oceanarea * probability, na.rm = TRUE)) %>%
+  left_join(spp, by = c('am_sid' = 'speciesid')) %>%
+  select(am_sid, n_cells, area, area_wt, sciname, reviewed, occurcells) %>%
+  mutate(geog_space_extrapolate = area / occurcells,
+         env_space_extrapolate = area_wt / occurcells)
+  
+spp_cell_sums_Oplana <- spp_cells %>%
+  filter(speciesid == 'W-Oph-245456')
+spp_cell_sums_Rfyllae <- spp_cells %>%
+  filter(speciesid == 'Fis-131802')
+
+hist(spp_cell_sums_Oplana$probability)
+hist(spp_cell_sums_Rfyllae$probability)
+
+summary(spp_cell_sums_Oplana$probability)
+summary(spp_cell_sums_Rfyllae$probability)
+### Very similar distributions
+# > summary(spp_cell_sums_Oplana$probability)
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  0.0100  0.2300  0.6000  0.5725  0.9600  1.0000 
+# > summary(spp_cell_sums_Rfyllae$probability)
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  0.0100  0.2300  0.6500  0.5981  1.0000  1.0000 
+
+### How do prob-weighted areas compare to non-prob-weighted areas?  consistent 
+### ratio would indicate that the uncertainty due to # of occurcells is not
+### being considered in the predictions
+
+spp_cell_sums1 <- spp_cell_sums %>%
+  mutate(a_to_a_wt = area / area_wt,
+         gspace_to_espace = geog_space_extrapolate / env_space_extrapolate) %>%
+  arrange(desc(a_to_a_wt)) %>%
+  filter(a_to_a_wt < 50) ### get rid of Zalophus wollbaeki outlier
+
+summary(spp_cell_sums1$a_to_a_wt)
+  #  Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  # 1.023   1.258   1.371   1.495   1.571   8.062 
+summary(spp_cell_sums1$gspace_to_espace)
+### haha the same, duh
+### but fairly consistent ratios seem to indicate no relationship
+
+summary(lm(a_to_a_wt ~ occurcells, data = spp_cell_sums1))
+# Adjusted R-squared:  0.01058 - essentially no explanatory power
+```
+
+```{r hist_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE, eval = TRUE}
+
+spp_df3 <- spp_cells %>%
+  group_by(speciesid) %>%
+  summarize(cells_0.4 = sum(probability >= 0.4),
+            cells_t = sum(probability >= 0)) %>%
+  left_join(spp, by = c('speciesid')) %>%
+  mutate(prop = cells_0.4 / cells_t,
+         iucn_code = ifelse(is.na(iucn_code), 'NE', iucn_code)) %>%
+  filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')) %>%
+  # filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX')) %>%
+  select(sciname, speciesid, cells_0.4, cells_t, prop, iucn_code)
+
+iucn_levels = c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')
+spp_df3 <- spp_df3 %>% 
+  transform(iucn_code = factor(iucn_code, levels = iucn_levels))
+
+spp_df3_mean <- mean(spp_df3$prop, na.rm = TRUE)
+spp_df3_med <- median(spp_df3$prop, na.rm = TRUE)
+
+hist_area_vs_threshold <- ggplot(spp_df3, aes(prop, fill = iucn_code)) + 
+  ggtheme_plot + 
+  geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
+  geom_vline(xintercept = spp_df3_mean, color = 'darkred', linetype = 'dashed') + 
+  annotate('text', x = spp_df3_mean, y = .13, hjust = 0, vjust = -.5,
+           angle = 90, 
+           size = 3, 
+           color = 'grey20',
+           label = 'mean') + 
+  geom_vline(xintercept = spp_df3_med, color = 'grey30', linetype = 'dashed') + 
+  annotate('text', x = spp_df3_med + .02, y = .13, hjust = 0, vjust = 1,
+           angle = 90, 
+           size = 3, 
+           color = 'grey20',
+           label = 'median') + 
+  scale_fill_manual(values = c('LC' = 'green4', 
+                               'NT' = 'greenyellow', 
+                               'VU' = 'orange', 
+                               'EN' = 'orangered2', 
+                               'CR' = 'red4',
+                               'EX' = 'black',
+                               'DD' = 'grey60',
+                               'NE' = 'grey70')) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 1.02)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  labs(x = 'Proportion of range included for presence threshold = 40%', 
+       y = sprintf('Proportion of all \nAquaMaps species (n = %s)', nrow(spp)),
+       fill = 'IUCN code')
+
+# print(hist_area_vs_threshold)
+
+ggsave(file.path(dir_fig, 'si_am_threshold.tif'), device = 'tiff', 
+       width = 11.4, height = 6, units = 'cm', dpi = 600)
+ggsave(file.path(dir_fig, 'si_am_threshold.png'), 
+       width = 11.4, height = 6, units = 'cm', dpi = 600)
+
+```
+
+![](../figures/si_am_threshold.png)
+
+```{r hist_lost_area_w_threshold_ne_dd_removed, warning = FALSE, message = FALSE, echo = FALSE, eval = FALSE}
+
+spp_df3a <- spp_df3 %>% 
+  filter(!iucn_code %in% c('DD', 'NE'))
+
+spp_df3a_mean <- mean(spp_df3$prop, na.rm = TRUE)
+spp_df3a_med <- median(spp_df3$prop, na.rm = TRUE)
+
+hist_area_vs_threshold2 <- ggplot(spp_df3a, aes(prop, fill = iucn_code)) + 
+  ggtheme_plot + 
+  geom_histogram(aes(y = ..count../sum(..count..)), binwidth = 0.05, alpha = .7) + 
+  geom_vline(xintercept = spp_df3a_mean, color = 'darkred', linetype = 'dashed') + 
+  annotate('text', x = spp_df3a_mean, y = .16, hjust = 0, vjust = -.5,
+           angle = 90, 
+           size = 3, 
+           color = 'grey20',
+           label = 'mean') + 
+  geom_vline(xintercept = spp_df3a_med, color = 'grey30', linetype = 'dashed') + 
+  annotate('text', x = spp_df3a_med, y = .16, hjust = 0, vjust = -.5,
+           angle = 90, 
+           size = 3, 
+           color = 'grey20',
+           label = 'median') + 
+  scale_fill_manual(values = c('LC' = 'green4', 
+                               'NT' = 'greenyellow', 
+                               'VU' = 'orange', 
+                               'EN' = 'orangered2', 
+                               'CR' = 'red4',
+                               'DD' = 'grey60',
+                               'NE' = 'grey70')) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 1.02)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  labs(x = 'Proportion of range included when selecting a threshold of 40%', 
+       y = sprintf('Proportion of all aquamaps species (n = %s)', nrow(spp_df3a)),
+       fill = 'IUCN code')
+
+ggsave(file.path(dir_fig, 'si_am_threshold2.tif'), device = 'tiff', 
+       width = 17.8, height = 9, units = 'cm', dpi = 600)
+ggsave(file.path(dir_fig, 'si_am_threshold2.png'), 
+       width = 17.8, height = 9, units = 'cm', dpi = 600)
+
+```
+
+<!--![](../figures/si_am_threshold2.png)-->
+
+
+```{r df_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE, eval = TRUE}
+
+threshold_df <- data.frame()
+for (i in seq(0, 1, .05)) { # i = .05
+  message('Calculating species cell losses for threshold = ', i, '...')
+  temp_df <- spp_cells %>%
+    group_by(speciesid) %>%
+    summarize(thresh       = i,
+              cells_thresh = sum(probability >= thresh),
+              cells_total  = sum(probability >= 0),
+              proportion   = cells_thresh/cells_total) %>%
+    left_join(spp %>%
+             filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX', 'DD', 'NE')),
+#              filter(toupper(iucn_code) %in% c('LC', 'NT', 'VU', 'EN', 'CR', 'EX')), 
+            by = c('speciesid')) %>%
+    select(sciname, speciesid, thresh, cells_thresh, cells_total, proportion, iucn_code)
+  
+  threshold_df <- threshold_df %>%
+    bind_rows(temp_df)
+}
+
+message('Summarizing all down to quantiles, medians, and means...')
+thresh_df_summary <- threshold_df %>%
+  group_by(thresh) %>%
+  summarize(mean_prop   = mean(proportion, na.rm = TRUE),
+            median_prop = median(proportion, na.rm = TRUE),
+            quant05 = quantile(proportion, .05),
+            quant25 = quantile(proportion, .25),
+            quant75 = quantile(proportion, .75),
+            quant95 = quantile(proportion, .95))
+            
+```
+
+
+```{r ribbon_lost_area_w_threshold, warning = FALSE, message = FALSE, echo = FALSE, eval = TRUE}
+
+ribbon_area_vs_threshold <- ggplot(thresh_df_summary, aes(x = thresh, y = median_prop)) + 
+  ggtheme_plot + 
+#  geom_point(position = position_jitter(w = .1), aes(color = scenario), alpha = .5) +
+
+  geom_ribbon(aes(ymax = quant95, ymin = quant05), alpha = .5, color = NA, fill = '#b8b8e1') +
+  geom_ribbon(aes(ymax = quant75, ymin = quant25), alpha = .5, color = NA, fill = '#4d4dac') +
+  geom_line(color = 'grey30') + 
+  # geom_line(aes(y = mean_prop), color = 'darkgreen') + 
+  # geom_abline(intercept = area_mean_model[['coefficients']][1],
+  #             slope     = area_mean_model[['coefficients']][2],
+  #             color = 'red') + 
+  geom_vline(xintercept = 0.40, color = 'blue', linetype = 'dashed') +
+  geom_vline(xintercept = 0.50, color = 'blue', linetype = 'dashed') +
+  geom_vline(xintercept = 0.60, color = 'blue', linetype = 'dashed') +
+  annotate('text', x = .39, y = .03, hjust = 0, vjust = 0,
+           angle = 90, 
+           size = 2, 
+           color = 'grey20',
+           label = 'Halpern et al. 2012') + 
+  annotate('text', x = .49, y = .03, hjust = 0, vjust = 0,
+           angle = 90, 
+           size = 2, 
+           color = 'grey20',
+           label = 'Klein et al. 2015') + 
+  annotate('text', x = .59, y = .03, hjust = 0, vjust = 0,
+           angle = 90, 
+           size = 2, 
+           color = 'grey20',
+           label = 'Kaschner et al. 2006') + 
+  # annotate('text', x = .75, y = .85,
+  #          #size = 3, 
+  #          color = 'grey20',
+  #          label = 'R^2^ = .995') + 
+  scale_x_continuous(expand = c(0, 0), 
+                     breaks = c(  .2,    .4,    .5,    .6,    .8,   1.0),
+                     labels = c('20%', '40%', '50%', '60%', '80%', '100%'),
+                     limits = c(0, 1.02)) +
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(0, 1.01)) +
+  labs(# title = 'Relative species range after presence threshold',
+       x = 'AquaMaps presence threshold cutoff', 
+       y = 'Relative species range')
+
+ggsave(file.path(dir_fig, 'si_ribbon_am_threshold.tif'), device = 'tiff', 
+       width = 11.4, height = 6, units = 'cm', dpi = 600)
+ggsave(file.path(dir_fig, 'si_ribbon_am_threshold.png'), 
+       width = 11.4, height = 6, units = 'cm', dpi = 600)
+
+```
+
+![](../figures/si_ribbon_am_threshold.png)
+
