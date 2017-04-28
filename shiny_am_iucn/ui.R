@@ -4,7 +4,7 @@ source('ui_setup.R')
 
 ui <- navbarPage(title = '',
                  theme = shinytheme('cerulean'),
-                 
+
   tabPanel('Abstract',
     sidebarPanel(
       includeMarkdown('pages/article_info.md')
@@ -13,7 +13,7 @@ ui <- navbarPage(title = '',
       includeMarkdown('pages/abstract.md')
     )
   ),
-  
+
   tabPanel('Figures',
     sidebarPanel(
       includeMarkdown('pages/article_info.md')
@@ -36,7 +36,7 @@ ui <- navbarPage(title = '',
       includeMarkdown('pages/fig5.md')
     )
   ),
-  
+
   tabPanel('Map alignment',
     sidebarPanel(
       includeMarkdown('pages/align_tab_side1.md'),
@@ -57,7 +57,7 @@ ui <- navbarPage(title = '',
       plotOutput('barchart', height = '300px')
     )
   ),
-  
+
   tabPanel('Species maps',
     sidebarPanel(
       includeMarkdown('pages/map_tab_side1.md'),
@@ -67,7 +67,7 @@ ui <- navbarPage(title = '',
                   choices = unique(spp_list$name) %>% sort()),
       radioButtons('show_maps', label = 'Data source',
                    choices = list('AquaMaps' = 'am',
-                                  'IUCN'     = 'iucn', 
+                                  'IUCN'     = 'iucn',
                                   'Both'     = 'both'),
                    selected = 'both'),
       includeMarkdown('pages/map_tab_side2.md'),
@@ -79,12 +79,12 @@ ui <- navbarPage(title = '',
       plotOutput('compare_map', width = '100%')
     )
   ),
-  
+
   tabPanel('Coral depth',
     sidebarPanel(
       includeMarkdown('pages/coral_tab_side1.md'),
       selectInput('coral_spp', 'Select a coral species:',
-                  choices = coral_spp_list$name %>% 
+                  choices = coral_spp_list$name %>%
                                      sort()),
       includeMarkdown('pages/coral_tab_side2.md'),
       plotOutput('coral_quad', height = '150px'),
@@ -97,7 +97,7 @@ ui <- navbarPage(title = '',
       plotOutput('coral_barchart', height = '250px')
     )
   ),
-  
+
   tabPanel('References',
     sidebarPanel(
       includeMarkdown('pages/article_info.md')
@@ -106,7 +106,7 @@ ui <- navbarPage(title = '',
       includeMarkdown('pages/references.md')
     )
   ),
-  
+
   tabPanel('SI',
     sidebarPanel(
       includeMarkdown('pages/article_info.md')

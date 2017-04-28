@@ -1,9 +1,7 @@
 ### server_fxns.R
 library(raster)
 library(stringr)
-# library(maps)
 library(tmap)
-# data(World)
 library(RColorBrewer)
 
 ### read data for raster (used to plot species)

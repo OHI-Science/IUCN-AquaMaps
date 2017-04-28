@@ -99,17 +99,23 @@ spp_list_med_areas <- spp_list_quads2016 %>%
 
 ### Start with a sample of 15% of the medium-area species; this is about 170 spp.
 ### Then group by species group and quadrant, and for each, ensure a minimum
-### representation by selecting the first two (or one, if group is only 1)
+### representation by selecting the first two (or one, if group is only 1).
+### Force the list to keep the spp mentioned in the paper:
+spp_in_si <- spp_list_quads2016 %>%
+  filter(sciname %in% c('Conus episcopatus', 'Kajikia albida', 'Acanthurus nigroris', 'Conus magnificus', 'Thunnus alalunga'))
+
 spp_list_samples <- spp_list_med_areas %>%
+  bind_rows(spp_in_si) %>%
   mutate(keep_spp = ifelse(runif(n()) <= .15, TRUE, FALSE)) %>%
   group_by(spp_group_text, quad) %>%
   mutate(n_spp_gp = n(),
          keep_spp = ifelse(iucn_sid == first(iucn_sid), TRUE, keep_spp),
          keep_spp = ifelse(iucn_sid == nth(iucn_sid, 2) & n_spp_gp >= 2, TRUE, keep_spp),
+         keep_spp = ifelse(sciname %in% spp_in_si$sciname, TRUE, keep_spp),
          kept     = sum(keep_spp)) %>%
   ungroup() %>%
   filter(keep_spp) %>%
-  select(iucn_sid, am_sid, sciname, spp_group_text) %>%
+  select(iucn_sid, am_sid, sciname, name, spp_group_text) %>%
   distinct()
 
 write_csv(spp_list_samples, file.path(dir_shiny, 'data', 'spp_list_app.csv'))
