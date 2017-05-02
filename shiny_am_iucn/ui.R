@@ -76,7 +76,7 @@ ui <- navbarPage(title = '',
     ),
     mainPanel(
       includeMarkdown('pages/map_tab_main1.md'),
-      plotOutput('compare_map', width = '100%')
+      plotOutput('compare_map') #, width = '100%')
     )
   ),
 

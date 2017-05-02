@@ -136,15 +136,13 @@ assemble_map_tmap <- function(map_rast, spp) {
                 colorNA = NULL,
                 showNA  = TRUE,
                 title = spp,
-                alpha = 1) +
+                alpha = 1)  +
     tm_layout(legend.text.size = 1,
               legend.title.size = 1.2,
-              # title.position = 'TOP', 
-              legend.outside = FALSE, 
+              legend.outside = FALSE,
               legend.position = c('left', 'bottom'),
               legend.bg.color = '#f6f8ff',
               legend.bg.alpha = .9,
-              attr.outside = TRUE,
               outer.margins = 0, inner.margins = 0, asp = 2.1)
         
   return(map_obj)
@@ -458,12 +456,10 @@ create_coral_map <- function(coral_spp) {
     tm_layout(bg.color = '#f6faff',
               legend.text.size = 1,
               legend.title.size = 1.2,
-              # title.position = 'TOP', 
-              legend.outside = FALSE, 
+              legend.outside = FALSE,
               legend.position = c('left', 'bottom'),
               legend.bg.color = 'white',
               legend.bg.alpha = .5,
-              attr.outside = TRUE,
               outer.margins = 0, inner.margins = 0, asp = 2.1)
   
   return(map_coral_depth)
