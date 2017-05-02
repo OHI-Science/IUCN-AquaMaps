@@ -465,49 +465,49 @@ create_coral_map <- function(coral_spp) {
   return(map_coral_depth)
 }
 
-create_coral_barchart <- function() {
-  message('in create_coral_barchart()')
-  
-  coral_quads <- read_csv('data/coral_quads_app.csv')
-
-  coral_quads <- coral_quads %>%
-    mutate(quad_name = factor(quad_name, 
-                              levels = c('poorly aligned', 
-                                         'area-aligned', 
-                                         'dist-aligned',
-                                         'well-aligned'),
-                              ordered = TRUE),
-           quad      = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'), 
-                              ordered = TRUE))
-
-  quad_names <- c('poorly aligned', 'area-aligned', 
-                  'dist-aligned',   'well-aligned')
-  break_nums <- seq(0, 100, 20)
-  
-  ### Plot the bar chart
-  barchart_coral_quads <- ggplot(coral_quads, 
-                                 aes(x = method, fill = quad, weight = pct_quad)) +
-    ggtheme_basic(textsize = 12) +
-    geom_bar(stat = 'count', alpha = 1) +
-    scale_fill_manual(values = c('q4' = '#d01c8b', 
-                                 'q3' = '#f1b6da', 
-                                 'q2' = '#b8e186',
-                                 'q1' = '#4dac26'),
-                      labels = quad_names,
-                      guide = guide_legend(reverse = TRUE)) +
-    scale_y_continuous(expand = c(0, 0), 
-                       limits = c(0, 1),
-                       breaks = break_nums/100,
-                       labels = sprintf('%s%%', break_nums)) + 
-    ### add grid lines; horizontal but then get flipped
-    geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
-    coord_flip() +
-    labs(x = 'Depth limit', 
-         y = 'Percent of corals by quadrant', 
-         fill = 'Alignment')
-  
-  # barchart_coral_quads
-  
-  return(barchart_coral_quads)
-  
-}
+# create_coral_barchart <- function() {
+#   message('in create_coral_barchart()')
+#   
+#   coral_quads <- read_csv('data/coral_quads_app.csv')
+# 
+#   coral_quads <- coral_quads %>%
+#     mutate(quad_name = factor(quad_name, 
+#                               levels = c('poorly aligned', 
+#                                          'area-aligned', 
+#                                          'dist-aligned',
+#                                          'well-aligned'),
+#                               ordered = TRUE),
+#            quad      = factor(quad, levels = c('q4', 'q3', 'q2', 'q1'), 
+#                               ordered = TRUE))
+# 
+#   quad_names <- c('poorly aligned', 'area-aligned', 
+#                   'dist-aligned',   'well-aligned')
+#   break_nums <- seq(0, 100, 20)
+#   
+#   ### Plot the bar chart
+#   barchart_coral_quads <- ggplot(coral_quads, 
+#                                  aes(x = method, fill = quad, weight = pct_quad)) +
+#     ggtheme_basic(textsize = 12) +
+#     geom_bar(stat = 'count', alpha = 1) +
+#     scale_fill_manual(values = c('q4' = '#d01c8b', 
+#                                  'q3' = '#f1b6da', 
+#                                  'q2' = '#b8e186',
+#                                  'q1' = '#4dac26'),
+#                       labels = quad_names,
+#                       guide = guide_legend(reverse = TRUE)) +
+#     scale_y_continuous(expand = c(0, 0), 
+#                        limits = c(0, 1),
+#                        breaks = break_nums/100,
+#                        labels = sprintf('%s%%', break_nums)) + 
+#     ### add grid lines; horizontal but then get flipped
+#     geom_hline(yintercept = break_nums/100, size = 0.25, color = 'white', alpha = .5) +
+#     coord_flip() +
+#     labs(x = 'Depth limit', 
+#          y = 'Percent of corals by quadrant', 
+#          fill = 'Alignment')
+#   
+#   # barchart_coral_quads
+#   
+#   return(barchart_coral_quads)
+#   
+# }

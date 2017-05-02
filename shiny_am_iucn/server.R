@@ -76,9 +76,9 @@ server <- shinyServer(function(input, output, session) {
     create_coral_map(input$coral_spp)
   })
   
-  output$coral_barchart <- renderPlot({
-    create_coral_barchart()
-  })
+  # output$coral_barchart <- renderPlot({
+  #   create_coral_barchart()
+  # })
   
   
 })

@@ -94,7 +94,8 @@ ui <- navbarPage(title = '',
       includeMarkdown('pages/coral_tab_main1.md'),
       plotOutput('coral_map'),
       includeMarkdown('pages/coral_tab_main2.md'),
-      plotOutput('coral_barchart', height = '250px')
+      img(src='barchart_coral_quads.png', height = 158, width = 750)
+      # plotOutput('coral_barchart', height = '250px')
     )
   ),
 
