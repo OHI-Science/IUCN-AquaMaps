@@ -3,10 +3,10 @@
 source('ui_setup.R')
 
 ui <- navbarPage(
+  
   # tags$head(includeScript("google_analytics.js")),
   title = '',
   theme = shinytheme('cerulean'),
-                 
 
   tabPanel('Abstract',
     sidebarPanel(
@@ -97,7 +97,7 @@ ui <- navbarPage(
       includeMarkdown('pages/coral_tab_main1.md'),
       plotOutput('coral_map'),
       includeMarkdown('pages/coral_tab_main2.md'),
-      img(src='barchart_coral_quads.png', height = 158, width = 750)
+      div(img(src='barchart_coral_quads.png', height = 158, width = 750), style="text-align: center;")
       # plotOutput('coral_barchart', height = '250px')
     )
   ),
