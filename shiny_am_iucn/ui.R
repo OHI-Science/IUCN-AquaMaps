@@ -3,7 +3,7 @@
 source('ui_setup.R')
 
 ui <- navbarPage(
-  tags$head(includeScript("google_analytics.js")),
+  # tags$head(includeScript("google_analytics.js")),
   title = '',
   theme = shinytheme('cerulean'),
                  
