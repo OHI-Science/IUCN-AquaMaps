@@ -2,8 +2,11 @@
 
 source('ui_setup.R')
 
-ui <- navbarPage(title = '',
-                 theme = shinytheme('cerulean'),
+ui <- navbarPage(
+  title = '',
+  theme = shinytheme('cerulean'),
+  # tags$head(includeScript("google-analytics.js")),
+                 
 
   tabPanel('Abstract',
     sidebarPanel(
